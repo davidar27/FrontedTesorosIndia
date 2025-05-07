@@ -6,7 +6,7 @@ import UniqueExperiences from "@/features/Home/components/UniqueExperiences";
 import Leaders from "@/features/Home/components/Leaders";
 import History from "@/features/Home/components/History";
 
-const Home = () => {
+const Home: React.FC = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);

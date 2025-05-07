@@ -7,9 +7,10 @@ interface ButtonIconProps {
     className?: string;
     url?: string;
     children: React.ReactNode;
+    target?: string;
 }
 
-const ButtonIcon: React.FC<ButtonIconProps> = ({ label, className, url, children }) => {
+const ButtonIcon: React.FC<ButtonIconProps> = ({ label, className, url, children, target }) => {
     return (
         <motion.button
             whileHover={{ scale: 1.1 }}
@@ -19,7 +20,7 @@ const ButtonIcon: React.FC<ButtonIconProps> = ({ label, className, url, children
                 aria-label={label}
                 className={className}
                 href={url ? url : '#'}
-                target="_blank"
+                target={target ? target : '_blank'}
                 rel="noopener noreferrer"
             >
                 {children}
