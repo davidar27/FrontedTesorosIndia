@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from 'react-router-dom'
 import imgLogo from "../../assets/icons/logotesorosindia.webp";
 import Navbar from "./Navbar";
