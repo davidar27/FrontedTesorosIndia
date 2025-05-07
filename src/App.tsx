@@ -1,15 +1,14 @@
-import './App.css'
 import Home from './pages/Home'
-import Navbar from './components/Navbar'
-import Footer from './components/Footer'
+import Header from './components/layouts/Header'
+import Footer from './components/layouts/Footer'
 
 function App() {
 
   return (
     <>
-    <Navbar/>
-     <Home/>
-    <Footer/>
+      <Header />
+      <Home />
+      <Footer />
     </>
   )
 }
