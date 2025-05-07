@@ -16,7 +16,7 @@ const Picture = ({ className, src, icon, alt }: PictureProps) => {
         <img
             src={src}
             alt={alt}
-            className="w-10 h-10"
+            className={className}
         />
     );
 };
