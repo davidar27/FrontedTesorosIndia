@@ -16,9 +16,9 @@ const Navbar = () => {
       {/* Desktop Menu */}
       <nav className="hidden md:flex space-x-8">
         <Link to="/" className="text-gray-700 hover:text-primary">Inicio</Link>
-        <Link to="/experiencias" className="text-gray-700 hover:text-primary">Experiencias</Link>
-        <Link to="/historia" className="text-gray-700 hover:text-primary">Historia</Link>
-        <Link to="/contacto" className="text-gray-700 hover:text-primary">Contacto</Link>
+        <Link to="/experiencias" className="text-gray-700 hover:text-primary">Nosotros</Link>
+        <Link to="/historia" className="text-gray-700 hover:text-primary">Productos</Link>
+        <Link to="/contacto" className="text-gray-700 hover:text-primary">Paquetes</Link>
       </nav>
 
       {/* Mobile Menu Button */}
