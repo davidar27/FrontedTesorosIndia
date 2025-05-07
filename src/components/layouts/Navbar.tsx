@@ -8,17 +8,17 @@ const Navbar = () => {
   const toggleMenu = () => setIsOpen(!isOpen)
 
   return (
-    <>
+    <div className="flex items-center justify-between">
 
-      <button onClick={toggleMenu} className="md:hidden text-gray-700">
+      <button onClick={toggleMenu} className="md:hidden">
         {isOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
       {/* Desktop Menu */}
       <nav className="hidden md:flex space-x-8">
-        <Link to="/" className="text-gray-700 hover:text-primary">Inicio</Link>
-        <Link to="/experiencias" className="text-gray-700 hover:text-primary">Nosotros</Link>
-        <Link to="/historia" className="text-gray-700 hover:text-primary">Productos</Link>
-        <Link to="/contacto" className="text-gray-700 hover:text-primary">Paquetes</Link>
+        <Link to="/" className="hover:text-primary">Inicio</Link>
+        <Link to="/experiencias" className="hover:text-primary">Nosotros</Link>
+        <Link to="/historia" className="hover:text-primary">Productos</Link>
+        <Link to="/contacto" className="hover:text-primary">Paquetes</Link>
       </nav>
 
       {/* Mobile Menu Button */}
@@ -37,7 +37,7 @@ const Navbar = () => {
           </div>
         </nav>
       )}
-    </>
+    </div>
   )
 }
 
