@@ -16,7 +16,7 @@ const Header: React.FC = () => {
     if (ocultarDiv) return null;
 
     return (
-        <header className="bg-transparent shadow-md fixed top-0 w-full z-50 text-white flex items-center justify-around p-4 md:px-10 lg:px-20 xl:px-40 2xl:px-60 gap-4">
+        <header className="bg-transparent shadow-md fixed top-0 w-full z-50 text-white flex items-center justify-around p-4 md:px-5 lg:px-10 xl:px-20 2xl:px-40  gap-4">
             <div className="w-40">
                 <Link to="/">
                     <Picture src={imgLogo} alt="Logo" className="w-full h-full object-cover" />
@@ -25,7 +25,7 @@ const Header: React.FC = () => {
 
             <Navbar />
 
-            <div className="relative w-50 max-w-md mx-auto ">
+            <div className="relative w-120 max-w-md mx-auto ">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                 <input
                     type="text"

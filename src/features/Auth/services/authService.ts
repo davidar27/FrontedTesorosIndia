@@ -1,5 +1,8 @@
+const BASE_URL = import.meta.env._API_URL;
+
+
 export const login = async (email: string, password: string) => {
-    const response = await fetch('http://localhost:3000/auth/login', {
+    const response = await fetch(`${BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
