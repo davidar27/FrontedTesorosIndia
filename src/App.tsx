@@ -1,4 +1,8 @@
 import { Routes, Route } from "react-router-dom";
+// import Cookies from "js-cookie";
+
+// const userRole = Cookies.get("user_role");
+
 
 import Home from '@/pages/Home/Home';
 import Header from '@/components/layouts/Header';
