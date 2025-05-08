@@ -3,6 +3,7 @@ import { login } from "@/features/Auth/services/authService";
 import Button from "@/components/ui/Button";
 import { Eye, EyeOff } from 'lucide-react';
 
+
 const LoginForm: React.FC = () => {
 
   const styles = {
@@ -27,6 +28,8 @@ const LoginForm: React.FC = () => {
       } catch (error: unknown) {
           if (error instanceof Error) {
               console.error('Error:', error.message);
+              console.log('API URL:', import.meta.env.VITE_API_URL);
+
           } else {
               console.error('Unexpected error:', error);
           }
