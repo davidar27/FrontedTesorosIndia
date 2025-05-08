@@ -16,7 +16,6 @@ function App() {
         <Route path="/productos" element={<Home />} />
         <Route path="/nosotros" element={<Home />} />
         <Route path="/login" element={<LoginPage />} />
-        {/* Puedes agregar más rutas aquí */}
       </Routes>
 
       <Footer />
