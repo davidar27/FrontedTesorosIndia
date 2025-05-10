@@ -16,9 +16,8 @@ const Navbar: React.FC = () => {
       {/* Desktop Menu */}
       <nav className="hidden md:flex space-x-8">
         <Link to="/" className="hover:text-primary">Inicio</Link>
-        <Link to="/experiencias" className="hover:text-primary">Nosotros</Link>
-        <Link to="/historia" className="hover:text-primary">Productos</Link>
-        <Link to="/contacto" className="hover:text-primary">Paquetes</Link>
+        <Link to="/nosotros" className="hover:text-primary">Nosotros</Link>
+        <Link to="/productos" className="hover:text-primary">Productos</Link>
       </nav>
 
       {/* Mobile Menu Button */}
@@ -31,9 +30,8 @@ const Navbar: React.FC = () => {
         <nav className="md:hidden bg-white border-t border-gray-200">
           <div className="px-4 py-3 space-y-2">
             <Link to="/" className="block text-gray-700 hover:text-primary">Inicio</Link>
-            <Link to="/experiencias" className="block text-gray-700 hover:text-primary">Experiencias</Link>
-            <Link to="/historia" className="block text-gray-700 hover:text-primary">Historia</Link>
-            <Link to="/contacto" className="block text-gray-700 hover:text-primary">Contacto</Link>
+            <Link to="/nosotros" className="block text-gray-700 hover:text-primary">Nosotros</Link>
+            <Link to="/productos" className="block text-gray-700 hover:text-primary">Productos</Link>
           </div>
         </nav>
       )}

@@ -1,5 +1,5 @@
 
-import banner from '@/assets/images/Paisaje.jpg'
+import banner from '@/assets/images/Paisaje.webp'
 
 
 const Hero: React.FC = () => {

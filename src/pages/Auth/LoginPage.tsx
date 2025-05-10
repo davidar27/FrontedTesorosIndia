@@ -1,35 +1,68 @@
-import LoginForm from "@/features/Auth/components/LoginForm";
-import banner from "@/assets/images/banner2.webp";
-import imgLogo from '@/assets/icons/logotesorosindiaPequeño.webp';
-import Picture from "@/components/ui/Picture";
-import { ChevronLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import AuthForm from '@/components/layouts/AuthForm';
+import Cookies from "js-cookie";
+import { useState } from 'react';
+import { useNavigate } from "react-router-dom";
+import { authService } from "@/features/Auth/services/authService";
+
+
+const LoginPage = () => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState("");
+    const navigate = useNavigate();
+
+    const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setErrorMessage("");
+
+        try {
+            const data = await authService(email, password);
+
+            Cookies.set("auth_token", data.token, { expires: 7 });
+            Cookies.set("user_role", data.role, { expires: 7 });
+            Cookies.set("user_name", data.name, { expires: 7 });
+
+            navigate("/");
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+            setErrorMessage(error.message);
+        }
+    };
 
 
 
-const LoginPage: React.FC = () => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        if (name === "email") setEmail(value);
+        if (name === "password") setPassword(value);
+    };
 
-    
+
+    const fields = [
+        { label: "Email", placeholder: "User@gmail.com", type: "email", name: "email", value: email },
+        { label: "Contraseña", placeholder: "Ingresa tu contraseña", type: "password", name: "password", value: password },
+    ];
+
+
+
     return (
-        <section className="min-h-screen bg-cover bg-center flex items-center justify-center text-black  md:p-14" style={{ backgroundImage: `url(${banner})` }}
-        >
-            <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md text-center relative">
-                <div className="absolute top-[-50px] left-1/2 transform -translate-x-1/2 w-36 h-36 rounded-full overflow-hidden bg-white p-1.5 shadow-md">
-                    <Picture src={imgLogo} alt="Logo" className="w-full h-full object-contain" />
-                </div>
+        <AuthForm
+            title="Iniciar sesión"
+            subtitle="Inicia sesión con tu cuenta de"
+            bold='Tesoros de la India'
+            fields={fields}
+            submitText="Ingresar"
+            extraLinkText="¿Has olvidado la contraseña?"
+            extraLinkTo="/recuperar"
+            bottomText="¿No tienes cuenta?"
+            bottomLinkText="Regístrate"
+            bottomLinkTo="/registro"
+            errorMessage={errorMessage}
+            onSubmit={handleLogin}
+            onChange={handleChange}
 
-                <Link to="/" className="absolute top-4 left-4 hover:text-gray-700 transition duration-200">
-                    <ChevronLeft className="w-10 h-10"/>
-
-                </Link>
-
-                <h1 className="text-2xl font-bold mt-16">Inicio de sesión</h1>
-                <p className="text-sm text-gray-600 mt-1 mb-6">Inicia de sesión con tu cuenta de Tesoros India</p>
-
-                <LoginForm />
-            </div>
-        </section>
+        />
     );
 };
 
-export default LoginPage;   
+export default LoginPage;

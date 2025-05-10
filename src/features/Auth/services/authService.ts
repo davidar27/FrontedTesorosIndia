@@ -1,19 +1,19 @@
-const BASE_URL = import.meta.env.VITE_API_URL;
+import axiosInstance from "@/api/axiosInstance";
 
+export const authService = async (email: string, password: string) => {
+    try {
+        const response = await axiosInstance.post("/auth/login", {
+            email,
+            password,
+        });
 
-export const login = async (email: string, password: string) => {
-    const response = await fetch(`${BASE_URL}/auth/login`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ email, password }),
-    });
-
-    if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Error al iniciar sesión');
+        return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        if (error.response && error.response.data) {
+            throw new Error(error.response.data.error || "Credenciales incorrectas");
+        } else {
+            throw new Error("Error de conexión con el servidor");
+        }
     }
-    return response.json();
 };

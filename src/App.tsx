@@ -7,7 +7,9 @@ import { Routes, Route } from "react-router-dom";
 import Home from '@/pages/Home/Home';
 import Header from '@/components/layouts/Header';
 import Footer from '@/components/layouts/Footer';
-import LoginPage from '@/pages/Auth/LoginPage';
+import LoginPage from '@/pages/Auth/LoginPage'
+import RegisterPage from '@/pages/Auth/RegisterPage';
+import Form from '@/components/layouts/AuthForm';
 
 function App() {
   return (
@@ -20,6 +22,9 @@ function App() {
         <Route path="/productos" element={<Home />} />
         <Route path="/nosotros" element={<Home />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/registro" element={<RegisterPage />} />
+        <Route path="/form" element={<Form />} />
+
       </Routes>
 
       <Footer />

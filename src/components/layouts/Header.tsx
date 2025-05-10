@@ -1,22 +1,22 @@
 import { useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
-import { Search, ShoppingCart, CircleUserRound } from 'lucide-react';
+import { Search, ShoppingCart } from 'lucide-react';
 
 import imgLogo from '@/assets/icons/logotesorosindia.webp';
 import Navbar from './Navbar';
 import Button from '@/components/ui/Button';
-import ButtonIcon from '@/components/ui/ButtonIcon';
 import Picture from '@/components/ui/Picture';
+import UserMenu from '@/components/layouts/UserMenu';
 
 const Header: React.FC = () => {
     const location = useLocation();
-    const ocultarDiv = ['/login', '/register'].includes(location.pathname);
+    const ocultarDiv = ['/login', '/registro', '/form'].includes(location.pathname);
 
     if (ocultarDiv) return null;
 
     return (
-        <header className="bg-transparent shadow-md fixed top-0 w-full z-50 text-white flex items-center justify-around p-4 md:px-5 lg:px-10 xl:px-20 2xl:px-40  gap-4">
+        <header className="bg-green-900/50 shadow-md fixed top-0 w-full z-50 text-white flex items-center justify-around p-4 md:px-5 lg:px-10 xl:px-15 2xl:px-40  gap-4">
             <div className="w-40">
                 <Link to="/">
                     <Picture src={imgLogo} alt="Logo" className="w-full h-full object-cover" />
@@ -44,11 +44,8 @@ const Header: React.FC = () => {
                 <span>Fincas</span>
             </Button>
 
-            <ButtonIcon className="" label="Ingresar" url="/login" target="_self">
-                <span>
-                    <CircleUserRound />
-                </span>
-            </ButtonIcon>
+            <UserMenu />
+
         </header>
     );
 };

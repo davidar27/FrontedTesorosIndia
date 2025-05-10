@@ -14,10 +14,13 @@ const Home: React.FC = () => {
   return (
     <div className="bg-white text-gray-800">
       <main>
+
         <Hero />
-        <section className="px-4 md:px-16 py-10">
+        <section className="px-4 md:px-16 py-10 bg-gray-500">
           <PackageSelector />
+
         </section>
+
         <section className="px-4 md:px-16 py-10 bg-gray-50">
           <TouristRoute />
         </section>
