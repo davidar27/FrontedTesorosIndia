@@ -1,10 +1,10 @@
 import { useEffect } from "react";
-import Hero from "@/features/Home/components/Hero";
-import PackageSelector from "@/features/Home/components/PackageSelector";
-import TouristRoute from "@/features/Home/components/TouristRoute";
-import UniqueExperiences from "@/features/Home/components/UniqueExperiences";
-import Leaders from "@/features/Home/components/Leaders";
-import History from "@/features/Home/components/History";
+import Hero from "@/components/home/Hero";
+import PackageSelector from "@/components/home/PackageSelector";
+import TouristRoute from "@/components/home/TouristRoute";
+import UniqueExperiences from "@/components/home/UniqueExperiences";
+import Leaders from "@/components/home/Leaders";
+import History from "@/components/home/History";
 
 const Home: React.FC = () => {
   useEffect(() => {

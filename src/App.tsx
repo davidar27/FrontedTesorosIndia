@@ -1,33 +1,85 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route/* , Navigate  */} from "react-router-dom";
+// import { useAuth } from '@/context/AuthContext';
 // import Cookies from "js-cookie";
 
-// const userRole = Cookies.get("user_role");
+// Layouts
+import MainLayout from '@/layouts/MainLayout';
+import AuthLayout from '@/layouts/AuthLayout';
 
-
+// Pages
 import Home from '@/pages/Home/Home';
-import Header from '@/components/layouts/Header';
-import Footer from '@/components/layouts/Footer';
-import LoginPage from '@/pages/Auth/LoginPage'
+// import PackagesPage from '@/pages/Packages/PackagesPage';
+// import ProductsPage from '@/pages/Products/ProductsPage';
+// import AboutPage from '@/pages/About/AboutPage';
+import LoginPage from '@/pages/Auth/LoginPage';
 import RegisterPage from '@/pages/Auth/RegisterPage';
-import Form from '@/components/layouts/AuthForm';
+import EmailVerification from '@/pages/Auth/VerifyEmail';
+import { EmailVerificationPage } from "./pages/Auth/VerificationPage";
+// import FarmPage from '@/pages/Farm/FarmPage';
+// import NotFoundPage from '@/pages/Errors/NotFoundPage';
+
+// Componente para rutas protegidas
+// const PrivateRoute = ({ children, roles = [] }: { children: JSX.Element, roles?: string[] }) => {
+//   const { user } = useAuth();
+//   const userRole = Cookies.get("user_role");
+
+//   if (!user) {
+//     return <Navigate to="/login" replace />;
+//   }
+
+//   if (roles.length > 0 && !roles.includes(userRole || '')) {
+//     return <Navigate to="/" replace />;
+//   }
+
+//   return children;
+// };
 
 function App() {
   return (
     <>
-      <Header />
-
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/paquetes" element={<Home />} />
-        <Route path="/productos" element={<Home />} />
-        <Route path="/nosotros" element={<Home />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/registro" element={<RegisterPage />} />
-        <Route path="/form" element={<Form />} />
+        {/* Rutas públicas principales */}
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<Home />} />
+          {/* <Route path="/paquetes" element={<PackagesPage />} />
+          <Route path="/productos" element={<ProductsPage />} />
+          <Route path="/nosotros" element={<AboutPage />} /> */}
+          {/* <Route path="*" element={<NotFoundPage />} /> */}
+        </Route>
 
+        {/* Rutas de autenticación */}
+        <Route element={<AuthLayout />}>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/registro" element={<RegisterPage />} />
+          <Route path="/correo-enviado" element={<EmailVerification />} />
+          <Route path="/verificar-correo" element={<EmailVerificationPage/>} />
+        </Route>
+
+        {/* Rutas protegidas */}
+        {/* <Route element={<MainLayout />}>
+          <Route 
+            path="/myfarm" 
+            element={
+              <PrivateRoute roles={['emprendedor']}>
+                <FarmPage />
+              </PrivateRoute>
+            } 
+          /> */}
+          
+          {/* Ejemplo de ruta solo para admin */}
+          {/* <Route 
+            path="/admin" 
+            element={
+              <PrivateRoute roles={['admin']}>
+                <AdminPage />
+              </PrivateRoute>
+            } 
+          />
+        </Route> */}
+
+        {/* Ruta para verificación de email */}
+        {/* <Route path="/verify/:token" element={<EmailVerificationHandler />} /> */}
       </Routes>
-
-      <Footer />
     </>
   );
 }

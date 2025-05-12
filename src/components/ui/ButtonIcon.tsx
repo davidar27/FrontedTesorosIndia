@@ -15,7 +15,7 @@ const ButtonIcon: React.FC<ButtonIconProps> = ({ label, className, url, children
     return (
         <motion.button
             whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
+            whileTap={{ scale: 1 }}
             onClick={onClick}
 
         >
@@ -23,7 +23,7 @@ const ButtonIcon: React.FC<ButtonIconProps> = ({ label, className, url, children
                 aria-label={label}
                 className={className}
                 href={url ? url : '#'}
-                target={target ? target : '_blank'}
+                target={target ? target : '_self'}
                 rel="noopener noreferrer"
             >
                 {children}

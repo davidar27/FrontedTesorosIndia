@@ -1,58 +1,90 @@
+//components
 import AuthForm from '@/components/layouts/AuthForm';
-import registerService from '@/features/Auth/services/registerService';
+//hooks
 import { useNavigate } from "react-router-dom";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm } from "react-hook-form";
 import { useState } from 'react';
+//services
+import registerService from '@/services/auth/registerService';
+//validations
+import { registerSchema } from "@/validations/auth/registerSchema";
+//types
+import { RegisterFormData } from '@/types/auth/registerTypes';
+
+
 
 const RegisterPage = () => {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [phone_number, setPhoneNumber] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-
-
     const navigate = useNavigate();
 
-    const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        setErrorMessage("");
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting }
+    } = useForm<RegisterFormData>({
+        resolver: yupResolver(registerSchema),
+    });
 
+    const onSubmit = async (data: RegisterFormData) => {
         try {
-            await registerService(name, email, phone_number, password, confirmPassword);
-            navigate("/login");
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } catch (error: any) {
-            console.log(name, email, phone_number, password, confirmPassword);
-
-            if (error.response) {
-                console.error("Detalles del error:", {
-                    status: error.response.status,
-                    data: error.response.data,
+            const result = await registerService(
+                data.name,
+                data.email,
+                data.phone_number,
+                data.password,
+                data.confirm_password
+            );
+            // Redirección después de 2 segundos
+            setTimeout(() => {
+                navigate('/correo-enviado', {
+                    state: {
+                        registrationSuccess: true,
+                        email: result.user?.email || data.email
+                    }
                 });
-                
-                throw new Error(error.response.data.error || "Error de validación");
+            }, 2000);
+
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                setErrorMessage(error.message);
             } else {
-                throw new Error("Error de conexión con el servidor");
+                setErrorMessage("Ocurrió un error desconocido");
             }
         }
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        if (name === "name") setName(value);
-        if (name === "email") setEmail(value);
-        if (name === "phone_number") setPhoneNumber(value);
-        if (name === "password") setPassword(value);
-        if (name === "confirmPassword") setConfirmPassword(value);
-    };
-
     const fields = [
-        { label: "Nombre", placeholder: "Ingresa tu nombre", name: "name" },
-        { label: "Email", placeholder: "User@gmail.com", type: "email", name: "email" },
-        { label: "Número Celular", placeholder: "3123446735", name: "phone_number" },
-        { label: "Contraseña", placeholder: "Ingresa tu contraseña", type: "password", name: "password" },
-        { label: "Confirmar contraseña", placeholder: "Ingresa tu contraseña", type: "password", name: "confirmPassword" },
+        {
+            label: "Nombre",
+            placeholder: "Ingresa tu nombre",
+            type: "text",
+            name: "name"
+        },
+        {
+            label: "Email",
+            placeholder: "user@ejemplo.com",
+            type: "email",
+            name: "email"
+        },
+        {
+            label: "Número Celular",
+            placeholder: "3123446735",
+            type: "tel",
+            name: "phone_number"
+        },
+        {
+            label: "Contraseña",
+            placeholder: "Ingresa tu contraseña",
+            type: "password",
+            name: "password"
+        },
+        {
+            label: "Confirmar contraseña",
+            placeholder: "Confirma tu contraseña",
+            type: "password",
+            name: "confirm_password"
+        },
     ];
 
     return (
@@ -65,8 +97,11 @@ const RegisterPage = () => {
             bottomLinkText="Inicia sesión"
             bottomLinkTo="/login"
             errorMessage={errorMessage}
-            onSubmit={handleRegister}
-            onChange={handleChange}
+            onSubmit={handleSubmit(onSubmit)}
+            register={register}
+            errors={errors}
+            isSubmitting={isSubmitting}
+            onChange={() => setErrorMessage("")}
         />
     );
 };

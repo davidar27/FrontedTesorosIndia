@@ -36,7 +36,7 @@ const UserMenu: React.FC = () => {
 
     if (!isAuthenticated) {
         return (
-            <ButtonIcon onClick={() => navigate('/login')} target="_self" className="flex items-center gap-2 text-white font-bold ">
+            <ButtonIcon onClick={() => navigate('/login')} className="flex items-center gap-2 text-white font-bold ">
                 <LogIn />
                 <span>Ingresar</span>
             </ButtonIcon>
@@ -45,10 +45,10 @@ const UserMenu: React.FC = () => {
 
     return (
         <div className="relative">
-            <ButtonIcon onClick={toggleMenu} className="flex items-center gap-2 cursor-pointer" target='_self'>
+            <ButtonIcon onClick={toggleMenu} className="flex items-center gap-2 cursor-pointer">
                 <CircleUserRound />
-                <span className="capitalize">
-                    {userName || userRole}
+                <span className="capitalize 2xl:text-xl md:text-md sm:text-sm">
+                    {(userName || userRole)?.split(' ').slice(0, 2).join(' ')}
                 </span>
             </ButtonIcon>
 

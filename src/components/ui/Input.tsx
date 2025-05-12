@@ -1,0 +1,73 @@
+import { forwardRef, useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
+
+type InputVariant = 'default' | 'error' | 'success' | 'disabled';
+type InputSize = 'sm' | 'md' | 'lg';
+
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+    className?: string;
+    variant?: InputVariant;
+    inputSize?: InputSize;
+    fullWidth?: boolean;
+}
+
+const Input = forwardRef<HTMLInputElement, InputProps>(
+    (
+        {
+            className = '',
+            variant = 'default',
+            inputSize = 'md',
+            fullWidth = true,
+            type,
+            ...props
+        },
+        ref
+    ) => {
+        const [showPassword, setShowPassword] = useState(false);
+        const isPassword = type === 'password';
+
+        const variantClasses = {
+            default: 'border-gray-300 focus:border-blue-500 focus:ring-blue-500',
+            error: 'border-red-500 focus:border-red-500 focus:ring-red-500',
+            success: 'border-green-500 focus:border-green-500 focus:ring-green-500',
+            disabled: 'bg-gray-100 cursor-not-allowed',
+        };
+
+        const sizeClasses = {
+            sm: 'py-1 px-2 text-sm',
+            md: 'py-2 px-3 text-base',
+            lg: 'py-3 px-4 text-lg',
+        };
+
+        const widthClass = fullWidth ? 'w-full' : '';
+
+        return (
+            <div className="relative">
+                <input
+                    ref={ref}
+                    type={isPassword ? (showPassword ? 'text' : 'password') : type}
+                    className={`${widthClass} ${sizeClasses[inputSize]} ${variantClasses[variant]} border rounded-md shadow-sm focus:outline-none focus:ring-1 disabled:opacity-70 pr-10 ${className}`}
+                    {...props}
+                />
+                {isPassword && (
+                    <button
+                        type="button"
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                        onClick={() => setShowPassword(!showPassword)}
+                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                        {showPassword ? (
+                            <EyeOff className="w-5 h-5" />
+                        ) : (
+                            <Eye className="w-5 h-5" />
+                        )}
+                    </button>
+                )}
+            </div>
+        );
+    }
+);
+
+Input.displayName = 'Input';
+
+export default Input;

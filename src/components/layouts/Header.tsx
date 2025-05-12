@@ -1,13 +1,21 @@
-import { useLocation } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-
-import { Search, ShoppingCart } from 'lucide-react';
-
-import imgLogo from '@/assets/icons/logotesorosindia.webp';
-import Navbar from './Navbar';
+//componentes
 import Button from '@/components/ui/Button';
 import Picture from '@/components/ui/Picture';
 import UserMenu from '@/components/layouts/UserMenu';
+import ButtonIcon from '@/components/ui/ButtonIcon';
+import Navbar from '@/components/layouts/Navbar';
+
+//assets
+import imgLogo from '@/assets/icons/logotesorosindia.webp';
+import { Search, ShoppingCart } from 'lucide-react';
+//hooks
+import { useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+
+
+
+
+
 
 const Header: React.FC = () => {
     const location = useLocation();
@@ -16,7 +24,7 @@ const Header: React.FC = () => {
     if (ocultarDiv) return null;
 
     return (
-        <header className="bg-green-900/50 shadow-md fixed top-0 w-full z-50 text-white flex items-center justify-around p-4 md:px-5 lg:px-10 xl:px-15 2xl:px-40  gap-4">
+        <header className="bg-green-900/50 shadow-md fixed top-0 w-full z-50 text-white flex items-center justify-between p-4 sm:px-2 md:px-5 lg:px-10 xl:px-12 sm:gap-2 md:gap-4 lg:gap-6 xl:gap-8">
             <div className="w-40">
                 <Link to="/">
                     <Picture src={imgLogo} alt="Logo" className="w-full h-full object-cover" />
@@ -34,11 +42,11 @@ const Header: React.FC = () => {
                 />
             </div>
 
-            <Button>
+            <ButtonIcon>
                 <span>
                     <ShoppingCart />
                 </span>
-            </Button>
+            </ButtonIcon>
 
             <Button className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg">
                 <span>Fincas</span>

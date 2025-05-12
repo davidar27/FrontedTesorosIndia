@@ -1,27 +1,34 @@
-import { Link } from "react-router-dom";
-import React from "react";
-import { ChevronLeft } from "lucide-react";
+//assets
 import background from "@/assets/images/Paisaje.webp";
 import imgLogo from "@/assets/icons/logotesorosindiaPequeño.webp";
-import Picture from "@/components/ui/Picture";
-import Button from "../ui/Button";
-import { Eye, EyeOff } from 'lucide-react';
-import { useState } from "react";
 
-interface InputField {
+
+//components
+import Card from "@/components/ui/Card";
+import CardContent from "@/components/ui/CardContent";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
+import Label from "@/components/ui/Label";
+import CircularLogo from "@/components/ui/CircularLogo";
+import BackButton from "@/components/ui/BackButton";
+
+//hooks
+import { Link } from "react-router-dom";
+import { FormEventHandler } from "react";
+import { UseFormRegister, FieldErrors } from "react-hook-form";
+
+type Field = {
   label: string;
   placeholder: string;
-  type?: string;
+  type: string;
   name: string;
-  value?: string;
-  errorMessage?: string;
-}
+};
 
 interface AuthFormProps {
   title: string;
   subtitle: string;
   bold?: string;
-  fields: InputField[];
+  fields: Field[];
   submitText: string;
   bottomText: string;
   bottomLinkText: string;
@@ -29,101 +36,101 @@ interface AuthFormProps {
   extraLinkText?: string;
   extraLinkTo?: string;
   errorMessage?: string;
-  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-
+  isSubmitting?: boolean;
+  onSubmit: FormEventHandler<HTMLFormElement>;
+  onChange: () => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  register: UseFormRegister<any>;
+  errors: FieldErrors;
 }
 
-
-const AuthForm: React.FC<AuthFormProps> = ({
+const AuthForm = ({
   title,
   subtitle,
   bold,
+  extraLinkText,
   fields,
   submitText,
   bottomText,
   bottomLinkText,
   bottomLinkTo,
-  extraLinkText,
   extraLinkTo,
-  errorMessage,
   onSubmit,
   onChange,
-
-}) => {
-  const [showPassword, setShowPassword] = useState(false);
-
+  register,
+  errors
+}: AuthFormProps) => {
   return (
     <div className="min-h-screen bg-cover bg-center flex items-center justify-center text-black  md:p-14" style={{ backgroundImage: `url(${background})` }}>
-      <div className="bg-white rounded-2xl shadow-lg p-8 w-100 max-w-md  relative pt-30">
 
-        <div className="absolute top-[-50px] left-1/2 transform -translate-x-1/2 w-36 h-36 rounded-full overflow-hidden bg-white p-1.5 shadow-md">
-          <Picture src={imgLogo} alt="Logo" className="w-full h-full object-contain" />
-        </div>
+      <Card className="rounded-2xl shadow-lg p-8 w-100 max-w-md  relative pt-20">
 
-        <Link to="/" className="absolute top-4 left-4 hover:text-gray-700 transition duration-200">
-          <ChevronLeft className="w-10 h-10" />
-        </Link>
+        <CardContent>
 
-        <h2 className="text-2xl font-bold text-center mb-1">{title}</h2>
-        <p className="text-center text-sm mb-6">{subtitle} <span className="font-bold" >{bold}</span></p>
-        {errorMessage && (
-          <p className="text-red-500 text-sm text-center mt-2">{errorMessage}</p>
-        )}
+          <CircularLogo
+            src={imgLogo}
+            alt="Tesoros de la India"
+            size="xl"
+            borderColor="none"
+            shadow="lg"
+            offsetY="-50px"
+          />
 
-        <form onSubmit={onSubmit} className="space-y-4">
-          {fields.map(({ label, placeholder, type = "text", name, value }) => {
-            const isPasswordField = type === "password";
-            return (
-              <div key={name} className="relative">
-                <label className="block text-sm font-medium mb-1 ml-1">{label}</label>
-                <input
-                  name={name}
-                  type={isPasswordField ? (showPassword ? "text" : "password") : type}
+          <BackButton
+            to="/"
+            position="top-left"
+            size="lg"
+            color="blue-500"
+            hoverColor="blue-700"
+            className="p-2"
+            iconClassName="stroke-2"
+          />
+
+          <div className="space-y-2 text-center pt-6">
+            <h1 className="text-2xl font-bold">{title}</h1>
+            <p className="text-sm text-gray-500">{subtitle} <span className="font-bold text-black">{bold}</span></p>
+          </div>
+
+          <form onSubmit={onSubmit} onChange={onChange} className="space-y-4 mt-6">
+            {fields.map(({ label, placeholder, type, name }) => (
+              <div key={name} className="space-y-2">
+                <Label htmlFor={name}>{label}</Label>
+                <Input
+                  id={name}
+                  type={type}
                   placeholder={placeholder}
-                  className="w-full border-2 border-green-500 rounded-lg px-3 py-2 focus:outline-none"
-                  value={value}
-                  onChange={onChange}
+                  variant="success"
+                  {...register(name)}
                 />
-                {isPasswordField && (
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-[35px] text-gray-500"
-                  >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-
-
+                {errors[name] && (
+                  <p className="text-red-500 text-sm">{(errors[name]?.message as string) || "Campo inválido"}</p>
                 )}
               </div>
+            ))}
 
-            );
-          })}
-          <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-semibold cursor-pointer">
-            {submitText}
-          </Button>
-        </form>
+            <Button type="submit" className="w-full">
+              {submitText}
+            </Button>
+          </form>
 
+          {extraLinkText && extraLinkTo && (
+            <div className="text-center mt-4 text-sm">
+              <Link to={extraLinkTo} className="underline">
+                {extraLinkText}
+              </Link>
+            </div>
+          )}
 
-
-        {extraLinkText && extraLinkTo && (
           <div className="text-center mt-4 text-sm">
-            <Link to={extraLinkTo} className="underline">
-              {extraLinkText}
+            {bottomText}{" "}
+            <Link to={bottomLinkTo} className="font-bold underline"> <br />
+              {bottomLinkText}
             </Link>
           </div>
-        )}
+        </CardContent>
+      </Card>
+      /</div>
 
-
-        <div className="text-center mt-4 text-sm">
-          {bottomText}{" "}
-          <Link to={bottomLinkTo} className="font-bold underline">
-            {bottomLinkText}
-          </Link>
-        </div>
-      </div>
-    </div>
   );
 };
 
