@@ -4,14 +4,14 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Cookies from 'js-cookie';
 import AuthForm from '@/components/layouts/AuthForm';
-import { useAuth } from '@/context/AuthContext';
+// import { useAuth } from '@/context/AuthContext';
 import authService from '@/services/auth/authService';
 import { loginSchema } from "@/validations/auth/loginSchema";
 import { LoginFormData } from '@/types/auth/authTypes';
 import { AxiosError } from 'axios';
 
 const LoginPage = () => {
-    const { login } = useAuth();
+    // const { login } = useAuth();
     const [errorMessage, setErrorMessage] = useState("");
     const [isRedirecting, setIsRedirecting] = useState(false);
     const navigate = useNavigate();
@@ -31,10 +31,8 @@ const LoginPage = () => {
         try {
             const response = await authService.login(data.email, data.password);
 
-            // Guardar datos de autenticación
-            login(response.token, response.user);
+            // login(response.token, response.user);
 
-            // Configurar cookies seguras
             const cookieOptions = {
                 expires: 7,
                 secure: process.env.NODE_ENV === 'production',
@@ -46,7 +44,6 @@ const LoginPage = () => {
             Cookies.set("user_role", response.user.role, cookieOptions);
             Cookies.set("user_name", response.user.name, cookieOptions);
 
-            // Redirección con estado de carga
             setIsRedirecting(true);
             navigate("/", { replace: true });
 

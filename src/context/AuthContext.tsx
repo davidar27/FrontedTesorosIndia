@@ -1,4 +1,4 @@
-import { createContext, useContext, ReactNode, useState, useEffect, useCallback } from 'react';
+/* import { createContext, useContext, ReactNode, useState, useEffect, useCallback } from 'react';
 import Cookies from 'js-cookie';
 import  verifyToken  from "@/services/auth/authService";
 
@@ -138,4 +138,4 @@ export const useAuth = () => {
         throw new Error('useAuth must be used within an AuthProvider');
     }
     return context;
-};
+}; */

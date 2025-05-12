@@ -1,4 +1,4 @@
-export const useRoles = () => {
+/* export const useRoles = () => {
     const { user } = useAuth();
 
     return {
@@ -7,4 +7,4 @@ export const useRoles = () => {
         isClient: user?.role === 'cliente',
         currentRole: user?.role
     };
-};
+}; */
