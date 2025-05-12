@@ -48,7 +48,6 @@ const authService = {
             await axiosInstance.post("/auth/logout");
         } catch (error) {
             console.warn("Error al cerrar sesión", error);
-            // Aun así continuamos con el logout local
         }
     },
 
