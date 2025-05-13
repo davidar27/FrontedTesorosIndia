@@ -4,17 +4,18 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Cookies from 'js-cookie';
 import AuthForm from '@/components/layouts/AuthForm';
-// import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import authService from '@/services/auth/authService';
 import { loginSchema } from "@/validations/auth/loginSchema";
 import { LoginFormData } from '@/types/auth/authTypes';
 import { AxiosError } from 'axios';
 
 const LoginPage = () => {
-    // const { login } = useAuth();
+    const { login } = useAuth();
     const [errorMessage, setErrorMessage] = useState("");
     const [isRedirecting, setIsRedirecting] = useState(false);
     const navigate = useNavigate();
+    const isProduction = process.env.NODE_ENV === 'production';
 
     const {
         register,
@@ -31,18 +32,25 @@ const LoginPage = () => {
         try {
             const response = await authService.login(data.email, data.password);
 
-            // login(response.token, response.user);
+            login(response.token, response.user);
+
 
             const cookieOptions = {
-                expires: 7,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict' as const,
-                path: '/'
+                expires: 7, // días
+                secure: isProduction,
+                sameSite: isProduction ? 'None' as const : 'Lax' as const,
+                path: '/',
             };
 
             Cookies.set("auth_token", response.token, cookieOptions);
-            Cookies.set("user_role", response.user.role, cookieOptions);
-            Cookies.set("user_name", response.user.name, cookieOptions);
+
+            if (response.user && response.user.role) {
+                Cookies.set("user_role", response.user.role, cookieOptions);
+            }
+
+            if (response.user && response.user.name) {
+                Cookies.set("user_name", response.user.name, cookieOptions);
+            }
 
             setIsRedirecting(true);
             navigate("/", { replace: true });
@@ -51,8 +59,10 @@ const LoginPage = () => {
             reset({ password: '' });
 
             if (error instanceof AxiosError) {
+                console.error("Error de login:", error.response?.data);
                 setErrorMessage(
                     error.response?.data?.error ||
+                    error.message ||
                     "Credenciales incorrectas. Por favor, inténtalo de nuevo."
                 );
             } else if (error instanceof Error) {

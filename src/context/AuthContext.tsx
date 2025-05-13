@@ -1,35 +1,7 @@
-/* import { createContext, useContext, ReactNode, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, ReactNode, useState, useEffect, useCallback } from 'react';
 import Cookies from 'js-cookie';
-import  verifyToken  from "@/services/auth/authService";
-
-// Definición de tipos
-type UserRole = 'administrador' | 'emprendedor' | 'cliente';
-
-interface User {
-    id: string;
-    email: string;
-    name: string;
-    role: UserRole;
-    avatar?: string;
-    // Datos específicos por rol
-    businessName?: string;    // Para emprendedores
-    phoneNumber?: string;     // Para clientes
-    permissions?: string[];   // Para administradores
-}
-
-interface AuthContextType {
-    user: User | null;
-    isAuthenticated: boolean;
-    isLoading: boolean;
-    role: UserRole | null;
-    isAdmin: boolean;
-    isEntrepreneur: boolean;
-    isClient: boolean;
-    login: (token: string, userData: User) => void;
-    logout: () => Promise<void>;
-    updateUser: (userData: Partial<User>) => void;
-    hasPermission: (permission: string) => boolean;
-}
+import authService from "@/services/auth/authService";
+import { User , AuthContextType} from '@/types/auth/authTypes'
 
 const AuthContext = createContext<AuthContextType>(null!);
 
@@ -37,7 +9,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    // Helper functions para roles
     const isAdmin = user?.role === 'administrador';
     const isEntrepreneur = user?.role === 'emprendedor';
     const isClient = user?.role === 'cliente';
@@ -53,11 +24,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         try {
-            const userData = await verifyToken(token);
-            setUser(userData);
+            const userData = await authService.verifyToken(token);
+
+            if (userData.isValid && userData.user) {
+                setUser(userData.user);
+            } else {
+                await logout();
+            }
         } catch (error) {
             console.error('Error verifying token:', error);
-            await logout(); // Limpieza completa
+            await logout();
         } finally {
             setIsLoading(false);
         }
@@ -84,7 +60,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Logout function
     const logout = useCallback(async () => {
         try {
-            // Llamar a API de logout si es necesario
             await authService.logout();
         } catch (error) {
             console.error('Error during logout:', error);
@@ -138,4 +113,4 @@ export const useAuth = () => {
         throw new Error('useAuth must be used within an AuthProvider');
     }
     return context;
-}; */
+};

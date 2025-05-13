@@ -1,4 +1,5 @@
-/* export const useRoles = () => {
+import { useAuth } from "@/context/AuthContext";
+export const useRoles = () => {
     const { user } = useAuth();
 
     return {
@@ -7,4 +8,4 @@
         isClient: user?.role === 'cliente',
         currentRole: user?.role
     };
-}; */
+};

@@ -1,6 +1,6 @@
-import { Routes, Route/* , Navigate  */} from "react-router-dom";
-// import { useAuth } from '@/context/AuthContext';
-// import Cookies from "js-cookie";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from '@/context/AuthContext';
+import Cookies from "js-cookie";
 
 // Layouts
 import MainLayout from '@/layouts/MainLayout';
@@ -15,24 +15,26 @@ import LoginPage from '@/pages/Auth/LoginPage';
 import RegisterPage from '@/pages/Auth/RegisterPage';
 import EmailVerification from '@/pages/Auth/VerifyEmail';
 import { EmailVerificationPage } from "./pages/Auth/VerificationPage";
-// import FarmPage from '@/pages/Farm/FarmPage';
+import FarmPage from '@/pages/Estates/EstatePage';
+import AdminPage from "./pages/Admin/AdminPage";
+import { JSX } from "react";
 // import NotFoundPage from '@/pages/Errors/NotFoundPage';
 
 // Componente para rutas protegidas
-// const PrivateRoute = ({ children, roles = [] }: { children: JSX.Element, roles?: string[] }) => {
-//   const { user } = useAuth();
-//   const userRole = Cookies.get("user_role");
+const PrivateRoute = ({ children, roles = [] }: { children: JSX.Element, roles?: string[] }) => {
+  const { user } = useAuth();
+  const userRole = Cookies.get("user_role");
 
-//   if (!user) {
-//     return <Navigate to="/login" replace />;
-//   }
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
-//   if (roles.length > 0 && !roles.includes(userRole || '')) {
-//     return <Navigate to="/" replace />;
-//   }
+  if (roles.length > 0 && !roles.includes(userRole || '')) {
+    return <Navigate to="/" replace />;
+  }
 
-//   return children;
-// };
+  return children;
+};
 
 function App() {
   return (
@@ -56,18 +58,18 @@ function App() {
         </Route>
 
         {/* Rutas protegidas */}
-        {/* <Route element={<MainLayout />}>
+        <Route element={<MainLayout />}>
           <Route 
-            path="/myfarm" 
+            path="/myfinca" 
             element={
               <PrivateRoute roles={['emprendedor']}>
                 <FarmPage />
               </PrivateRoute>
             } 
-          /> */}
+          />
           
           {/* Ejemplo de ruta solo para admin */}
-          {/* <Route 
+          <Route 
             path="/admin" 
             element={
               <PrivateRoute roles={['admin']}>
@@ -75,7 +77,7 @@ function App() {
               </PrivateRoute>
             } 
           />
-        </Route> */}
+        </Route>
 
         {/* Ruta para verificación de email */}
         {/* <Route path="/verify/:token" element={<EmailVerificationHandler />} /> */}

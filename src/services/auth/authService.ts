@@ -1,9 +1,6 @@
 import axiosInstance from "@/api/axiosInstance";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { AuthResponse, AuthError } from "@/types/auth/authTypes"
-
-// Tipos para las respuestas
-
 
 const authService = {
     /**
@@ -23,17 +20,32 @@ const authService = {
             return {
                 token: response.data.token,
                 user: response.data.user,
-                expiresIn: response.data.expiresIn || 3600, 
+                expiresIn: response.data.expiresIn || 3600,
             };
 
         } catch (error: unknown) {
             if (axios.isAxiosError(error)) {
+                if (error.response?.status === 422) {
+                    const serverError = error.response?.data as AuthError;
+                    throw new AxiosError(
+                        serverError?.error || "Datos de entrada inválidos",
+                        error.code,
+                        error.config,
+                        error.request,
+                        error.response
+                    );
+                }
+
                 const serverError = error.response?.data as AuthError;
-                throw new Error(
+                throw new AxiosError(
                     serverError?.error ||
                         error.response?.status === 401
                         ? "Credenciales inválidas"
-                        : "Error en el servidor"
+                        : "Error en el servidor",
+                    error.code,
+                    error.config,
+                    error.request,
+                    error.response
                 );
             }
             throw new Error("Error desconocido al intentar iniciar sesión");
@@ -56,11 +68,11 @@ const authService = {
      */
     async verifyToken(token: string): Promise<{ isValid: boolean; user?: AuthResponse['user'] }> {
         try {
-            const response = await axiosInstance.get("/auth/verify-token", {
+            const response = await axiosInstance.get("/auth/verificar-token", {
                 headers: { Authorization: `Bearer ${token}` }
             });
             return { isValid: true, user: response.data.user };
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
             return { isValid: false };
         }
