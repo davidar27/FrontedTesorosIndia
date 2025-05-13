@@ -35,7 +35,6 @@ const RegisterPage = () => {
                 data.password,
                 data.confirm_password
             );
-            // Redirección después de 2 segundos
             setTimeout(() => {
                 navigate('/correo-enviado', {
                     state: {
@@ -43,7 +42,7 @@ const RegisterPage = () => {
                         email: result.user?.email || data.email
                     }
                 });
-            }, 2000);
+            }, 1000);
 
         } catch (error: unknown) {
             if (error instanceof Error) {
