@@ -30,9 +30,6 @@ const UserMenu: React.FC = () => {
     const handleLogout = () => {
         const cookieOptions = {
             path: '/',
-            domain: window.location.hostname.includes('localhost')
-                ? undefined
-                : 'https://fronted-tesoros-india.vercel.app'
         };
 
         ['access_token', 'user_role', 'user_name'].forEach(cookie => {

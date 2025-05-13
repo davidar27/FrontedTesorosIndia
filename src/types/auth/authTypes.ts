@@ -24,14 +24,8 @@ export interface User {
  * Estructura de respuesta para operaciones de autenticación
  */
 export interface AuthResponse {
-    token: string;
-    user: {
-        id: string;
-        email:string;
-        name: string;
-        role: UserRole;
-    };
-    expiresIn?: number; 
+    name: string;
+    expiresIn?: number;
 }
 
 /**
@@ -58,6 +52,7 @@ export interface AuthContextType {
     user: User | null;
     isAuthenticated: boolean;
     isLoading: boolean;
+    name: User
 
     // Helpers de roles
     role: UserRole | null;
@@ -66,7 +61,7 @@ export interface AuthContextType {
     isClient: boolean;
 
     // Métodos
-    login: (token: string, userData: User) => void;
+    login: (userData: User) => void;
     logout: () => Promise<void>;
     updateUser: (userData: Partial<User>) => void;
     hasPermission: (permission: string) => boolean;
@@ -81,7 +76,7 @@ export interface RegisterFormData {
     password: string;
     passwordConfirmation: string;
     phone_number?: string;
-    role?: UserRole; 
+    role?: UserRole;
 }
 
 /**

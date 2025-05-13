@@ -18,8 +18,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const checkAuth = useCallback(async () => {
         setIsLoading(true);
         const token = Cookies.get('access_token');
-        // const name = Cookies.get('user_name');
-        // const role = Cookies.get('user_role');
+        const name = Cookies.get('user_name');
 
 
         if (!token) {
@@ -50,7 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, [checkAuth]);
 
     // Login function
-    const login = useCallback((token: string, userData: User) => {
+    const login = useCallback(( userData: User) => {
         const cookieOptions = {
             expires: 7,
             secure: isProduction,
@@ -60,7 +59,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         Cookies.set('access_token', token, cookieOptions);
         Cookies.set('user_name', userData.name, cookieOptions);
-        Cookies.set('user_role', userData.role, cookieOptions);
         setUser(userData);
 
     }, []);
@@ -99,6 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 user,
                 isAuthenticated: !!user,
                 isLoading,
+                name,
                 role: user?.role || null,
                 isAdmin,
                 isEntrepreneur,

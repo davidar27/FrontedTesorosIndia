@@ -34,8 +34,9 @@ const LoginPage = () => {
         try {
             const response = await authService.login(data.email, data.password);
 
-
-            login(response.token, response.user);
+            console.log(response);
+            
+            login();
 
             const cookieOptions = {
                 expires: 7,
@@ -46,9 +47,7 @@ const LoginPage = () => {
 
             
 
-            Cookies.set("access_token", response.token, cookieOptions);
-            Cookies.set("user_name", response.user.name, cookieOptions);
-            Cookies.set("user_role", response.user.role, cookieOptions);
+            Cookies.set("user_name", response.name, cookieOptions);
 
             navigate("/", { replace: true });
 

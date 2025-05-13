@@ -8,20 +8,14 @@ const authService = {
      */
     async login(email: string, password: string): Promise<AuthResponse> {
         try {
-            const response = await axiosInstance.post<AuthResponse>("/auth/login", {
+            const response = await axiosInstance.post<Omit<AuthResponse, 'token'>>("/auth/login", {
                 email,
                 password,
             });
-
-            if (!response.data.token) {
-                throw new Error("No se recibió token en la respuesta");
-            }
-
+            console.log(response);
             
-
             return {
-                token: response.data.token,
-                user: response.data.user,
+                name: response.data.name,
                 expiresIn: response.data.expiresIn || 3600,
             };
 
@@ -68,7 +62,7 @@ const authService = {
     /**
      * Verifica si el token actual es válido
      */
-    async verifyToken(token: string): Promise<{ isValid: boolean; user?: AuthResponse['user'] }> {
+    async verifyToken(token: string): Promise<{ isValid: boolean; user?: AuthResponse['name'] }> {
         try {
             const response = await axiosInstance.get("/auth/verificar-token", {
                 headers: { Authorization: `Bearer ${token}` }
