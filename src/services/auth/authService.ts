@@ -17,6 +17,8 @@ const authService = {
                 throw new Error("No se recibió token en la respuesta");
             }
 
+            
+
             return {
                 token: response.data.token,
                 user: response.data.user,

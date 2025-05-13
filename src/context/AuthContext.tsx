@@ -1,22 +1,26 @@
 import { createContext, useContext, ReactNode, useState, useEffect, useCallback } from 'react';
 import Cookies from 'js-cookie';
 import authService from "@/services/auth/authService";
-import { User , AuthContextType} from '@/types/auth/authTypes'
+import { User, AuthContextType } from '@/types/auth/authTypes'
 
 const AuthContext = createContext<AuthContextType>(null!);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const isProduction = process.env.NODE_ENV === 'production';
+
 
     const isAdmin = user?.role === 'administrador';
     const isEntrepreneur = user?.role === 'emprendedor';
     const isClient = user?.role === 'cliente';
 
-    // Verificar autenticación al iniciar
     const checkAuth = useCallback(async () => {
         setIsLoading(true);
-        const token = Cookies.get('auth_token');
+        const token = Cookies.get('access_token');
+        // const name = Cookies.get('user_name');
+        // const role = Cookies.get('user_role');
+
 
         if (!token) {
             setIsLoading(false);
@@ -25,6 +29,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         try {
             const userData = await authService.verifyToken(token);
+            console.log(userData);
+
 
             if (userData.isValid && userData.user) {
                 setUser(userData.user);
@@ -47,14 +53,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const login = useCallback((token: string, userData: User) => {
         const cookieOptions = {
             expires: 7,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict' as const,
-            path: '/'
+            secure: isProduction,
+            sameSite: isProduction ? 'None' as const : 'Lax' as const,
+            path: '/',
         };
 
-        Cookies.set('auth_token', token, cookieOptions);
+        Cookies.set('access_token', token, cookieOptions);
+        Cookies.set('user_name', userData.name, cookieOptions);
         Cookies.set('user_role', userData.role, cookieOptions);
         setUser(userData);
+
     }, []);
 
     // Logout function
@@ -64,8 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } catch (error) {
             console.error('Error during logout:', error);
         } finally {
-            Cookies.remove('auth_token');
-            Cookies.remove('user_role');
+            Cookies.remove('access_token');
             setUser(null);
         }
     }, []);
@@ -107,6 +114,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {

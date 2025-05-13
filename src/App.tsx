@@ -54,33 +54,30 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/registro" element={<RegisterPage />} />
           <Route path="/correo-enviado" element={<EmailVerification />} />
-          <Route path="/verificar-correo" element={<EmailVerificationPage/>} />
+          <Route path="/verificar-correo" element={<EmailVerificationPage />} />
         </Route>
 
         {/* Rutas protegidas */}
         <Route element={<MainLayout />}>
-          <Route 
-            path="/myfinca" 
+          <Route
+            path="/myfinca"
             element={
               <PrivateRoute roles={['emprendedor']}>
                 <FarmPage />
               </PrivateRoute>
-            } 
+            }
           />
-          
+
           {/* Ejemplo de ruta solo para admin */}
-          <Route 
-            path="/admin" 
+          <Route
+            path="/admin"
             element={
-              <PrivateRoute roles={['admin']}>
+              <PrivateRoute roles={['administrador']}>
                 <AdminPage />
               </PrivateRoute>
-            } 
+            }
           />
         </Route>
-
-        {/* Ruta para verificación de email */}
-        {/* <Route path="/verify/:token" element={<EmailVerificationHandler />} /> */}
       </Routes>
     </>
   );

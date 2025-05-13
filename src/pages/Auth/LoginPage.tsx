@@ -13,9 +13,9 @@ import { AxiosError } from 'axios';
 const LoginPage = () => {
     const { login } = useAuth();
     const [errorMessage, setErrorMessage] = useState("");
-    const [isRedirecting, setIsRedirecting] = useState(false);
     const navigate = useNavigate();
     const isProduction = process.env.NODE_ENV === 'production';
+
 
     const {
         register,
@@ -26,33 +26,30 @@ const LoginPage = () => {
         resolver: yupResolver(loginSchema)
     });
 
+
+
     const onSubmit = async (data: LoginFormData) => {
         setErrorMessage("");
 
         try {
             const response = await authService.login(data.email, data.password);
 
+
             login(response.token, response.user);
 
-
             const cookieOptions = {
-                expires: 7, // días
+                expires: 7,
                 secure: isProduction,
                 sameSite: isProduction ? 'None' as const : 'Lax' as const,
                 path: '/',
             };
 
-            Cookies.set("auth_token", response.token, cookieOptions);
+            
 
-            if (response.user && response.user.role) {
-                Cookies.set("user_role", response.user.role, cookieOptions);
-            }
+            Cookies.set("access_token", response.token, cookieOptions);
+            Cookies.set("user_name", response.user.name, cookieOptions);
+            Cookies.set("user_role", response.user.role, cookieOptions);
 
-            if (response.user && response.user.name) {
-                Cookies.set("user_name", response.user.name, cookieOptions);
-            }
-
-            setIsRedirecting(true);
             navigate("/", { replace: true });
 
         } catch (error) {
@@ -72,6 +69,8 @@ const LoginPage = () => {
             }
         }
     };
+
+
 
     const fields = [
         {
@@ -96,7 +95,7 @@ const LoginPage = () => {
             subtitle="Inicia sesión con tu cuenta de"
             bold="Tesoros de la India"
             fields={fields}
-            submitText={isSubmitting || isRedirecting ? "Procesando..." : "Ingresar"}
+            submitText={isSubmitting ? "Procesando..." : "Ingresar"}
             extraLinkText="¿Has olvidado la contraseña?"
             extraLinkTo="/recuperar"
             bottomText="¿No tienes cuenta?"
@@ -106,7 +105,7 @@ const LoginPage = () => {
             onSubmit={handleSubmit(onSubmit)}
             register={register}
             errors={errors}
-            isSubmitting={isSubmitting || isRedirecting}
+            isSubmitting={isSubmitting}
             onChange={() => errorMessage && setErrorMessage("")}
         />
     );
