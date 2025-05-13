@@ -11,23 +11,26 @@ import registerService from '@/services/auth/registerService';
 import { registerSchema } from "@/validations/auth/registerSchema";
 //types
 import { RegisterFormData } from '@/types/auth/registerTypes';
-
-
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 const RegisterPage = () => {
     const [errorMessage, setErrorMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
     const {
         register,
         handleSubmit,
-        formState: { errors, isSubmitting }
+        formState: { errors }
     } = useForm<RegisterFormData>({
         resolver: yupResolver(registerSchema),
     });
 
     const onSubmit = async (data: RegisterFormData) => {
         try {
+            setIsLoading(true);
+            setErrorMessage('');
+
             const result = await registerService(
                 data.name,
                 data.email,
@@ -35,6 +38,7 @@ const RegisterPage = () => {
                 data.password,
                 data.confirm_password
             );
+
             setTimeout(() => {
                 navigate('/correo-enviado', {
                     state: {
@@ -50,6 +54,8 @@ const RegisterPage = () => {
             } else {
                 setErrorMessage("Ocurrió un error desconocido");
             }
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -87,21 +93,24 @@ const RegisterPage = () => {
     ];
 
     return (
-        <AuthForm
-            title="Registro"
-            subtitle="Regístrate ingresando los siguientes datos"
-            fields={fields}
-            submitText="Crear cuenta"
-            bottomText="¿Ya tienes cuenta?"
-            bottomLinkText="Inicia sesión"
-            bottomLinkTo="/login"
-            errorMessage={errorMessage}
-            onSubmit={handleSubmit(onSubmit)}
-            register={register}
-            errors={errors}
-            isSubmitting={isSubmitting}
-            onChange={() => setErrorMessage("")}
-        />
+        <>
+            {isLoading && <LoadingSpinner />}
+            <AuthForm
+                title="Registro"
+                subtitle="Regístrate ingresando los siguientes datos"
+                fields={fields}
+                submitText="Crear cuenta"
+                bottomText="¿Ya tienes cuenta?"
+                bottomLinkText="Inicia sesión"
+                bottomLinkTo="/login"
+                errorMessage={errorMessage}
+                onSubmit={handleSubmit(onSubmit)}
+                register={register}
+                errors={errors}
+                isSubmitting={isLoading}
+                onChange={() => setErrorMessage("")}
+            />
+        </>
     );
 };
 
