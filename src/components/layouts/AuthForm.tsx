@@ -2,7 +2,6 @@
 import background from "@/assets/images/Paisaje.webp";
 import imgLogo from "@/assets/icons/logotesorosindiaPequeño.webp";
 
-
 //components
 import Card from "@/components/ui/Card";
 import CardContent from "@/components/ui/CardContent";
@@ -42,6 +41,7 @@ interface AuthFormProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   register: UseFormRegister<any>;
   errors: FieldErrors;
+  errorType?: "email" | "password" | "general" | null;
 }
 
 const AuthForm = ({
@@ -58,15 +58,17 @@ const AuthForm = ({
   onSubmit,
   onChange,
   register,
-  errors
+  errors,
+  errorType,
+  errorMessage,
 }: AuthFormProps) => {
   return (
-    <div className="min-h-screen bg-cover bg-center flex items-center justify-center text-black  md:p-14" style={{ backgroundImage: `url(${background})` }}>
-
-      <Card className="rounded-2xl shadow-lg p-8 w-100 max-w-md  relative pt-20">
-
+    <div
+      className="min-h-screen bg-cover bg-center flex items-center justify-center text-black  md:p-14"
+      style={{ backgroundImage: `url(${background})` }}
+    >
+      <Card className="rounded-2xl shadow-lg p-8 w-100 max-w-md relative pt-20">
         <CardContent>
-
           <CircularLogo
             src={imgLogo}
             alt="Tesoros de la India"
@@ -88,7 +90,10 @@ const AuthForm = ({
 
           <div className="space-y-2 text-center pt-6">
             <h1 className="text-2xl font-bold">{title}</h1>
-            <p className="text-sm text-gray-500">{subtitle} <span className="font-bold text-black">{bold}</span></p>
+            <p className="text-sm text-gray-500">
+              {subtitle}{" "}
+              <span className="font-bold text-black">{bold}</span>
+            </p>
           </div>
 
           <form onSubmit={onSubmit} onChange={onChange} className="space-y-4 mt-6">
@@ -99,14 +104,22 @@ const AuthForm = ({
                   id={name}
                   type={type}
                   placeholder={placeholder}
-                  variant="success"
+                  variant={errorType === name ? "error" : "success"}
                   {...register(name)}
                 />
                 {errors[name] && (
-                  <p className="text-red-500 text-sm">{(errors[name]?.message as string) || "Campo inválido"}</p>
+                  <p className="text-red-500 text-sm">
+                    {(errors[name]?.message as string) || "Campo inválido"}
+                  </p>
                 )}
               </div>
             ))}
+
+            {errorMessage && errorType === "general" && (
+              <div className="text-red-500 text-center text-sm p-2 bg-red-50 rounded">
+                {errorMessage}
+              </div>
+            )}
 
             <Button type="submit" className="w-full">
               {submitText}
@@ -123,14 +136,14 @@ const AuthForm = ({
 
           <div className="text-center mt-4 text-sm">
             {bottomText}{" "}
-            <Link to={bottomLinkTo} className="font-bold underline"> <br />
+            <Link to={bottomLinkTo} className="font-bold underline">
+              <br />
               {bottomLinkText}
             </Link>
           </div>
         </CardContent>
       </Card>
-      /</div>
-
+    </div>
   );
 };
 

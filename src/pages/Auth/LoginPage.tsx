@@ -6,32 +6,49 @@ import { useAuth } from '@/context/useAuth';
 import { loginSchema } from "@/validations/auth/loginSchema";
 import { Credentials } from '@/interfaces/formInterface';
 import AuthForm from '@/components/layouts/AuthForm';
-
+import { AuthError } from '@/interfaces/responsesApi';
 
 const LoginPage = () => {
     const { login } = useAuth();
-    const [errorMessage, setErrorMessage] = useState("");
+    const [isRedirecting, setIsRedirecting] = useState(false);
     const navigate = useNavigate();
 
     const {
         register,
         handleSubmit,
         formState: { errors, isSubmitting },
-        reset
+        reset,
+        setError: setFormError
     } = useForm<Credentials>({
         resolver: yupResolver(loginSchema)
     });
 
     const onSubmit = async (credentials: Credentials) => {
-        setErrorMessage("");
+
+        setIsRedirecting(false);
+        reset({}, { keepValues: true });
+
         try {
             await login(credentials);
             navigate("/", { replace: true });
         } catch (error) {
-            reset({ password: '' });
-            setErrorMessage(
-                error instanceof Error ? error.message : "Error desconocido"
-            );
+            if (error instanceof AuthError) {
+
+                if (error.errorType === 'general') {
+                    setFormError('email', {
+                        type: 'manual',
+                        message: error.message
+                    });
+
+                    setFormError('password', {
+                        type: 'manual',
+                        message: error.message
+                    });
+                }
+
+            } else {
+                console.error('Error desconocido:', error);
+            }
         }
     };
 
@@ -58,18 +75,20 @@ const LoginPage = () => {
             subtitle="Inicia sesión con tu cuenta de"
             bold="Tesoros de la India"
             fields={fields}
-            submitText={isSubmitting ? "Procesando..." : "Ingresar"}
+            submitText={isSubmitting ? "Procesando..." :
+                isRedirecting ? "Redirigiendo..." : "Ingresar"}
             extraLinkText="¿Has olvidado la contraseña?"
             extraLinkTo="/recuperar"
             bottomText="¿No tienes cuenta?"
             bottomLinkText="Regístrate"
             bottomLinkTo="/registro"
-            errorMessage={errorMessage}
             onSubmit={handleSubmit(onSubmit)}
             register={register}
             errors={errors}
-            isSubmitting={isSubmitting}
-            onChange={() => errorMessage && setErrorMessage("")}
+            isSubmitting={isSubmitting || isRedirecting}
+            onChange={() => {
+                if (isRedirecting) setIsRedirecting(false);
+            }}
         />
     );
 };

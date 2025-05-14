@@ -4,7 +4,6 @@ import { AuthContextType } from '@/interfaces/authContextInterface';
 import authService from "@/services/auth/authService";
 import { PUBLIC_ROUTES } from '@/routes/publicRoutes';
 
-
 export const AuthContext = createContext<AuthContextType>(null!);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -35,7 +34,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsLoading(true);
         try {
             const { isValid, user: userData } = await authService.verifyToken();
-
             if (isValid && userData) {
                 setUser(userData);
             } else {
@@ -53,15 +51,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (!silent) {
             setIsLoading(true);
         }
-
         try {
             const { isValid, user: userData } = await authService.verifyToken();
-
             if (!isValid || !userData) {
                 await logout();
                 return false;
             }
-
             setUser(userData);
             return true;
         } catch (error) {
@@ -81,7 +76,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         const verifySession = async () => {
             await checkAuth();
-
             const interval = setInterval(checkAuth, 5 * 60 * 1000);
             return () => clearInterval(interval);
         };
@@ -105,7 +99,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setIsLoading(false);
         }
     }, []);
-
 
     // ===== Funciones de gestión de usuario =====
 
@@ -164,4 +157,3 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         </AuthContext.Provider>
     );
 }
-
