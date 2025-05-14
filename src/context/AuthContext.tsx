@@ -2,6 +2,7 @@ import { createContext, useContext, ReactNode, useState, useEffect, useCallback,
 import { User } from '@/interfaces/user';
 import { AuthContextType } from '@/interfaces/authContext';
 import authService from "@/services/auth/authService";
+import { PUBLIC_ROUTES } from '@/routes/publicRoutes';
 
 
 const AuthContext = createContext<AuthContextType>(null!);
@@ -33,13 +34,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const checkAuth = useCallback(async () => {
         setIsLoading(true);
         try {
-            const { isValid, user } = await authService.verifyToken();
-            if (isValid && user) {
-                setUser(user);
+            const response = await authService.verifyToken();
+            console.log("VALID: " + response.isValid);
+            console.log(response.user);
+            console.log(response.code);
+            
+            
+            
+
+            if (response.isValid) {
+                setUser(response.user);
             } else {
+                if (response.code === 'TOKEN_EXPIRED') {
+                    // Intentar renovar token aquí si implementas refresh tokens
+                }
                 await logout();
             }
-        } catch {
+        } catch (error) {
+            console.error('Error verifying token:', error);
             await logout();
         } finally {
             setIsLoading(false);
@@ -144,7 +156,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         hasPermission,
         checkAuth,
         refreshAuth,
-        setError
+        setError,
+        isPublicRoute: (path: string) => {
+            const publicRoutes = PUBLIC_ROUTES;
+            return publicRoutes.includes(path);
+        }
     }), [
         user,
         isLoading,
