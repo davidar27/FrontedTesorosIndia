@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { CircleUserRound, LogOut, LogIn } from 'lucide-react';
 import ButtonIcon from '../ui/ButtonIcon';
 import { useAuth } from '@/context/AuthContext';
-import {  } from '@/context/AuthContext'
 
 const UserMenu: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);

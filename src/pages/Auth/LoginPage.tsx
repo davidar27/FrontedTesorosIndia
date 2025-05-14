@@ -7,6 +7,7 @@ import { loginSchema } from "@/validations/auth/loginSchema";
 import { Credentials } from '@/interfaces/formInterface';
 import AuthForm from '@/components/layouts/AuthForm';
 
+
 const LoginPage = () => {
     const { login } = useAuth();
     const [errorMessage, setErrorMessage] = useState("");

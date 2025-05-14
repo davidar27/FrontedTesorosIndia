@@ -29,7 +29,7 @@ const authService = {
                 user: response.data.payload
             };
         } catch (error) {
-            console.error('Error verifying token:', error);
+            console.error('Error al Verificar el Token', error);
             return { isValid: false, user: null };
         }
     },
