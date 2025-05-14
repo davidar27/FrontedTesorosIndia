@@ -1,6 +1,6 @@
 import axios from 'axios';
-
-const axiosInstance = axios.create({
+import { PUBLIC_ROUTES } from '@/routes/publicRoutes';
+export const axiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
     headers: {
         'Content-Type': 'application/json',
@@ -9,15 +9,18 @@ const axiosInstance = axios.create({
     timeout: 10000,
 });
 
-// axiosInstance.interceptors.response.use(
-//     (response) => response,
-//     (error) => {
-//         if (error.response?.status === 401) {
-//             // Redirigir a login o manejar token expirado
-//             window.location.href = '/login?sessionExpired=true';
-//         }
-//         return Promise.reject(error);
-//     }
-// );
+axiosInstance.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        const isAuthError = error.response?.status === 401;
+        const isPublicRoute = PUBLIC_ROUTES.includes(window.location.pathname);
 
-export default axiosInstance;
+        if (isAuthError && !isPublicRoute) {
+            // Solo redirige si no está en una ruta pública
+            window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+        }
+
+        return Promise.reject(error);
+    }
+);
+

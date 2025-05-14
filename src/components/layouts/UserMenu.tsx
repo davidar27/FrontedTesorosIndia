@@ -8,6 +8,10 @@ const UserMenu: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
     const navigate = useNavigate();
     const { user, isAuthenticated, logout } = useAuth();
+    console.log( "ROLE MENU " + user?.role);
+    console.log(isAuthenticated);
+    
+    
 
     const toggleMenu = () => setIsOpen(!isOpen);
 

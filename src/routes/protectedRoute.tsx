@@ -1,0 +1,23 @@
+import { useAuth } from '@/context/AuthContext';
+import { Navigate, Outlet } from 'react-router-dom';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
+
+const ProtectedRoute = ({ roles = [] }: { roles?: string[] }) => {
+    const { isAuthenticated, user, isLoading } = useAuth();
+
+    if (isLoading) {
+        return <LoadingSpinner />;
+    }
+
+    if (!isAuthenticated) {
+        return <Navigate to="/login" replace />;
+    }
+
+    if (roles.length > 0 && user?.role && !roles.includes(user.role)) {
+        return <Navigate to="/not-authorized" replace />;
+    }
+
+    return <Outlet />;
+};
+
+export default ProtectedRoute;

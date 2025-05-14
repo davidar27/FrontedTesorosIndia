@@ -1,5 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import { useAuth } from '@/context/AuthContext';
+import { Routes, Route} from "react-router-dom";
 
 // Layouts
 import MainLayout from '@/layouts/MainLayout';
@@ -16,29 +15,10 @@ import EmailVerification from '@/pages/Auth/VerifyEmail';
 import { EmailVerificationPage } from "./pages/Auth/VerificationPage";
 import FarmPage from '@/pages/Estates/EstatePage';
 import AdminPage from "./pages/Admin/AdminPage";
-import { JSX } from "react";
-// import NotFoundPage from '@/pages/Errors/NotFoundPage';
+import NotFoundPage from '@/pages/Errors/NotFoundPage';
 
-// Componente para rutas protegidas
-const PrivateRoute = ({
-  children,
-  roles = []
-}: {
-  children: JSX.Element;
-  roles?: string[];
-}) => {
-  const { user } = useAuth();
+import ProtectedRoute from "./routes/protectedRoute";
 
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
-  if (roles.length > 0 && !roles.includes(user.role)) {
-    return <Navigate to="/" replace />;
-  }
-
-  return children;
-};
 
 function App() {
   return (
@@ -62,26 +42,17 @@ function App() {
         </Route>
 
         {/* Rutas protegidas */}
-        <Route element={<MainLayout />}>
-          <Route
-            path="/myfinca"
-            element={
-              <PrivateRoute roles={['emprendedor']}>
-                <FarmPage />
-              </PrivateRoute>
-            }
-          />
-
-          {/* Ejemplo de ruta solo para admin */}
-          <Route
-            path="/admin"
-            element={
-              <PrivateRoute roles={['administrador']}>
-                <AdminPage />
-              </PrivateRoute>
-            }
-          />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<FarmPage />} />
+          {/* <Route path="/profile" element={<Profile />} /> */}
         </Route>
+
+        {/* Rutas con roles específicos */}
+        <Route element={<ProtectedRoute roles={['administrador']} />}>
+          <Route path="/admin" element={<AdminPage />} />
+        </Route>
+
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>
   );
