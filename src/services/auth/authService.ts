@@ -23,23 +23,19 @@ const authService = {
         await axiosInstance.post('/auth/logout');
     },
 
-    verifyToken: async () => {
+    verifyToken: async (): Promise<{ isValid: boolean; user?: User }> => {
         try {
             const response = await axiosInstance.get('/auth/verificar-token');
-            console.log(response.data.user);
-            console.log(response);
-
-
             return {
                 isValid: response.data.success,
-                user: response.data.payload,
-                code: response.data.code
+                user: response.data.user
             };
         } catch (error) {
-            console.error('Error al Verificar el Token', error);
-            return { isValid: false, user: null };
+            console.error('Token verification failed:', error);
+            return { isValid: false };
         }
     },
+
     refreshToken: async (): Promise<User> => {
         const response = await axiosInstance.post<AuthResponse>('/auth/refresh');
         return response.data.user;

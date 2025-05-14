@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CircleUserRound, LogOut, LogIn } from 'lucide-react';
 import ButtonIcon from '../ui/ButtonIcon';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/useAuth';
 
 const UserMenu: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
     const navigate = useNavigate();
     const { user, isAuthenticated, logout } = useAuth();
-    console.log( "ROLE MENU " + user?.role);
+    console.log( "ROLE MENU " + user);
     console.log(isAuthenticated);
     
     

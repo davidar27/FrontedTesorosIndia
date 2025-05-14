@@ -1,11 +1,11 @@
-import { createContext, useContext, ReactNode, useState, useEffect, useCallback, useMemo } from 'react';
+import { createContext, ReactNode, useState, useEffect, useCallback, useMemo } from 'react';
 import { User } from '@/interfaces/user';
-import { AuthContextType } from '@/interfaces/authContext';
+import { AuthContextType } from '@/interfaces/authContextInterface';
 import authService from "@/services/auth/authService";
 import { PUBLIC_ROUTES } from '@/routes/publicRoutes';
 
 
-const AuthContext = createContext<AuthContextType>(null!);
+export const AuthContext = createContext<AuthContextType>(null!);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
@@ -34,29 +34,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const checkAuth = useCallback(async () => {
         setIsLoading(true);
         try {
-            const response = await authService.verifyToken();
-            console.log("VALID: " + response.isValid);
-            console.log(response.user);
-            console.log(response.code);
-            
-            
-            
+            const { isValid, user: userData } = await authService.verifyToken();
 
-            if (response.isValid) {
-                setUser(response.user);
+            if (isValid && userData) {
+                setUser(userData);
             } else {
-                if (response.code === 'TOKEN_EXPIRED') {
-                    // Intentar renovar token aquí si implementas refresh tokens
-                }
-                await logout();
+                setUser(null);
             }
         } catch (error) {
             console.error('Error verifying token:', error);
-            await logout();
+            setUser(null);
         } finally {
             setIsLoading(false);
         }
-    }, [logout]);
+    }, []);
 
     const refreshAuth = useCallback(async (silent: boolean = false) => {
         if (!silent) {
@@ -87,25 +78,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     }, [logout]);
 
-    // Initialize auth state
     useEffect(() => {
-        let isMounted = true;
-
-        const initializeAuth = async () => {
+        const verifySession = async () => {
             await checkAuth();
 
-            // Set up periodic token verification (every 5 minutes)
-            if (isMounted) {
-                const interval = setInterval(checkAuth, 5 * 60 * 1000);
-                return () => clearInterval(interval);
-            }
+            const interval = setInterval(checkAuth, 5 * 60 * 1000);
+            return () => clearInterval(interval);
         };
 
-        initializeAuth();
-
-        return () => {
-            isMounted = false;
-        };
+        verifySession();
     }, [checkAuth]);
 
     // ===== Funciones de autenticación principal =====
@@ -184,10 +165,3 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 }
 
-export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
-};

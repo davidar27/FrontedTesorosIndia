@@ -16,7 +16,6 @@ axiosInstance.interceptors.response.use(
         const isPublicRoute = PUBLIC_ROUTES.includes(window.location.pathname);
 
         if (isAuthError && !isPublicRoute) {
-            // Solo redirige si no está en una ruta pública
             window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
         }
 

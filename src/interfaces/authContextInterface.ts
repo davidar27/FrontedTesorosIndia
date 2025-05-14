@@ -19,6 +19,6 @@ export interface AuthContextType {
     updateUser: (userData: Partial<User>) => void;
     hasPermission: (permission: string) => boolean;
     checkAuth: () => Promise<void>;
-    refreshAuth: () => Promise<boolean>; // Asegúrate que coincida
+    refreshAuth: () => Promise<boolean>;
     setError: React.Dispatch<React.SetStateAction<string | null>>;
 }
