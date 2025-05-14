@@ -1,5 +1,6 @@
 //components
 import AuthForm from '@/components/layouts/AuthForm';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 //hooks
 import { useNavigate } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -9,9 +10,9 @@ import { useState } from 'react';
 import registerService from '@/services/auth/registerService';
 //validations
 import { registerSchema } from "@/validations/auth/registerSchema";
-//types
-import { RegisterFormData } from '@/types/auth/registerTypes';
-import LoadingSpinner from '@/components/ui/LoadingSpinner';
+//interfaces
+import { RegistrationData } from '@/interfaces/formInterface';
+
 
 const RegisterPage = () => {
     const [errorMessage, setErrorMessage] = useState('');
@@ -22,11 +23,11 @@ const RegisterPage = () => {
         register,
         handleSubmit,
         formState: { errors }
-    } = useForm<RegisterFormData>({
+    } = useForm<RegistrationData>({
         resolver: yupResolver(registerSchema),
     });
 
-    const onSubmit = async (data: RegisterFormData) => {
+    const onSubmit = async (data: RegistrationData) => {
         try {
             setIsLoading(true);
             setErrorMessage('');

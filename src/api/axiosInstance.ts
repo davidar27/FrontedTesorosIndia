@@ -9,15 +9,15 @@ const axiosInstance = axios.create({
     timeout: 10000,
 });
 
-axiosInstance.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        if (error.response?.status === 401) {
-            // Redirigir a login o manejar token expirado
-            window.location.href = '/login?sessionExpired=true';
-        }
-        return Promise.reject(error);
-    }
-);
+// axiosInstance.interceptors.response.use(
+//     (response) => response,
+//     (error) => {
+//         if (error.response?.status === 401) {
+//             // Redirigir a login o manejar token expirado
+//             window.location.href = '/login?sessionExpired=true';
+//         }
+//         return Promise.reject(error);
+//     }
+// );
 
 export default axiosInstance;

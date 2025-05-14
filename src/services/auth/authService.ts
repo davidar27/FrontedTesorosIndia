@@ -1,77 +1,41 @@
-import axiosInstance from "@/api/axiosInstance";
-import axios, { AxiosError } from "axios";
-import { AuthResponse, AuthError } from "@/types/auth/authTypes"
+import axiosInstance from '@/api/axiosInstance';
+import { AxiosError } from 'axios';
+import { Credentials } from '@/interfaces/formInterface';
+import { ErrorResponse, AuthResponse } from '@/interfaces/responsesApi';
+import { User } from '@/interfaces/user'
 
 const authService = {
-    /**
-     * Inicia sesión con email y contraseña
-     */
-    async login(email: string, password: string): Promise<AuthResponse> {
+    login: async (credentials: Credentials): Promise<User> => {
         try {
-            const response = await axiosInstance.post<Omit<AuthResponse, 'token'>>("/auth/login", {
-                email,
-                password,
-            });
-            console.log(response);
-            
+            const response = await axiosInstance.post<AuthResponse>('/auth/login', credentials);
+            return response.data.user;
+        } catch (error) {
+            const axiosError = error as AxiosError<ErrorResponse>;
+            throw new Error(
+                axiosError.response?.data?.error || 'Error durante el inicio de sesión'
+            );
+        }
+    },
+
+    logout: async (): Promise<void> => {
+        await axiosInstance.post('/auth/logout' );
+    },
+
+    verifyToken: async () => {
+        try {
+            const response = await axiosInstance.get('/auth/verificar-token');
             return {
-                name: response.data.name,
-                expiresIn: response.data.expiresIn || 3600,
+                isValid: response.data.success,
+                user: response.data.payload
             };
-
-        } catch (error: unknown) {
-            if (axios.isAxiosError(error)) {
-                if (error.response?.status === 422) {
-                    const serverError = error.response?.data as AuthError;
-                    throw new AxiosError(
-                        serverError?.error || "Datos de entrada inválidos",
-                        error.code,
-                        error.config,
-                        error.request,
-                        error.response
-                    );
-                }
-
-                const serverError = error.response?.data as AuthError;
-                throw new AxiosError(
-                    serverError?.error ||
-                        error.response?.status === 401
-                        ? "Credenciales inválidas"
-                        : "Error en el servidor",
-                    error.code,
-                    error.config,
-                    error.request,
-                    error.response
-                );
-            }
-            throw new Error("Error desconocido al intentar iniciar sesión");
+        } catch (error) {
+            console.error('Error verifying token:', error);
+            return { isValid: false, user: null };
         }
     },
-
-    /**
-     * Cierra la sesión del usuario
-     */
-    async logout(): Promise<void> {
-        try {
-            await axiosInstance.post("/auth/logout");
-        } catch (error) {
-            console.warn("Error al cerrar sesión", error);
-        }
-    },
-
-    /**
-     * Verifica si el token actual es válido
-     */
-    async verifyToken(token: string): Promise<{ isValid: boolean; user?: AuthResponse['name'] }> {
-        try {
-            const response = await axiosInstance.get("/auth/verificar-token", {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            return { isValid: true, user: response.data.user };
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (error) {
-            return { isValid: false };
-        }
+    refreshToken: async (): Promise<User> => {
+        const response = await axiosInstance.post<AuthResponse>('/auth/refresh');
+        return response.data.user;
     }
 };
 

@@ -1,6 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from '@/context/AuthContext';
-import Cookies from "js-cookie";
 
 // Layouts
 import MainLayout from '@/layouts/MainLayout';
@@ -21,15 +20,20 @@ import { JSX } from "react";
 // import NotFoundPage from '@/pages/Errors/NotFoundPage';
 
 // Componente para rutas protegidas
-const PrivateRoute = ({ children, roles = [] }: { children: JSX.Element, roles?: string[] }) => {
+const PrivateRoute = ({
+  children,
+  roles = []
+}: {
+  children: JSX.Element;
+  roles?: string[];
+}) => {
   const { user } = useAuth();
-  const userRole = Cookies.get("user_role");
 
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  if (roles.length > 0 && !roles.includes(userRole || '')) {
+  if (roles.length > 0 && !roles.includes(user.role)) {
     return <Navigate to="/" replace />;
   }
 

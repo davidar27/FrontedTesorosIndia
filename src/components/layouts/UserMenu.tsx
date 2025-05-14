@@ -1,48 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import Cookies from 'js-cookie';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CircleUserRound, LogOut, LogIn } from 'lucide-react';
 import ButtonIcon from '../ui/ButtonIcon';
+import { useAuth } from '@/context/AuthContext';
+import {  } from '@/context/AuthContext'
 
 const UserMenu: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
-    const [userName, setUserName] = useState('');
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const checkAuth = () => {
-            const authToken = Cookies.get('access_token');
-            const name = Cookies.get('user_name');
-
-            setIsAuthenticated(!!authToken);
-            if (name) setUserName(name);
-        };
-
-        checkAuth();
-
-        const interval = setInterval(checkAuth, 1000);
-        return () => clearInterval(interval);
-    }, []);
+    const { user, isAuthenticated, logout } = useAuth();
 
     const toggleMenu = () => setIsOpen(!isOpen);
 
-    const handleLogout = () => {
-        const cookieOptions = {
-            path: '/',
-        };
-
-        ['access_token', 'user_role', 'user_name'].forEach(cookie => {
-            Cookies.remove(cookie, cookieOptions);
-        });
-
-        setIsAuthenticated(false);
-        setUserName('');
+    const handleLogout = async () => {
+        await logout();
         setIsOpen(false);
-        navigate('/login');
+        navigate('/');
     };
 
-    // Renderizado condicional CORREGIDO
     if (!isAuthenticated) {
         return (
             <ButtonIcon
@@ -64,7 +39,7 @@ const UserMenu: React.FC = () => {
             >
                 <CircleUserRound size={20} />
                 <span className="capitalize text-sm md:text-base">
-                    {userName?.split(' ').slice(0, 2).join(' ')}
+                    {user?.name?.split(' ').slice(0, 2).join(' ')}
                 </span>
             </ButtonIcon>
 
