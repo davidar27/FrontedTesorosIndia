@@ -22,8 +22,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const logout = useCallback(async () => {
         try {
             await authService.logout();
-        } catch (err) {
-            console.error('Error during logout:', err);
+        } catch {
+            // 
         } finally {
             setUser(null);
             setError(null);
@@ -39,8 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             } else {
                 setUser(null);
             }
-        } catch (error) {
-            console.error('Error verifying token:', error);
+        } catch {
             setUser(null);
         } finally {
             setIsLoading(false);
@@ -93,7 +92,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setUser(userData);
         } catch (err) {
             setError('Credenciales incorrectas');
-            console.error('Login failed:', err);
             throw err;
         } finally {
             setIsLoading(false);

@@ -33,8 +33,7 @@ const authService = {
     async logout(): Promise<void> {
         try {
             await axiosInstance.post('/auth/logout');
-        } catch (error) {
-            console.error('Logout error:', error);
+        } catch {
             throw new AuthError('Error al cerrar sesión', { errorType: 'general' });
         }
     },

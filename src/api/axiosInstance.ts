@@ -15,17 +15,12 @@ axiosInstance.interceptors.response.use(
     response => response,
     error => {
         const errorData = error.response?.data?.error;
-
-        
-        console.log("ERROR RECIBIDO EN INTERCEPTOR :   " + errorData );
-
         if (errorData) {
             return Promise.reject(new AuthError(errorData.message, {
                 redirectTo: errorData.redirectTo,
                 errorType: errorData.type || 'general'
             }));
         }
-        console.log(errorData);
 
         return Promise.reject(error);
     }

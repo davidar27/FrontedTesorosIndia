@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import Hero from "@/components/home/Hero";
 import PackageSelector from "@/components/home/PackageSelector";
 import TouristRoute from "@/components/home/TouristRoute";
@@ -8,15 +7,7 @@ import History from "@/components/home/History";
 import { useAuth } from '@/context/useAuth';
 
 const Home: React.FC = () => {
-  const { user, isAuthenticated, isLoading } = useAuth();
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-
-    if (!isLoading && !isAuthenticated) {
-      console.log("Usuario no autenticado viendo la página de inicio");
-    }
-  }, [isAuthenticated, isLoading]);
+  const { user, isAuthenticated } = useAuth();
 
   return (
     <div className="bg-white text-gray-800">
