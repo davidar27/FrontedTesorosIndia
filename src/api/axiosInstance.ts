@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { PUBLIC_ROUTES } from '@/routes/publicRoutes';
+import { AuthError } from '@/interfaces/responsesApi';
+
 export const axiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
     headers: {
@@ -9,17 +10,18 @@ export const axiosInstance = axios.create({
     timeout: 10000,
 });
 
-axiosInstance.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        const isAuthError = error.response?.status === 401;
-        const isPublicRoute = PUBLIC_ROUTES.includes(window.location.pathname);
 
-        if (isAuthError && !isPublicRoute) {
-            window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+axiosInstance.interceptors.response.use(
+    response => response,
+    error => {
+        const errorData = error.response?.data?.error;
+        if (errorData) {
+            return Promise.reject(new AuthError(errorData.message, {
+                redirectTo: errorData.redirectTo,
+                errorType: errorData.type || 'general'
+            }));
         }
 
         return Promise.reject(error);
     }
 );
-

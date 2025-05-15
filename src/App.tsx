@@ -1,4 +1,4 @@
-import { Routes, Route} from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 // Layouts
 import MainLayout from '@/layouts/MainLayout';
@@ -16,9 +16,7 @@ import { EmailVerificationPage } from "./pages/Auth/VerificationPage";
 import FarmPage from '@/pages/Estates/EstatePage';
 import AdminPage from "./pages/Admin/AdminPage";
 import NotFoundPage from '@/pages/Errors/NotFoundPage';
-
 import ProtectedRoute from "./routes/protectedRoute";
-
 
 function App() {
   return (
@@ -30,7 +28,6 @@ function App() {
           {/* <Route path="/paquetes" element={<PackagesPage />} />
           <Route path="/productos" element={<ProductsPage />} />
           <Route path="/nosotros" element={<AboutPage />} /> */}
-          {/* <Route path="*" element={<NotFoundPage />} /> */}
         </Route>
 
         {/* Rutas de autenticación */}
@@ -52,6 +49,7 @@ function App() {
           <Route path="/admin" element={<AdminPage />} />
         </Route>
 
+        {/* 404 */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>
