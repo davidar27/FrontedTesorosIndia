@@ -7,7 +7,7 @@ import AuthLayout from '@/layouts/AuthLayout';
 // Pages
 import Home from '@/pages/Home/Home';
 // import PackagesPage from '@/pages/Packages/PackagesPage';
-// import ProductsPage from '@/pages/Products/ProductsPage';
+import ProductsPage from '@/pages/Products/Products';
 // import AboutPage from '@/pages/About/AboutPage';
 import LoginPage from '@/pages/Auth/LoginPage';
 import RegisterPage from '@/pages/Auth/RegisterPage';
@@ -25,8 +25,9 @@ function App() {
         {/* Rutas públicas principales */}
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
-          {/* <Route path="/paquetes" element={<PackagesPage />} />
           <Route path="/productos" element={<ProductsPage />} />
+
+          {/* <Route path="/paquetes" element={<PackagesPage />} />
           <Route path="/nosotros" element={<AboutPage />} /> */}
         </Route>
 

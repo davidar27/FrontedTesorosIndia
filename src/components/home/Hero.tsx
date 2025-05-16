@@ -1,12 +1,30 @@
+import bannerImg from "@/assets/images/corredor.jpeg";
+// import bannerImg from "@/assets/images/Paisaje2.webp";
 
-import banner from '@/assets/images/Paisaje.webp'
+
+import Button from "@/components/ui/Button";
 
 
-const Hero: React.FC = () => {
+const Hero = () => {
   return (
-    <img className="w-full h-screen object-cover object-center brightness-60 " src={banner} alt="" />
-    /* "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDJ8fHRvdXJpc3R8ZW58MHx8fHwxNjg5NTY1NzA0&ixlib=rb-4.0.3&q=80&w=1080" */
-  )
-}
+    <section className="relative w-full h-100 md:h-screen text-white overflow-hidden">
+      <img
+        src={bannerImg}
+        alt="Banner"
+        className="absolute inset-0 w-full h-full object-cover object-center brightness-60"
+      />
 
-export default Hero
+      <div className="relative z-10 flex flex-col justify-center h-full px-6 lg:px-30 max-w-7xl">
+        <h1 className="text-4xl lg:text-8xl  md:text-6xl font-bold leading-tight mb-4">
+          TESOROS <br /> DE LA INDIA
+        </h1>
+        <p className="text-lg md:text-xl mb-6">
+          “En nuestro territorio podrás vivir experiencias inigualables”
+        </p>
+        <Button className="w-fit ">¿Quiénes somos?</Button>
+      </div>
+    </section>
+  );
+};
+
+export default Hero;
