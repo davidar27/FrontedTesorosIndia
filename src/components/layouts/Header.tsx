@@ -33,7 +33,7 @@ const Header: React.FC = () => {
   if (ocultarDiv) return null;
 
   return (
-    <header className="fixed z-50 w-full text-white">
+    <header className="fixed z-50 w-full text-white  ">
       {!isHome && (
         <div
           className="absolute inset-0 bg-cover brightness-50"
@@ -44,12 +44,11 @@ const Header: React.FC = () => {
         ></div>
       )}
       <div
-        className={`relative flex flex-wrap items-center justify-between gap-4 p-4 px-1 sm:px-2 md:px-4 lg:px-6 xl:px-8 transition-all duration-300 ease-in-out shadow-lg ${
-          scrolled ? "shadow-xl h-22" : "h-26"
-        }`}
+        className={`relative flex flex-wrap items-center justify-between px-1 sm:px-2 md:px-4 lg:px-6 xl:px-8 transition-all duration-300 ease-in-out shadow-lg  ${scrolled ? "shadow-xl h-10 md:h-16 lg:h-22" : "h-16 md:h-20 lg:h-24"
+          }`}
       >
         {/* Logo */}
-        <div className="w-20 md:w-30 lg:w-40 xl:w-50">
+        <div className="w-22 md:block md:w-30 lg:w-40 xl:w-50">
           <Link to="/">
             <Picture
               src={imgLogo}
@@ -59,12 +58,22 @@ const Header: React.FC = () => {
           </Link>
         </div>
 
+        {/* <div className="w-15 md:hidden">
+          <Link to="/">
+            <Picture
+              src={logoSmall}
+              alt="Logo"
+              className="w-full h-full object-contain"
+            />
+          </Link>
+        </div> */}
+
         {/* Mobile: Navbar and search hidden initially */}
         <div className="hidden md:block">
           <Navbar />
         </div>
         {/* Search bar */}
-        <div className="relative w-full ">
+        <div className="relative w-45 md:w-100 ">
           <Search
             className="absolute left-3 top-1/2 transform -translate-y-1/2"
             size={20}
@@ -72,20 +81,20 @@ const Header: React.FC = () => {
           <input
             type="text"
             placeholder="Buscar..."
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
+            className="w-full pl-10 py-0.5 md:py-1.5 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
-        
-        <div className="md:hidden">
+
+        <div className="md:hidden mt-2">
           <Navbar />
         </div>
         {/* Actions */}
-        <div className="flex items-center justify-end gap-3 mt-3 md:mt-0">
+        <div className="flex items-center justify-end gap-0.5 md:gap-2 lg:gap-4 xl:gap-6">
           <ButtonIcon>
             <ShoppingCart />
           </ButtonIcon>
 
-          <Button className="">
+          <Button className="hidden md:block">
             <span>Fincas</span>
           </Button>
           <div className="hidden md:block">

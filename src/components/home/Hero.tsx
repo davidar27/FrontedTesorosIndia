@@ -1,10 +1,13 @@
-import bannerImg from "@/assets/images/Paisaje1.webp";
+import bannerImg from "@/assets/images/corredor.jpeg";
+// import bannerImg from "@/assets/images/Paisaje2.webp";
+
+
 import Button from "@/components/ui/Button";
 
 
 const Hero = () => {
   return (
-    <section className="relative w-full h-screen text-white overflow-hidden">
+    <section className="relative w-full h-100 md:h-screen text-white overflow-hidden">
       <img
         src={bannerImg}
         alt="Banner"

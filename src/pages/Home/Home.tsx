@@ -11,7 +11,7 @@ const Home: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
 
   return (
-    <div className=" text-gray-800">
+    <div className=" text-gray-800 ">
       <main>
         <Hero />
 

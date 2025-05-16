@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import UserMenu from "./UserMenu";
+import Button from "../ui/Button";
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,16 +25,20 @@ const Navbar: React.FC = () => {
       </div>
 
       {/* Mobile menu toggle button */}
-      <div className="md:hidden">
+      <div className="md:hidden p-0 m-0">
         <button onClick={toggleMenu}>
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
+          {isOpen ? <X size={32} /> : <Menu size={32} />}
         </button>
       </div>
 
       {/* Mobile Menu Dropdown */}
       {isOpen && (
-        <div className="absolute top-full left-0 w-full bg-white text-gray-700 shadow-md z-40 px-4 py-3 md:hidden">
+        <div className="absolute top-full left-0 w-full bg-white !text-gray-700 shadow-md z-40 px-4 py-3 md:hidden">
+
           <nav className="flex flex-col gap-3">
+            <div className="border-b">
+              <UserMenu textColor="text-black"/>
+            </div>
             <Link to="/" onClick={closeMenu} className="hover:text-primary">
               Inicio
             </Link>
@@ -51,9 +56,10 @@ const Navbar: React.FC = () => {
             >
               Productos
             </Link>
-            <div className="pt-3 border-t">
-              <UserMenu /> {/* Mobile user menu */}
-            </div>
+
+            <Button className="hidden md:block text-black">
+              <span>Fincas</span>
+            </Button>
           </nav>
         </div>
       )}

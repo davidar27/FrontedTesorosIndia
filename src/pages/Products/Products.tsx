@@ -12,7 +12,7 @@ const products = [
 
 export default function ProductList() {
     return (
-        <div className="flex flex-col md:flex-row p-6 pt-40 bg-gray-50 min-h-screen">
+        <div className="flex flex-col md:flex-row p-6 bg-gray-50 min-h-screen">
             <aside className="w-full md:w-1/5 mb-6 md:mb-0 md:mr-6">
                 <h2 className="text-green-600 font-semibold text-lg mb-4">Categorías</h2>
                 <ul className="space-y-2">

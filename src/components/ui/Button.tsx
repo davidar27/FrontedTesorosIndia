@@ -15,11 +15,12 @@ const Button: React.FC<ButtonProps> = ({ children, className, type, bgColor, hov
         <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 1 }}
-            className={`bg-${bgColor || 'primary'} hover:bg-${hoverColor || 'white'} text-white hover:text-primary font-bold hover:font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${className}`}
+            className={`bg-${bgColor || 'primary'} hover:${hoverColor || 'bg-white'} text-white hover:text-primary font-bold hover:font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${className}`}
             type={type}
             onClick={onClick}
         >            {children}
         </motion.button>
     );
 };
+// hover:bg-${hoverColor || 'white'}
 export default Button;
