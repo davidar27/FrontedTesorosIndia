@@ -1,3 +1,8 @@
 @import "tailwindcss";
 
-
+@theme {
+  --color-primary: var(--color-green-600); /* Verde principal */
+  --color-hover-primary: var(--color-green-800); /* Verde más oscuro para hover */
+  --color-secondary: #81c9c1; /* Azul verdoso claro */
+  --color-tertiary: #eee41e; /* Amarillo brillante */
+}

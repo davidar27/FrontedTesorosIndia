@@ -1,42 +1,64 @@
-import { useState } from 'react'
-import { Menu, X } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
+import { Link } from "react-router-dom";
+import UserMenu from "./UserMenu";
 
 const Navbar: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false)
-
-  const toggleMenu = () => setIsOpen(!isOpen)
+  const [isOpen, setIsOpen] = useState(false);
+  const toggleMenu = () => setIsOpen(!isOpen);
+  const closeMenu = () => setIsOpen(false);
 
   return (
-    <div className="flex items-center justify-between">
-
-      <button onClick={toggleMenu} className="md:hidden">
-        {isOpen ? <X size={24} /> : <Menu size={24} />}
-      </button>
+    <>
       {/* Desktop Menu */}
-      <nav className="hidden md:flex space-x-8">
-        <Link to="/" className="hover:text-primary">Inicio</Link>
-        <Link to="/nosotros" className="hover:text-primary">Nosotros</Link>
-        <Link to="/productos" className="hover:text-primary">Productos</Link>
-      </nav>
+      <div className="hidden md:flex items-center gap-6">
+        <Link to="/" className="hover:text-primary transition-colors">
+          Inicio
+        </Link>
+        <Link to="/nosotros" className="hover:text-primary transition-colors">
+          Nosotros
+        </Link>
+        <Link to="/productos" className="hover:text-primary transition-colors">
+          Productos
+        </Link>
+      </div>
 
-      {/* Mobile Menu Button */}
-      <button onClick={toggleMenu} className="md:hidden text-gray-700">
-        {isOpen ? <X size={24} /> : <Menu size={24} />}
-      </button>
+      {/* Mobile menu toggle button */}
+      <div className="md:hidden">
+        <button onClick={toggleMenu}>
+          {isOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Dropdown */}
       {isOpen && (
-        <nav className="md:hidden bg-white border-t border-gray-200">
-          <div className="px-4 py-3 space-y-2">
-            <Link to="/" className="block text-gray-700 hover:text-primary">Inicio</Link>
-            <Link to="/nosotros" className="block text-gray-700 hover:text-primary">Nosotros</Link>
-            <Link to="/productos" className="block text-gray-700 hover:text-primary">Productos</Link>
-          </div>
-        </nav>
+        <div className="absolute top-full left-0 w-full bg-white text-gray-700 shadow-md z-40 px-4 py-3 md:hidden">
+          <nav className="flex flex-col gap-3">
+            <Link to="/" onClick={closeMenu} className="hover:text-primary">
+              Inicio
+            </Link>
+            <Link
+              to="/nosotros"
+              onClick={closeMenu}
+              className="hover:text-primary"
+            >
+              Nosotros
+            </Link>
+            <Link
+              to="/productos"
+              onClick={closeMenu}
+              className="hover:text-primary"
+            >
+              Productos
+            </Link>
+            <div className="pt-3 border-t">
+              <UserMenu /> {/* Mobile user menu */}
+            </div>
+          </nav>
+        </div>
       )}
-    </div>
-  )
-}
+    </>
+  );
+};
 
-export default Navbar
+export default Navbar;
