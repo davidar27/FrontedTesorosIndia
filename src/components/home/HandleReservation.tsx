@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import Button from "../ui/Button";
 
 export default function QuickReservation() {
   const navigate = useNavigate();
@@ -56,12 +57,12 @@ export default function QuickReservation() {
         </select>
       </div>
 
-      <button
+      <Button
         onClick={handleReservation}
-        className="bg-white text-primary font-semibold rounded-md px-6 py-2 hover:bg-gray-200 transition"
+        className="bg-white text-primary font-semibold rounded-md px-6 py-2 hover:bg-hover-primary"
       >
         Reservar ahora
-      </button>
+      </Button>
     </div>
   );
 }

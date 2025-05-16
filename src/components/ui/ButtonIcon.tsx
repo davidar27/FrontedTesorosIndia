@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import clsx from "clsx";
 
 interface ButtonIconProps {
   label?: string;
@@ -23,23 +24,35 @@ const ButtonIcon: React.FC<ButtonIconProps> = ({
   hoverColor = "hover:text-hover-primary",
   onClick,
 }) => {
-  const combinedClass = `text-sm  py-1 rounded flex items-center gap-2 transition-colors ${textColor} ${hoverColor} ${className}`;
+  const baseClasses = clsx(
+    "text-sm py-1 rounded flex items-center gap-2 transition-colors",
+    textColor,
+    hoverColor,
+    className
+  );
 
-  const MotionTag = motion(url ? "a" : "button");
+  const commonProps = {
+    className: baseClasses,
+    "aria-label": label,
+    onClick,
+    whileHover: { scale: 1.03 },
+    whileTap: { scale: 0.97 },
+    transition: {duration: 0.15, ease: "easeInOut" },
+  };
 
-  return (
-    <MotionTag
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 1 }}
-      onClick={onClick}
+  return url ? (
+    <motion.a
+      {...commonProps}
       href={url}
-      target={url ? target : undefined}
-      rel={url ? "noopener noreferrer" : undefined}
-      aria-label={label}
-      className={combinedClass}
+      target={target}
+      rel="noopener noreferrer"
     >
       {children}
-    </MotionTag>
+    </motion.a>
+  ) : (
+    <motion.button {...commonProps} type="button">
+      {children}
+    </motion.button>
   );
 };
 

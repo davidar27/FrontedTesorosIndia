@@ -1,26 +1,46 @@
-import React from 'react'
-import { motion } from 'framer-motion';
+import React from "react";
+import { motion } from "framer-motion";
+import clsx from "clsx";
 
 interface ButtonProps {
     className?: string;
     children: React.ReactNode;
-    type?: 'button' | 'submit' | 'reset';
+    type?: "button" | "submit" | "reset";
     bgColor?: string;
-    hoverColor?: string;    
-    onClick?: React.MouseEventHandler<HTMLButtonElement>; 
+    hoverColor?: string;
+    textColor?: string;
+    onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
-const Button: React.FC<ButtonProps> = ({ children, className, type, bgColor, hoverColor, onClick }) => {
+const Button: React.FC<ButtonProps> = ({
+    children,
+    className = "",
+    type = "button",
+    bgColor = "bg-primary",
+    hoverColor = "hover:bg-white",
+    textColor = "text-white",
+    onClick,
+}) => {
     return (
         <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 1 }}
-            className={`bg-${bgColor || 'primary'} hover:${hoverColor || 'bg-white'} text-white hover:text-primary font-bold hover:font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${className}`}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ duration: 0.15, ease: "easeInOut" }}
             type={type}
             onClick={onClick}
-        >            {children}
+
+            className={clsx(
+                "font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-colors",
+                bgColor,
+                hoverColor,
+                textColor,
+                "hover:text-primary",
+                className
+            )}
+        >
+            {children}
         </motion.button>
     );
 };
-// hover:bg-${hoverColor || 'white'}
+
 export default Button;

@@ -44,7 +44,7 @@ const Header: React.FC = () => {
         ></div>
       )}
       <div
-        className={`relative flex flex-wrap items-center justify-between px-1 sm:px-2 md:px-4 lg:px-6 xl:px-8 transition-all duration-300 ease-in-out shadow-lg  ${scrolled ? "shadow-xl h-10 md:h-16 lg:h-22" : "h-16 md:h-20 lg:h-26"
+        className={`relative flex  items-center justify-between gap-1 px-1 sm:px-2 md:px-4 lg:px-6 xl:px-8 transition-all duration-300 ease-in-out shadow-lg  ${scrolled ? "shadow-xl h-10 md:h-16 lg:h-22" : "h-16 md:h-20 lg:h-26"
           }`}
       >
         {/* Logo */}
@@ -73,7 +73,7 @@ const Header: React.FC = () => {
           <Navbar />
         </div>
         {/* Search bar */}
-        <div className="relative w-45 md:w-100 ">
+        <div className="relative w-40 sm:w-45 md:w-80 lg:w-100  ">
           <Search
             className="absolute left-3 top-1/2 transform -translate-y-1/2"
             size={20}
