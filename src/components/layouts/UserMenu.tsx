@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { CircleUserRound, LogOut, LogIn, User } from "lucide-react";
+import { CircleUserRound, LogOut, LogIn, User, CircleEllipsis } from "lucide-react";
 import ButtonIcon from "../ui/ButtonIcon";
 import { useAuth } from "@/context/useAuth";
 
@@ -61,21 +61,22 @@ const UserMenu: React.FC<UserMenuProps> = ({ textColor = "text-white" }) => {
 
   return (
     <>
-      <div className="relative flex items-center gap-2" ref={menuRef}>
+      <div className="relative flex items-center gap-2 w-full justify-between md:justify-start" ref={menuRef}>
         {/* Mobile */}
-        <div className="flex md:hidden items-center gap-2">
-          <CircleUserRound size={20} />
+        <div className="w-full flex md:hidden items-center gap-2 justify-between">
           <span
-            onClick={() => setIsMobileMenuOpen(true)}
-            className={`capitalize text-sm cursor-pointer ${textColor}`}
+            className={`capitalize text-sm flex gap-2 items-center ${textColor}`}
           >
+            <CircleUserRound size={20} />
             {user?.name?.split(" ").slice(0, 2).join(" ")}
           </span>
+
           <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 px-2 py-1 bg-white border rounded shadow-sm hover:bg-gray-100 text-red-500 text-sm"
+            onClick={() => setIsMobileMenuOpen(true)}
+            className=" text-gray-800 font-bold hover:underline flex gap-0.5 items-center"
           >
-            <LogOut size={16} />
+            <CircleEllipsis size={20} />
+            Opciones
           </button>
         </div>
 
@@ -116,7 +117,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ textColor = "text-white" }) => {
 
       {/* Modal Mobile */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-50 flex items-end bg-black bg-opacity-40 md:hidden">
+        <div className="fixed inset-0 z-50 flex items-end bg-black opacity-90 md:hidden">
           <div className="w-full bg-white rounded-t-lg p-4 shadow-lg">
             <div className="flex flex-col gap-3">
               <button
