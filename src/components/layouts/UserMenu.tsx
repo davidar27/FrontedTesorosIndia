@@ -1,27 +1,50 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { CircleUserRound, LogOut, LogIn } from "lucide-react";
+import { CircleUserRound, LogOut, LogIn, User } from "lucide-react";
 import ButtonIcon from "../ui/ButtonIcon";
 import { useAuth } from "@/context/useAuth";
-import DropdownMenu from "../ui/DropdownMenu";
 
 interface UserMenuProps {
   textColor?: string;
 }
 
-const UserMenu: React.FC<UserMenuProps> = ({
-  textColor = "text-white"
-}) => {
+const UserMenu: React.FC<UserMenuProps> = ({ textColor = "text-white" }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
-  const toggleMenu = () => setIsOpen(!isOpen);
 
   const handleLogout = async () => {
     await logout();
     setIsOpen(false);
+    setIsMobileMenuOpen(false);
     navigate("/");
   };
+
+  const goToProfile = () => {
+    setIsOpen(false);
+    setIsMobileMenuOpen(false);
+    navigate("/perfil");
+  };
+
+  const toggleMenu = () => setIsOpen(!isOpen);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
 
   if (!isAuthenticated) {
     return (
@@ -29,7 +52,6 @@ const UserMenu: React.FC<UserMenuProps> = ({
         onClick={() => navigate("/login")}
         className="font-bold"
         textColor={textColor}
-
       >
         <LogIn size={20} />
         <span>Ingresar</span>
@@ -38,34 +60,90 @@ const UserMenu: React.FC<UserMenuProps> = ({
   }
 
   return (
-    <div className="relative ">
-      <ButtonIcon
-        onClick={toggleMenu}
-        className="flex items-center gap-2 cursor-pointer hover:bg-opacity-80 transition-colors"
-        aria-label="Menú de usuario"
-        textColor={textColor}
-      >
-        <CircleUserRound size={20} />
-        <span className="capitalize text-sm md:text-base">
-          {user?.name?.split(" ").slice(0, 2).join(" ")}
-        </span>
-      </ButtonIcon>
-
-
-
-      {isOpen &&
-
-        <DropdownMenu>
+    <>
+      <div className="relative flex items-center gap-2" ref={menuRef}>
+        {/* Mobile */}
+        <div className="flex md:hidden items-center gap-2">
+          <CircleUserRound size={20} />
+          <span
+            onClick={() => setIsMobileMenuOpen(true)}
+            className={`capitalize text-sm cursor-pointer ${textColor}`}
+          >
+            {user?.name?.split(" ").slice(0, 2).join(" ")}
+          </span>
           <button
             onClick={handleLogout}
-            className="w-full text-left px-4 py-3 text-gray-800 hover:bg-gray-100 flex items-center gap-2 transition-colors"
+            className="flex items-center gap-2 px-2 py-1 bg-white border rounded shadow-sm hover:bg-gray-100 text-red-500 text-sm"
           >
-            <LogOut size={18} className="text-red-500" />
-            <span>Cerrar sesión</span>
+            <LogOut size={16} />
           </button>
-        </DropdownMenu>
-      }
-    </div>
+        </div>
+
+        {/* Desktop */}
+        <div className="hidden md:flex relative">
+          <ButtonIcon
+            onClick={toggleMenu}
+            className="flex items-center gap-2 cursor-pointer hover:bg-opacity-80 transition-colors"
+            aria-label="Menú de usuario"
+            textColor={textColor}
+          >
+            <CircleUserRound size={20} />
+            <span className="capitalize text-sm md:text-base">
+              {user?.name?.split(" ").slice(0, 2).join(" ")}
+            </span>
+          </ButtonIcon>
+
+          {isOpen && (
+            <div className="absolute right-0 mt-10 bg-white border border-gray-200 rounded-md shadow-lg w-48 z-50 overflow-hidden">
+              <button
+                onClick={goToProfile}
+                className="w-full text-left px-4 py-3 text-gray-800 hover:bg-gray-100 flex items-center gap-2 transition-colors"
+              >
+                <User size={18} className="text-blue-500" />
+                <span>Perfil</span>
+              </button>
+              <button
+                onClick={handleLogout}
+                className="w-full text-left px-4 py-3 text-gray-800 hover:bg-gray-100 flex items-center gap-2 transition-colors"
+              >
+                <LogOut size={18} className="text-red-500" />
+                <span>Cerrar sesión</span>
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Modal Mobile */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-50 flex items-end bg-black bg-opacity-40 md:hidden">
+          <div className="w-full bg-white rounded-t-lg p-4 shadow-lg">
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={goToProfile}
+                className="flex items-center gap-2 px-3 py-2 rounded hover:bg-gray-100 text-gray-800 text-base"
+              >
+                <User size={18} className="text-blue-500" />
+                Perfil
+              </button>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-3 py-2 rounded hover:bg-gray-100 text-red-600 text-base"
+              >
+                <LogOut size={18} />
+                Cerrar sesión
+              </button>
+              <button
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-sm text-gray-500 text-center mt-2 hover:underline"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

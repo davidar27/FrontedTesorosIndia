@@ -44,7 +44,7 @@ const Header: React.FC = () => {
         ></div>
       )}
       <div
-        className={`relative flex flex-wrap items-center justify-between px-1 sm:px-2 md:px-4 lg:px-6 xl:px-8 transition-all duration-300 ease-in-out shadow-lg  ${scrolled ? "shadow-xl h-10 md:h-16 lg:h-22" : "h-16 md:h-20 lg:h-24"
+        className={`relative flex flex-wrap items-center justify-between px-1 sm:px-2 md:px-4 lg:px-6 xl:px-8 transition-all duration-300 ease-in-out shadow-lg  ${scrolled ? "shadow-xl h-10 md:h-16 lg:h-22" : "h-16 md:h-20 lg:h-26"
           }`}
       >
         {/* Logo */}

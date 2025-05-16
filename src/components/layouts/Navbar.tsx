@@ -38,6 +38,7 @@ const Navbar: React.FC = () => {
           <nav className="flex flex-col gap-3">
             <div className="border-b">
               <UserMenu textColor="text-black"/>
+              
             </div>
             <Link to="/" onClick={closeMenu} className="hover:text-primary">
               Inicio
