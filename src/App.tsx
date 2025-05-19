@@ -27,9 +27,9 @@ function App() {
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/productos" element={<ProductsPage />} />
+          <Route path="/nosotros" element={<AboutUs/>} />
 
-          {/* <Route path="/paquetes" element={<PackagesPage />} />
-          <Route path="/nosotros" element={<AboutPage />} /> */}
+          {/* <Route path="/paquetes" element={<PackagesPage />} />*/}
         </Route>
 
         {/* Rutas de autenticación */}
@@ -38,7 +38,6 @@ function App() {
           <Route path="/registro" element={<RegisterPage />} />
           <Route path="/correo-enviado" element={<EmailVerification />} />
           <Route path="/verificar-correo" element={<EmailVerificationPage />} />
-          <Route path="/nosotros" element={<AboutUs/>} />
         </Route>
 
         {/* Rutas protegidas */}

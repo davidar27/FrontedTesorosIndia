@@ -65,7 +65,7 @@ const Footer = () => {
                 rel="noopener noreferrer"
                 className="hover:scale-110 transition"
               >
-                <Icon name={link.icon} className="text-[30px]" />
+                <Icon name={link.icon} className="text-[30px] w-10 h-10 " />
               </a>
             ))}
           </div>

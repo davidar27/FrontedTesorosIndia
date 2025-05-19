@@ -16,10 +16,11 @@ import { useEffect, useState } from "react";
 
 const Header: React.FC = () => {
   const location = useLocation();
-  const ocultarDiv = ["/login", "/registro", "/form"].includes(
+  const ocultarDiv = ["/login", "/registro"].includes(
     location.pathname
   );
   const isHome = location.pathname === "/";
+  const isAboutUs = location.pathname === "/nosotros"
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -34,7 +35,7 @@ const Header: React.FC = () => {
 
   return (
     <header className="fixed z-50 w-full text-white  ">
-      {!isHome && (
+      {!isHome || isAboutUs && (
         <div
           className="absolute inset-0 bg-cover brightness-50"
           style={{
@@ -44,7 +45,7 @@ const Header: React.FC = () => {
         ></div>
       )}
       <div
-        className={`relative flex  items-center justify-between gap-1 px-1 sm:px-2 md:px-4 lg:px-6 xl:px-8 transition-all duration-300 ease-in-out shadow-lg  ${scrolled ? "shadow-xl h-10 md:h-16 lg:h-22" : "h-16 md:h-20 lg:h-26"
+        className={`relative flex  items-center justify-between gap-1 responsive-padding-x transition-all duration-300 ease-in-out shadow-lg   ${scrolled ? "shadow-xl h-10 md:h-16 lg:h-22" : "h-16 md:h-20 lg:h-26"
           }`}
       >
         {/* Logo */}

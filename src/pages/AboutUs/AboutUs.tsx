@@ -1,18 +1,23 @@
-import Hero from '@/components/home/Hero';
-import Header from '@/components/layouts/Header';
+import HeroSection from '@/components/layouts/HeroSection';
 import SectionUs from '@/components/layouts/SectionUs';
-import Us from '@/components/layouts/Us';
 import History from '@/assets/images/HistoryUs.png';
 import Paisaje from '@/assets/images/Paisaje.webp';
 import CuyUs from '@/assets/images/CuyUs.png';
-import Footer from '@/components/layouts/Footer';
+import Grupo from '@/assets/images/Grupo.png';
+
 
 const AboutUs = () => {
     return (
         <main>
-            <Hero />
-            <Us />
-            <Header />
+            <HeroSection
+                title="Sobre Nosotros"
+                subtitle='Somos un grupo dedicado a conservar el territorio, promover el turismo rural y mejorar los ingresos de las familias campesinas de manera sostenible.'
+                sideImage={Grupo}
+                sideImageAlt='Grupo'
+                className='w-full h-full object-cover'/>
+
+
+
             <SectionUs
                 title="Nuestra Historia"
                 text="La historia de 'Tesoros de la India' comenzó con un pequeño grupo de apasionados
@@ -51,7 +56,6 @@ const AboutUs = () => {
                 imageAlt="Cuy"
                 order={1}
             />
-            <Footer />
         </main>
     )
 }

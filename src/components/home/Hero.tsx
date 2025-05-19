@@ -1,30 +1,24 @@
-import bannerImg from "@/assets/images/corredor.jpeg";
-// import bannerImg from "@/assets/images/Paisaje2.webp";
-
-
-import Button from "@/components/ui/Button";
-
+import HeroSection from "../layouts/HeroSection";
+import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
-  return (
-    <section className="relative w-full h-100 md:h-screen text-white overflow-hidden">
-      <img
-        src={bannerImg}
-        alt="Banner"
-        className="absolute inset-0 w-full h-full object-cover object-center brightness-60"
-      />
+    const navigate = useNavigate();
 
-      <div className="relative z-10 flex flex-col justify-center h-full px-6 lg:px-30 max-w-7xl">
-        <h1 className="text-4xl lg:text-8xl  md:text-6xl font-bold leading-tight mb-4">
-          TESOROS <br /> DE LA INDIA
-        </h1>
-        <p className="text-lg md:text-xl mb-6">
-          “En nuestro territorio podrás vivir experiencias inigualables”
-        </p>
-        <Button className="w-fit ">¿Quiénes somos?</Button>
-      </div>
-    </section>
-  );
+    return (
+        <section>
+            <HeroSection
+                title={
+                    <>
+                        TESOROS <br /> DE LA INDIA
+                    </>
+                }
+                subtitle="En nuestro territorio podrás vivir experiencias inigualables"
+                buttonLabel="¿Quiénes somos?"
+                onButtonClick={() => navigate("/nosotros")}
+                className=""
+            />
+        </section>
+    );
 };
 
 export default Hero;

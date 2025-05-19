@@ -1,5 +1,5 @@
-import { FaInstagram, FaFacebook, FaWhatsapp } from "react-icons/fa";
-import { IconType } from "react-icons";
+import { Instagram, Facebook } from "lucide-react";
+import Whatsapp from "@/assets/icons/whatsapp.svg?react";
 
 type IconName = "instagram" | "facebook" | "whatsapp";
 
@@ -8,14 +8,13 @@ interface IconProps {
   className?: string;
 }
 
-const icons: Record<IconName, IconType> = {
-  instagram: FaInstagram,
-  facebook: FaFacebook,
-  whatsapp: FaWhatsapp,
+const icons = {
+  instagram: Instagram,
+  facebook: Facebook,
+  whatsapp: Whatsapp,
 };
 
 export const Icon = ({ name, className }: IconProps) => {
   const Component = icons[name];
   return <Component className={className} />;
 };
-

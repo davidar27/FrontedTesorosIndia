@@ -6,3 +6,9 @@
   --color-secondary: #81c9c1; /* Azul verdoso claro */
   --color-tertiary: #eee41e; /* Amarillo brillante */
 }
+
+@layer utilities {
+  .responsive-padding-x {
+    @apply px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10;
+  }
+}
