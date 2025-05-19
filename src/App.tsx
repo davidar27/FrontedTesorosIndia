@@ -17,6 +17,7 @@ import FarmPage from '@/pages/Estates/EstatePage';
 import AdminPage from "./pages/Admin/AdminPage";
 import NotFoundPage from '@/pages/Errors/NotFoundPage';
 import ProtectedRoute from "./routes/protectedRoute";
+import AboutUs from "./pages/AboutUs/AboutUs";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
           <Route path="/registro" element={<RegisterPage />} />
           <Route path="/correo-enviado" element={<EmailVerification />} />
           <Route path="/verificar-correo" element={<EmailVerificationPage />} />
+          <Route path="/nosotros" element={<AboutUs/>} />
         </Route>
 
         {/* Rutas protegidas */}
