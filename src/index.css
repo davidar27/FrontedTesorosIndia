@@ -2,7 +2,9 @@
 
 @theme {
   --color-primary: var(--color-green-600); /* Verde principal */
-  --color-hover-primary: var(--color-green-800); /* Verde más oscuro para hover */
+  --color-hover-primary: var(
+    --color-green-800
+  ); /* Verde más oscuro para hover */
   --color-secondary: #81c9c1; /* Azul verdoso claro */
   --color-tertiary: #eee41e; /* Amarillo brillante */
 }
@@ -15,4 +17,42 @@
   .responsive-padding-y {
     @apply py-10 sm:py-15 md:py-20 lg:py-25 xl:py-30;
   }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.animate-fade-in-right {
+  animation: fadeInRight 0.8s ease-out forwards;
+}
+
+.delay-100 {
+  animation-delay: 0.1s;
+}
+
+.delay-200 {
+  animation-delay: 0.2s;
 }
