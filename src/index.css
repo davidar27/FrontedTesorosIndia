@@ -11,4 +11,8 @@
   .responsive-padding-x {
     @apply px-2 sm:px-4 md:px-6 lg:px-12 xl:px-20;
   }
+
+  .responsive-padding-y {
+    @apply py-10 sm:py-15 md:py-20 lg:py-25 xl:py-30;
+  }
 }

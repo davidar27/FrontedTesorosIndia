@@ -1,18 +1,19 @@
 import ProductCard from "@/components/products/ProductCard";
+import imgCafe from "@/assets/images/cafetalero-bolsa-sola-tag.webp"
 const categories = ["Café", "Comida", "Comida", "Comida"];
 
 const products = [
     {
         name: "Café Especial Cafetalero",
         price: "$6.500",
-        image: "/images/cafetalero-bolsa-sola-tag.webp", 
+        image: imgCafe
     },
     // ... puedes agregar más productos
 ];
 
 export default function ProductList() {
     return (
-        <div className="flex flex-col md:flex-row p-6 bg-gray-50 min-h-screen">
+        <div className="flex flex-col  responsive-padding-x bg-gray-50 min-h-screen py-40">
             <aside className="w-full md:w-1/5 mb-6 md:mb-0 md:mr-6">
                 <h2 className="text-green-600 font-semibold text-lg mb-4">Categorías</h2>
                 <ul className="space-y-2">
@@ -31,6 +32,11 @@ export default function ProductList() {
                     ))}
                 </div>
             </div>
+
+        
+
         </div>
+
+
     );
 }
