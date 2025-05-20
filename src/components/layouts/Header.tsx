@@ -8,7 +8,7 @@ import Navbar from "@/components/layouts/Navbar";
 //assets
 import imgLogo from "@/assets/icons/logotesorosindia.webp";
 import { Search, ShoppingCart } from "lucide-react";
-import background from "@/assets/images/Paisaje1.webp";
+import background from "/images/FondoMobile.webp";
 //hooks
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -16,10 +16,11 @@ import { useEffect, useState } from "react";
 
 const Header: React.FC = () => {
   const location = useLocation();
-  const ocultarDiv = ["/login", "/registro", "/form"].includes(
+  const ocultarDiv = ["/login", "/registro"].includes(
     location.pathname
   );
   const isHome = location.pathname === "/";
+  const isAboutUs = location.pathname === "/nosotros"
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -33,8 +34,8 @@ const Header: React.FC = () => {
   if (ocultarDiv) return null;
 
   return (
-    <header className="fixed z-50 w-full text-white  ">
-      {!isHome && (
+    <header className="fixed z-50 w-full text-white backdrop-blur-xs bg-black/30  ">
+      {!isHome || isAboutUs && (
         <div
           className="absolute inset-0 bg-cover brightness-50"
           style={{
@@ -44,9 +45,12 @@ const Header: React.FC = () => {
         ></div>
       )}
       <div
-        className={`relative flex flex-wrap items-center justify-between px-1 sm:px-2 md:px-4 lg:px-6 xl:px-8 transition-all duration-300 ease-in-out shadow-lg  ${scrolled ? "shadow-xl h-10 md:h-16 lg:h-22" : "h-16 md:h-20 lg:h-26"
-          }`}
+        className={`relative flex items-center justify-between gap-1 responsive-padding-x 
+    shadow-lg
+    ${scrolled ? "shadow-xl h-10 md:h-16 lg:h-22" : "h-16 md:h-20 lg:h-26"}
+    md:transition-all md:duration-300 md:ease-in-out`}
       >
+
         {/* Logo */}
         <div className="w-22 md:block md:w-30 lg:w-40 xl:w-50">
           <Link to="/">
@@ -58,22 +62,12 @@ const Header: React.FC = () => {
           </Link>
         </div>
 
-        {/* <div className="w-15 md:hidden">
-          <Link to="/">
-            <Picture
-              src={logoSmall}
-              alt="Logo"
-              className="w-full h-full object-contain"
-            />
-          </Link>
-        </div> */}
-
         {/* Mobile: Navbar and search hidden initially */}
         <div className="hidden md:block">
           <Navbar />
         </div>
         {/* Search bar */}
-        <div className="relative w-45 md:w-100 ">
+        <div className="relative w-40 sm:w-45 md:w-80 lg:w-100  ">
           <Search
             className="absolute left-3 top-1/2 transform -translate-y-1/2"
             size={20}
@@ -94,7 +88,7 @@ const Header: React.FC = () => {
             <ShoppingCart />
           </ButtonIcon>
 
-          <Button className="hidden md:block">
+          <Button className="hidden md:block ">
             <span>Fincas</span>
           </Button>
           <div className="hidden md:block">

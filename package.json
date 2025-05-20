@@ -4,22 +4,25 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
-  },
+  "dev": "vite --host",
+  "build": "tsc -b && vite build",
+  "lint": "eslint .",
+  "preview": "vite preview",
+  "build:preview": "npm run build && npm run preview"
+},
+
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
     "@types/react-router-dom": "^5.3.3",
     "axios": "^1.9.0",
+    "clsx": "^2.1.1",
     "js-cookie": "^3.0.5",
-    "lucide-react": "^0.507.0",
+    "lucide-react": "^0.511.0",
     "motion": "^12.10.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.56.3",
-    "react-router-dom": "^7.5.3",
+    "react-router-dom": "^7.6.0",
     "uni": "^0.0.0",
     "yup": "^1.6.1"
   },
@@ -39,6 +42,7 @@
     "tailwindcss": "^4.1.7",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.26.1",
-    "vite": "^6.3.1"
+    "vite": "^6.3.1",
+    "vite-plugin-svgr": "^4.3.0"
   }
 }

@@ -65,6 +65,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ textColor = "text-white" }) => {
         {/* Mobile */}
         <div className="w-full flex md:hidden items-center gap-2 justify-between">
           <span
+            onClick={goToProfile}
             className={`capitalize text-sm flex gap-2 items-center ${textColor}`}
           >
             <CircleUserRound size={20} />
@@ -76,7 +77,6 @@ const UserMenu: React.FC<UserMenuProps> = ({ textColor = "text-white" }) => {
             className=" text-gray-800 font-bold hover:underline flex gap-0.5 items-center"
           >
             <CircleEllipsis size={20} />
-            Opciones
           </button>
         </div>
 

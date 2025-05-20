@@ -1,13 +1,18 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import Button from "../ui/Button";
 
 export default function QuickReservation() {
   const navigate = useNavigate();
-  const [people, setPeople] = useState("2 Adultos");
+  const [people, setPeople] = useState(2);
   const [date, setDate] = useState("");
   const [packageType, setPackageType] = useState("Tour");
 
   const handleReservation = () => {
+    if (!date) {
+      alert("Por favor selecciona una fecha.");
+      return;
+    }
     navigate("/reservar", {
       state: {
         people,
@@ -18,50 +23,65 @@ export default function QuickReservation() {
   };
 
   return (
-    <div className="bg-primary text-white rounded-md p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+    <div className="bg-primary text-white rounded-md p-4
+      flex flex-col gap-4
+      sm:flex-row sm:items-center sm:justify-between sm:gap-4
+      md:gap-6
+      lg:gap-8
+      xl:gap-10
+    ">
       <div className="flex flex-col">
-        <label className="text-sm">Personas</label>
+        <label htmlFor="people" className="text-sm mb-1">
+          Personas
+        </label>
         <select
-          className="text-black rounded-md p-2"
+          id="people"
+          className="rounded-md p-2"
           value={people}
-          onChange={(e) => setPeople(e.target.value)}
+          onChange={(e) => setPeople(Number(e.target.value))}
         >
-          <option>1 Adulto</option>
-          <option>2 Adultos</option>
-          <option>3 Adultos</option>
-          <option>4 Adultos</option>
+          <option value={1}>1 Adulto</option>
+          <option value={2}>2 Adultos</option>
+          <option value={3}>3 Adultos</option>
+          <option value={4}>4 Adultos</option>
         </select>
       </div>
 
       <div className="flex flex-col">
-        <label className="text-sm">Fecha</label>
+        <label htmlFor="date" className="text-sm mb-1">
+          Fecha
+        </label>
         <input
+          id="date"
           type="date"
-          className="text-black rounded-md p-2"
+          className="rounded-md p-2"
           value={date}
           onChange={(e) => setDate(e.target.value)}
         />
       </div>
 
       <div className="flex flex-col">
-        <label className="text-sm">Paquete</label>
+        <label htmlFor="package" className="text-sm mb-1">
+          Paquete
+        </label>
         <select
-          className="text-black rounded-md p-2"
+          id="package"
+          className="rounded-md p-2"
           value={packageType}
           onChange={(e) => setPackageType(e.target.value)}
         >
-          <option>Tour</option>
-          <option>Aventura</option>
-          <option>Relajación</option>
+          <option value="Tour">Tour</option>
+          <option value="Aventura">Aventura</option>
+          <option value="Relajación">Relajación</option>
         </select>
       </div>
 
-      <button
+      <Button
         onClick={handleReservation}
-        className="bg-white text-primary font-semibold rounded-md px-6 py-2 hover:bg-gray-200 transition"
+        className="bg-white !text-primary"
       >
         Reservar ahora
-      </button>
+      </Button>
     </div>
   );
 }

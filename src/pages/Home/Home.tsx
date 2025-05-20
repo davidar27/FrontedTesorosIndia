@@ -11,16 +11,16 @@ const Home: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
 
   return (
-    <div className=" text-gray-800 ">
+    <div className=" text-gray-800 relative">
       <main>
-        <Hero />
 
+        <Hero />
         {isAuthenticated && (
           <div className="bg-green-100 p-4 text-center">
             Bienvenido de vuelta, {user?.name}!
           </div>
         )}
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-[95%] md:w-[90%] max-w-5xl">
+        <div className="absolute -translate-y-1/2 z-10 left-1/2 transform -translate-x-1/2 w-[95%] md:w-[90%] max-w-5xl">
           <HandleReservation />
         </div>
         <section className="px-4 md:px-16 py-10 bg-gray-500">

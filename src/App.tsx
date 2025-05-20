@@ -1,37 +1,37 @@
 import { Routes, Route } from "react-router-dom";
+import { Suspense, lazy } from "react";
 
-// Layouts
-import MainLayout from '@/layouts/MainLayout';
-import AuthLayout from '@/layouts/AuthLayout';
+/// Layouts
+const MainLayout = lazy(() => import('@/layouts/MainLayout'));
+const AuthLayout = lazy(() => import('@/layouts/AuthLayout'));
 
 // Pages
-import Home from '@/pages/Home/Home';
-// import PackagesPage from '@/pages/Packages/PackagesPage';
-import ProductsPage from '@/pages/Products/Products';
-// import AboutPage from '@/pages/About/AboutPage';
-import LoginPage from '@/pages/Auth/LoginPage';
-import RegisterPage from '@/pages/Auth/RegisterPage';
-import EmailVerification from '@/pages/Auth/VerifyEmail';
-import { EmailVerificationPage } from "./pages/Auth/VerificationPage";
-import FarmPage from '@/pages/Estates/EstatePage';
-import AdminPage from "./pages/Admin/AdminPage";
-import NotFoundPage from '@/pages/Errors/NotFoundPage';
+const Home = lazy(() => import('@/pages/Home/Home'));
+const ProductsPage = lazy(() => import('@/pages/Products/Products'));
+const LoginPage = lazy(() => import('@/pages/Auth/LoginPage'));
+const RegisterPage = lazy(() => import('@/pages/Auth/RegisterPage'));
+const EmailVerification = lazy(() => import('@/pages/Auth/VerifyEmail'));
+const EmailVerificationPage = lazy(() => import('@/pages/Auth/VerificationPage'));
+const FarmPage = lazy(() => import('@/pages/Estates/EstatePage'));
+const AdminPage = lazy(() => import('@/pages/Admin/AdminPage'));
+const NotFoundPage = lazy(() => import('@/pages/Errors/NotFoundPage'));
+const AboutUs = lazy(() => import('@/pages/AboutUs/AboutUs'));
+
+// Routes
 import ProtectedRoute from "./routes/protectedRoute";
 
 function App() {
   return (
-    <>
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">
+      <span className="animate-spin h-6 w-6 border-4 border-t-transparent rounded-full border-white" />
+    </div>}>
       <Routes>
-        {/* Rutas públicas principales */}
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/productos" element={<ProductsPage />} />
-
-          {/* <Route path="/paquetes" element={<PackagesPage />} />
-          <Route path="/nosotros" element={<AboutPage />} /> */}
+          <Route path="/nosotros" element={<AboutUs />} />
         </Route>
 
-        {/* Rutas de autenticación */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/registro" element={<RegisterPage />} />
@@ -39,22 +39,19 @@ function App() {
           <Route path="/verificar-correo" element={<EmailVerificationPage />} />
         </Route>
 
-        {/* Rutas protegidas */}
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<FarmPage />} />
-          {/* <Route path="/profile" element={<Profile />} /> */}
         </Route>
 
-        {/* Rutas con roles específicos */}
         <Route element={<ProtectedRoute roles={['administrador']} />}>
           <Route path="/admin" element={<AdminPage />} />
         </Route>
 
-        {/* 404 */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
-    </>
+    </Suspense>
   );
 }
+
 
 export default App;
