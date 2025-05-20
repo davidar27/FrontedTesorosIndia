@@ -54,7 +54,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ textColor = "text-white" }) => {
         textColor={textColor}
       >
         <LogIn size={20} />
-        <span>Ingresar</span>
+        <span>Iniciar Sesión</span>
       </ButtonIcon>
     );
   }
