@@ -1,88 +1,126 @@
-import { useEffect, useRef, useState } from 'react';
-import { LoadScript, GoogleMap } from '@react-google-maps/api';
-
-const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-
-const mapContainerStyle = {
-  width: '100%',
-  height: '500px',
-};
+import { useEffect, useState } from 'react';
+import {
+    MapContainer,
+    TileLayer,
+    Marker,
+    Popup,
+    useMap,
+} from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+import 'leaflet-routing-machine';
+import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 
 export interface Location {
-  id: number;
-  name: string;
-  position: {
-    lat: number;
-    lng: number;
-  };
+    id: number;
+    name: string;
+    position: {
+        lat: number;
+        lng: number;
+    };
+    description?: string;
 }
 
-interface Props {
-  center?: { lat: number; lng: number };
-  locations: Location[];
-  showUserLocation?: boolean;
+interface ReusableMapProps {
+    locations: Location[];
 }
 
-const Map = ({ center, locations, showUserLocation = false }: Props) => {
-  const mapRef = useRef<google.maps.Map | null>(null);
-  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+// Fix de íconos de Leaflet en React (sin esto no se ven los marcadores)
+delete (L.Icon.Default.prototype as unknown as { _getIconUrl?: unknown })._getIconUrl;
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon-2x.png',
+    iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
+});
 
-  useEffect(() => {
-    if (showUserLocation && navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
-        },
-        (error) => {
-          console.error("Error obteniendo ubicación del usuario:", error);
-        }
-      );
-    }
-  }, [showUserLocation]);
+// Componente para obtener y mostrar ubicación del usuario
+const UserLocation = ({ onLocationFound }: { onLocationFound: (latlng: L.LatLng) => void }) => {
+    const map = useMap();
 
-  useEffect(() => {
-    if (!mapRef.current) return;
+    useEffect(() => {
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const { latitude, longitude } = pos.coords;
+                const userLatLng = L.latLng(latitude, longitude);
+                map.setView(userLatLng, 13);
 
-    // Marcadores de ubicaciones recibidas
-    locations.forEach(loc => {
-      const marker = new google.maps.marker.AdvancedMarkerElement({
-        map: mapRef.current!,
-        position: loc.position,
-        title: loc.name,
-      });
+                L.marker(userLatLng)
+                    .addTo(map)
+                    .bindPopup('Estás aquí')
+                    .openPopup();
 
-      marker.addEventListener('gmp-click', () => {
-        alert(`Has hecho clic en ${loc.name}`);
-      });
-    });
+                onLocationFound(userLatLng);
+            },
+            () => {
+                console.warn('Ubicación no permitida o disponible');
+                onLocationFound(null!); // indica que no hay ubicación
+            }
+        );
+    }, [map, onLocationFound]);
 
-    // Marcador de ubicación del usuario
-    if (userLocation) {
-      new google.maps.marker.AdvancedMarkerElement({
-        map: mapRef.current!,
-        position: userLocation,
-        title: "Tu ubicación",
-      });
-    }
-  }, [locations, userLocation]);
+    return null;
+};
 
-  const mapCenter = userLocation || center || { lat: 4.674, lng: -75.658 };
+const Map = ({ locations }: ReusableMapProps) => {
+    const [center] = useState({ lat: 4.674, lng: -75.658 });
+    const [userLocation, setUserLocation] = useState<L.LatLng | null>(null);
 
-  return (
-    <LoadScript googleMapsApiKey={apiKey} libraries={['marker']}>
-      <GoogleMap
-        mapContainerStyle={mapContainerStyle}
-        center={mapCenter}
-        zoom={13}
-        onLoad={(map) => {
-          mapRef.current = map;
-        }}
-      />
-    </LoadScript>
-  );
+    // Finca destino para la ruta (ejemplo: primer location)
+    const destination = locations.length > 0 ? L.latLng(locations[0].position.lat, locations[0].position.lng) : null;
+
+    const RoutingMachine = () => {
+        const map = useMap();
+
+        useEffect(() => {
+            if (!userLocation || !destination) {
+                return;
+            }
+
+            const routingControl = L.Routing.control({
+                waypoints: [userLocation, destination],
+                lineOptions: {
+                    styles: [{ color: '#6FA1EC', weight: 5 }],
+                    extendToWaypoints: true,
+                    missingRouteTolerance: 1,
+                },
+                addWaypoints: false,
+                fitSelectedRoutes: true,
+            }).addTo(map);
+
+            return () => {
+                map.removeControl(routingControl);
+            };
+        }, [map, userLocation, destination]);
+
+        return null;
+    };
+
+    return (
+        <MapContainer
+            center={center}
+            zoom={13}
+            scrollWheelZoom={true}
+            style={{ height: '500px', width: '100%', borderRadius: '8px', zIndex: '1' }}
+        >
+            <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+
+            {locations.map((loc) => (
+                <Marker key={loc.id} position={loc.position}>
+                    <Popup>
+                        <strong>{loc.name}</strong>
+                        <br />
+                        {loc.description || ''}
+                    </Popup>
+                </Marker>
+            ))}
+
+            <UserLocation onLocationFound={setUserLocation} />
+            {userLocation && destination && <RoutingMachine />}
+        </MapContainer>
+    );
 };
 
 export default Map;
