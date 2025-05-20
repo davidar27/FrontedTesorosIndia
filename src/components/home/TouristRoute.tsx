@@ -1,9 +1,8 @@
-import Map from '../layouts/Map';
-import { Location } from '../layouts/Map';
 import Button from '@/components/ui/buttons/Button';
 import { TreePalm, MapPin, Coffee, Mountain } from 'lucide-react';
+import ReusableMap from '../layouts/ReusableMap';
 
-const locations: Location[] = [
+const locations = [
   {
     id: 1,
     name: 'Finca Puerto Arturo',
@@ -35,8 +34,9 @@ const locations: Location[] = [
 ];
 
 const TouristRoute = () => {
+
   return (
-    <div className="max-w-7xl mx-autoresponsive-padding-x">
+    <div className="responsive-padding-x">
       <div className="text-center pb-10">
         <h1 className="text-4xl font-bold text-green-700 mb-4">Ruta Turística</h1>
         <div className="w-24 h-1 bg-green-600 mx-auto rounded mb-6"></div>
@@ -92,7 +92,8 @@ const TouristRoute = () => {
         {/* Mapa y descripción */}
         <div className="md:col-span-2">
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
-            <Map locations={locations} />
+            <ReusableMap locations={locations} />
+
           </div>
 
           <div className="mt-8 bg-white rounded-xl shadow-md p-6">
