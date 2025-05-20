@@ -4,19 +4,21 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-  "dev": "vite --host",
-  "build": "tsc -b && vite build",
-  "lint": "eslint .",
-  "preview": "vite preview",
-  "build:preview": "npm run build && npm run preview"
-},
-
+    "dev": "vite --host",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "build:preview": "npm run build && npm run preview"
+  },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
+    "@react-google-maps/api": "^2.20.6",
+    "@types/leaflet": "^1.9.18",
     "@types/react-router-dom": "^5.3.3",
     "axios": "^1.9.0",
     "clsx": "^2.1.1",
     "js-cookie": "^3.0.5",
+    "leaflet": "^1.9.4",
     "lucide-react": "^0.511.0",
     "motion": "^12.10.5",
     "react": "^19.0.0",
@@ -30,6 +32,7 @@
     "@eslint/js": "^9.22.0",
     "@rollup/plugin-alias": "^5.1.1",
     "@tailwindcss/vite": "^4.1.5",
+    "@types/google.maps": "^3.58.1",
     "@types/js-cookie": "^3.0.6",
     "@types/node": "^22.15.14",
     "@types/react": "^19.0.10",
