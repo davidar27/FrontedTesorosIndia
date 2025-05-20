@@ -1,6 +1,6 @@
-const navLinks = [
+const Links = [
     { path: "/", label: "Inicio" },
     { path: "/nosotros", label: "Nosotros" },
     { path: "/productos", label: "Productos" }
 ];
-export default navLinks;
+export default Links;
