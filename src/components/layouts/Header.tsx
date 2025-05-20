@@ -45,9 +45,12 @@ const Header: React.FC = () => {
         ></div>
       )}
       <div
-        className={`relative flex  items-center justify-between gap-1 responsive-padding-x transition-all duration-300 ease-in-out shadow-lg   ${scrolled ? "shadow-xl h-10 md:h-16 lg:h-22" : "h-16 md:h-20 lg:h-26"
-          }`}
+        className={`relative flex items-center justify-between gap-1 responsive-padding-x 
+    shadow-lg
+    ${scrolled ? "shadow-xl h-10 md:h-16 lg:h-22" : "h-16 md:h-20 lg:h-26"}
+    md:transition-all md:duration-300 md:ease-in-out`}
       >
+
         {/* Logo */}
         <div className="w-22 md:block md:w-30 lg:w-40 xl:w-50">
           <Link to="/">

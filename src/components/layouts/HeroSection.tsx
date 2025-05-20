@@ -28,7 +28,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
     <section
       role="region"
       aria-label="Hero section"
-      className={`relative w-full min-h-[60vh] sm:min-h-[70vh] py-24 sm:py-32 md:py-40 text-center md:text-left text-white overflow-hidden ${containerClassName}`}
+      className={`relative w-full min-h-[60vh] sm:min-h-[70vh] max-h-[60vh] md:max-h-screen py-20 sm:py-32 md:py-40 text-center md:text-left text-white overflow-hidden ${containerClassName}`}
     >
       {/* Imagen de fondo posicionada correctamente */}
       <div className="absolute inset-0 z-0">

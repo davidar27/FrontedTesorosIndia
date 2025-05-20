@@ -12,12 +12,13 @@ const AboutUs = () => {
             <HeroSection
                 title={
                     <>
-                        Sobre <br /> Nosotros
+                        Sobre<br />Nosotros
                     </>
                 }
                 subtitle='Somos un grupo dedicado a conservar el territorio, promover el turismo rural y mejorar los ingresos de las familias campesinas de manera sostenible.'
                 sideImage={Grupo}
-                sideImageAlt='Grupo'/>
+                sideImageAlt='Grupo'
+                containerClassName='!py-35'/>
 
 
 
