@@ -1,5 +1,5 @@
 import React from "react";
-import Button from "@/components/ui/Button";
+import Button from "@/components/ui/buttons/Button";
 import Picture from "../ui/Picture";
 
 interface HeroSectionProps {
@@ -80,10 +80,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
         )}
       </div>
 
-      {/* Efecto de partículas opcional (puedes implementarlo con una librería como tsParticles) */}
-      <div className="absolute inset-0 z-10 pointer-events-none" aria-hidden="true">
-        {/* Aquí iría el componente de partículas */}
-      </div>
+
     </section>
   );
 };

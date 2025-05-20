@@ -1,87 +1,82 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import Button from "../ui/Button";
+import { useState, useMemo } from "react";
+import Button from "../ui/buttons/Button";
+import SelectInput from "../ui/inputs/SelectInput";
+import DateInput from "../ui/inputs/DateInput";
 
+interface PackageOption {
+  value: string;
+  label: string;
+  icon: string;
+}
 export default function QuickReservation() {
   const navigate = useNavigate();
   const [people, setPeople] = useState(2);
   const [date, setDate] = useState("");
   const [packageType, setPackageType] = useState("Tour");
+  const [touched, setTouched] = useState(false);
+
+  const packageOptions: PackageOption[] = useMemo(() => [
+    { value: "Tour", label: "Tour", icon: "✈️" },
+    { value: "Aventura", label: "Aventura", icon: "🧗‍♂️" },
+    { value: "Relajación", label: "Relajación", icon: "🏖️" }
+  ], []);
+
+  const peopleOptions = useMemo(() =>
+    [1, 2, 3, 4].map(num => ({
+      value: num,
+      label: `${num} ${num === 1 ? "Adulto" : "Adultos"}`
+    })),
+    []
+  );
 
   const handleReservation = () => {
-    if (!date) {
-      alert("Por favor selecciona una fecha.");
-      return;
-    }
-    navigate("/reservar", {
-      state: {
-        people,
-        date,
-        packageType,
-      },
-    });
+    setTouched(true);
+    if (!date) return;
+    navigate("/reservar", { state: { people, date, packageType } });
   };
 
   return (
-    <div className="bg-primary text-white rounded-md p-4
-      flex flex-col gap-4
-      sm:flex-row sm:items-center sm:justify-between sm:gap-4
-      md:gap-6
-      lg:gap-8
-      xl:gap-10
-    ">
-      <div className="flex flex-col">
-        <label htmlFor="people" className="text-sm mb-1">
-          Personas
-        </label>
-        <select
+    <div className="bg-primary rounded-xl shadow-lg overflow-hidden ">
+      <div className="p-4 md:p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Componente Select reutilizable */}
+        <SelectInput
           id="people"
-          className="rounded-md p-2"
+          label="Personas"
           value={people}
-          onChange={(e) => setPeople(Number(e.target.value))}
-        >
-          <option value={1}>1 Adulto</option>
-          <option value={2}>2 Adultos</option>
-          <option value={3}>3 Adultos</option>
-          <option value={4}>4 Adultos</option>
-        </select>
-      </div>
-
-      <div className="flex flex-col">
-        <label htmlFor="date" className="text-sm mb-1">
-          Fecha
-        </label>
-        <input
-          id="date"
-          type="date"
-          className="rounded-md p-2"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
+          options={peopleOptions}
+          onChange={value => setPeople(Number(value))}
         />
-      </div>
 
-      <div className="flex flex-col">
-        <label htmlFor="package" className="text-sm mb-1">
-          Paquete
-        </label>
-        <select
+        {/* Input de fecha personalizado */}
+        <DateInput
+          date={date}
+          setDate={setDate}
+          touched={touched}
+        />
+
+        {/* Select de paquetes */}
+        <SelectInput
           id="package"
-          className="rounded-md p-2"
+          label="Paquete"
           value={packageType}
-          onChange={(e) => setPackageType(e.target.value)}
-        >
-          <option value="Tour">Tour</option>
-          <option value="Aventura">Aventura</option>
-          <option value="Relajación">Relajación</option>
-        </select>
-      </div>
+          options={packageOptions.map(p => ({ value: p.value, label: `${p.icon} ${p.label}` }))}
+          onChange={value => setPackageType(String(value))}
+        />
 
-      <Button
-        onClick={handleReservation}
-        className="bg-white !text-primary"
-      >
-        Reservar ahora
-      </Button>
+        {/* Botón de reserva */}
+        <div className="flex items-end">
+          <Button
+            onClick={handleReservation}
+            className="w-full py-3 bg-white hover:bg-primary-dark !text-primary font-medium
+                     transition-colors duration-200 transform hover:-translate-y-0.5
+                     active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-primary/50"
+          >
+            Reservar ahora
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
+

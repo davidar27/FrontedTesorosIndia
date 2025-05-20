@@ -3,13 +3,13 @@ import background from "/images/FondoDesktop.webp";
 import imgLogo from "@/assets/icons/logotesorosindiaPequeño.webp";
 
 //components
-import Card from "@/components/ui/Card";
-import CardContent from "@/components/ui/CardContent";
-import Button from "@/components/ui/Button";
-import Input from "@/components/ui/Input";
+import Card from "@/components/ui/cards/Card";
+import CardContent from "@/components/ui/cards/CardContent";
+import Button from "@/components/ui/buttons/Button";
+import Input from "@/components/ui/inputs/Input";
 import Label from "@/components/ui/Label";
 import CircularLogo from "@/components/ui/CircularLogo";
-import BackButton from "@/components/ui/BackButton";
+import BackButton from "@/components/ui/buttons/BackButton";
 
 //hooks
 import { Link } from "react-router-dom";
@@ -82,7 +82,7 @@ const AuthForm = ({
             to="/"
             position="top-left"
             size="lg"
-            color="blue-500"
+            color="black"
             hoverColor="blue-700"
             className="p-2"
             iconClassName="stroke-2"

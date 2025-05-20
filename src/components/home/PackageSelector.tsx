@@ -1,4 +1,4 @@
-import { PackageCard } from '@/components/ui/PackageCard';
+import { PackageCard } from '@/components/ui/cards/PackageCard';
 
 const PackageSelector = () => {
   return (
