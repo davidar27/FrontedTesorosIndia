@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { verifyEmail } from '@/services/auth/verifyEmailService';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import Button from '@/components/ui/Button';
+import Button from '@/components/ui/buttons/Button';
 
 const EmailVerificationPage = () => {
     const [searchParams] = useSearchParams();

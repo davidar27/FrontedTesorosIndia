@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Icon } from "@/components/ui/Icons";
+import { Icon } from "@/components/ui/icons/Icons";
 import Logo from "@/assets/icons/logotesorosindia.webp";
 
 const Footer = () => {

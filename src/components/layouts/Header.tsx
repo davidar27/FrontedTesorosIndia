@@ -1,58 +1,89 @@
-//componentes
-import Button from "@/components/ui/Button";
-import Picture from "@/components/ui/Picture";
-import UserMenu from "@/components/layouts/UserMenu";
-import ButtonIcon from "@/components/ui/ButtonIcon";
-import Navbar from "@/components/layouts/Navbar";
-
-//assets
-import imgLogo from "@/assets/icons/logotesorosindia.webp";
-import { Search, ShoppingCart } from "lucide-react";
-import background from "/images/FondoMobile.webp";
-//hooks
+import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
 import { useLocation } from "react-router-dom";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import Picture from "@/components/ui/Picture";
+import Navbar from "@/components/layouts/nav/Navbar";
+import imgLogo from "@/assets/icons/logotesorosindia.webp";
+import background from "/images/FondoMobile.webp";
+import SearchBar from "../ui/SearchBar";
+import HeaderActions from "./HeaderActions";
+
+const excludedPaths = ["/login", "/registro"];
+
+// Animaciones predefinidas (reutilizables)
+const headerAnimations = {
+  hidden: { opacity: 0, y: -20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring", damping: 25, stiffness: 300 }
+  },
+  scrolled: {
+    height: "70px",
+    transition: { type: "spring", damping: 20, stiffness: 300 }
+  },
+  unscrolled: {
+    height: "90px",
+    transition: { type: "spring", damping: 20, stiffness: 300 }
+  }
+};
+
+const backgroundAnimations = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 0.5, transition: { duration: 0.8 } }
+};
 
 const Header: React.FC = () => {
-  const location = useLocation();
-  const ocultarDiv = ["/login", "/registro"].includes(
-    location.pathname
-  );
-  const isHome = location.pathname === "/";
-  const isAboutUs = location.pathname === "/nosotros"
+  const { pathname } = useLocation();
   const [scrolled, setScrolled] = useState(false);
+  const isHome = pathname === "/";
+  const isAboutUs = pathname === "/nosotros";
+  const shouldRender = !excludedPaths.includes(pathname);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  const { scrollY } = useScroll();
 
-  if (ocultarDiv) return null;
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    setScrolled(latest > 50);
+  });
+
+  if (!shouldRender) return null;
 
   return (
-    <header className="fixed z-50 w-full text-white backdrop-blur-xs bg-black/30  ">
-      {!isHome || isAboutUs && (
-        <div
-          className="absolute inset-0 bg-cover brightness-50"
-          style={{
-            backgroundImage: `url(${background})`,
-            backgroundPosition: "20% 19.2%",
-          }}
-        ></div>
-      )}
-      <div
-        className={`relative flex items-center justify-between gap-1 responsive-padding-x 
-    shadow-lg
-    ${scrolled ? "shadow-xl h-10 md:h-16 lg:h-22" : "h-16 md:h-20 lg:h-26"}
-    md:transition-all md:duration-300 md:ease-in-out`}
-      >
+    <motion.header
+      initial="hidden"
+      animate="visible"
+      variants={headerAnimations}
+      className="fixed z-50 w-full text-white backdrop-blur-xs bg-black/30"
+    >
+      <AnimatePresence>
+        {(!isHome || isAboutUs) && (
+          <motion.div
+            key="header-bg"
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            variants={backgroundAnimations}
+            className="absolute inset-0 bg-cover brightness-50"
+            style={{
+              backgroundImage: `url(${background})`,
+              backgroundPosition: "20% 19.2%",
+            }}
+          />
+        )}
+      </AnimatePresence>
 
-        {/* Logo */}
-        <div className="w-22 md:block md:w-30 lg:w-40 xl:w-50">
+      <motion.div
+        className={`relative flex items-center justify-between gap-1 responsive-padding-x shadow-lg`}
+        animate={scrolled ? "scrolled" : "unscrolled"}
+        variants={headerAnimations}
+      >
+        {/* Logo con animación sutil */}
+        <motion.div
+          className="w-22 md:block md:w-30 lg:w-40 xl:w-50"
+          whileHover={{ scale: 1.05 }}
+          transition={{ type: "spring", stiffness: 400 }}
+        >
           <Link to="/">
             <Picture
               src={imgLogo}
@@ -60,43 +91,24 @@ const Header: React.FC = () => {
               className="w-full h-full object-contain"
             />
           </Link>
-        </div>
+        </motion.div>
 
-        {/* Mobile: Navbar and search hidden initially */}
+        {/* Navbar */}
         <div className="hidden md:block">
           <Navbar />
         </div>
-        {/* Search bar */}
-        <div className="relative w-40 sm:w-45 md:w-80 lg:w-100  ">
-          <Search
-            className="absolute left-3 top-1/2 transform -translate-y-1/2"
-            size={20}
-          />
-          <input
-            type="text"
-            placeholder="Buscar..."
-            className="w-full pl-10 py-0.5 md:py-1.5 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-        </div>
+
+        {/* Search bar con animación interactiva */}
+        <SearchBar />
 
         <div className="md:hidden mt-2">
           <Navbar />
         </div>
-        {/* Actions */}
-        <div className="flex items-center justify-end gap-0.5 md:gap-2 lg:gap-4 xl:gap-6">
-          <ButtonIcon>
-            <ShoppingCart />
-          </ButtonIcon>
 
-          <Button className="hidden md:block ">
-            <span>Fincas</span>
-          </Button>
-          <div className="hidden md:block">
-            <UserMenu />
-          </div>
-        </div>
-      </div>
-    </header>
+        {/* Botones con microinteracciones */}
+        <HeaderActions />
+      </motion.div>
+    </motion.header>
   );
 };
 
