@@ -8,7 +8,7 @@ import Navbar from "@/components/layouts/Navbar";
 //assets
 import imgLogo from "@/assets/icons/logotesorosindia.webp";
 import { Search, ShoppingCart } from "lucide-react";
-import background from "@/assets/images/Paisaje1.webp";
+import background from "/images/FondoMobile.webp";
 //hooks
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -34,7 +34,7 @@ const Header: React.FC = () => {
   if (ocultarDiv) return null;
 
   return (
-    <header className="fixed z-50 w-full text-white  ">
+    <header className="fixed z-50 w-full text-white backdrop-blur-xs bg-black/30  ">
       {!isHome || isAboutUs && (
         <div
           className="absolute inset-0 bg-cover brightness-50"
@@ -58,16 +58,6 @@ const Header: React.FC = () => {
             />
           </Link>
         </div>
-
-        {/* <div className="w-15 md:hidden">
-          <Link to="/">
-            <Picture
-              src={logoSmall}
-              alt="Logo"
-              className="w-full h-full object-contain"
-            />
-          </Link>
-        </div> */}
 
         {/* Mobile: Navbar and search hidden initially */}
         <div className="hidden md:block">
@@ -95,7 +85,7 @@ const Header: React.FC = () => {
             <ShoppingCart />
           </ButtonIcon>
 
-          <Button className="hidden md:block">
+          <Button className="hidden md:block ">
             <span>Fincas</span>
           </Button>
           <div className="hidden md:block">

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { verifyEmail } from '@/services/auth/verifyEmailService';
-import  LoadingSpinner  from '@/components/ui/LoadingSpinner';
-import  Button  from '@/components/ui/Button';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import Button from '@/components/ui/Button';
 
-export const EmailVerificationPage = () => {
+const EmailVerificationPage = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const [status, setStatus] = useState<'verifying' | 'success' | 'error'>('verifying');
@@ -129,3 +129,6 @@ export const EmailVerificationPage = () => {
         </div>
     );
 };
+
+
+export default EmailVerificationPage;

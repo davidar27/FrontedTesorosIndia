@@ -5,7 +5,7 @@ const products = [
     {
         name: "Café Especial Cafetalero",
         price: "$6.500",
-        image: "@/assets/images/cafetalero-bolsa-sola-tag.webp", 
+        image: "/images/cafetalero-bolsa-sola-tag.webp", 
     },
     // ... puedes agregar más productos
 ];

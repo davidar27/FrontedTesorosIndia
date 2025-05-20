@@ -1,5 +1,5 @@
 //assets
-import background from "@/assets/images/Paisaje.webp";
+import background from "/images/FondoDesktop.webp";
 import imgLogo from "@/assets/icons/logotesorosindiaPequeño.webp";
 
 //components

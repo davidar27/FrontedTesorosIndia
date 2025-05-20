@@ -15,7 +15,6 @@ const Hero = () => {
                 subtitle="En nuestro territorio podrás vivir experiencias inigualables"
                 buttonLabel="¿Quiénes somos?"
                 onButtonClick={() => navigate("/nosotros")}
-                className=""
             />
         </section>
     );

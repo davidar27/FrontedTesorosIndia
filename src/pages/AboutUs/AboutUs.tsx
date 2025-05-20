@@ -1,20 +1,23 @@
 import HeroSection from '@/components/layouts/HeroSection';
-import SectionUs from '@/components/layouts/SectionUs';
-import History from '@/assets/images/HistoryUs.png';
-import Paisaje from '@/assets/images/Paisaje.webp';
-import CuyUs from '@/assets/images/CuyUs.png';
-import Grupo from '@/assets/images/Grupo.png';
+import SectionUs from '@/components/aboutUs/SectionUs';
+import History from '/images/HistoryUs.webp';
+import Paisaje from '/images/Paisaje.webp';
+import CuyUs from '/images/CuyUs.webp';
+import Grupo from '/images/Grupo.webp';
 
 
 const AboutUs = () => {
     return (
         <main>
             <HeroSection
-                title="Sobre Nosotros"
+                title={
+                    <>
+                        Sobre <br /> Nosotros
+                    </>
+                }
                 subtitle='Somos un grupo dedicado a conservar el territorio, promover el turismo rural y mejorar los ingresos de las familias campesinas de manera sostenible.'
                 sideImage={Grupo}
-                sideImageAlt='Grupo'
-                className='w-full h-full object-cover'/>
+                sideImageAlt='Grupo'/>
 
 
 

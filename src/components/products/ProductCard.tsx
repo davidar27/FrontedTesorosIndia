@@ -1,4 +1,4 @@
-import { Star, StarHalf } from "lucide-react"; // Asegúrate de tener `lucide-react` instalado
+import { Star, StarHalf } from "lucide-react";
 
 interface Product {
   name: string;

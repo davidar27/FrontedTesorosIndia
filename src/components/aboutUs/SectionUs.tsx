@@ -11,7 +11,7 @@ interface SectionUsProps {
 
 const SectionUs: React.FC<SectionUsProps> = ({ title, text, imageSrc, imageAlt, order, styleImg }) => {
     return (
-        <div className={`bg-white py-16 px-26 flex flex-col md:flex-row items-center gap-8 ${order === 2 ? 'md:flex-row-reverse' : ''}`}>
+        <div className={`bg-white py-16 responsive-padding-x flex flex-col md:flex-row items-center gap-8 ${order === 2 ? 'md:flex-row-reverse' : ''}`}>
             {/* Imagen */}
             <div className="w-full md:w-1/2 flex justify-center">
                 <img
