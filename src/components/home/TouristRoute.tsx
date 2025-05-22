@@ -29,7 +29,7 @@ const locations = [
     name: 'Sendero Ecológico',
     position: { lat: 4.678, lng: -75.662 },
     description: 'Ruta para caminatas entre bosques nativos',
-    type: 'coffe'
+    type: 'coffee'
   }
 ];
 
@@ -92,7 +92,11 @@ const TouristRoute = () => {
         {/* Mapa y descripción */}
         <div className="md:col-span-2">
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
-            <ReusableMap locations={locations} />
+            <ReusableMap
+              locations={locations}
+              initialCenter={{ lat: 4.676, lng: -75.655 }}
+              className="border border-gray-200"
+            />
 
           </div>
 
