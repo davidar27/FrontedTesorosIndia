@@ -46,9 +46,8 @@ const LoginPage = () => {
                     });
                 }
 
-            } else {
-                console.error('Error desconocido:', error);
             }
+            
         }
     };
 
