@@ -28,7 +28,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
     <section
       role="region"
       aria-label="Hero section"
-      className={`relative w-full min-h-[60vh] sm:min-h-[70vh] max-h-[60vh] md:max-h-screen py-20 sm:py-32 md:py-40 text-center md:text-left text-white overflow-hidden group ${containerClassName}`}
+      className={`relative w-full h-screen text-center  md:text-left text-white overflow-hidden group ${containerClassName}`}
     >
       {/* Imagen de fondo con efecto parallax y zoom sutil */}
       <div className="absolute inset-0 z-0 overflow-hidden">
@@ -36,7 +36,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
           className="w-full h-full object-cover transform transition-transform duration-1000 group-hover:scale-105"
           alt=""
           src="/images/FondoDesktop.webp"
-          srcSet="/images/FondoMobile.webp 480w, /images/FondoDesktop.webp 1920w"
+          srcSet="/images/FondoMobile.webp 480w ,/images/FondoDesktop.webp 1920w"
           sizes="(max-width: 600px) 480px, 1920px"
         />
       </div>
@@ -46,12 +46,12 @@ const HeroSection: React.FC<HeroSectionProps> = ({
 
       {/* Contenido con animaciones */}
       <div className="relative z-20 responsive-padding-x h-full flex flex-col md:flex-row items-center justify-center md:justify-between gap-8 lg:gap-12">
-        <div className="flex-1 flex flex-col justify-center space-y-6">
-          <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold leading-tight mb-4 animate-fade-in-up">
+        <div className="flex flex-col justify-center space-y-6">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-tight mb-4 animate-fade-in-up">
             {title}
           </h1>
 
-          <p className={`text-lg md:text-xl mb-6 max-w-2xl mx-auto md:mx-0 ${subtitleClassName} animate-fade-in-up delay-100`}>
+          <p className={`text-xl md:text-2xl mb-6 max-w-2xl mx-auto md:mx-0 ${subtitleClassName} animate-fade-in-up delay-100`}>
             {subtitle}
           </p>
 
@@ -69,11 +69,11 @@ const HeroSection: React.FC<HeroSectionProps> = ({
         </div>
 
         {sideImage && (
-          <div className="flex-1 hidden md:flex justify-end animate-fade-in-right">
+          <div className="animate-fade-in-right">
             <img
               src={sideImage}
               alt={sideImageAlt || "Imagen decorativa"}
-              className="max-w-sm lg:max-w-md rounded-xl shadow-2xl border-4 border-white/20 hover:border-primary transition-all duration-500 hover:shadow-glow transform hover:-translate-y-2"
+              className="max-w-xs lg:max-w-md rounded-xl shadow-2xl border-4 border-white/20 hover:border-primary transition-all duration-500 hover:shadow-glow transform hover:-translate-y-2"
               loading="lazy"
             />
           </div>

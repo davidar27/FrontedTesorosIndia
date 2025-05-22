@@ -2,16 +2,14 @@ import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/useAuth";
 import useClickOutside from "@/hooks/useClickOutside";
-import LoginButton from "./LoginButton";
 import MobileMenuModal from "./MobileMenuModal";
 import DesktopUserSection from "./DesktopUserSection";
 import MobileUserSection from "./MobileUserSection";
+import LoginButton from "@/components/ui/buttons/LoginButton";
 
-interface UserMenuProps {
-  textColor?: string;
-}
 
-const UserMenu: React.FC<UserMenuProps> = ({ textColor = "text-white" }) => {
+
+const UserMenu: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -27,21 +25,19 @@ const UserMenu: React.FC<UserMenuProps> = ({ textColor = "text-white" }) => {
   };
 
   if (!isAuthenticated) {
-    return <LoginButton textColor={textColor} />;
+    return <LoginButton/>;
   }
 
   return (
     <div className="relative flex items-center gap-2 w-full justify-between md:justify-start" ref={menuRef}>
       <MobileUserSection
         user={user}
-        textColor={textColor}
         onProfile={() => handleAction(() => navigate("/perfil"))}
         onMenuToggle={() => setIsMobileMenuOpen(true)}
       />
 
       <DesktopUserSection
         user={user}
-        textColor={textColor}
         isOpen={isOpen}
         onToggle={() => setIsOpen(!isOpen)}
         onProfile={() => handleAction(() => navigate("/perfil"))}

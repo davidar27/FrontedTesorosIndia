@@ -15,7 +15,7 @@
   }
 
   .responsive-padding-y {
-    @apply py-10 sm:py-15 md:py-20 lg:py-25 xl:py-30;
+    @apply py-20 sm:py-25 md:py-30 lg:py-35 xl:py-40;
   }
 }
 

@@ -9,11 +9,9 @@ const DesktopNav = ({ links }: { links: Array<{ path: string; label: string }> }
     const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0, opacity: 0 });
     const navRef = useRef<HTMLDivElement>(null);
 
-    // Función para actualizar la posición del indicador
     const updateIndicator = () => {
         if (!navRef.current) return;
 
-        // Encontrar el enlace activo
         const activeLink = navRef.current.querySelector('[data-active="true"]') as HTMLAnchorElement;
 
         if (activeLink) {
@@ -26,20 +24,16 @@ const DesktopNav = ({ links }: { links: Array<{ path: string; label: string }> }
                 opacity: 1
             });
         } else {
-            // Si no hay enlace activo, ocultar el indicador
             setIndicatorStyle(prev => ({ ...prev, opacity: 0 }));
         }
     };
 
-    // Actualizar el indicador al cambiar de ruta
     useEffect(() => {
         updateIndicator();
-        // Asegurarse de que la posición se actualice después de cualquier cambio en el DOM
         const timeoutId = setTimeout(updateIndicator, 50);
         return () => clearTimeout(timeoutId);
     }, [location.pathname]);
 
-    // Actualizar el indicador al cambiar el tamaño de la pantalla
     useEffect(() => {
         window.addEventListener('resize', updateIndicator);
         return () => window.removeEventListener('resize', updateIndicator);
@@ -53,7 +47,7 @@ const DesktopNav = ({ links }: { links: Array<{ path: string; label: string }> }
             {links.map((link) => (
                 <motion.div
                     key={link.path}
-                    whileHover={{ y: -2 }}
+                    whileHover={{ y: -3 }}
                     whileTap={{ scale: 0.98 }}
                 >
                     <NavLink to={link.path} label={link.label} />
@@ -62,7 +56,7 @@ const DesktopNav = ({ links }: { links: Array<{ path: string; label: string }> }
 
             {/* Indicador deslizante con framer-motion */}
             <motion.div
-                className="absolute bottom-0 h-1 bg-primary rounded-t-md"
+                className="absolute top-6 h-1 bg-primary rounded-t-md"
                 initial={{ opacity: 0 }}
                 animate={{
                     left: `${indicatorStyle.left}px`,

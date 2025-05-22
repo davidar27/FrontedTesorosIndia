@@ -3,17 +3,15 @@ import { CircleUserRound, CircleEllipsis } from "lucide-react";
 
 const MobileUserSection = ({
     user,
-    textColor,
     onProfile,
     onMenuToggle
 }: {
     user: { name?: string } | null;
-    textColor: string;
     onProfile: () => void;
     onMenuToggle: () => void;
 }) => (
     <div className="w-full flex md:hidden items-center gap-2 justify-between">
-        <button onClick={onProfile} className={`capitalize text-sm flex gap-2 items-center ${textColor}`}>
+        <button onClick={onProfile} className={`capitalize text-sm flex gap-2 items-center`}>
             <CircleUserRound size={20} />
             {user?.name?.split(" ").slice(0, 2).join(" ")}
         </button>
@@ -22,4 +20,5 @@ const MobileUserSection = ({
         </button>
     </div>
 );
+
 export default MobileUserSection;

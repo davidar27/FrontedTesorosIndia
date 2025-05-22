@@ -1,3 +1,4 @@
+import AnimatedTitle from "../ui/AnimatedTitle";
 
 interface SectionUsProps {
     title: string;
@@ -22,11 +23,8 @@ const SectionUs: React.FC<SectionUsProps> = ({ title, text, imageSrc, imageAlt, 
             </div>
 
             {/* Texto con animación sutil */}
-            <div className="w-full md:w-1/2 space-y-6">
-                <h2 className="text-4xl md:text-5xl font-bold text-[#00A650] mb-4 transform transition-all duration-300 group-hover:-translate-y-1">
-                    {title}
-                    <span className="block w-16 h-1 bg-[#00A650] mt-3 mx-auto lg:mx-0 group-hover:w-24 transition-all duration-500"></span>
-                </h2>
+            <div className="w-full md:w-1/2 space-y-6 ">
+                <AnimatedTitle title={title}  className="md: "/>
 
                 <p className="text-xl md:text-2xl text-gray-800 leading-relaxed opacity-90 group-hover:opacity-100 transition-opacity duration-300">
                     {text}

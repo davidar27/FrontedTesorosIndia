@@ -3,12 +3,9 @@ import React from "react";
 interface PictureProps {
     className?: string;
     alt?: string;
-    // Imagen principal para <img src="">
     src: string;
-    // Opcional: srcSet para distintos tamaños, ejemplo:
     // "/images/corredor-480.webp 480w, /images/corredor-768.webp 768w, /images/corredor-1920.webp 1920w"
     srcSet?: string;
-    // Opcional: atributo sizes para indicar tamaños responsivos
     sizes?: string;
     icon?: React.ReactNode;
 }

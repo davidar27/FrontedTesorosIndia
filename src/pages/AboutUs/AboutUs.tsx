@@ -7,7 +7,7 @@ import Grupo from '@/assets/images/Grupo.webp';
 
 const AboutUs = () => {
     return (
-        <main>
+        <>
             <HeroSection
                 title={
                     <>
@@ -16,8 +16,7 @@ const AboutUs = () => {
                 }
                 subtitle="Somos un grupo dedicado a conservar el territorio, promover el turismo rural y mejorar los ingresos de las familias campesinas de manera sostenible."
                 sideImage={Grupo}
-                sideImageAlt="Grupo"
-                containerClassName="!py-35"
+                sideImageAlt="Grupo"                
             />
 
             <SectionUs
@@ -32,6 +31,8 @@ const AboutUs = () => {
                 imageAlt="Recolectando frutos"
                 order={1}
                 styleImg="w-1/2"
+                
+                
             />
 
             <SectionUs
@@ -49,7 +50,7 @@ const AboutUs = () => {
                 imageAlt="Cuy"
                 order={1}
             />
-        </main>
+        </>
     );
 };
 

@@ -13,7 +13,7 @@ const DesktopUserSection = ({
     onLogout
 }: {
     user: { name?: string } | null;
-    textColor: string;
+    textColor?: string;
     isOpen: boolean;
     onToggle: () => void;
     onProfile: () => void;
