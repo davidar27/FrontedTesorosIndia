@@ -1,6 +1,7 @@
 import Button from '@/components/ui/buttons/Button';
 import { TreePalm, MapPin, Coffee, Mountain } from 'lucide-react';
 import ReusableMap from '../layouts/ReusableMap';
+import AnimatedTitle from '../ui/AnimatedTitle';
 
 const locations = [
   {
@@ -38,9 +39,12 @@ const TouristRoute = () => {
   return (
     <div className="responsive-padding-x">
       <div className="text-center pb-2">
-        <h1 className="text-4xl font-bold text-green-700 mb-4">Ruta Turística</h1>
-        <div className="w-24 h-1 bg-green-600 mx-auto rounded mb-6"></div>
-        <p className="text-gray-700 max-w-2xl mx-auto text-lg">
+        <AnimatedTitle
+          title='RUTA TURÍSTICA'
+          align="center"
+          mdAlign="center"
+        />
+        <p className="text-gray-700 max-w-2xl mx-auto text-lg mt-2">
           ¡Bienvenidos a la vereda La India, una joya escondida en las montañas de Filandia, Quindío!
         </p>
       </div>
@@ -143,7 +147,7 @@ const TouristRoute = () => {
                 </li>
                 <li className="flex items-start">
                   <span className="text-green-500 mr-2">•</span>
-                  <span>Prueba la gastronomía local en los restaurantes de la zona</span>
+                  <span>Prueba la gastronomía local en las fincas de la zona</span>
                 </li>
               </ul>
             </div>
