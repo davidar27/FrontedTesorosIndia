@@ -37,7 +37,7 @@ const locations = [
 const TouristRoute = () => {
 
   return (
-    <div className="responsive-padding-x">
+    <div className="responsive-padding-x pt-10">
       <div className="text-center pb-2">
         <AnimatedTitle
           title='RUTA TURÍSTICA'

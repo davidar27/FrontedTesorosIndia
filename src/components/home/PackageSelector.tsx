@@ -42,7 +42,7 @@ const PackageSelector = () => {
   const filters = ['Todos', 'Educativo', 'Premium'];
 
   return (
-    <div className="responsive-padding-x pt-50 pb-10 sm:py-20">
+    <div className="responsive-padding-x pt-50 pb-10 sm:pt-30 group-hover">
       <div className="max-w-6xl mx-auto">
         <motion.div
           className="text-center mb-12"
