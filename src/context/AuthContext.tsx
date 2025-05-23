@@ -58,11 +58,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
             setUser(userData);
             return true;
-        } catch (error) {
+        } catch {
             if (!silent) {
                 setError('Error al actualizar la sesión');
             }
-            console.error('Error refreshing auth:', error);
             await logout();
             return false;
         } finally {

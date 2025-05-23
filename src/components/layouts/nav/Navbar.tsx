@@ -11,8 +11,7 @@ const Navbar: React.FC = () => {
   const closeMenu = () => setIsOpen(false);
 
   return (
-    <nav>
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+    <nav className='container mx-auto  flex justify-between items-center'>
         {/* Desktop */}
         <DesktopNav links={Links} />
 
@@ -22,8 +21,9 @@ const Navbar: React.FC = () => {
           toggleMenu={toggleMenu}
           closeMenu={closeMenu}
           links={Links}
+        
+          
         />
-      </div>
     </nav>
   );
 };

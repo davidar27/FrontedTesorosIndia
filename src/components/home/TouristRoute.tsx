@@ -1,46 +1,50 @@
-import Map from '../layouts/Map';
-import { Location } from '../layouts/Map';
 import Button from '@/components/ui/buttons/Button';
 import { TreePalm, MapPin, Coffee, Mountain } from 'lucide-react';
+import ReusableMap from '../layouts/ReusableMap';
+import AnimatedTitle from '../ui/AnimatedTitle';
 
-const locations: Location[] = [
+const locations = [
   {
     id: 1,
     name: 'Finca Puerto Arturo',
     position: { lat: 4.6969524975159604, lng: -75.6779047288352 },
     description: 'Correg. La India-Filandia, Filandia, Quindío, Colombia',
-    type: 'coffee'
+    type: 'cafe'
   },
   {
     id: 2,
     name: 'Cañón del Río Barbas',
     position: { lat: 4.681, lng: -75.645 },
     description: 'Reserva natural con diversidad de flora y fauna',
-    type: 'nature'
+    type: 'naturaleza'
   },
   {
     id: 3,
     name: 'Mirador La India',
     position: { lat: 4.684, lng: -75.668 },
     description: 'Vista panorámica de la región cafetera',
-    type: 'viewpoint'
+    type: 'mirador'
   },
   {
     id: 4,
     name: 'Sendero Ecológico',
     position: { lat: 4.678, lng: -75.662 },
     description: 'Ruta para caminatas entre bosques nativos',
-    type: 'coffe'
+    type: 'cafe'
   }
 ];
 
 const TouristRoute = () => {
+
   return (
-    <div className="max-w-7xl mx-autoresponsive-padding-x">
-      <div className="text-center pb-10">
-        <h1 className="text-4xl font-bold text-green-700 mb-4">Ruta Turística</h1>
-        <div className="w-24 h-1 bg-green-600 mx-auto rounded mb-6"></div>
-        <p className="text-gray-700 max-w-2xl mx-auto text-lg">
+    <div className="responsive-padding-x">
+      <div className="text-center pb-2">
+        <AnimatedTitle
+          title='RUTA TURÍSTICA'
+          align="center"
+          mdAlign="center"
+        />
+        <p className="text-gray-700 max-w-2xl mx-auto text-lg mt-2">
           ¡Bienvenidos a la vereda La India, una joya escondida en las montañas de Filandia, Quindío!
         </p>
       </div>
@@ -59,10 +63,10 @@ const TouristRoute = () => {
                 >
                   <div className="flex items-start">
                     <div className="mr-3 mt-1">
-                      {location.type === 'coffee' && <Coffee className="text-green-600" />}
-                      {location.type === 'nature' && <TreePalm className="text-green-600" />}
-                      {location.type === 'viewpoint' && <MapPin className="text-green-600" />}
-                      {location.type === 'hiking' && <Coffee className="text-green-600" />}
+                      {location.type === 'cafe' && <Coffee className="text-green-600" />}
+                      {location.type === 'naturaleza' && <TreePalm className="text-green-600" />}
+                      {location.type === 'mirador' && <MapPin className="text-green-600" />}
+                      {location.type === 'caminata' && <Coffee className="text-green-600" />}
                     </div>
                     <div>
                       <h3 className="font-semibold text-green-700">{location.name}</h3>
@@ -92,7 +96,12 @@ const TouristRoute = () => {
         {/* Mapa y descripción */}
         <div className="md:col-span-2">
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
-            <Map locations={locations} />
+            <ReusableMap
+              locations={locations}
+              initialCenter={{ lat: 4.676, lng: -75.655 }}
+              className="border border-gray-200"
+            />
+
           </div>
 
           <div className="mt-8 bg-white rounded-xl shadow-md p-6">
@@ -138,7 +147,7 @@ const TouristRoute = () => {
                 </li>
                 <li className="flex items-start">
                   <span className="text-green-500 mr-2">•</span>
-                  <span>Prueba la gastronomía local en los restaurantes de la zona</span>
+                  <span>Prueba la gastronomía local en las fincas de la zona</span>
                 </li>
               </ul>
             </div>

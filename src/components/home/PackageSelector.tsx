@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import PackageCard from '../ui/cards/PackageCard';
 import paquete1 from "@/assets/images/paquete1.webp"
 import paquete2 from "@/assets/images/paquete2.webp"
+import AnimatedTitle from '../ui/AnimatedTitle';
 
 
 const PackageSelector = () => {
@@ -23,7 +24,7 @@ const PackageSelector = () => {
     },
     {
       image: paquete2,
-      title: "Paquete Personalizado",
+      title: "Paquete Ruta Turistica",
       price: "$65.000",
       category: "Premium",
       description: "Una experiencia única donde cada detalle ha sido cuidadosamente diseñado para ofrecer momentos memorables en entornos naturales de ensueño.",
@@ -41,7 +42,7 @@ const PackageSelector = () => {
   const filters = ['Todos', 'Educativo', 'Premium'];
 
   return (
-    <div className="responsive-padding-x responsive-padding-y">
+    <div className="responsive-padding-x pt-50 pb-10 sm:py-20">
       <div className="max-w-6xl mx-auto">
         <motion.div
           className="text-center mb-12"
@@ -49,10 +50,11 @@ const PackageSelector = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          
-          <h2 className="text-4xl font-bold text-green-700 mb-4">ESCOJA SU PAQUETE</h2>
-          <div className="w-24 h-1 bg-green-600 mx-auto rounded mb-6"></div>
-          <p className="text-gray-700 max-w-2xl mx-auto text-lg">
+          <AnimatedTitle
+            title='NUESTROS PAQUETES' 
+            align="center"
+            mdAlign="center" />
+          <p className="text-gray-700 max-w-2xl mx-auto text-lg mt-2" >
             Seleccione el mejor paquete para su viaje y disfrute de una experiencia inolvidable en contacto con la naturaleza
           </p>
 
@@ -61,8 +63,8 @@ const PackageSelector = () => {
               <motion.button
                 key={filter}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${activeFilter === filter
-                    ? 'bg-green-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-green-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 onClick={() => setActiveFilter(filter)}
                 whileHover={{ y: -2 }}
