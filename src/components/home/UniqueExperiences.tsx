@@ -3,7 +3,6 @@ import rioBarbas from '@/assets/images/cañonRioBarbas.webp';
 import flores from '@/assets/images/paquete1.webp';
 import gastronomiaImage from '@/assets/images/experincia3.webp';
 import AnimatedTitle from '../ui/AnimatedTitle';
-// import Button from '../ui/buttons/Button';
 
 const UniqueExperiences: React.FC = () => {
   const experiences = [
@@ -12,7 +11,7 @@ const UniqueExperiences: React.FC = () => {
       description: "Vive la belleza del campo con caminatas a través de ríos, quebradas y bosques nativos, descubriendo la biodiversidad mientras te conectas con la naturaleza.",
       image: rioBarbas,
       color: "from-secondary to-tertiary",
-      titleColor: "primary",
+      hoverColor: "primary",
       delay: "delay-100"
     },
     {
@@ -20,7 +19,7 @@ const UniqueExperiences: React.FC = () => {
       description: "Aprende sobre la práctica de la agricultura tanto agroecológica como convencional, entendiendo los métodos sostenibles y la producción local.",
       image: flores,
       color: "from-tertiary to-primary",
-      titleColor: "white",
+      hoverColor: "white",
       delay: "delay-200"
     },
     {
@@ -28,7 +27,7 @@ const UniqueExperiences: React.FC = () => {
       description: "Disfruta y aprende sobre los alimentos ancestrales de la región, explorando su importancia cultural y su preparación tradicional.",
       image: gastronomiaImage,
       color: "from-primary to-secondary",
-      titleColor: "tertiary",
+      hoverColor: "tertiary",
       delay: "delay-300"
     }
   ];
@@ -59,7 +58,7 @@ const UniqueExperiences: React.FC = () => {
               </div>
 
               <div className="relative z-10 p-8 h-full flex flex-col">
-                {/* Contenedor de imagen (opcional si quieres mostrar otra imagen aparte del fondo) */}
+                {/* Contenedor de imagen */}
                 <div className="w-20 h-20 mb-6 overflow-hidden rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
                   <img
                     src={exp.image}
@@ -68,20 +67,13 @@ const UniqueExperiences: React.FC = () => {
                   />
                 </div>
 
-                <h2 className={`text-2xl font-bold text-white mb-4 group-hover:text-${exp.titleColor}  transition-colors duration-300`}>
+                <h2 className={`text-2xl font-bold text-white mb-4 group-hover:text-${exp.hoverColor}  transition-colors duration-300`}>
                   {exp.title}
                 </h2>
 
                 <p className="text-white mb-6 flex-grow">
                   {exp.description}
                 </p>
-{/* 
-                <Button
-                  className="mt-auto w-fit px-6 py-3 text-gray-800 rounded-full font-medium transition-all duration-300 group-hover:animate-shake"
-                  aria-label={`Más información sobre ${exp.title}`}
-                >
-                  Descubre más
-                </Button> */}
               </div>
 
               {/* Elementos decorativos */}
