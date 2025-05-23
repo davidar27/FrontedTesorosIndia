@@ -1,9 +1,12 @@
 import { Star, StarHalf } from "lucide-react";
-
+import { motion } from "framer-motion";
 interface Product {
+  id: number;
   name: string;
-  price: string | number;
+  price: string;
   image: string;
+  rating: number;
+  category?: string;
 }
 
 interface ProductCardProps {
@@ -11,33 +14,72 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+
+  const renderStars = () => {
+    const stars = [];
+    const fullStars = Math.floor(product.rating);
+    const hasHalfStar = product.rating % 1 >= 0.5;
+
+    for (let i = 0; i < fullStars; i++) {
+      stars.push(<Star key={`full-${i}`} fill="currentColor" stroke="none" size={18} />);
+    }
+
+    if (hasHalfStar) {
+      stars.push(<StarHalf key="half" fill="currentColor" stroke="none" size={18} />);
+    }
+
+    const emptyStars = 5 - stars.length;
+    for (let i = 0; i < emptyStars; i++) {
+      stars.push(<Star key={`empty-${i}`} fill="none" stroke="currentColor" size={18} />);
+    }
+
+    return stars;
+  };
+
   return (
-    <div className="bg-[#fffaf4] rounded-2xl shadow-sm p-4 text-center max-w-xs mx-auto">
-      <img
-        src={product.image}
-        alt={product.name}
-        className="w-40 h-40 object-contain mx-auto mb-4"
-      />
+    <motion.div
+      className="bg-white rounded-2xl shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md"
+      whileHover={{ y: -5 }}
+    >
+      <div className="relative">
+        <img
+          src={product.image}
+          alt={product.name}
+          className="w-full h-48 object-contain mx-auto pt-4"
+        />
 
-      {/* Nombre */}
-      <h3 className="font-semibold text-gray-800 text-lg mb-1">
-        {product.name}
-      </h3>
 
-      {/* Estrellas */}
-      <div className="flex justify-center items-center text-yellow-400 mb-2">
-        <Star fill="currentColor" stroke="none" size={18} />
-        <Star fill="currentColor" stroke="none" size={18} />
-        <Star fill="currentColor" stroke="none" size={18} />
-        <Star fill="currentColor" stroke="none" size={18} />
-        <StarHalf fill="currentColor" stroke="none" size={18} />
+
       </div>
 
-      {/* Precio */}
-      <p className="text-gray-800 font-medium">
-        A partir de <span className="font-semibold">{product.price}</span>
-      </p>
-    </div>
+      <div className="p-5 flex flex-col items-center gap-2">
+        <h3 className="font-semibold text-gray-800 text-lg line-clamp-2 ">
+          {product.name}
+        </h3>
+        {/* Badge de categoría */}
+        {product.category && (
+          <span className=" bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">
+            {product.category}
+          </span>
+        )}
+        <div className="flex justify-center items-center text-yellow-400">
+          {renderStars()}
+          <span className="text-xs text-gray-500 ml-1">({product.rating})</span>
+
+        </div>
+        <p className="text-gray-800 font-bold text-lg">{product.price}</p>
+
+
+        <div className="flex items-center justify-between">
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            Añadir al carrito
+          </motion.button>
+        </div>
+      </div>
+    </motion.div>
   );
 };
 
