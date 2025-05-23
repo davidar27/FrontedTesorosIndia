@@ -8,28 +8,28 @@ const locations = [
     name: 'Finca Puerto Arturo',
     position: { lat: 4.6969524975159604, lng: -75.6779047288352 },
     description: 'Correg. La India-Filandia, Filandia, Quindío, Colombia',
-    type: 'coffee'
+    type: 'cafe'
   },
   {
     id: 2,
     name: 'Cañón del Río Barbas',
     position: { lat: 4.681, lng: -75.645 },
     description: 'Reserva natural con diversidad de flora y fauna',
-    type: 'nature'
+    type: 'naturaleza'
   },
   {
     id: 3,
     name: 'Mirador La India',
     position: { lat: 4.684, lng: -75.668 },
     description: 'Vista panorámica de la región cafetera',
-    type: 'viewpoint'
+    type: 'mirador'
   },
   {
     id: 4,
     name: 'Sendero Ecológico',
     position: { lat: 4.678, lng: -75.662 },
     description: 'Ruta para caminatas entre bosques nativos',
-    type: 'coffee'
+    type: 'cafe'
   }
 ];
 
@@ -37,7 +37,7 @@ const TouristRoute = () => {
 
   return (
     <div className="responsive-padding-x">
-      <div className="text-center pb-10">
+      <div className="text-center pb-2">
         <h1 className="text-4xl font-bold text-green-700 mb-4">Ruta Turística</h1>
         <div className="w-24 h-1 bg-green-600 mx-auto rounded mb-6"></div>
         <p className="text-gray-700 max-w-2xl mx-auto text-lg">
@@ -59,10 +59,10 @@ const TouristRoute = () => {
                 >
                   <div className="flex items-start">
                     <div className="mr-3 mt-1">
-                      {location.type === 'coffee' && <Coffee className="text-green-600" />}
-                      {location.type === 'nature' && <TreePalm className="text-green-600" />}
-                      {location.type === 'viewpoint' && <MapPin className="text-green-600" />}
-                      {location.type === 'hiking' && <Coffee className="text-green-600" />}
+                      {location.type === 'cafe' && <Coffee className="text-green-600" />}
+                      {location.type === 'naturaleza' && <TreePalm className="text-green-600" />}
+                      {location.type === 'mirador' && <MapPin className="text-green-600" />}
+                      {location.type === 'caminata' && <Coffee className="text-green-600" />}
                     </div>
                     <div>
                       <h3 className="font-semibold text-green-700">{location.name}</h3>
