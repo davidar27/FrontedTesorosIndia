@@ -4,7 +4,6 @@ interface PictureProps {
     className?: string;
     alt?: string;
     src: string;
-    // "/images/corredor-480.webp 480w, /images/corredor-768.webp 768w, /images/corredor-1920.webp 1920w"
     srcSet?: string;
     sizes?: string;
     icon?: React.ReactNode;

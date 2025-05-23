@@ -51,7 +51,9 @@ const PackageSelector = () => {
           transition={{ duration: 0.5 }}
         >
           <AnimatedTitle
-          title='NUESTROS PAQUETES'  />
+            title='NUESTROS PAQUETES' 
+            align="center"
+            mdAlign="center" />
           <p className="text-gray-700 max-w-2xl mx-auto text-lg mt-2" >
             Seleccione el mejor paquete para su viaje y disfrute de una experiencia inolvidable en contacto con la naturaleza
           </p>
@@ -61,8 +63,8 @@ const PackageSelector = () => {
               <motion.button
                 key={filter}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${activeFilter === filter
-                    ? 'bg-green-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-green-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 onClick={() => setActiveFilter(filter)}
                 whileHover={{ y: -2 }}

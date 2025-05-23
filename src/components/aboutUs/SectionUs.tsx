@@ -1,3 +1,5 @@
+
+
 import AnimatedTitle from "../ui/AnimatedTitle";
 
 interface SectionUsProps {
@@ -9,28 +11,74 @@ interface SectionUsProps {
     order: 1 | 2;
 }
 
-const SectionUs: React.FC<SectionUsProps> = ({ title, text, imageSrc, imageAlt, order, styleImg }) => {
+const SectionUs: React.FC<SectionUsProps> = ({
+    title,
+    text,
+    imageSrc,
+    imageAlt,
+    order,
+    styleImg
+}) => {
     return (
 
-        <div className={`responsive-padding-x responsive-padding-y flex flex-col md:flex-row items-center gap-8 lg:gap-12 text-center lg:text-left  rounded-xl bg-white/10 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:shadow-[#00A650]/20 hover:border-solid hover:bg-white/20 group ${order === 2 ? 'md:flex-row-reverse' : ''}`}>
-            {/* Imagen con efecto hover y brillo */}
-            <div className="w-full md:w-1/2 flex justify-center transform transition-all duration-500 group-hover:scale-105">
+        <div className={`
+      responsive-padding-x 
+      py-6 md:py-8 
+      gap-4 md:gap-6 
+      flex flex-col md:flex-row 
+      items-center 
+      text-center md:text-left
+      bg-white/10 backdrop-blur-sm 
+      transition-all duration-300 
+      hover:shadow-lg hover:shadow-[#00A650]/20 
+      hover:bg-white/20 
+      group 
+      ${order === 2 ? 'md:flex-row-reverse' : ''}
+    `}>
+           
+            {/* Image container */}
+            <div className={`
+        ${styleImg}  
+        flex justify-center 
+        w-full md:w-1/2
+        transform transition-all duration-500 
+        group-hover:scale-[1.02]
+      `}>
                 <img
                     src={imageSrc}
                     alt={imageAlt}
-                    className={`${styleImg} rounded-lg shadow-xl object-cover border-2 border-white/30 group-hover:border-[#00A650] group-hover:shadow-[#00A650]/30 transition-all duration-300`}
+                    className="
+            w-full max-w-md 
+            h-auto 
+            rounded-lg 
+            shadow-md 
+            object-cover 
+            border-2 border-white/30 
+            group-hover:border-[#00A650]/50 
+            group-hover:shadow-[#00A650]/20 
+            transition-all duration-300
+          "
                 />
             </div>
 
-            {/* Texto con animación sutil */}
-            <div className="w-full md:w-1/2 space-y-6 ">
-                <AnimatedTitle title={title}  className="md: "/>
+            {/* Text content */}
+            <div className="w-full md:w-1/2 space-y-4 px-2 md:px-0">
+                <AnimatedTitle
+                    title={title}
+                    className="mb-2"
+                    align="left"
+                />
 
-                <p className="text-xl md:text-2xl text-gray-800 leading-relaxed opacity-90 group-hover:opacity-100 transition-opacity duration-300">
+                <p className="
+          text-base md:text-lg 
+          text-gray-800 
+          leading-snug md:leading-relaxed 
+          opacity-90 
+          group-hover:opacity-100 
+          transition-opacity duration-300
+        ">
                     {text}
                 </p>
-
-
             </div>
         </div>
     );

@@ -4,6 +4,7 @@ interface AnimatedTitleProps {
     title: string;
     color?: string;
     align?: 'left' | 'center' | 'right';
+    mdAlign?: 'left' | 'center' | 'right'; 
     size?: 'sm' | 'md' | 'lg' | 'xl';
     className?: string;
     underlineWidth?: 'sm' | 'md' | 'lg';
@@ -13,6 +14,7 @@ const AnimatedTitle: React.FC<AnimatedTitleProps> = ({
     title,
     color = '#00A650',
     align = 'center',
+    mdAlign = 'left', 
     size = 'xl',
     className = '',
     underlineWidth = 'md'
@@ -37,9 +39,9 @@ const AnimatedTitle: React.FC<AnimatedTitleProps> = ({
     };
 
     return (
-        <div className={`group ${alignClasses[align]} ${className} `}>
+        <div className={`group ${alignClasses[align]} md:${alignClasses[mdAlign]} ${className}`}>
             <h2
-                className={`${sizeClasses[size]} font-bold transform transition-all duration-300 group-hover:-translate-y-1`}
+                className={`${sizeClasses[size]}  font-bold transform transition-all duration-300 group-hover:-translate-y-1`}
                 style={{ color }}
             >
                 {title}

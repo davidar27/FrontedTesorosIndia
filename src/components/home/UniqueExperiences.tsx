@@ -3,6 +3,7 @@ import rioBarbas from '@/assets/images/cañonRioBarbas.webp';
 import flores from '@/assets/images/paquete1.webp';
 import gastronomiaImage from '@/assets/images/experincia3.webp';
 import AnimatedTitle from '../ui/AnimatedTitle';
+// import Button from '../ui/buttons/Button';
 
 const UniqueExperiences: React.FC = () => {
   const experiences = [
@@ -11,6 +12,7 @@ const UniqueExperiences: React.FC = () => {
       description: "Vive la belleza del campo con caminatas a través de ríos, quebradas y bosques nativos, descubriendo la biodiversidad mientras te conectas con la naturaleza.",
       image: rioBarbas,
       color: "from-secondary to-tertiary",
+      titleColor: "primary",
       delay: "delay-100"
     },
     {
@@ -18,6 +20,7 @@ const UniqueExperiences: React.FC = () => {
       description: "Aprende sobre la práctica de la agricultura tanto agroecológica como convencional, entendiendo los métodos sostenibles y la producción local.",
       image: flores,
       color: "from-tertiary to-primary",
+      titleColor: "white",
       delay: "delay-200"
     },
     {
@@ -25,16 +28,18 @@ const UniqueExperiences: React.FC = () => {
       description: "Disfruta y aprende sobre los alimentos ancestrales de la región, explorando su importancia cultural y su preparación tradicional.",
       image: gastronomiaImage,
       color: "from-primary to-secondary",
+      titleColor: "tertiary",
       delay: "delay-300"
     }
   ];
 
   return (
-    <section className="responsive-padding-y bg-gradient-to-b from-green-50 to-white ">
+    <section className="responsive-padding-y responsive-padding-x  bg-gradient-to-b from-green-50 to-white ">
       <div className="max-w-7xl mx-auto">
         <AnimatedTitle
           title="Experiencias únicas"
           className="mb-12"
+          mdAlign='center'
         />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -63,20 +68,20 @@ const UniqueExperiences: React.FC = () => {
                   />
                 </div>
 
-                <h2 className="text-2xl font-bold text-white mb-4 group-hover:text-tertiary transition-colors duration-300">
+                <h2 className={`text-2xl font-bold text-white mb-4 group-hover:text-${exp.titleColor}  transition-colors duration-300`}>
                   {exp.title}
                 </h2>
 
-                <p className="text-white/90 mb-6 flex-grow">
+                <p className="text-white mb-6 flex-grow">
                   {exp.description}
                 </p>
-
-                <button
-                  className="mt-auto w-fit px-6 py-3 bg-white text-gray-800 rounded-full font-medium hover:bg-tertiary hover:text-white transition-all duration-300 group-hover:animate-shake"
+{/* 
+                <Button
+                  className="mt-auto w-fit px-6 py-3 text-gray-800 rounded-full font-medium transition-all duration-300 group-hover:animate-shake"
                   aria-label={`Más información sobre ${exp.title}`}
                 >
                   Descubre más
-                </button>
+                </Button> */}
               </div>
 
               {/* Elementos decorativos */}
@@ -84,16 +89,6 @@ const UniqueExperiences: React.FC = () => {
               <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full transform -translate-x-12 translate-y-12 group-hover:scale-150 transition-transform duration-700"></div>
             </div>
           ))}
-        </div>
-
-        {/* Call to action */}
-        <div className="mt-20 text-center animate-fade-in-up delay-300">
-          <p className="text-xl text-gray-600 mb-6">
-            ¿Listo para vivir una experiencia inolvidable?
-          </p>
-          <button className="px-8 py-4 bg-primary text-white rounded-full text-lg font-bold hover:bg-hover-primary transition-colors duration-300 shadow-lg hover:shadow-xl">
-            Reserva tu experiencia ahora
-          </button>
         </div>
       </div>
     </section>
