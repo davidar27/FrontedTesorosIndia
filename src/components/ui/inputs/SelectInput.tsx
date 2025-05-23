@@ -35,7 +35,7 @@ const SelectInput = ({
       <div className="relative">
         <select
           id={id}
-          className={inputStyles}
+          className={`${inputStyles} appearance-none pr-10`}
           value={value}
           onChange={(e) => onChange(e.target.value)}
         >
@@ -45,9 +45,11 @@ const SelectInput = ({
             </option>
           ))}
         </select>
-        <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+
+        <ChevronDownIcon className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-900 w-4 h-4" />
       </div>
     </div>
+
   );
 };
 
