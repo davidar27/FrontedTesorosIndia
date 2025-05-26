@@ -40,11 +40,11 @@ function App() {
         </Route>
 
         <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<FarmPage />} />
+          <Route path="/estate" element={<FarmPage />} />
         </Route>
 
         <Route element={<ProtectedRoute roles={['administrador']} />}>
-          <Route path="/admin" element={<AdminPage />} />
+          <Route path="/dashboard" element={<AdminPage />} />
         </Route>
 
         <Route path="*" element={<NotFoundPage />} />

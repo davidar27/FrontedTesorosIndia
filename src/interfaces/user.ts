@@ -9,7 +9,5 @@ export interface User {
     phone_number?: string;
 
     // Campos condicionales por rol
-    businessName?: string;    // Para emprendedores
     address?: string;        // Para clientes
-    permissions?: string[];  // Para administradores
 }

@@ -23,6 +23,8 @@ const authService = {
           errorType: "general",
         });
       }
+
+      
       return response.data.user;
     } catch (error: unknown) {
       if (error instanceof AuthError) {
@@ -64,7 +66,7 @@ const authService = {
 
   async refreshToken(): Promise<User> {
     try {
-      const res = await axiosInstance.post<AuthResponse>("/auth/refresh");
+      const res = await axiosInstance.post<AuthResponse>("/refrescar-token");
 
       if (res.data.error) {
         throw new AuthError(res.data.error.message, {

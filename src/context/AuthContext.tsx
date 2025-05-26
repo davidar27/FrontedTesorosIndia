@@ -3,6 +3,7 @@ import { User } from '@/interfaces/user';
 import { AuthContextType } from '@/interfaces/authContextInterface';
 import authService from "@/services/auth/authService";
 import { PUBLIC_ROUTES } from '@/routes/publicRoutes';
+import { Credentials } from '@/interfaces/formInterface';
 
 export const AuthContext = createContext<AuthContextType>(null!);
 
@@ -19,7 +20,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // ===== Funciones de mantenimiento de sesión =====
 
-    const logout = useCallback(async () => {
+    const logout = useCallback(async (): Promise<void> => {
         try {
             await authService.logout();
         } catch {
@@ -30,7 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     }, []);
 
-    const checkAuth = useCallback(async () => {
+    const checkAuth = useCallback(async (): Promise<void> => {
         setIsLoading(true);
         try {
             const { isValid, user: userData } = await authService.verifyToken();
@@ -46,7 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     }, []);
 
-    const refreshAuth = useCallback(async (silent: boolean = false) => {
+    const refreshAuth = useCallback(async (silent: boolean = false): Promise<boolean> => {
         if (!silent) {
             setIsLoading(true);
         }
@@ -83,12 +84,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // ===== Funciones de autenticación principal =====
 
-    const login = useCallback(async (credentials: { email: string; password: string }) => {
+    const login = useCallback(async (credentials: Credentials): Promise<User> => {
         setIsLoading(true);
         setError(null);
         try {
             const userData = await authService.login(credentials);
             setUser(userData);
+            return userData; 
         } catch (err) {
             setError('Credenciales incorrectas');
             throw err;
@@ -99,20 +101,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // ===== Funciones de gestión de usuario =====
 
-    const updateUser = useCallback((updates: Partial<User>) => {
+    const updateUser = useCallback((updates: Partial<User>): void => {
         setUser(prev => {
             if (!prev) return null;
             return { ...prev, ...updates };
         });
     }, []);
 
-    const hasPermission = useCallback((permission: string) => {
-        if (!user) return false;
-        if (isAdmin) return true;
-        return user.permissions?.includes(permission) ?? false;
-    }, [user, isAdmin]);
+    const setErrorCallback = useCallback((error: string | null): void => {
+        setError(error);
+    }, []);
 
-    const value = useMemo(() => ({
+    const isPublicRoute = useCallback((path: string): boolean => {
+        const publicRoutes = PUBLIC_ROUTES;
+        return publicRoutes.includes(path);
+    }, []);
+
+    const value: AuthContextType = useMemo(() => ({
         user,
         isAuthenticated: !!user,
         isLoading,
@@ -124,14 +129,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         logout,
         updateUser,
-        hasPermission,
         checkAuth,
         refreshAuth,
-        setError,
-        isPublicRoute: (path: string) => {
-            const publicRoutes = PUBLIC_ROUTES;
-            return publicRoutes.includes(path);
-        }
+        setError: setErrorCallback,
+        isPublicRoute
     }), [
         user,
         isLoading,
@@ -142,10 +143,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         logout,
         updateUser,
-        hasPermission,
         checkAuth,
         refreshAuth,
-        setError
+        setErrorCallback,
+        isPublicRoute
     ]);
 
     return (
