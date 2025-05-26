@@ -4,58 +4,47 @@ import { User } from "@/interfaces/user";
 import { AuthError } from "@/interfaces/responsesApi";
 
 const authService = {
-  async login(credentials: { email: string; password: string }): Promise<User> {
+  login: async (credentials: { email: string; password: string }): Promise<User> => {
     try {
-      const response = await axiosInstance.post<AuthResponse>(
-        "/auth/login",
-        credentials
-      );
+      const { data } = await axiosInstance.post<AuthResponse>("/auth/login", credentials);
 
-      if (response.data.error) {
-        throw new AuthError(response.data.error.message, {
-          redirectTo: response.data.error.redirectTo,
-          errorType: response.data.error.type,
+      if (data.error) {
+        throw new AuthError(data.error.message, {
+          redirectTo: data.error.redirectTo,
+          errorType: data.error.type,
         });
       }
 
-      if (!response.data.user) {
+      if (!data.user) {
         throw new AuthError("Error desconocido al iniciar sesión", {
           errorType: "general",
         });
       }
 
-      
-      return response.data.user;
+      return data.user;
     } catch (error: unknown) {
-      if (error instanceof AuthError) {
-        throw error;
-      }
+      if (error instanceof AuthError) throw error;
       throw new AuthError("Error inesperado al iniciar sesión", {
         errorType: "general",
       });
     }
   },
 
-  async logout(): Promise<void> {
+  logout: async (): Promise<void> => {
     try {
       await axiosInstance.post("/auth/logout");
-      localStorage.removeItem("authToken");
-    } catch  {
+    } catch {
       throw new AuthError("Error al cerrar sesión", { errorType: "general" });
     }
   },
 
-  async verifyToken(): Promise<{ isValid: boolean; user?: User }> {
+  verifyToken: async (): Promise<{ isValid: boolean; user?: User }> => {
     try {
-      const res = await axiosInstance.get<AuthResponse>(
-        "/auth/verificar-token"
-      );
+      const { data } = await axiosInstance.get<AuthResponse>("/auth/verificar-token");
 
-      if (res.data.error) {
-        return { isValid: false };
-      }
+      if (data.error) return { isValid: false };
 
-      return { isValid: true, user: res.data.user };
+      return { isValid: true, user: data.user };
     } catch (error) {
       if (error instanceof AuthError && error.shouldRedirect()) {
         return { isValid: false };
@@ -64,26 +53,25 @@ const authService = {
     }
   },
 
-  async refreshToken(): Promise<User> {
+  refreshToken: async (): Promise<User> => {
     try {
-      const res = await axiosInstance.post<AuthResponse>("/refrescar-token");
+      const { data } = await axiosInstance.post<AuthResponse>("/refrescar-token");
 
-      if (res.data.error) {
-        throw new AuthError(res.data.error.message, {
-          errorType: res.data.error.type,
+      if (data.error) {
+        throw new AuthError(data.error.message, {
+          errorType: data.error.type,
         });
       }
 
-      if (!res.data.user) {
+      if (!data.user) {
         throw new AuthError("No se recibió el usuario", {
           errorType: "general",
         });
       }
-      return res.data.user;
+
+      return data.user;
     } catch (error) {
-      if (error instanceof AuthError) {
-        throw error;
-      }
+      if (error instanceof AuthError) throw error;
       throw new AuthError("La sesión ha expirado", { errorType: "general" });
     }
   },

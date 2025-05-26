@@ -68,9 +68,8 @@ export default function QuickReservation() {
         <div className="flex items-end">
           <Button
             onClick={handleReservation}
-            className="w-full py-3 bg-white hover:bg-primary-dark !text-primary font-medium
-                     transition-colors duration-200 transform hover:-translate-y-0.5
-                     active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-primary/50"
+            className="bg-white !text-primary py-3 px-10 rounded-xl  !border-white hover:!bg-primary  hover:!text-white"
+            type="submit"
           >
             Reservar ahora
           </Button>

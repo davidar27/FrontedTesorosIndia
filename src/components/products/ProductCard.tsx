@@ -1,5 +1,6 @@
 import { Star, StarHalf } from "lucide-react";
 import { motion } from "framer-motion";
+import Button from "../ui/buttons/Button";
 interface Product {
   id: number;
   name: string;
@@ -71,12 +72,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
 
         <div className="flex items-center justify-between">
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-          >
+          <Button
+            type="button"
+            >
             Añadir al carrito
-          </motion.button>
+          </Button>
         </div>
       </div>
     </motion.div>

@@ -11,11 +11,10 @@
 
 @layer utilities {
   .responsive-padding-x {
-    @apply px-2 sm:px-4 md:px-6 lg:px-12 xl:px-20;
+    @apply px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20;
   }
-
   .responsive-padding-y {
-    @apply py-20;
+    @apply py-8 sm:py-10 md:py-12 lg:py-14;
   }
 }
 
