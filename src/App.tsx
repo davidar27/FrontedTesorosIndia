@@ -10,7 +10,7 @@ const Home = lazy(() => import('@/pages/Home/Home'));
 const ProductsPage = lazy(() => import('@/pages/Products/Products'));
 const LoginPage = lazy(() => import('@/pages/Auth/LoginPage'));
 const RegisterPage = lazy(() => import('@/pages/Auth/RegisterPage'));
-const EmailVerification = lazy(() => import('@/pages/Auth/VerifyEmail'));
+const SendEmail = lazy(() => import('@/pages/Auth/SendEmail'));
 const EmailVerificationPage = lazy(() => import('@/pages/Auth/VerificationPage'));
 const FarmPage = lazy(() => import('@/pages/Estates/EstatePage'));
 const AdminPage = lazy(() => import('@/pages/Admin/AdminPage'));
@@ -35,7 +35,7 @@ function App() {
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/registro" element={<RegisterPage />} />
-          <Route path="/correo-enviado" element={<EmailVerification />} />
+          <Route path="/correo-enviado" element={<SendEmail />} />
           <Route path="/verificar-correo" element={<EmailVerificationPage />} />
         </Route>
 
