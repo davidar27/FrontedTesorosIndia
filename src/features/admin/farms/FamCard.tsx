@@ -13,11 +13,11 @@ interface FarmCardProps {
 const FarmCard: React.FC<FarmCardProps> = ({ item, onEdit, onDelete }) => {
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'active':
+            case 'Publicada':
                 return 'bg-green-100 text-green-800 border-green-200';
-            case 'inactive':
+            case 'Inactiva':
                 return 'bg-red-100 text-red-800 border-red-200';
-            case 'draft':
+            case 'Borrador':
                 return 'bg-yellow-100 text-yellow-800 border-yellow-200';
             default:
                 return 'bg-gray-100 text-gray-800 border-gray-200';
@@ -26,11 +26,11 @@ const FarmCard: React.FC<FarmCardProps> = ({ item, onEdit, onDelete }) => {
 
     const getStatusLabel = (status: string) => {
         switch (status) {
-            case 'active':
-                return 'Activa';
-            case 'inactive':
+            case 'Public':
+                return 'Publicada';
+            case 'Inactive':
                 return 'Inactiva';
-            case 'draft':
+            case 'Draft':
                 return 'Borrador';
             default:
                 return status;
@@ -58,7 +58,7 @@ const FarmCard: React.FC<FarmCardProps> = ({ item, onEdit, onDelete }) => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                     <span className="font-medium">Emprendedor:</span>
-                    <span className="ml-1">{item.entrepreneur}</span>
+                    <span className="ml-1">{item.emprendedor_id}</span>
                 </div>
 
                 <div className="flex items-start text-sm text-gray-600">
@@ -83,7 +83,7 @@ const FarmCard: React.FC<FarmCardProps> = ({ item, onEdit, onDelete }) => {
                     </svg>
                     <span className="font-medium">Cultivo:</span>
                     <span className="ml-1 px-2 py-1 bg-green-50 text-green-700 rounded-md text-xs">
-                        {item.Type}
+                        {item.type?.toString()}
                     </span>
                 </div>
             </div>

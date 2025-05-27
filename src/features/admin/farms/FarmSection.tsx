@@ -1,112 +1,139 @@
-// pages/FarmsManagement.tsx
-import { useState, useMemo } from 'react';
+/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useQueryClient } from '@tanstack/react-query';
 import GenericManagement from '@/components/admin/GenericManagent';
-import FarmCard from '@/features/admin/farms/FamCard';
-import { createFarmsConfig } from '@/features/admin/farms/createFarmsConfig';
+import { useAuth } from '@/hooks/useAuth';
+import { usePermissions } from '@/hooks/usePermissions';
+import { useAuthenticatedQuery } from '@/hooks/useAuthenticatedQuery';
+import { useProtectedMutation } from '@/hooks/useProtectedMutation';
+import { farmsApi } from '@/services/admin/farms';
 import { Farm } from '@/features/admin/farms/FarmTypes';
-
-// Datos de ejemplo más completos
-const initialFarms: Farm[] = [
-    {
-        id: 1,
-        name: "Puerto Arturo",
-        entrepreneur: "Arturo Ocampo",
-        location: "La finca Rillera del Guarriak se halla ubicada en la vereda San José, municipio de Planadas, Tolima",
-        Type: "Café Arábigo",
-        status: "active",
-        establishedDate: "2018-03-15"
-    },
-    {
-        id: 2,
-        name: "El Mirador",
-        entrepreneur: "María González",
-        location: "Vereda El Mirador, Ibagué, Tolima",
-        Type: "Cacao",
-        status: "active",
-        establishedDate: "2020-01-10"
-    },
-    {
-        id: 3,
-        name: "La Esperanza",
-        entrepreneur: "Carlos Ruiz",
-        location: "Corregimiento La Esperanza, Chaparral, Tolima",
-        Type: "Café Robusta",
-        status: "draft",
-        establishedDate: "2017-06-22"
-    }
-];
-
+import { CreateFarmsConfig } from '@/features/admin/farms/createFarmsConfig';
+import FarmCard  from '@/features/admin/farms/FamCard';
 
 export default function FarmsManagement() {
-    const [farms, setFarms] = useState<Farm[]>(initialFarms);
-    const [showDeleteModal, setShowDeleteModal] = useState<number | null>(null);
+    const queryClient = useQueryClient();
+    const { isAuthenticated, isLoading: authLoading } = useAuth();
+    const { hasPermission, isAdmin } = usePermissions();
+
+    // Verificar autenticación antes de cargar
+    if (authLoading) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <span className="ml-3 text-gray-600">Verificando autenticación...</span>
+            </div>
+        );
+    }
+
+    if (!isAuthenticated) {
+        return (
+            <div className="bg-red-50 border border-red-200 rounded-md p-4">
+                <p className="text-red-800">Debes iniciar sesión para acceder a esta página</p>
+                <button
+                    onClick={() => window.location.href = '/login'}
+                    className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                >
+                    Ir al Login
+                </button>
+            </div>
+        );
+    }
+
+    // Verificar permisos
+    const canEdit = isAdmin() || hasPermission('fincas:edit');
+    const canDelete = isAdmin() || hasPermission('fincas:delete');
+
+    // Query autenticada para obtener fincas
+    const {
+        data: farms = [],
+        isLoading,
+        error,
+        refetch
+    } = useAuthenticatedQuery<Farm[]>({
+        queryKey: ['farms'],
+        queryFn: () => farmsApi.getAll(),
+        staleTime: 5 * 60 * 1000, // 5 minutos
+        retry: 2
+    });
+
+
+    // const updateMutation = useProtectedMutation({
+    //     mutationFn: ({ id, data }: { id: number; data: UpdateEntrepreneurData }) =>
+    //         entrepreneursApi.update(id, data),
+    //     requiredPermission: 'entrepreneurs:edit',
+    //     onSuccess: () => {
+    //         queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] });
+    //     },
+    //     onError: (error: any) => {
+    //         console.error('Error updating entrepreneur:', error);
+    //     },
+    //     onUnauthorized: () => {
+    //         alert('No tienes permisos para editar emprendedores');
+    //     }
+    // });
+
+    const deleteMutation = useProtectedMutation({
+        mutationFn: farmsApi.delete,
+        requiredPermission: 'fincas:delete',
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['farms'] });
+        },
+        onError: (error: any) => {
+            console.error('Error deleting farm:', error);
+        },
+        onUnauthorized: () => {
+            alert('No tienes permisos para eliminar fincas');
+        }
+    });
 
     const handleEdit = (farm: Farm) => {
+        if (!canEdit) {
+            alert('No tienes permisos para editar fincas');
+            return;
+        }
         console.log('Editing farm:', farm);
-        // Aquí implementarías la lógica para abrir un modal de edición
-        // o navegar a una página de edición
+        // Aquí puedes abrir un modal de edición o navegar a una página de edición
     };
 
     const handleDelete = (farmId: number) => {
-        setShowDeleteModal(farmId);
-    };
-
-    const confirmDelete = () => {
-        if (showDeleteModal) {
-            setFarms(prev => prev.filter(farm => farm.id !== showDeleteModal));
-            setShowDeleteModal(null);
-            console.log('Farm deleted:', showDeleteModal);
+        if (window.confirm('¿Estás seguro de que quieres eliminar esta finca?')) {
+            deleteMutation.mutate(farmId);
         }
     };
 
-    const handleCreate = () => {
-        console.log('Creating new farm');
-        // Aquí implementarías la lógica para crear una nueva finca
-    };
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <span className="ml-3 text-gray-600">Cargando fincas...</span>
+            </div>
+        );
+    }
 
-    const config = useMemo(() => createFarmsConfig(
-        farms,
-        FarmCard,
-        {
-            onEdit: handleEdit,
-            onDelete: handleDelete,
-            onCreate: handleCreate
+    if (error) {
+        return (
+            <div className="bg-red-50 border border-red-200 rounded-md p-4">
+                <p className="text-red-800">Error al cargar las fincas</p>
+                <button
+                    onClick={() => refetch()}
+                    className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                    Reintentar
+                </button>
+            </div>
+        );
+    }
+    const config = CreateFarmsConfig<Farm>({
+        data: farms,
+        CardComponent: FarmCard,
+        actions: {
+            onEdit: canEdit ? handleEdit : undefined,
+            onDelete: canDelete ? handleDelete : undefined,
         }
-    ), [farms]);
+    });
 
-   
-
-    return (
-        <>
-            <GenericManagement config={config} />
-
-            {/* Modal de confirmación de eliminación */}
-            {showDeleteModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 max-w-sm mx-4">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                            Confirmar eliminación
-                        </h3>
-                        <p className="text-gray-600 mb-4">
-                            ¿Estás seguro de que deseas eliminar esta finca? Esta acción no se puede deshacer.
-                        </p>
-                        <div className="flex space-x-3 justify-end">
-                            <button
-                                onClick={() => setShowDeleteModal(null)}
-                                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
-                            >
-                                Cancelar
-                            </button>
-                            <button
-                                onClick={confirmDelete}
-                                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-                            >
-                                Eliminar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </>
-    );
+    return <GenericManagement<Farm> config={config} />
+       
+        
 }

@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// entrepreneursApi.ts
 import { axiosInstance } from '@/api/axiosInstance';
 import { Entrepreneur, CreateEntrepreneurData, UpdateEntrepreneurData, EntrepreneurApiResponse } from '@/features/admin/entrepreneurs/EntrepreneursTypes';
 
@@ -32,7 +31,7 @@ export const entrepreneursApi = {
     // Crear un nuevo emprendedor
     create: async (data: CreateEntrepreneurData): Promise<Entrepreneur> => {
         try {
-            const response = await axiosInstance.post<Entrepreneur>('usuario/emprendedores', data);
+            const response = await axiosInstance.post<Entrepreneur>('usuario/registrar/emprendedor', data);
             return response.data;
         } catch (error: any) {
             console.error('Error creating entrepreneur:', error);
