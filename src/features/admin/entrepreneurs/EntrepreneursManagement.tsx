@@ -94,6 +94,7 @@ export default function EntrepreneursManagement() {
         }
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const updateMutation = useProtectedMutation({
         mutationFn: ({ id, data }: { id: number; data: UpdateEntrepreneurData }) =>
             entrepreneursApi.update(id, data),

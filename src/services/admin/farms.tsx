@@ -24,10 +24,7 @@ export function FarmsManagementWithAPI() {
         }
     };
 
-    const handleView = (farm: Farm) => {
-        console.log('Viewing farm:', farm);
-        // Aquí podrías usar useNavigate para redirigir
-    };
+    
 
     const handleCreate = () => {
         const newFarm = {
@@ -45,7 +42,6 @@ export function FarmsManagementWithAPI() {
     const config = createFarmsConfig(farms, FarmCard, {
         onEdit: handleEdit,
         onDelete: handleDelete,
-        onView: handleView,
         onCreate: handleCreate,
     });
 

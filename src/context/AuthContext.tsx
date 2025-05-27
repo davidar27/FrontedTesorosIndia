@@ -48,12 +48,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     // Mutación para login
-    const loginMutation = useMutation<{ user: User; token: string }, Error, Credentials>({
+    const loginMutation = useMutation<{ user: User; }, Error, Credentials>({
         mutationFn: async (credentials: Credentials) => {
             const result = await authService.login(credentials);
-            return { user: result, token: result.token };
+            return { user: result};
         },
-        onSuccess: (result: { user: User; token: string }) => {
+        onSuccess: (result: { user: User; }) => {
             // Actualizar cache con los datos del usuario
             queryClient.setQueryData(AUTH_QUERY_KEY, result.user);
             setError(null);

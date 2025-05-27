@@ -8,7 +8,6 @@ interface FarmCardProps {
     item: Farm;
     onEdit: (farm: Farm) => void;
     onDelete: (id: number) => void;
-    onView: (farm: Farm) => void;
 }
 
 const FarmCard: React.FC<FarmCardProps> = ({ item, onEdit, onDelete }) => {

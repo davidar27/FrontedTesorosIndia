@@ -59,11 +59,6 @@ export default function FarmsManagement() {
         }
     };
 
-    const handleView = (farm: Farm) => {
-        console.log('Viewing farm:', farm);
-        // Aquí implementarías la lógica para ver los detalles completos
-    };
-
     const handleCreate = () => {
         console.log('Creating new farm');
         // Aquí implementarías la lógica para crear una nueva finca
@@ -75,7 +70,6 @@ export default function FarmsManagement() {
         {
             onEdit: handleEdit,
             onDelete: handleDelete,
-            onView: handleView,
             onCreate: handleCreate
         }
     ), [farms]);
