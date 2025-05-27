@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { BaseEntity } from "./GenericManagent";
+import Button from "../ui/buttons/Button";
 export interface StatusFilter {
     id: string;
     label: string;
@@ -35,12 +36,12 @@ export const DefaultCustomFilters = <T extends BaseEntity>({
             <h3 className="font-semibold text-gray-800 mb-4">Filtrar por estado</h3>
             <div className="flex flex-wrap gap-3">
                 {statusFilters.map((filter) => (
-                    <button
+                    <Button
                         key={filter.id}
                         onClick={() => handleStatusChange(filter.id)}
                         className={`px-4 py-2 rounded-xl font-medium transition-all duration-300 flex items-center gap-2 ${selectedStatus === filter.id
-                            ? 'bg-gradient-to-r from-primary to-[#81c9c1] text-white shadow-lg'
-                            : 'bg-gray-100 text-gray-600 hover:bg-green-50 hover:text-primary'
+                            ? 'bg-gradient-to-r from-primary to-primary-hover text-white shadow-lg'
+                            : 'bg-gray-100 text-gray-600 hover:bg-green-50'
                             }`}
                     >
                         <span>{filter.label}</span>
@@ -50,7 +51,7 @@ export const DefaultCustomFilters = <T extends BaseEntity>({
                             }`}>
                             {filter.count}
                         </span>
-                    </button>
+                    </Button>
                 ))}
             </div>
         </div>

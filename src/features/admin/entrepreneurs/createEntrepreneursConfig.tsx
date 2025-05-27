@@ -1,24 +1,44 @@
-import { EntityConfig, BaseEntity } from "@/components/admin/GenericManagent";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { BaseEntity, EntityConfig } from "@/components/admin/GenericManagent";
 
-export const createEntrepreneursConfig = <T extends BaseEntity & { email: string; phone: string }>(
-    items: T[],
-    ItemCard: EntityConfig<T>['ItemCard'],
-    callbacks: Pick<EntityConfig<T>, 'onEdit' | 'onDelete' | 'onCreate'>
-): EntityConfig<T> => ({
-    entityName: 'Emprendedor',
-    entityNamePlural: 'Emprendedores',
-    description: 'Gestiona los emprendedores y sus datos de contacto',
-    searchPlaceholder: 'Buscar emprendedores, email, teléfono...',
-    emptyStateEmoji: '👥',
-    emptyStateTitle: 'No se encontraron emprendedores',
-    emptyStateDescription: 'Intenta cambiar los filtros o el término de búsqueda',
-    items,
-    ItemCard,
-    ...callbacks,
-    searchFunction: (item, searchTerm) => {
-        const term = searchTerm.toLowerCase();
-        return item.name.toLowerCase().includes(term) ||
-            item.email.toLowerCase().includes(term) ||
-            item.phone.toLowerCase().includes(term);
-    }
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+interface CreateConfigParams<T extends BaseEntity<any>> {
+    data: T[];
+    CardComponent: React.ComponentType<{
+        item: T;
+        onEdit: (item: T) => void;
+        onDelete: (id: number) => void;
+    }>;
+    actions: {
+        onEdit?: (item: T) => void;
+        onDelete?: (id: number) => void;
+        onCreate?: () => void;
+    };
+}
+
+export const CreateEntrepreneursConfig = <T extends BaseEntity<any>>({
+    data,
+    CardComponent,
+    actions
+}: CreateConfigParams<T>): EntityConfig<T> => ({
+    entityName: "Emprendedor",
+    entityNamePlural: "Emprendedores",
+    searchPlaceholder: "Buscar emprendedores...",
+    emptyStateEmoji: "👥",
+    ItemCard: CardComponent,
+    emptyStateTitle: "No hay emprendedores",
+    emptyStateDescription: "Crea el primer emprendedor para comenzar",
+    description: "Gestiona emprendedores",
+    items: data,
+    isLoading: false,
+    error: null,
+    maxResults: 50,
+    enableAnimations: true,
+    showResultsCount: true,
+    customFilters: () => null,
+    searchFunction: () => true,
+    onEdit: actions.onEdit || (() => {}),
+    onDelete: actions.onDelete || (() => {}),
+    onCreate: actions.onCreate || (() => {}),
+    onRetry: () => {},
 });

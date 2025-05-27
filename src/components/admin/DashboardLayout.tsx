@@ -4,8 +4,8 @@ import useSidebarLogic from "@/hooks/useSidebarLogic";
 import { Outlet } from "react-router-dom";
 import { Filter } from "lucide-react";
 import { usePageContext } from '@/context/PageContext';
-import AnimatedTitle from '../ui/AnimatedTitle';
-import UserMenu from '../layouts/menu/UserMenu';
+import AnimatedTitle from '@/components/ui/AnimatedTitle';
+import UserMenu from '@/components/layouts/menu/UserMenu';
 
 const DashboardLayout: React.FC = () => {
     const {

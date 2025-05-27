@@ -2,9 +2,10 @@ import { axiosInstance } from "@/api/axiosInstance";
 import { AuthResponse } from "@/interfaces/responsesApi";
 import { User } from "@/interfaces/user";
 import { AuthError } from "@/interfaces/responsesApi";
+import { Credentials } from "@/interfaces/formInterface";
 
 const authService = {
-  login: async (credentials: { email: string; password: string }): Promise<User> => {
+  login: async (credentials: Credentials): Promise<User> => {
     try {
       const { data } = await axiosInstance.post<AuthResponse>("/auth/login", credentials);
 
@@ -41,6 +42,8 @@ const authService = {
   verifyToken: async (): Promise<{ isValid: boolean; user?: User }> => {
     try {
       const { data } = await axiosInstance.get<AuthResponse>("/auth/verificar-token");
+      console.log(data.success);
+
 
       if (data.error) return { isValid: false };
 

@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import PackageCard from '../ui/cards/PackageCard';
+import PackageCard from '@/components/ui/cards/PackageCard';
 import paquete1 from "@/assets/images/paquete1.webp"
 import paquete2 from "@/assets/images/paquete2.webp"
-import AnimatedTitle from '../ui/AnimatedTitle';
+import AnimatedTitle from '@/components/ui/AnimatedTitle';
 
 
 const PackageSelector = () => {
