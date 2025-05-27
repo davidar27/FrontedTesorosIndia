@@ -125,7 +125,7 @@ const Leaders = () => {
                 >
                   <Picture
                     src={Grupo}
-                    className="w-32 h-32 rounded-full mb-4 object-cover border-4 border-green-200"
+                    className="w-48 h-48 rounded-full mb-4 object-cover border-4 border-green-200"
                   />
 
                   <h2 className="text-lg font-bold text-green-700 mb-2 text-center leading-tight">

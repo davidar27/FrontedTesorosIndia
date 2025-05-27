@@ -15,6 +15,19 @@ function normalizeErrorType(type?: string): "email" | "password" | "general" {
   return type === "email" || type === "password" ? type : "general";
 }
 
+// Interceptor de request - ya no necesita localStorage
+axiosInstance.interceptors.request.use(
+  (config) => {
+    // Las cookies se envían automáticamente con withCredentials: true
+    // No necesitamos agregar el token manualmente
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Interceptor de response para manejo de errores y estructura de respuesta
 axiosInstance.interceptors.response.use(
   (response) => {
     // Puedes transformar respuestas exitosas aquí si es necesario
@@ -25,7 +38,7 @@ axiosInstance.interceptors.response.use(
     const errorData = error.response?.data?.error;
 
     // Silencia solo los 401 (pero registra otros errores)
-    if (status !== 401 && process.env.NODE_ENV === "development") {
+    if (status !== 401 && import.meta.env.DEV) {
       console.error("API Error:", error);
     }
 
@@ -55,6 +68,7 @@ axiosInstance.interceptors.response.use(
   }
 );
 
+// Interceptor de response para renovación automática de tokens
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -64,12 +78,8 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        // 1. Intenta renovar el access token
-        await axios.post(
-          `${process.env.VITE_API_URL}/auth/refresh`,
-          {},
-          { withCredentials: true }
-        );
+        // 1. Intenta renovar el access token usando el refresh token de la cookie
+        await axiosInstance.post('/auth/refresh');
 
         // 2. Reintenta la petición original con el nuevo token
         return axiosInstance(originalRequest);

@@ -1,7 +1,7 @@
 import Button from '@/components/ui/buttons/Button';
 import { TreePalm, MapPin, Coffee, Mountain } from 'lucide-react';
-import ReusableMap from '../layouts/ReusableMap';
-import AnimatedTitle from '../ui/AnimatedTitle';
+import ReusableMap from '@/components/layouts/ReusableMap';
+import AnimatedTitle from '@/components/ui/AnimatedTitle';
 
 const locations = [
   {
@@ -37,7 +37,7 @@ const locations = [
 const TouristRoute = () => {
 
   return (
-    <div className="responsive-padding-x">
+    <div className="responsive-padding-x pt-10">
       <div className="text-center pb-2">
         <AnimatedTitle
           title='RUTA TURÍSTICA'

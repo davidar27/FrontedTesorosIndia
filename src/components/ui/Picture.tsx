@@ -3,7 +3,7 @@ import React from "react";
 interface PictureProps {
     className?: string;
     alt?: string;
-    src: string;
+    src?: string;
     srcSet?: string;
     sizes?: string;
     icon?: React.ReactNode;

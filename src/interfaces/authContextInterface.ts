@@ -1,24 +1,21 @@
-import { UserRole } from '@/interfaces/role';
-import { User } from '@/interfaces/user'
+import { UserRole } from "@/interfaces/role";
+import { User } from "@/interfaces/user";
+import { Credentials } from "./formInterface";
+
 export interface AuthContextType {
-    // Estado
     user: User | null;
     isAuthenticated: boolean;
     isLoading: boolean;
     error: string | null;
-
-    // Helpers
     role: UserRole | null;
     isAdmin: boolean;
     isEntrepreneur: boolean;
     isClient: boolean;
-
-    // Métodos
-    login: (credentials: { email: string; password: string }) => Promise<void>;
+    login: (credentials: Credentials) => Promise<User>;
     logout: () => Promise<void>;
-    updateUser: (userData: Partial<User>) => void;
-    hasPermission: (permission: string) => boolean;
+    updateUser: (updates: Partial<User>) => void;
     checkAuth: () => Promise<void>;
-    refreshAuth: () => Promise<boolean>;
-    setError: React.Dispatch<React.SetStateAction<string | null>>;
+    refreshAuth: (silent?: boolean) => Promise<boolean>;
+    setError: (error: string | null) => void;
+    isPublicRoute: (path: string) => boolean;
 }

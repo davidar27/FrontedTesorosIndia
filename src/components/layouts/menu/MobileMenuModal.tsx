@@ -5,7 +5,7 @@ const MobileMenuModal = ({
     isOpen,
     onClose,
     onProfile,
-    onLogout
+    onLogout,
 }: {
     isOpen: boolean;
     onClose: () => void;
@@ -13,8 +13,8 @@ const MobileMenuModal = ({
     onLogout: () => void;
 }) => (
     isOpen && (
-        <div className="fixed inset-0 z-50 flex items-end bg-black bg-opacity-90 md:hidden">
-            <div className="w-full bg-white rounded-t-lg p-4 shadow-lg">
+        <div className="fixed inset-0 z-50 -inset-y-18 flex items-end bg-black bg-opacity-90 md:hidden">
+            <div className="w-full bg-white p-4 shadow-lg">
                 <div className="flex flex-col gap-3">
                     <MenuButton icon={<User size={18} className="text-blue-500" />} label="Perfil" onClick={onProfile} mobile />
                     <MenuButton icon={<LogOut size={18} />} label="Cerrar sesión" onClick={onLogout} mobile className="text-red-600" />

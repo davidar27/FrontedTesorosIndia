@@ -1,89 +1,337 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: var(--color-green-600); /* Verde principal */
-  --color-hover-primary: var(
-    --color-green-800
-  ); /* Verde más oscuro para hover */
-  --color-secondary: #81c9c1; /* Azul verdoso claro */
-  --color-tertiary: #eee41e; /* Amarillo brillante */
+  /* Colores principales con mejor nomenclatura */
+  --color-primary: var(--color-green-600);
+  --color-primary-hover: var(--color-green-700);
+  --color-primary-active: var(--color-green-800);
+  --color-secondary: #81c9c1;
+  --color-secondary-hover: #6bb5ae;
+  --color-accent: #eee41e;
+  --color-accent-hover: #d4c91a;
+
+  /* Variables adicionales para consistencia */
+  --color-surface: var(--color-white);
+  --color-surface-alt: var(--color-gray-50);
+  --shadow-elevation-low: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-elevation-medium: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-elevation-high: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+  /* Transiciones estándar */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Bordes redondeados */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
 }
 
 @layer utilities {
+
+  /* Padding responsivo mejorado */
   .responsive-padding-x {
-    @apply px-2 sm:px-4 md:px-6 lg:px-12 xl:px-20;
+    @apply px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20;
   }
 
   .responsive-padding-y {
-    @apply py-20;
+    @apply py-8 sm:py-10 md:py-12 lg:py-14;
+  }
+
+
+  /* Utilidades de sombras usando variables */
+  .shadow-elevation-low {
+    box-shadow: var(--shadow-elevation-low);
+  }
+
+  .shadow-elevation-medium {
+    box-shadow: var(--shadow-elevation-medium);
+  }
+
+  .shadow-elevation-high {
+    box-shadow: var(--shadow-elevation-high);
+  }
+
+  /* Transiciones usando variables */
+  .transition-fast {
+    transition: all var(--transition-fast);
+  }
+
+  .transition-normal {
+    transition: all var(--transition-normal);
+  }
+
+  .transition-slow {
+    transition: all var(--transition-slow);
+  }
+
+  /* Utilidades para glassmorphism */
+  .glass {
+    @apply backdrop-blur-md bg-white/10 border border-white/20;
+  }
+
+  .glass-dark {
+    @apply backdrop-blur-md bg-black/10 border border-white/10;
+  }
+
+  /* Focus states mejorados */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
+  }
+
+  .focus-ring-inset {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset;
   }
 }
 
+/* Animaciones mejoradas con mejores curvas de bezier */
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(24px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-@keyframes fadeInRight {
+@keyframes fadeInDown {
   from {
     opacity: 0;
-    transform: translateX(20px);
+    transform: translateY(-24px);
   }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+
   to {
     opacity: 1;
     transform: translateX(0);
   }
 }
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 @keyframes shake {
+
   0%,
   100% {
     transform: translateX(0);
   }
-  20%,
-  60% {
-    transform: translateX(-5px);
+
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-4px);
   }
+
+  20%,
   40%,
+  60%,
   80% {
-    transform: translateX(5px);
+    transform: translateX(4px);
   }
 }
 
-.animate-shake {
-  animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+@keyframes pulse-scale {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
 }
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Clases de animación con mejores configuraciones */
+.animate-fade-in {
+  animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 .animate-fade-in-up {
-  animation: fadeInUp 0.8s ease-out forwards;
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fade-in-left {
+  animation: fadeInLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-fade-in-right {
-  animation: fadeInRight 0.8s ease-out forwards;
+  animation: fadeInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-shake {
+  animation: shake 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+.animate-pulse-scale {
+  animation: pulse-scale 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Delays de animación más variados */
+.delay-75 {
+  animation-delay: 75ms;
 }
 
 .delay-100 {
-  animation-delay: 0.1s;
+  animation-delay: 100ms;
+}
+
+.delay-150 {
+  animation-delay: 150ms;
 }
 
 .delay-200 {
-  animation-delay: 0.2s;
+  animation-delay: 200ms;
 }
 
+.delay-300 {
+  animation-delay: 300ms;
+}
+
+.delay-500 {
+  animation-delay: 500ms;
+}
+
+.delay-700 {
+  animation-delay: 700ms;
+}
+
+.delay-1000 {
+  animation-delay: 1000ms;
+}
+
+/* Estilos para elementos específicos mejorados */
 .leaflet-control-attribution {
-  font-size: 11px;
-  transition: all 0.3s ease;
+  font-size: 10px;
+  transition: all var(--transition-normal);
+  opacity: 0.7;
 }
 
+.leaflet-control-attribution:hover {
+  opacity: 1;
+}
+
+/* Estilos de teclado mejorados */
 kbd {
   display: inline-block;
-  padding: 2px 6px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 3px;
-  margin: 0 2px;
-  font-family: monospace;
+  padding: 0.125rem 0.375rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  margin: 0 0.125rem;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(4px);
+}
+
+/* Utilidades adicionales para desarrollo moderno */
+.text-balance {
+  text-wrap: balance;
+}
+
+.text-pretty {
+  text-wrap: pretty;
+}
+
+/* Scroll suave para toda la aplicación */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Mejoras de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Soporte para modo oscuro */
+@media (prefers-color-scheme: dark) {
+  kbd {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+  }
 }

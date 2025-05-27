@@ -9,7 +9,7 @@ import LoginButton from "@/components/ui/buttons/LoginButton";
 
 
 
-const UserMenu: React.FC = () => {
+const UserMenu: React.FC<{ textColor?: string }> = ({ textColor }) => {
   const { user, isAuthenticated, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -29,11 +29,12 @@ const UserMenu: React.FC = () => {
   }
 
   return (
-    <div className="relative flex items-center gap-2 w-full justify-between md:justify-start" ref={menuRef}>
+    <div className={`"relative flex items-center gap-2 justify-between md:justify-start  text-${textColor ? textColor : 'black'} `} ref={menuRef}>
       <MobileUserSection
         user={user}
         onProfile={() => handleAction(() => navigate("/perfil"))}
         onMenuToggle={() => setIsMobileMenuOpen(true)}
+        textColor={textColor}
       />
 
       <DesktopUserSection
@@ -42,6 +43,7 @@ const UserMenu: React.FC = () => {
         onToggle={() => setIsOpen(!isOpen)}
         onProfile={() => handleAction(() => navigate("/perfil"))}
         onLogout={() => handleAction(logout)}
+        textColor={textColor}
       />
 
       <MobileMenuModal

@@ -22,32 +22,33 @@ const LoginPage = () => {
     } = useForm<Credentials>({
         resolver: yupResolver(loginSchema)
     });
-
     const onSubmit = async (credentials: Credentials) => {
-
         setIsRedirecting(false);
         reset({}, { keepValues: true });
 
         try {
-            await login(credentials);
-            navigate("/", { replace: true });
+            const user = await login(credentials);
+
+            setIsRedirecting(true); 
+
+            if (user.role === 'administrador') {
+                navigate('/dashboard');
+            } else {
+                navigate("/", { replace: true });
+            }
         } catch (error) {
             if (error instanceof AuthError) {
-
                 if (error.errorType === 'general') {
                     setFormError('email', {
                         type: 'manual',
                         message: error.message
                     });
-
                     setFormError('password', {
                         type: 'manual',
                         message: error.message
                     });
                 }
-
             }
-            
         }
     };
 

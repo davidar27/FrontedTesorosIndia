@@ -1,121 +1,158 @@
-import { createContext, ReactNode, useState, useEffect, useCallback, useMemo } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// AuthProvider con React Query - Fixed Version
+import { createContext, ReactNode, useState, useCallback, useMemo } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { User } from '@/interfaces/user';
+import { UserRole } from '@/interfaces/role';
 import { AuthContextType } from '@/interfaces/authContextInterface';
 import authService from "@/services/auth/authService";
 import { PUBLIC_ROUTES } from '@/routes/publicRoutes';
+import { Credentials } from '@/interfaces/formInterface';
 
 export const AuthContext = createContext<AuthContextType>(null!);
 
+const AUTH_QUERY_KEY = ['auth', 'user'];
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [user, setUser] = useState<User | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
+    const queryClient = useQueryClient();
 
-    const { isAdmin, isEntrepreneur, isClient } = useMemo(() => ({
-        isAdmin: user?.role === 'administrador',
-        isEntrepreneur: user?.role === 'emprendedor',
-        isClient: user?.role === 'cliente'
-    }), [user?.role]);
-
-    // ===== Funciones de mantenimiento de sesión =====
-
-    const logout = useCallback(async () => {
-        try {
-            await authService.logout();
-        } catch {
-            // 
-        } finally {
-            setUser(null);
-            setError(null);
-        }
-    }, []);
-
-    const checkAuth = useCallback(async () => {
-        setIsLoading(true);
-        try {
-            const { isValid, user: userData } = await authService.verifyToken();
-            if (isValid && userData) {
-                setUser(userData);
-            } else {
-                setUser(null);
+    // Query para verificar autenticación
+    const {
+        data: user,
+        isLoading,
+        error: authError,
+        refetch: refetchAuth
+    } = useQuery({
+        queryKey: AUTH_QUERY_KEY,
+        queryFn: async () => {
+            const result = await authService.verifyToken();
+            if (!result.isValid || !result.user) {
+                throw new Error('No authenticated');
             }
-        } catch {
-            setUser(null);
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
-
-    const refreshAuth = useCallback(async (silent: boolean = false) => {
-        if (!silent) {
-            setIsLoading(true);
-        }
-        try {
-            const { isValid, user: userData } = await authService.verifyToken();
-            if (!isValid || !userData) {
-                await logout();
+            return result.user;
+        },
+        retry: (failureCount, error: any) => {
+            // No reintentar si es un error de autenticación
+            if (error?.response?.status === 401) {
                 return false;
             }
-            setUser(userData);
-            return true;
+            return failureCount < 2;
+        },
+        staleTime: 5 * 60 * 1000, // 5 minutos
+        gcTime: 10 * 60 * 1000, // 10 minutos (antes era cacheTime)
+        refetchOnWindowFocus: true,
+        refetchInterval: 15 * 60 * 1000, // Verificar cada 15 minutos
+    });
+
+    // Mutación para login
+    const loginMutation = useMutation<{ user: User; }, Error, Credentials>({
+        mutationFn: async (credentials: Credentials) => {
+            const result = await authService.login(credentials);
+            return { user: result};
+        },
+        onSuccess: (result: { user: User; }) => {
+            // Actualizar cache con los datos del usuario
+            queryClient.setQueryData(AUTH_QUERY_KEY, result.user);
+            setError(null);
+        },
+        onError: (error: any) => {
+            setError(error.message || 'Error de autenticación');
+            // Limpiar cache en caso de error
+            queryClient.setQueryData(AUTH_QUERY_KEY, null);
+        }
+    });
+
+    // Mutación para logout
+    const logoutMutation = useMutation({
+        mutationFn: authService.logout,
+        onSuccess: () => {
+            // Limpiar todo el cache de React Query
+            queryClient.clear();
+            setError(null);
+            navigate("/");
+        },
+        onError: () => {
+            // Incluso si falla la petición, limpiar cache local
+            queryClient.clear();
+            setError(null);
+            navigate("/");
+        }
+    });
+
+    const { isAdmin, isEntrepreneur, isClient } = useMemo(() => ({
+        isAdmin: user?.role === ('administrador' as UserRole),
+        isEntrepreneur: user?.role === ('emprendedor' as UserRole),
+        isClient: user?.role === ('cliente' as UserRole)
+    }), [user?.role]);
+
+    // ===== Funciones de autenticación =====
+
+    const login = useCallback(async (credentials: Credentials): Promise<User> => {
+        return new Promise((resolve, reject) => {
+            loginMutation.mutate(credentials, {
+                onSuccess: (result) => resolve(result.user),
+                onError: reject
+            });
+        });
+    }, [loginMutation]);
+
+    const logout = useCallback(async (): Promise<void> => {
+        return new Promise((resolve) => {
+            logoutMutation.mutate(undefined, {
+                onSettled: () => resolve() // Se ejecuta siempre, haya éxito o error
+            });
+        });
+    }, [logoutMutation]);
+
+    const checkAuth = useCallback(async (): Promise<void> => {
+        await refetchAuth();
+    }, [refetchAuth]);
+
+    const refreshAuth = useCallback(async (silent: boolean = false): Promise<boolean> => {
+        try {
+            const result = await refetchAuth();
+            return !!result.data;
         } catch {
             if (!silent) {
                 setError('Error al actualizar la sesión');
             }
             await logout();
             return false;
-        } finally {
-            if (!silent) {
-                setIsLoading(false);
-            }
         }
-    }, [logout]);
-
-    useEffect(() => {
-        const verifySession = async () => {
-            await checkAuth();
-            const interval = setInterval(checkAuth, 5 * 60 * 1000);
-            return () => clearInterval(interval);
-        };
-
-        verifySession();
-    }, [checkAuth]);
-
-    // ===== Funciones de autenticación principal =====
-
-    const login = useCallback(async (credentials: { email: string; password: string }) => {
-        setIsLoading(true);
-        setError(null);
-        try {
-            const userData = await authService.login(credentials);
-            setUser(userData);
-        } catch (err) {
-            setError('Credenciales incorrectas');
-            throw err;
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
+    }, [refetchAuth, logout]);
 
     // ===== Funciones de gestión de usuario =====
 
-    const updateUser = useCallback((updates: Partial<User>) => {
-        setUser(prev => {
-            if (!prev) return null;
-            return { ...prev, ...updates };
-        });
+    const updateUser = useCallback((updates: Partial<User>): void => {
+        if (user) {
+            const updatedUser = { ...user, ...updates };
+            queryClient.setQueryData(AUTH_QUERY_KEY, updatedUser);
+        }
+    }, [user, queryClient]);
+
+    const setErrorCallback = useCallback((error: string | null): void => {
+        setError(error);
     }, []);
 
-    const hasPermission = useCallback((permission: string) => {
-        if (!user) return false;
-        if (isAdmin) return true;
-        return user.permissions?.includes(permission) ?? false;
-    }, [user, isAdmin]);
+    const isPublicRoute = useCallback((path: string): boolean => {
+        return PUBLIC_ROUTES.includes(path);
+    }, []);
 
-    const value = useMemo(() => ({
-        user,
+    // Manejar errores de autenticación automáticamente
+    useMemo(() => {
+        if (authError && !isPublicRoute(window.location.pathname)) {
+            // Si hay error de autenticación y no estamos en ruta pública
+            navigate('/login?session_expired=1');
+        }
+    }, [authError, isPublicRoute, navigate]);
+
+    const value: AuthContextType = useMemo(() => ({
+        user: user || null,
         isAuthenticated: !!user,
-        isLoading,
+        isLoading: isLoading || loginMutation.isPending || logoutMutation.isPending,
         error,
         role: user?.role || null,
         isAdmin,
@@ -124,17 +161,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         logout,
         updateUser,
-        hasPermission,
         checkAuth,
         refreshAuth,
-        setError,
-        isPublicRoute: (path: string) => {
-            const publicRoutes = PUBLIC_ROUTES;
-            return publicRoutes.includes(path);
-        }
+        setError: setErrorCallback,
+        isPublicRoute
     }), [
         user,
         isLoading,
+        loginMutation.isPending,
+        logoutMutation.isPending,
         error,
         isAdmin,
         isEntrepreneur,
@@ -142,10 +177,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         logout,
         updateUser,
-        hasPermission,
         checkAuth,
         refreshAuth,
-        setError
+        setErrorCallback,
+        isPublicRoute
     ]);
 
     return (
@@ -153,4 +188,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             {children}
         </AuthContext.Provider>
     );
+}
+
+// Hook personalizado para usar el contexto de autenticación
+import { useContext } from 'react';
+
+export function useAuth(): AuthContextType {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error('useAuth must be used within an AuthProvider');
+    }
+    return context;
 }

@@ -1,10 +1,10 @@
 import React from 'react';
-
+import { motion } from 'framer-motion'
 interface AnimatedTitleProps {
     title: string;
     color?: string;
     align?: 'left' | 'center' | 'right';
-    mdAlign?: 'left' | 'center' | 'right'; 
+    mdAlign?: 'left' | 'center' | 'right';
     size?: 'sm' | 'md' | 'lg' | 'xl';
     className?: string;
     underlineWidth?: 'sm' | 'md' | 'lg';
@@ -14,7 +14,7 @@ const AnimatedTitle: React.FC<AnimatedTitleProps> = ({
     title,
     color = '#00A650',
     align = 'center',
-    mdAlign = 'left', 
+    mdAlign = 'left',
     size = 'xl',
     className = '',
     underlineWidth = 'md'
@@ -40,16 +40,21 @@ const AnimatedTitle: React.FC<AnimatedTitleProps> = ({
 
     return (
         <div className={`group ${alignClasses[align]} md:${alignClasses[mdAlign]} ${className}`}>
-            <h2
-                className={`${sizeClasses[size]}  font-bold transform transition-all duration-300 group-hover:-translate-y-1`}
+            <motion.h1
+                initial={{ opacity: 1, y: 0 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className={`  text-xl md:${sizeClasses[size ]}  font-bold transform transition-all duration-300 group-hover:-translate-y-1`}
                 style={{ color }}
             >
+
+
                 {title}
                 <span
-                    className={`block h-1 mt-3 transition-all duration-500 ${underlineWidthClasses[underlineWidth]} ${align === 'center' ? 'mx-auto' : 'ml-0'}`}
+                    className={`block h-1 mt-0 md:mt-3 transition-all duration-500 ${underlineWidthClasses[underlineWidth]} ${align === 'center' ? 'mx-auto' : 'ml-0'}`}
                     style={{ backgroundColor: color }}
                 ></span>
-            </h2>
+            </motion.h1>
         </div>
     );
 };

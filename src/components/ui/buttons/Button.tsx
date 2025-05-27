@@ -9,6 +9,7 @@ interface ButtonProps {
     bgColor?: string;
     hoverColor?: string;
     textColor?: string;
+    disabled?: boolean;
     onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
@@ -30,7 +31,7 @@ const Button: React.FC<ButtonProps> = ({
             onClick={onClick}
 
             className={clsx(
-                "font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-colors",
+                "font-semibold py-2 px-4 rounded transition-colors cursor-pointer shadow-lg border-2 border-primary",
                 bgColor,
                 hoverColor,
                 textColor,
