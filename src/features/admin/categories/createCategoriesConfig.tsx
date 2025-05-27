@@ -1,4 +1,4 @@
-import { EntityConfig, BaseEntity } from "../GenericManagent";
+import { EntityConfig, BaseEntity } from "@/components/admin/GenericManagent";
 export const createCategoriesConfig = <T extends BaseEntity & { description: string }>(
     items: T[],
     ItemCard: EntityConfig<T>['ItemCard'],

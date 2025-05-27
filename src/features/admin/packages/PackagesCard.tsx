@@ -1,5 +1,5 @@
 import { Edit, Trash2, Eye, Phone, Mail } from 'lucide-react';
-import { Package } from '@/components/admin/packages/PackagesManagement';
+import { Package } from '@/features/admin/packages/PackageTypes';
 
 
 interface PackageCardProps {

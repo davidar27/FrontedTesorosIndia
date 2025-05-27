@@ -4,6 +4,7 @@ import { AuthContextType } from '@/interfaces/authContextInterface';
 import authService from "@/services/auth/authService";
 import { PUBLIC_ROUTES } from '@/routes/publicRoutes';
 import { Credentials } from '@/interfaces/formInterface';
+import { useNavigate } from 'react-router-dom';
 
 export const AuthContext = createContext<AuthContextType>(null!);
 
@@ -11,6 +12,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     const { isAdmin, isEntrepreneur, isClient } = useMemo(() => ({
         isAdmin: user?.role === 'administrador',
@@ -18,7 +20,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isClient: user?.role === 'cliente'
     }), [user?.role]);
 
-    // ===== Funciones de mantenimiento de sesión =====
+    // ===== Funciones de Borrador de sesión =====
 
     const logout = useCallback(async (): Promise<void> => {
         try {
@@ -28,6 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } finally {
             setUser(null);
             setError(null);
+            navigate("/")
         }
     }, []);
 
@@ -69,6 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (!silent) {
                 setIsLoading(false);
             }
+        
         }
     }, [logout]);
 

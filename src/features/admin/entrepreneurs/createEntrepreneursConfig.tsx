@@ -1,4 +1,4 @@
-import { EntityConfig, BaseEntity } from "../GenericManagent";
+import { EntityConfig, BaseEntity } from "@/components/admin/GenericManagent";
 
 export const createEntrepreneursConfig = <T extends BaseEntity & { email: string; phone: string }>(
     items: T[],

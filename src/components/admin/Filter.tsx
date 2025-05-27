@@ -1,6 +1,10 @@
 import { useState } from "react";
-import { BaseEntity, StatusFilter } from "./GenericManagent";
-
+import { BaseEntity } from "./GenericManagent";
+export interface StatusFilter {
+    id: string;
+    label: string;
+    count: number;
+}
 
 export const DefaultCustomFilters = <T extends BaseEntity>({
     items,

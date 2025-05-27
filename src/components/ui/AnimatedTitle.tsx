@@ -44,14 +44,14 @@ const AnimatedTitle: React.FC<AnimatedTitleProps> = ({
                 initial={{ opacity: 1, y: 0 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className={`${sizeClasses[size]}  font-bold transform transition-all duration-300 group-hover:-translate-y-1`}
+                className={`  text-xl md:${sizeClasses[size ]}  font-bold transform transition-all duration-300 group-hover:-translate-y-1`}
                 style={{ color }}
             >
 
 
                 {title}
                 <span
-                    className={`block h-1 mt-3 transition-all duration-500 ${underlineWidthClasses[underlineWidth]} ${align === 'center' ? 'mx-auto' : 'ml-0'}`}
+                    className={`block h-1 mt-0 md:mt-3 transition-all duration-500 ${underlineWidthClasses[underlineWidth]} ${align === 'center' ? 'mx-auto' : 'ml-0'}`}
                     style={{ backgroundColor: color }}
                 ></span>
             </motion.h1>

@@ -41,7 +41,7 @@ export function useAuth() {
             if (!result.isValid || !result.user) throw new Error('No autorizado');
             return result.user;
         },
-        staleTime: 1000 * 60 * 5, // 5 min
+        staleTime: 1000 * 60 * 60, // 5 min
         retry: false,
     });
 

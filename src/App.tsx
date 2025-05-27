@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 /// Layouts
 const MainLayout = lazy(() => import('@/layouts/MainLayout'));
 const AuthLayout = lazy(() => import('@/layouts/AuthLayout'));
+const DashboardLayout = lazy(() => import('@/components/admin/DashboardLayout'));
 
 // Pages
 const Home = lazy(() => import('@/pages/Home/Home'));
@@ -13,61 +14,76 @@ const LoginPage = lazy(() => import('@/pages/Auth/LoginPage'));
 const RegisterPage = lazy(() => import('@/pages/Auth/RegisterPage'));
 const SendEmail = lazy(() => import('@/pages/Auth/SendEmail'));
 const EmailVerificationPage = lazy(() => import('@/pages/Auth/VerificationPage'));
-const FarmPage = lazy(() => import('@/pages/Estates/EstatePage'));
-const NotFoundPage = lazy(() => import('@/pages/Errors/NotFoundPage'));
+const FarmPage = lazy(() => import('@/pages/Farm/FarmPage'));
+const NotFoundPage = lazy(() => import('@/pages/Auth/Errors/NotFoundPage'));
 const AboutUs = lazy(() => import('@/pages/AboutUs/AboutUs'));
-import FarmsManagement from "./components/admin/farms/FarmSection";
-import EntrepreneursManagement from "./components/admin/entrepreneurs/EntrepreneursManagement";
-import { AdminDashboard } from "./pages/Admin/AdminDashboard";
-import PackagesManagement from "./components/admin/packages/PackagesManagement";
-import CategoriesManagement from "./components/admin/categories/CategoriesManagement";
+
+// Admin Pages - Corregir estas rutas para que apunten a las páginas correctas
+const FarmsPage = lazy(() => import('@/pages/Admin/FarmsPage'));
+const EntrepreneursPage = lazy(() => import('@/pages/Admin/EntrepreneursPage'));
+const PackagesPage = lazy(() => import('@/pages/Admin/PackagesPage'));
+const CategoriesPage = lazy(() => import('@/pages/Admin/CategoriesPage'));
+
+// Context
+import { PageProvider } from '@/context/PageContext';
 
 // Routes
 import ProtectedRoute from "./routes/protectedRoute";
-
 
 const queryClient = new QueryClient();
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Suspense fallback={<div className="flex items-center justify-center min-h-screen">
-        <span className="animate-spin h-6 w-6 border-4 border-t-transparent rounded-full border-white" />
-      </div>}>
-        <Routes>
-          <Route element={<MainLayout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/productos" element={<ProductsPage />} />
-            <Route path="/nosotros" element={<AboutUs />} />
-          </Route>
+      <PageProvider>
+        <Suspense fallback={
+          <div className="flex items-center justify-center min-h-screen">
+            <span className="animate-spin h-6 w-6 border-4 border-t-transparent rounded-full border-primary" />
+          </div>
+        }>
+          <Routes>
+            {/* Rutas públicas con MainLayout */}
+            <Route element={<MainLayout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/productos" element={<ProductsPage />} />
+              <Route path="/nosotros" element={<AboutUs />} />
+            </Route>
 
-          <Route element={<AuthLayout />}>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/registro" element={<RegisterPage />} />
-            <Route path="/correo-enviado" element={<SendEmail />} />
-            <Route path="/verificar-correo" element={<EmailVerificationPage />} />
-          </Route>
+            {/* Rutas de autenticación */}
+            <Route element={<AuthLayout />}>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/registro" element={<RegisterPage />} />
+              <Route path="/correo-enviado" element={<SendEmail />} />
+              <Route path="/verificar-correo" element={<EmailVerificationPage />} />
+            </Route>
 
-          <Route element={<ProtectedRoute />}>
-            <Route path="/estate" element={<FarmPage />} />
-          </Route>
+            {/* Rutas protegidas para usuarios autenticados */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/finca" element={<FarmPage />} />
+            </Route>
 
-          {/* <Route element={<ProtectedRoute roles={['administrador']} />}> */}
-          <Route path="/dashboard" element={<AdminDashboard />} />
-          <Route path="/dashboard/emprendedores" element={<EntrepreneursManagement />} />
-          <Route path="/dashboard/fincas" element={<FarmsManagement />} />
-          <Route path="/dashboard/paquetes" element={<PackagesManagement />} />
-          <Route path="/dashboard/categorias" element={<CategoriesManagement />} />
+            {/* Rutas del dashboard administrativo */}
+            {/* Descomenta y ajusta según tus roles */}
+            {/* <Route element={<ProtectedRoute roles={['administrador']} />}> */}
+            {/* <Route element={<ProtectedRoute />}> */}
+            <Route path="/dashboard" element={<DashboardLayout />}>
+              <Route path="emprendedores" element={<EntrepreneursPage />} />
+              <Route path="fincas" element={<FarmsPage />} />
+              <Route path="paquetes" element={<PackagesPage />} />
+              <Route path="categorias" element={<CategoriesPage />} />
+              {/* Ruta por defecto del admin */}
+              <Route index element={<EntrepreneursPage />} />
+            </Route>
+            {/* </Route> */}
+            {/* </Route> */}
 
-
-          {/* </Route> */}
-
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </Suspense>
+            {/* Página 404 */}
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </Suspense>
+      </PageProvider>
     </QueryClientProvider>
   );
 }
-
 
 export default App;

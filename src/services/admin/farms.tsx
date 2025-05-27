@@ -1,8 +1,7 @@
 import { useGenericManagement } from '@/hooks/useGenericManagement';
-import { Farm } from '@/interfaces/farm';
 import GenericManagement, { defaultSidebarItems } from '@/components/admin/GenericManagent';
-import { createFarmsConfig } from '@/components/admin/farms/createFarmsConfig';
-import { FarmCard } from '@/components/admin/farms/FarmCard';
+import { createFarmsConfig } from '@/features/admin/farms/createFarmsConfig';
+import FarmCard, { Farm } from '@/features/admin/farms/FamCard';
 
 export function FarmsManagementWithAPI() {
     const {
@@ -10,12 +9,11 @@ export function FarmsManagementWithAPI() {
         isLoading,
         create,
         update,
-        delete: deleteFarm
-    } = useGenericManagement<Farm>('farms', '/api/farms');
-    
+        delete: deleteFarm,
+    } = useGenericManagement<Farm>('fincas', '/fincas');
+
     const handleEdit = (farm: Farm) => {
-        // Abrir modal de edición
-        const updatedFarm = { ...farm, name: farm.name + ' (Editada)' };
+        const updatedFarm = { ...farm, name: `${farm.name} (Editada)` };
         update(updatedFarm);
     };
 
@@ -26,8 +24,8 @@ export function FarmsManagementWithAPI() {
     };
 
     const handleView = (farm: Farm) => {
-        // Navegar a vista detallada
         console.log('Viewing farm:', farm);
+        // Aquí podrías usar useNavigate para redirigir
     };
 
     const handleCreate = () => {
@@ -36,24 +34,23 @@ export function FarmsManagementWithAPI() {
             entrepreneur: 'Nuevo Emprendedor',
             location: 'Nueva Ubicación',
             cropType: 'Café',
-            status: 'draft' as const
+            status: 'draft' as const,
         };
         create(newFarm);
     };
 
-    if (isLoading) {
-        return <div>Cargando...</div>;
-    }
+    if (isLoading) return <div>Cargando fincas...</div>;
 
-    const config = createFarmsConfig(
-        farms,
-        FarmCard,
-        { onEdit: handleEdit, onDelete: handleDelete, onView: handleView, onCreate: handleCreate }
-    );
+    const config = createFarmsConfig(farms, FarmCard, {
+        onEdit: handleEdit,
+        onDelete: handleDelete,
+        onView: handleView,
+        onCreate: handleCreate,
+    });
 
     const sidebarItems = defaultSidebarItems.map(item => ({
         ...item,
-        active: item.id === 'fincas'
+        active: item.id === 'fincas',
     }));
 
     return <GenericManagement config={ config } sidebarItems = { sidebarItems } />;

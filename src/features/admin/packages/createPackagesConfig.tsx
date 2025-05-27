@@ -1,4 +1,4 @@
-import { EntityConfig, BaseEntity } from "../GenericManagent";
+import { EntityConfig, BaseEntity } from "@/components/admin/GenericManagent";
 
 export const createPackagesConfig = <T extends BaseEntity & { price: number; description: string }>(
     items: T[],

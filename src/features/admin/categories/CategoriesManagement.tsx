@@ -1,12 +1,10 @@
-import GenericManagement, { defaultSidebarItems, BaseEntity } from '@/components/admin/GenericManagent';
-import { CategoryCard } from '@/components/admin/categories/CategoriesCard';
-import { createCategoriesConfig } from '@/components/admin/categories/createCategoriesConfig';
+import GenericManagement from '@/components/admin/GenericManagent';
+import { CategoryCard } from '@/features/admin/categories/CategoriesCard';
+import { createCategoriesConfig } from '@/features/admin/categories/createCategoriesConfig';
+import { Category } from './CategoriesTypes';
 
-export interface Category extends BaseEntity {
-    description: string;
-    productsCount: number;
-    color: string;
-}
+
+
 
 const categories: Category[] = [
     {
@@ -43,10 +41,5 @@ export default function CategoriesManagement() {
         { onEdit: handleEdit, onDelete: handleDelete, onView: handleView, onCreate: handleCreate }
     );
 
-    const sidebarItems = defaultSidebarItems.map(item => ({
-        ...item,
-        active: item.id === 'categorias'
-    }));
-
-    return <GenericManagement config={config} sidebarItems={sidebarItems} />;
+    return   <GenericManagement config={config} />;
 }

@@ -66,7 +66,7 @@ axiosInstance.interceptors.response.use(
       try {
         // 1. Intenta renovar el access token
         await axios.post(
-          `${process.env.VITE_API_URL}/auth/refresh`,
+          `${process.env.VITE_API_URL}/refrescar-token`,
           {},
           { withCredentials: true }
         );
