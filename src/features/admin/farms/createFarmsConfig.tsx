@@ -3,12 +3,12 @@ import { EntityConfig, BaseEntity } from "@/components/admin/GenericManagent";
 export const createFarmsConfig = <T extends BaseEntity & {
     entrepreneur: string;
     location: string;
-    cropType: string;
+    Type: string;
     status: string;
 }>(
     items: T[],
     ItemCard: EntityConfig<T>['ItemCard'],
-    callbacks: Pick<EntityConfig<T>, 'onEdit' | 'onDelete' | 'onView' | 'onCreate'>
+    callbacks: Pick<EntityConfig<T>, 'onEdit' | 'onDelete' | 'onCreate'>
 ): EntityConfig<T> => ({
     entityName: 'Finca',
     entityNamePlural: 'Fincas',
@@ -28,7 +28,7 @@ export const createFarmsConfig = <T extends BaseEntity & {
             item.name || '',
             item.entrepreneur || '',
             item.location || '',
-            item.cropType || '',
+            item.Type || '',
             item.status || ''
         ];
 
@@ -47,7 +47,7 @@ export const createFarmsConfig = <T extends BaseEntity & {
     //         ]
     //     },
     //     {
-    //         key: 'cropType',
+    //         key: 'Type',
     //         label: 'Tipo de Cultivo',
     //         options: [
     //             { value: 'Café Arábigo', label: 'Café Arábigo' },

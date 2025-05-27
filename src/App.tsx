@@ -64,18 +64,16 @@ function App() {
 
             {/* Rutas del dashboard administrativo */}
             {/* Descomenta y ajusta según tus roles */}
-            {/* <Route element={<ProtectedRoute roles={['administrador']} />}> */}
-            {/* <Route element={<ProtectedRoute />}> */}
-            <Route path="/dashboard" element={<DashboardLayout />}>
-              <Route path="emprendedores" element={<EntrepreneursPage />} />
-              <Route path="fincas" element={<FarmsPage />} />
-              <Route path="paquetes" element={<PackagesPage />} />
-              <Route path="categorias" element={<CategoriesPage />} />
-              {/* Ruta por defecto del admin */}
-              <Route index element={<EntrepreneursPage />} />
+            <Route element={<ProtectedRoute roles={['administrador']} />}>
+              <Route path="/dashboard" element={<DashboardLayout />}>
+                <Route path="emprendedores" element={<EntrepreneursPage />} />
+                <Route path="fincas" element={<FarmsPage />} />
+                <Route path="paquetes" element={<PackagesPage />} />
+                <Route path="categorias" element={<CategoriesPage />} />
+                {/* Ruta por defecto del admin */}
+                <Route index element={<EntrepreneursPage />} />
+              </Route>
             </Route>
-            {/* </Route> */}
-            {/* </Route> */}
 
             {/* Página 404 */}
             <Route path="*" element={<NotFoundPage />} />

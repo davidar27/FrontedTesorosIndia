@@ -12,8 +12,9 @@ const entrepreneurs: Entrepreneur[] = [
         name: "Arturo Ocampo",
         email: "arturo@example.com",
         phone: "+57 300 123 4567",
-        farms: 2,
-        joinDate: "2023-01-15",
+        farm: "Puerto Arturo",
+        image: "",
+        joinDate: "2023-01-15", 
         status: "active",
     },
     // ... más emprendedores
@@ -28,10 +29,6 @@ export default function EntrepreneursManagement() {
         console.log('Deleting entrepreneur:', entrepreneurId);
     };
 
-    const handleView = (entrepreneur: Entrepreneur) => {
-        console.log('Viewing entrepreneur:', entrepreneur);
-    };
-
     const handleCreate = () => {
        
     };
@@ -39,7 +36,7 @@ export default function EntrepreneursManagement() {
     const config = createEntrepreneursConfig(
         entrepreneurs,
         EntrepreneurCard,
-        { onEdit: handleEdit, onDelete: handleDelete, onView: handleView, onCreate: handleCreate }
+        { onEdit: handleEdit, onDelete: handleDelete, onCreate: handleCreate }
     );
 
 

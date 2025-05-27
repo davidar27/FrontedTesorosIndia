@@ -12,7 +12,7 @@ const initialFarms: Farm[] = [
         name: "Puerto Arturo",
         entrepreneur: "Arturo Ocampo",
         location: "La finca Rillera del Guarriak se halla ubicada en la vereda San José, municipio de Planadas, Tolima",
-        cropType: "Café Arábigo",
+        Type: "Café Arábigo",
         status: "active",
         establishedDate: "2018-03-15"
     },
@@ -21,7 +21,7 @@ const initialFarms: Farm[] = [
         name: "El Mirador",
         entrepreneur: "María González",
         location: "Vereda El Mirador, Ibagué, Tolima",
-        cropType: "Cacao",
+        Type: "Cacao",
         status: "active",
         establishedDate: "2020-01-10"
     },
@@ -30,7 +30,7 @@ const initialFarms: Farm[] = [
         name: "La Esperanza",
         entrepreneur: "Carlos Ruiz",
         location: "Corregimiento La Esperanza, Chaparral, Tolima",
-        cropType: "Café Robusta",
+        Type: "Café Robusta",
         status: "draft",
         establishedDate: "2017-06-22"
     }

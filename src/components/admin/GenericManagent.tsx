@@ -29,13 +29,11 @@ export interface EntityConfig<T extends BaseEntity> {
         item: T;
         onEdit: (item: T) => void;
         onDelete: (id: number) => void;
-        onView: (item: T) => void;
     }>;
 
     // Callbacks
     onEdit: (item: T) => void;
     onDelete: (id: number) => void;
-    onView: (item: T) => void;
     onCreate: () => void;
 
     // Filtros personalizados (opcional)
@@ -122,8 +120,8 @@ export default function SimplifiedManagement<T extends BaseEntity>({
                     aria-label={`Crear nuevo ${config.entityName.toLowerCase()}`}
                 >
                     <Plus className="w-5 h-5" />
-                    <span className="hidden sm:inline">{`Nuevo ${config.entityName}`}</span>
-                    <span className="sm:hidden">Nuevo</span>
+                    <span className="hidden sm:inline">{`Crear ${config.entityName}`}</span>
+                    <span className="sm:hidden">Crear</span>
                 </Button>
             </div>
 
@@ -178,7 +176,6 @@ export default function SimplifiedManagement<T extends BaseEntity>({
                                 item={item}
                                 onEdit={config.onEdit}
                                 onDelete={config.onDelete}
-                                onView={config.onView}
                             />
                         </div>
                     ))}

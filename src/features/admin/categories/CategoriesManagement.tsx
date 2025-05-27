@@ -1,7 +1,7 @@
 import GenericManagement from '@/components/admin/GenericManagent';
 import { CategoryCard } from '@/features/admin/categories/CategoriesCard';
 import { createCategoriesConfig } from '@/features/admin/categories/createCategoriesConfig';
-import { Category } from './CategoriesTypes';
+import { Category } from '@/features/admin/categories/CategoriesTypes';
 
 
 
@@ -9,10 +9,8 @@ import { Category } from './CategoriesTypes';
 const categories: Category[] = [
     {
         id: 1,
-        name: "Café Premium",
-        description: "Cafés de alta calidad con procesos especiales",
+        name: "Comida",
         productsCount: 12,
-        color: "#8B4513",
         status: "active",
     },
     // ... más categorías
@@ -27,9 +25,6 @@ export default function CategoriesManagement() {
         console.log('Deleting category:', categoryId);
     };
 
-    const handleView = (category: Category) => {
-        console.log('Viewing category:', category);
-    };
 
     const handleCreate = () => {
         console.log('Creating new category');
@@ -38,7 +33,7 @@ export default function CategoriesManagement() {
     const config = createCategoriesConfig(
         categories,
         CategoryCard,
-        { onEdit: handleEdit, onDelete: handleDelete, onView: handleView, onCreate: handleCreate }
+        { onEdit: handleEdit, onDelete: handleDelete, onCreate: handleCreate }
     );
 
     return   <GenericManagement config={config} />;

@@ -4,4 +4,6 @@ export interface Package extends BaseEntity {
     price: number;
     description: string;
     category: string;
+    duration: string;
+    capacity: string;
 }

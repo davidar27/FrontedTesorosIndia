@@ -3,7 +3,7 @@ import { EntityConfig, BaseEntity } from "@/components/admin/GenericManagent";
 export const createEntrepreneursConfig = <T extends BaseEntity & { email: string; phone: string }>(
     items: T[],
     ItemCard: EntityConfig<T>['ItemCard'],
-    callbacks: Pick<EntityConfig<T>, 'onEdit' | 'onDelete' | 'onView' | 'onCreate'>
+    callbacks: Pick<EntityConfig<T>, 'onEdit' | 'onDelete' | 'onCreate'>
 ): EntityConfig<T> => ({
     entityName: 'Emprendedor',
     entityNamePlural: 'Emprendedores',

@@ -34,7 +34,7 @@ export function FarmsManagementWithAPI() {
             name: 'Nueva Finca',
             entrepreneur: 'Nuevo Emprendedor',
             location: 'Nueva Ubicación',
-            cropType: 'Café',
+            Type: 'Café',
             status: 'draft' as const,
         };
         create(newFarm);

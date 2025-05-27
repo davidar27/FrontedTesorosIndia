@@ -1,6 +1,6 @@
 import GenericManagement from '@/components/admin/GenericManagent';
 import { createPackagesConfig } from '@/features/admin/packages/createPackagesConfig';
-import { PackageCard } from '@/features/admin/packages/PackagesCard';
+import PackageCard from '@/features/admin/packages/PackagesCard';
 import { useMemo } from 'react';
 import { Package } from './PackageTypes';
 
@@ -14,6 +14,8 @@ const packages: Package[] = [
         description: "Café especial de alta calidad con notas frutales",
         category: "Premium",
         status: "active",
+        duration: "1 mes",
+        capacity: "10 Personas"
     },
     // ... más paquetes
 ];
@@ -27,9 +29,7 @@ function PackagesManagement() {
         console.log('Deleting package:', packageId);
     };
 
-    const handleView = (pkg: Package) => {
-        console.log('Viewing package:', pkg);
-    };
+   
 
     const handleCreate = () => {
         console.log('Creating new package');
@@ -41,13 +41,12 @@ function PackagesManagement() {
         {
             onEdit: handleEdit,
             onDelete: handleDelete,
-            onView: handleView,
             onCreate: handleCreate
         }
     ), []);
 
 
     return <GenericManagement config={config} />;
-    
+
 }
 export default PackagesManagement;
