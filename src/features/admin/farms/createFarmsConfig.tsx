@@ -1,62 +1,43 @@
-import { EntityConfig, BaseEntity } from "@/components/admin/GenericManagent";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { BaseEntity, EntityConfig } from "@/components/admin/GenericManagent";
 
-export const createFarmsConfig = <T extends BaseEntity & {
-    entrepreneur: string;
-    location: string;
-    Type: string;
-    status: string;
-}>(
-    items: T[],
-    ItemCard: EntityConfig<T>['ItemCard'],
-    callbacks: Pick<EntityConfig<T>, 'onEdit' | 'onDelete' | 'onCreate'>
-): EntityConfig<T> => ({
-    entityName: 'Finca',
-    entityNamePlural: 'Fincas',
-    description: 'Gestiona y monitorea las fincas de los emprendedores',
-    searchPlaceholder: 'Buscar fincas, emprendedores, ubicaciones...',
-    emptyStateEmoji: '🏔️',
-    emptyStateTitle: 'No se encontraron fincas',
-    emptyStateDescription: 'Intenta cambiar los filtros o el término de búsqueda para encontrar fincas',
-    items,
-    ItemCard,
-    ...callbacks,
-    searchFunction: (item, searchTerm) => {
-        if (!searchTerm) return true;
+interface CreateConfigParams<T extends BaseEntity<any>> {
+    data: T[];
+    CardComponent: React.ComponentType<{
+        item: T;
+        onEdit: (item: T) => void;
+        onDelete: (id: number) => void;
+    }>;
+    actions: {
+        onEdit?: (item: T) => void;
+        onDelete?: (id: number) => void;
+        onCreate?: () => void;
+    };
+}
 
-        const term = searchTerm.toLowerCase().trim();
-        const searchableFields = [
-            item.name || '',
-            item.entrepreneur || '',
-            item.location || '',
-            item.Type || '',
-            item.status || ''
-        ];
-
-        return searchableFields.some(field =>
-            field.toLowerCase().includes(term)
-        );
-    },
-    // filterOptions: [
-    //     {
-    //         key: 'status',
-    //         label: 'Estado',
-    //         options: [
-    //             { value: 'active', label: 'Activa' },
-    //             { value: 'inactive', label: 'Inactiva' },
-    //             { value: 'draft', label: 'Borrador' }
-    //         ]
-    //     },
-    //     {
-    //         key: 'Type',
-    //         label: 'Tipo de Cultivo',
-    //         options: [
-    //             { value: 'Café Arábigo', label: 'Café Arábigo' },
-    //             { value: 'Café Robusta', label: 'Café Robusta' },
-    //             { value: 'Cacao', label: 'Cacao' },
-    //             { value: 'Plátano', label: 'Plátano' }
-    //         ]
-    //     }
-    // ]
+export const CreateFarmsConfig = <T extends BaseEntity<any>>({
+    data,
+    CardComponent,
+    actions
+}: CreateConfigParams<T>): EntityConfig<T> => ({
+    entityName: "Finca",
+    entityNamePlural: "Fincas",
+    searchPlaceholder: "Buscar fincas...",
+    emptyStateEmoji: "🏠",
+    ItemCard: CardComponent,
+    emptyStateTitle: "No hay fincas",
+    emptyStateDescription: "Crea la primera finca para comenzar",
+    description: "Gestiona fincas",
+    items: data,
+    isLoading: false,
+    error: null,
+    maxResults: 50,
+    enableAnimations: true,
+    showResultsCount: true,
+    customFilters: () => null,
+    searchFunction: () => true,
+    onEdit: actions.onEdit || (() => { }),
+    onDelete: actions.onDelete || (() => { }),
+    onCreate: actions.onCreate || (() => { }),
+    onRetry: () => { },
 });
-
-

@@ -58,26 +58,10 @@ export default function EntrepreneursManagement() {
     } = useAuthenticatedQuery<Entrepreneur[]>({
         queryKey: ['entrepreneurs'],
         queryFn: () => entrepreneursApi.getAll(),
-        select: (data: any) => {
-            if (!data?.users) return [];
-
-            return data.users.map((user: any) => ({
-                id: user.usuario_id,
-                name: user.nombre,
-                email: user.correo,
-                phone: user.telefono,
-                registrationDate: user.fecha_registro,
-                status: user.estado === 1 ? 'active' as const :
-                    user.estado === 0 ? 'inactive' as const : 'pending' as const,
-                farm: user.finca
-            }));
-        },
         staleTime: 5 * 60 * 1000, // 5 minutos
         retry: 2
     });
 
-    console.log('Raw API data:', entrepreneurs);
-    console.log('Mapped entrepreneurs:', entrepreneurs);
     // Mutaciones protegidas
     const createMutation = useProtectedMutation({
         mutationFn: entrepreneursApi.create,

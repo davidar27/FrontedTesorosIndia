@@ -112,6 +112,7 @@ const LoadingSpinner: React.FC<{ size?: number }> = ({ size = 16 }) => (
     />
 );
 
+
 export function ReusableCard<T extends BaseItem>({
     item,
     contactInfo = [],
@@ -136,6 +137,9 @@ export function ReusableCard<T extends BaseItem>({
     };
 
     const getStatusLabel = (status: string) => {
+        if (!status) return 'Desconocido';
+
+        console.log('Status:', status);
         return statusConfig[status]?.label || status.charAt(0).toUpperCase() + status.slice(1);
     };
 
