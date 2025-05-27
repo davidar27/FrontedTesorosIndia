@@ -12,7 +12,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useAuthenticatedQuery } from '@/hooks/useAuthenticatedQuery';
 import { useProtectedMutation } from '@/hooks/useProtectedMutation';
-import { Entrepreneur, CreateEntrepreneurData, UpdateEntrepreneurData } from '@/features/admin/entrepreneurs/EntrepreneursTypes';
+import { Entrepreneur, CreateEntrepreneurData } from '@/features/admin/entrepreneurs/EntrepreneursTypes';
 
 export default function EntrepreneursManagement() {
     const [showCreateForm, setShowCreateForm] = useState(false);
@@ -94,21 +94,20 @@ export default function EntrepreneursManagement() {
         }
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const updateMutation = useProtectedMutation({
-        mutationFn: ({ id, data }: { id: number; data: UpdateEntrepreneurData }) =>
-            entrepreneursApi.update(id, data),
-        requiredPermission: 'entrepreneurs:edit',
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] });
-        },
-        onError: (error: any) => {
-            console.error('Error updating entrepreneur:', error);
-        },
-        onUnauthorized: () => {
-            alert('No tienes permisos para editar emprendedores');
-        }
-    });
+    // const updateMutation = useProtectedMutation({
+    //     mutationFn: ({ id, data }: { id: number; data: UpdateEntrepreneurData }) =>
+    //         entrepreneursApi.update(id, data),
+    //     requiredPermission: 'entrepreneurs:edit',
+    //     onSuccess: () => {
+    //         queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] });
+    //     },
+    //     onError: (error: any) => {
+    //         console.error('Error updating entrepreneur:', error);
+    //     },
+    //     onUnauthorized: () => {
+    //         alert('No tienes permisos para editar emprendedores');
+    //     }
+    // });
 
     const deleteMutation = useProtectedMutation({
         mutationFn: entrepreneursApi.delete,
