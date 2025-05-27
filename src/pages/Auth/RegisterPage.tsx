@@ -1,6 +1,5 @@
 //components
 import AuthForm from '@/components/layouts/AuthForm';
-import LoadingSpinner from '@/components/ui/LoadingSpinner';
 //hooks
 import { useNavigate, useLocation } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -115,12 +114,11 @@ const RegisterPage = () => {
 
     return (
         <>
-            {isLoading && <LoadingSpinner />}
             <AuthForm
                 title="Registro"
                 subtitle="Regístrate ingresando los siguientes datos"
                 fields={fields}
-                submitText="Crear cuenta"
+                submitText={isLoading ? "Procesando..." : "Crear cuenta"}
                 bottomText="¿Ya tienes cuenta?"
                 bottomLinkText="Inicia sesión"
                 bottomLinkTo="/login"

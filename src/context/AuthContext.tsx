@@ -12,6 +12,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [, setIsSubmitting] = useState(false);
+
     const navigate = useNavigate();
 
     const { isAdmin, isEntrepreneur, isClient } = useMemo(() => ({
@@ -23,13 +25,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // ===== Funciones de Borrador de sesión =====
 
     const logout = useCallback(async (): Promise<void> => {
+        setIsSubmitting(true);
+
         try {
             await authService.logout();
         } catch {
             // 
         } finally {
             setUser(null);
-            setError(null);
+            setError(null);   
+            setIsSubmitting(false); 
             navigate("/")
         }
     }, []);
@@ -91,6 +96,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const login = useCallback(async (credentials: Credentials): Promise<User> => {
         setIsLoading(true);
         setError(null);
+        setIsSubmitting(true);
+
         try {
             const userData = await authService.login(credentials);
             setUser(userData);
@@ -100,6 +107,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             throw err;
         } finally {
             setIsLoading(false);
+            setIsSubmitting(true);
+
         }
     }, []);
 

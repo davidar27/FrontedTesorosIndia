@@ -12,7 +12,7 @@ export interface BaseEntity {
 }
 
 export interface EntityConfig<T extends BaseEntity> {
-    // Solo la configuración específica de la entidad, sin sidebar
+    // Configuración específica de la entidad
     entityName: string;
     entityNamePlural: string;
     searchPlaceholder: string;

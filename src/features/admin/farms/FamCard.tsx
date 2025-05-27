@@ -1,6 +1,6 @@
 // components/admin/farms/FarmCard.tsx
 import React from 'react';
-import { Farm } from '@/features/admin/farms/farmTypes';
+import { Farm } from '@/features/admin/farms/FarmTypes';
 
 interface FarmCardProps {
     item: Farm;

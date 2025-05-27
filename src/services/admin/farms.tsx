@@ -1,7 +1,8 @@
 import { useGenericManagement } from '@/hooks/useGenericManagement';
-import GenericManagement, { defaultSidebarItems } from '@/components/admin/GenericManagent';
+import GenericManagement from '@/components/admin/GenericManagent';
 import { createFarmsConfig } from '@/features/admin/farms/createFarmsConfig';
-import FarmCard, { Farm } from '@/features/admin/farms/FamCard';
+import FarmCard from '@/features/admin/farms/FamCard';
+import { Farm } from '@/features/admin/farms/FarmTypes';
 
 export function FarmsManagementWithAPI() {
     const {
@@ -48,10 +49,7 @@ export function FarmsManagementWithAPI() {
         onCreate: handleCreate,
     });
 
-    const sidebarItems = defaultSidebarItems.map(item => ({
-        ...item,
-        active: item.id === 'fincas',
-    }));
+    
 
-    return <GenericManagement config={ config } sidebarItems = { sidebarItems } />;
+    return <GenericManagement config={ config } />;
 }

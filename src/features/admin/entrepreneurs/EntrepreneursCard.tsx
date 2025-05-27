@@ -1,6 +1,5 @@
-
 import { Edit, Trash2, Eye, Phone, Mail } from 'lucide-react';
-import { Entrepreneur } from './EntrepreneursManagement';
+import { Entrepreneur } from '@/features/admin/entrepreneurs/EntrepreneursTypes';
 
 
 interface EntrepreneurCardProps {

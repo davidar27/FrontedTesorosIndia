@@ -6,7 +6,6 @@ export const PageWrapper: React.FC<{
     description: string;
     children: React.ReactNode;
 }> = ({ title, description, children }) => {
-    // Configurar la información de la página
     usePageSetup({ title, description });
 
     return (

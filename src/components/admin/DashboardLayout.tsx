@@ -33,7 +33,7 @@ const DashboardLayout: React.FC = () => {
                 <main className="flex-1 min-h-screen">
                     {/* Header fijo para todas las páginas */}
                     <header className="backdrop-blur-sm border-b border-gray-200/50 sticky top-0 z-10">
-                        <div className=" flex flex-col md:flex-row   md:items-center responsive-padding-x py-0 md:py-4">
+                        <div className=" flex flex-col md:flex-row    md:items-center responsive-padding-x py-0 md:py-4">
                             {/* Información de la página actual */}
                             {pageInfo && (
                                 <>
@@ -51,25 +51,25 @@ const DashboardLayout: React.FC = () => {
                                             />
                                         </span>
                                     </div>
+                                    <div className='flex items-center justify-between w-full'>
+                                        <div className="animate-fade-in-up text-center md:text-left">
+                                            <AnimatedTitle
+                                                title={pageInfo.title}
+                                                align='left'
+                                                size='xl'
 
-                                    <div className="animate-fade-in-up text-center md:text-left">
-                                        <AnimatedTitle
-                                            title={pageInfo.title}
-                                            align='left'
-                                            size='xl'
+                                            />
+                                            <p className="text-xs md:text-xl text-gray-600">
+                                                {pageInfo.description}
+                                            </p>
 
-                                        />
-                                        <p className="text-xs md:text-xl text-gray-600">
-                                            {pageInfo.description}
-                                        </p>
-
+                                        </div>
+                                        <span className='hidden sm:block'>
+                                            <UserMenu
+                                                textColor='!black'
+                                            />
+                                        </span>
                                     </div>
-                                    <span className='hidden sm:block'>
-                                        <UserMenu
-                                            textColor='!black'
-                                        />
-                                    </span>
-
                                 </>
                             )}
                         </div>

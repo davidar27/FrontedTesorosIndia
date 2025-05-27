@@ -1,5 +1,5 @@
 import { Edit, Trash2, Eye, Phone, Mail } from 'lucide-react';
-import { Category } from './CategoriesManagement';
+import { Category } from '@/features/admin/categories/CategoriesTypes';
 
 
 interface CategoryCardProps {

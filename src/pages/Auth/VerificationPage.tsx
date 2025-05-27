@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { verifyEmail } from '@/services/auth/verifyEmailService';
-import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Button from '@/components/ui/buttons/Button';
 import background from "/images/FondoDesktop.webp";
 
@@ -62,7 +61,6 @@ const EmailVerificationPage = () => {
                 <div className="text-center gap-8">
                     {status === 'verifying' && (
                         <>
-                            <LoadingSpinner className="w-12 h-12 mx-auto text-primary" />
                             <p className="text-gray-600">
                                 Estamos confirmando tu dirección de email. Por favor espera...
                             </p>
