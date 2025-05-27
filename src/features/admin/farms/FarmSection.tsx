@@ -3,7 +3,7 @@ import { useState, useMemo } from 'react';
 import GenericManagement from '@/components/admin/GenericManagent';
 import FarmCard from '@/features/admin/farms/FamCard';
 import { createFarmsConfig } from '@/features/admin/farms/createFarmsConfig';
-import { Farm } from '@/features/admin/farms/farmTypes';
+import { Farm } from '@/features/admin/farms/FarmTypes';
 
 // Datos de ejemplo más completos
 const initialFarms: Farm[] = [
