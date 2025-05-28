@@ -13,7 +13,7 @@ import BackButton from "@/components/ui/buttons/BackButton";
 
 //hooks
 import { Link } from "react-router-dom";
-import { FormEventHandler, useState } from "react";
+import { FormEventHandler, useState, useEffect } from "react";
 import { UseFormRegister, FieldErrors } from "react-hook-form";
 
 type Field = {
@@ -65,36 +65,27 @@ const AuthForm = ({
 }: AuthFormProps) => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
+  useEffect(() => {
+    if (!isSubmitting) {
+      setIsButtonDisabled(false);
+    }
+  }, [isSubmitting]);
+
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
 
-    // Evitar múltiples submissions
     if (isButtonDisabled || isSubmitting) {
       return;
     }
-
-    // Deshabilitar el botón inmediatamente
+    
     setIsButtonDisabled(true);
 
     try {
-      // Llamar al onSubmit original
       await onSubmit(e);
-    } catch (error) {
-      // En caso de error, rehabilitar el botón
-      console.error('Error en el formulario:', error);
+    } catch  {
       setIsButtonDisabled(false);
     }
-
-    // Nota: El botón se rehabilitará cuando el componente se desmonte o 
-    // cuando el componente padre maneje el éxito/error y cambie isSubmitting
   };
-
-  // Rehabilitar el botón si isSubmitting cambia a false (indica que terminó el proceso)
-  useState(() => {
-    if (!isSubmitting && isButtonDisabled) {
-      setIsButtonDisabled(false);
-    }
-  });
 
   const buttonIsDisabled = isButtonDisabled || isSubmitting;
   const buttonText = isSubmitting ? "Procesando..." : submitText;
@@ -142,7 +133,6 @@ const AuthForm = ({
                   type={type}
                   placeholder={placeholder}
                   variant={errorType === name ? "error" : "success"}
-                  disabled={buttonIsDisabled} // Deshabilitar inputs durante el proceso
                   {...register(name)}
                 />
                 {errors[name] && (
@@ -162,8 +152,8 @@ const AuthForm = ({
             <Button
               type="submit"
               className={`w-full transition-all duration-200 ${buttonIsDisabled
-                  ? 'opacity-60 cursor-not-allowed bg-gray-400'
-                  : 'hover:opacity-90'
+                ? 'opacity-60 cursor-not-allowed bg-gray-400'
+                : 'hover:opacity-90'
                 }`}
               disabled={buttonIsDisabled}
             >

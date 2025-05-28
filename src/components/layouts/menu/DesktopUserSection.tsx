@@ -1,8 +1,7 @@
 import ButtonIcon from "@/components/ui/buttons/ButtonIcon";
-import { CircleUserRound } from "lucide-react";
 import MenuButton from "./MenuButton";
 import { User, LogOut } from "lucide-react"
-
+import Avatar from "@/components/ui/Avatar";
 
 const DesktopUserSection = ({
     user,
@@ -26,10 +25,9 @@ const DesktopUserSection = ({
             aria-label="Menú de usuario"
             textColor={textColor}
         >
-            <CircleUserRound size={20} />
-            <span className="capitalize text-sm md:text-base">
-                {user?.name?.split(" ").slice(0, 2).join(" ")}
-            </span>
+            <Avatar
+                name={user?.name || ''}
+            />
         </ButtonIcon>
 
         {isOpen && (

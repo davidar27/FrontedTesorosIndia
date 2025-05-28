@@ -23,7 +23,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const {
         data: user,
         isLoading,
-        error: authError,
         refetch: refetchAuth
     } = useQuery({
         queryKey: AUTH_QUERY_KEY,
@@ -141,13 +140,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return PUBLIC_ROUTES.includes(path);
     }, []);
 
-    // Manejar errores de autenticación automáticamente
-    useMemo(() => {
-        if (authError && !isPublicRoute(window.location.pathname)) {
-            // Si hay error de autenticación y no estamos en ruta pública
-            navigate('/login?session_expired=1');
-        }
-    }, [authError, isPublicRoute, navigate]);
+
 
     const value: AuthContextType = useMemo(() => ({
         user: user || null,

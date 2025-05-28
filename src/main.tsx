@@ -2,11 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AuthProvider } from '@/context/AuthContext';
 import App from './App';
 import './index.css';
+import { AuthProvider } from './context/AuthContext';
 
-// Create QueryClient instance here to share between App and AuthProvider
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -32,40 +31,6 @@ const queryClient = new QueryClient({
   },
 });
 
-// Global error handler
-window.addEventListener('unhandledrejection', (event) => {
-  console.error('Unhandled promise rejection:', event.reason);
-  // Prevent the default browser behavior
-  event.preventDefault();
-
-  // In production, you might want to send this to a logging service
-  if (process.env.NODE_ENV === 'production') {
-    // Example: Sentry.captureException(event.reason);
-  }
-});
-
-window.addEventListener('error', (event) => {
-  console.error('Global error:', event.error);
-
-  if (process.env.NODE_ENV === 'production') {
-    // Example: Sentry.captureException(event.error);
-  }
-});
-
-// Check for required environment variables in development
-if (process.env.NODE_ENV === 'development') {
-  const requiredEnvVars = [
-    'VITE_API_URL',
-    // Add other required environment variables here
-  ];
-
-  const missingVars = requiredEnvVars.filter(varName => !import.meta.env[varName]);
-
-  if (missingVars.length > 0) {
-    console.warn('Missing environment variables:', missingVars);
-  }
-}
-
 const rootElement = document.getElementById('root');
 
 if (!rootElement) {
@@ -86,7 +51,6 @@ root.render(
   </React.StrictMode>
 );
 
-// Hot Module Replacement (HMR) - Vite
 if (import.meta.hot) {
   import.meta.hot.accept();
 }

@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const resendVerificationEmail = async (email: string) => {
     try {
-        const response = await axiosInstance.post('/auth/resend-verification', { email });
+        const response = await axiosInstance.post('/auth/reenviar-correo-verificacion', { email });
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {

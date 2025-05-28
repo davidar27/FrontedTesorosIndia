@@ -1,5 +1,5 @@
-import  { axiosInstance } from "@/api/axiosInstance";
-import axios from "axios";
+import { axiosInstance } from "@/api/axiosInstance";
+import { AuthError } from '@/interfaces/responsesApi';
 
 interface RegisterResponse {
     success: boolean;
@@ -8,14 +8,9 @@ interface RegisterResponse {
         id: string;
         name: string;
         email: string;
-        phone_number: string;
+        phone_number?: string;
     };
     token?: string;
-}
-
-interface RegisterError {
-    error: string;
-    details?: Record<string, string>;
 }
 
 const registerService = async (
@@ -33,8 +28,7 @@ const registerService = async (
             password,
             confirm_password,
         });
-
-        if (response.status === 201) {
+        if (response.status === '201' || response.status === '200') {
             return {
                 success: true,
                 message: response.data.message || "Registro exitoso",
@@ -46,11 +40,13 @@ const registerService = async (
         throw new Error("Respuesta inesperada del servidor");
 
     } catch (error: unknown) {
-        if (axios.isAxiosError(error)) {
-            const serverError = error.response?.data as RegisterError;
-            throw new Error(serverError?.error || "Error en el registro");
+        if (error instanceof AuthError) {
+            throw error;
         }
-        throw new Error("Error desconocido al procesar la solicitud");
+
+        throw new AuthError("Error de conexión. Por favor, intenta nuevamente.", {
+            errorType: 'general'
+        });
     }
 };
 

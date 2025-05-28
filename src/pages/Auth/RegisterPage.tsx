@@ -15,29 +15,35 @@ import { AuthError } from '@/interfaces/responsesApi';
 
 const RegisterPage = () => {
     const [errorMessage, setErrorMessage] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
+    const [isRedirecting, setIsRedirecting] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
-    const [prefilledEmail, setPrefilledEmail] = useState("");
-
-    useEffect(() => {
-        if (location.state?.prefilledEmail) {
-            setPrefilledEmail(location.state.prefilledEmail);
-        }
-    }, [location.state]);
 
     const {
         register,
         handleSubmit,
-        formState: { errors }
+        formState: { errors, isSubmitting },
+        setValue,
+        clearErrors,
+        setError: setFormError
     } = useForm<RegistrationData>({
         resolver: yupResolver(registerSchema),
     });
 
+    useEffect(() => {
+        if (location.state?.prefilledEmail) {
+            setValue('email', location.state.prefilledEmail);
+        }
+        if (location.state?.message) {
+            setErrorMessage(location.state.message);
+        }
+    }, [location.state, setValue]);
+
     const onSubmit = async (data: RegistrationData) => {
         try {
-            setIsLoading(true);
-            setErrorMessage('');
+            setIsRedirecting(false);
+            setErrorMessage(''); 
+            clearErrors();
 
             const result = await registerService(
                 data.name,
@@ -47,34 +53,61 @@ const RegisterPage = () => {
                 data.confirm_password
             );
 
-            setTimeout(() => {
-                navigate('/correo-enviado', {
-                    state: {
-                        registrationSuccess: true,
-                        email: result.user?.email || data.email
-                    }
+
+            if (result.success) {
+                setIsRedirecting(true);
+
+                setTimeout(() => {
+                    navigate('/correo-enviado', {
+                        state: {
+                            registrationSuccess: true,
+                            email: result.user?.email || data.email
+                        }                        
+                    });
+                }, 1000);
+            } else {
+                setErrorMessage(result.message);
+                setFormError('email', {
+                    type: 'manual',
+                    message: result.message
                 });
-            }, 1000);
+            }
 
         } catch (error: unknown) {
+            setIsRedirecting(false);
+
             if (error instanceof AuthError) {
                 setErrorMessage(error.message);
 
-                if (error.errorType === 'email') {
-                    setTimeout(() => {
-                        navigate('/registro', {
-                            state: {
-                                prefilledEmail: data.email,
-                                message: error.message
-                            }
-                        });
-                    }, 1500);
+                const errorType = error.errorType || error.errorType;
+
+                if (errorType === 'email') {
+                    setFormError('email', {
+                        type: 'manual',
+                        message: error.message
+                    });
+                } else if (errorType === 'general') {
+                    // The errorMessage state will handle displaying the error
                 }
             } else {
-                setErrorMessage("Ocurrió un error desconocido");
+                const errorMsg = "Ocurrió un error inesperado. Por favor, intenta nuevamente.";
+                setErrorMessage(errorMsg);
+                console.error('Registration error:', error);
             }
-        } finally {
-            setIsLoading(false);
+
+            
+        }
+    };
+
+    const handleFormChange = () => {
+        if (errorMessage) {
+            setErrorMessage("");
+        }
+        if (isRedirecting) {
+            setIsRedirecting(false);
+        }
+        if (Object.keys(errors).length > 0) {
+            clearErrors();
         }
     };
 
@@ -89,8 +122,7 @@ const RegisterPage = () => {
             label: "Email",
             placeholder: "user@ejemplo.com",
             type: "email",
-            name: "email",
-            value: prefilledEmail
+            name: "email"
         },
         {
             label: "Número Celular",
@@ -112,24 +144,33 @@ const RegisterPage = () => {
         },
     ];
 
+    // Determine error type for AuthForm
+    const getErrorType = () => {
+        if (errors.email) return "email";
+        return "general";
+    };
+
     return (
-        <>
-            <AuthForm
-                title="Registro"
-                subtitle="Regístrate ingresando los siguientes datos"
-                fields={fields}
-                submitText={isLoading ? "Procesando..." : "Crear cuenta"}
-                bottomText="¿Ya tienes cuenta?"
-                bottomLinkText="Inicia sesión"
-                bottomLinkTo="/login"
-                errorMessage={errorMessage}
-                onSubmit={handleSubmit(onSubmit)}
-                register={register}
-                errors={errors}
-                isSubmitting={isLoading}
-                onChange={() => setErrorMessage("")}
-            />
-        </>
+        <AuthForm
+            title="Registro"
+            subtitle="Regístrate ingresando los siguientes datos"
+            fields={fields}
+            submitText={
+                isSubmitting ? "Procesando..." :
+                    isRedirecting ? "Redirigiendo..." :
+                        "Crear cuenta"
+            }
+            bottomText="¿Ya tienes cuenta?"
+            bottomLinkText="Inicia sesión"
+            bottomLinkTo="/login"
+            errorMessage={errorMessage}
+            errorType={getErrorType()}
+            onSubmit={handleSubmit(onSubmit)}
+            register={register}
+            errors={errors}
+            isSubmitting={isSubmitting || isRedirecting}
+            onChange={handleFormChange}
+        />
     );
 };
 

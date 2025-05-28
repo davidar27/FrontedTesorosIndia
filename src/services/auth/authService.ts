@@ -42,7 +42,6 @@ const authService = {
   verifyToken: async (): Promise<{ isValid: boolean; user?: User }> => {
     try {
       const { data } = await axiosInstance.get<AuthResponse>("/auth/verificar-token");
-      console.log(data.success);
 
 
       if (data.error) return { isValid: false };
