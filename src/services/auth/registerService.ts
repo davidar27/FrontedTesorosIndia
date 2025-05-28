@@ -28,7 +28,9 @@ const registerService = async (
             password,
             confirm_password,
         });
-        if (response.status === '201' || response.status === '200') {
+
+        // Respuestas exitosas (200-299)
+        if (Number(response.status) >= 200 && Number(response.status) < 300) {
             return {
                 success: true,
                 message: response.data.message || "Registro exitoso",
@@ -37,17 +39,19 @@ const registerService = async (
             };
         }
 
-        throw new Error("Respuesta inesperada del servidor");
+        // Esto normalmente no se ejecutaría porque Axios maneja los códigos de error
+        throw new Error(`Respuesta inesperada del servidor: ${response.status}`);
 
     } catch (error: unknown) {
         if (error instanceof AuthError) {
             throw error;
         }
 
-        throw new AuthError("Error de conexión. Por favor, intenta nuevamente.", {
+        throw new AuthError("Error desconocido durante el registro", {
             errorType: 'general'
         });
     }
 };
+
 
 export default registerService;
