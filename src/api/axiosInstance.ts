@@ -10,16 +10,12 @@ export const axiosInstance = axios.create({
   timeout: 10000,
 });
 
-// Función helper para normalizar tipos de error
 function normalizeErrorType(type?: string): "email" | "password" | "general" {
   return type === "email" || type === "password" ? type : "general";
 }
 
-// Interceptor de request - ya no necesita localStorage
 axiosInstance.interceptors.request.use(
   (config) => {
-    // Las cookies se envían automáticamente con withCredentials: true
-    // No necesitamos agregar el token manualmente
     return config;
   },
   (error) => {
@@ -27,28 +23,50 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// Interceptor de response para manejo de errores y estructura de respuesta
 axiosInstance.interceptors.response.use(
   (response) => {
-    // Puedes transformar respuestas exitosas aquí si es necesario
     return response;
   },
   (error) => {
     const status = error.response?.status;
-    const errorData = error.response?.data?.error;
+    const errorData = error.response?.data;
 
-    // Silencia solo los 401 (pero registra otros errores)
-    if (status !== 401 && import.meta.env.DEV) {
-      console.error("API Error:", error);
-    }
-
-    // Manejo de errores con estructura esperada
+    // Handle different response structures
     if (errorData) {
+      let errorMessage: string;
+      let errorType: "email" | "password" | "general" = "general";
+
+      // Check if errorData has the structure { error: { message: "...", type: "..." } }
+      if (errorData.error && typeof errorData.error === 'object' && errorData.error.message) {
+        errorMessage = errorData.error.message;
+        errorType = normalizeErrorType(errorData.error.type);
+      }
+      // Check if errorData has the structure { error: "message string" }
+      else if (errorData.error && typeof errorData.error === 'string') {
+        errorMessage = errorData.error;
+
+        // Determine error type based on status code and message content
+        if (status === 409 || errorMessage.toLowerCase().includes('correo') || errorMessage.toLowerCase().includes('email')) {
+          errorType = "email";
+        } else if (errorMessage.toLowerCase().includes('contraseña') || errorMessage.toLowerCase().includes('password')) {
+          errorType = "password";
+        }
+      }
+      // Check if errorData has message directly
+      else if (errorData.message) {
+        errorMessage = errorData.message;
+        errorType = normalizeErrorType(errorData.type);
+      }
+      // Fallback
+      else {
+        errorMessage = "Ha ocurrido un error";
+      }
+
       const authError = new AuthError(
-        errorData.message || "Error de autenticación",
+        errorMessage || "Contraseña o correo incorrecto",
         {
           redirectTo: errorData.redirectTo,
-          errorType: normalizeErrorType(errorData.type),
+          errorType: errorType,
         }
       );
 
@@ -64,30 +82,13 @@ axiosInstance.interceptors.response.use(
       );
     }
 
-    return Promise.reject(error);
-  }
-);
-
-// Interceptor de response para renovación automática de tokens
-axiosInstance.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-
-      try {
-        // 1. Intenta renovar el access token usando el refresh token de la cookie
-        await axiosInstance.post('/auth/refresh');
-
-        // 2. Reintenta la petición original con el nuevo token
-        return axiosInstance(originalRequest);
-      } catch (refreshError) {
-        // 3. Redirige a login si falla el refresh
-        window.location.href = "/login?session_expired=1";
-        return Promise.reject(refreshError);
-      }
+    // Handle network errors or other issues
+    if (!error.response) {
+      return Promise.reject(
+        new AuthError("Error de conexión. Por favor, verifica tu conexión a internet.", {
+          errorType: "general",
+        })
+      );
     }
 
     return Promise.reject(error);

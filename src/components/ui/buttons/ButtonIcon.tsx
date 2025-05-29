@@ -21,7 +21,7 @@ const ButtonIcon: React.FC<ButtonIconProps> = ({
   children,
   target = "_self",
   textColor = "text-white",
-  hoverColor = "hover:text-hover-primary",
+  hoverColor = "hover:text-primary-hover",
   onClick,
 }) => {
   const baseClasses = clsx(

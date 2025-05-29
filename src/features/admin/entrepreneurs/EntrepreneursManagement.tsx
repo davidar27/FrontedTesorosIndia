@@ -20,7 +20,6 @@ export default function EntrepreneursManagement() {
     const { isAuthenticated, isLoading: authLoading } = useAuth();
     const { hasPermission, isAdmin } = usePermissions();
 
-    // Verificar autenticación antes de cargar
     if (authLoading) {
         return (
             <div className="flex justify-center items-center h-64">
@@ -44,12 +43,10 @@ export default function EntrepreneursManagement() {
         );
     }
 
-    // Verificar permisos
     const canCreate = isAdmin() || hasPermission('entrepreneurs:create');
     const canEdit = isAdmin() || hasPermission('entrepreneurs:edit');
     const canDelete = isAdmin() || hasPermission('entrepreneurs:delete');
 
-    // Query autenticada para obtener emprendedores
     const {
         data: entrepreneurs = [],
         isLoading,

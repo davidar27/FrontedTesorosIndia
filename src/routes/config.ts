@@ -26,7 +26,7 @@ export const PackagesPage = lazy(() => import('@/pages/Admin/PackagesPage'));
 export const CategoriesPage = lazy(() => import('@/pages/Admin/CategoriesPage'));
 
 // Error Pages
-export const NotFoundPage = lazy(() => import('@/pages/Auth/Errors/NotFoundPage'));
+export const NotFoundPage = lazy(() => import('@/pages/Errors/NotFoundPage'));
 
 // Route Configuration
 export interface RouteConfig {

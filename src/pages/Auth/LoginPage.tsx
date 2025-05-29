@@ -17,19 +17,20 @@ const LoginPage = () => {
         register,
         handleSubmit,
         formState: { errors, isSubmitting },
-        reset,
-        setError: setFormError
+        setError: setFormError,
+        clearErrors
     } = useForm<Credentials>({
         resolver: yupResolver(loginSchema)
     });
+
     const onSubmit = async (credentials: Credentials) => {
         setIsRedirecting(false);
-        reset({}, { keepValues: true });
+        clearErrors();
 
         try {
             const user = await login(credentials);
 
-            setIsRedirecting(true); 
+            setIsRedirecting(true);
 
             if (user.role === 'administrador') {
                 navigate('/dashboard');
@@ -37,6 +38,8 @@ const LoginPage = () => {
                 navigate("/", { replace: true });
             }
         } catch (error) {
+            setIsRedirecting(false);
+
             if (error instanceof AuthError) {
                 if (error.errorType === 'general') {
                     setFormError('email', {
@@ -49,6 +52,16 @@ const LoginPage = () => {
                     });
                 }
             }
+            throw error;
+        }
+    };
+
+    const handleFormChange = () => {
+        if (isRedirecting) {
+            setIsRedirecting(false);
+        }
+        if (Object.keys(errors).length > 0) {
+            clearErrors();
         }
     };
 
@@ -78,7 +91,7 @@ const LoginPage = () => {
             submitText={isSubmitting ? "Procesando..." :
                 isRedirecting ? "Redirigiendo..." : "Ingresar"}
             extraLinkText="¿Has olvidado la contraseña?"
-            extraLinkTo="/recuperar"
+            extraLinkTo="/restablecer-contraseña"
             bottomText="¿No tienes cuenta?"
             bottomLinkText="Regístrate"
             bottomLinkTo="/registro"
@@ -86,9 +99,7 @@ const LoginPage = () => {
             register={register}
             errors={errors}
             isSubmitting={isSubmitting || isRedirecting}
-            onChange={() => {
-                if (isRedirecting) setIsRedirecting(false);
-            }}
+            onChange={handleFormChange}
         />
     );
 };
