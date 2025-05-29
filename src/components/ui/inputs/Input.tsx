@@ -6,18 +6,16 @@ import { useState } from 'react';
 type InputVariant = 'default' | 'error' | 'success' | 'disabled';
 type InputSize = 'sm' | 'md' | 'lg';
 
-interface ValidationRule {
-    message: string;
-    isValid: boolean;
-}
-
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
     className?: string;
     variant?: InputVariant;
     inputSize?: InputSize;
     fullWidth?: boolean;
     rightElement?: ReactNode;
-    validationRules?: ValidationRule[];
+    validationRules?: {
+        message: string;
+        isValid: boolean;
+    }[];
     showValidation?: boolean;
 }
 

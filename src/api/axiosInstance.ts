@@ -31,33 +31,28 @@ axiosInstance.interceptors.response.use(
     const status = error.response?.status;
     const errorData = error.response?.data;
 
-    // Handle different response structures
     if (errorData) {
       let Message: string;
       let errorType: "email" | "password" | "general" = "general";
 
-      // Check if errorData has the structure { error: { message: "...", type: "..." } }
       if (errorData.error && typeof errorData.error === 'object' && errorData.error.message) {
         Message = errorData.error.message;
         errorType = normalizeErrorType(errorData.error.type);
       }
-      // Check if errorData has the structure { error: "message string" }
       else if (errorData.error && typeof errorData.error === 'string') {
         Message = errorData.error;
 
-        // Determine error type based on status code and message content
         if (status === 409 || Message.toLowerCase().includes('correo') || Message.toLowerCase().includes('email')) {
           errorType = "email";
         } else if (Message.toLowerCase().includes('contraseña') || Message.toLowerCase().includes('password')) {
           errorType = "password";
         }
       }
-      // Check if errorData has message directly
       else if (errorData.message) {
         Message = errorData.message;
         errorType = normalizeErrorType(errorData.type);
       }
-      // Fallback
+       
       else {
         Message = "Ha ocurrido un error";
       }
@@ -82,7 +77,6 @@ axiosInstance.interceptors.response.use(
       );
     }
 
-    // Handle network errors or other issues
     if (!error.response) {
       return Promise.reject(
         new AuthError("Error de conexión. Por favor, verifica tu conexión a internet.", {

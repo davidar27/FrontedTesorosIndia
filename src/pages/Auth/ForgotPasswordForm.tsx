@@ -40,7 +40,7 @@ const ForgotPasswordForm = () => {
   const { mutate: sendResetEmail } = useMutation({
     mutationFn: (email: string) => sendPasswordResetEmail(email),
     onSuccess: (_, email) => {
-      setMessage(`Se ha enviado un correo con las instrucciones para restablecer tu contraseña a ${email}`);
+      setMessage(`¡Correo enviado con éxito! Se han enviado las instrucciones para restablecer tu contraseña a ${email}`);
       startCooldown();
     },
     onError: (error) => {
@@ -72,6 +72,11 @@ const ForgotPasswordForm = () => {
     }
   ];
 
+  const messageStyle = {
+    textColor: Message?.includes('éxito') ? 'text-green-600' : 'text-red-500',
+    backgroundColor: Message?.includes('éxito') ? 'bg-green-50' : 'bg-red-50'
+  };
+
   return (
     <AuthForm
       title="Recuperar contraseña"
@@ -86,6 +91,7 @@ const ForgotPasswordForm = () => {
       register={register}
       errors={errors}
       Message={Message}
+      messageStyle={messageStyle}
       errorType="general"
       isSubmitting={isSubmitting}
     />
