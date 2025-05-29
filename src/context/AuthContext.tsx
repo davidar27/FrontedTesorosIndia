@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // AuthProvider con React Query - Fixed Version
-import { createContext, ReactNode, useState, useCallback, useMemo } from 'react';
+import { createContext, ReactNode, useState, useCallback, useMemo, useContext } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { User } from '@/interfaces/user';
@@ -19,7 +19,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
 
-    // Query para verificar autenticación
     const {
         data: user,
         isLoading,
@@ -34,47 +33,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             return result.user;
         },
         retry: (failureCount, error: any) => {
-            // No reintentar si es un error de autenticación
             if (error?.response?.status === 401) {
                 return false;
             }
             return failureCount < 2;
         },
-        staleTime: 5 * 60 * 1000, // 5 minutos
-        gcTime: 10 * 60 * 1000, // 10 minutos (antes era cacheTime)
+        staleTime: 5 * 60 * 1000,
+        gcTime: 10 * 60 * 1000,
         refetchOnWindowFocus: true,
-        refetchInterval: 15 * 60 * 1000, // Verificar cada 15 minutos
+        refetchInterval: 15 * 60 * 1000,
     });
 
-    // Mutación para login
     const loginMutation = useMutation<{ user: User; }, Error, Credentials>({
         mutationFn: async (credentials: Credentials) => {
             const result = await authService.login(credentials);
             return { user: result};
         },
         onSuccess: (result: { user: User; }) => {
-            // Actualizar cache con los datos del usuario
             queryClient.setQueryData(AUTH_QUERY_KEY, result.user);
             setError(null);
         },
         onError: (error: any) => {
             setError(error.message || 'Error de autenticación');
-            // Limpiar cache en caso de error
             queryClient.setQueryData(AUTH_QUERY_KEY, null);
         }
     });
 
-    // Mutación para logout
     const logoutMutation = useMutation({
         mutationFn: authService.logout,
         onSuccess: () => {
-            // Limpiar todo el cache de React Query
             queryClient.clear();
             setError(null);
             navigate("/");
         },
         onError: () => {
-            // Incluso si falla la petición, limpiar cache local
             queryClient.clear();
             setError(null);
             navigate("/");
@@ -101,7 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const logout = useCallback(async (): Promise<void> => {
         return new Promise((resolve) => {
             logoutMutation.mutate(undefined, {
-                onSettled: () => resolve() // Se ejecuta siempre, haya éxito o error
+                onSettled: () => resolve()
             });
         });
     }, [logoutMutation]);
@@ -183,8 +175,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 }
 
-// Hook personalizado para usar el contexto de autenticación
-import { useContext } from 'react';
 
 export function useAuth(): AuthContextType {
     const context = useContext(AuthContext);

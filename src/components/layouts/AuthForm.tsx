@@ -13,7 +13,7 @@ import BackButton from "@/components/ui/buttons/BackButton";
 
 //hooks
 import { Link } from "react-router-dom";
-import { FormEventHandler, useState, useEffect } from "react";
+import { FormEventHandler, useState, useEffect, ReactNode } from "react";
 import { UseFormRegister, FieldErrors } from "react-hook-form";
 
 type Field = {
@@ -21,21 +21,29 @@ type Field = {
   placeholder: string;
   type: string;
   name: string;
+  rightElement?: ReactNode;
+  disabled?: boolean;
 };
 
 interface AuthFormProps {
   title: string;
-  subtitle: string;
+  subtitle: string | ReactNode;
   bold?: string;
-  fields: Field[];
+  fields?: Field[];
   submitText: string;
+  loadingText?: string;
   bottomText: string;
   bottomLinkText: string;
   bottomLinkTo: string;
   extraLinkText?: string;
   extraLinkTo?: string;
-  errorMessage?: string;
+  Message?: string;
+  messageStyle?: {
+    textColor?: string;
+    backgroundColor?: string;
+  };
   isSubmitting?: boolean;
+  hideSubmitButton?: boolean;
   onSubmit: FormEventHandler<HTMLFormElement>;
   onChange: () => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -51,6 +59,7 @@ const AuthForm = ({
   extraLinkText,
   fields,
   submitText,
+  loadingText = "Procesando...",
   bottomText,
   bottomLinkText,
   bottomLinkTo,
@@ -60,8 +69,13 @@ const AuthForm = ({
   register,
   errors,
   errorType,
-  errorMessage,
+  Message,
+  messageStyle = {
+    textColor: "text-red-500",
+    backgroundColor: "bg-red-50"
+  },
   isSubmitting = false,
+  hideSubmitButton = false,
 }: AuthFormProps) => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
@@ -88,7 +102,7 @@ const AuthForm = ({
   };
 
   const buttonIsDisabled = isButtonDisabled || isSubmitting;
-  const buttonText = isSubmitting ? "Procesando..." : submitText;
+  const buttonText = isSubmitting ? (loadingText || "Procesando...") : submitText;
 
   return (
     <div
@@ -118,14 +132,14 @@ const AuthForm = ({
 
           <div className="space-y-2 text-center pt-6">
             <h1 className="text-2xl font-bold">{title}</h1>
-            <p className="text-sm text-gray-500">
+            <div className="text-sm text-gray-500">
               {subtitle}{" "}
               <span className="font-bold text-black">{bold}</span>
-            </p>
+            </div>
           </div>
 
           <form onSubmit={handleSubmit} onChange={onChange} className="space-y-4 mt-6">
-            {fields.map(({ label, placeholder, type, name }) => (
+            {fields && fields.map(({ label, placeholder, type, name }) => (
               <div key={name} className="space-y-2">
                 <Label htmlFor={name}>{label}</Label>
                 <Input
@@ -143,45 +157,47 @@ const AuthForm = ({
               </div>
             ))}
 
-            {errorMessage && errorType === "general" && (
-              <div className="text-red-500 text-center text-sm p-2 bg-red-50 rounded">
-                {errorMessage}
+            {Message && errorType === "general" && (
+              <div className={`text-center text-sm p-2 rounded ${messageStyle.textColor} ${messageStyle.backgroundColor}`}>
+                {Message}
               </div>
             )}
 
-            <Button
-              type="submit"
-              className={`w-full transition-all duration-200 ${buttonIsDisabled
-                ? 'opacity-60 cursor-not-allowed bg-gray-400'
-                : 'hover:opacity-90'
-                }`}
-              disabled={buttonIsDisabled}
-            >
-              <div className="flex items-center justify-center gap-2">
-                {isSubmitting && (
-                  <svg
-                    className="animate-spin h-4 w-4"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                      fill="none"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
-                )}
-                <span>{buttonText}</span>
-              </div>
-            </Button>
+            {!hideSubmitButton && submitText && (
+              <Button
+                type="submit"
+                className={`w-full transition-all duration-200 ${buttonIsDisabled
+                  ? 'opacity-60 cursor-not-allowed bg-gray-400'
+                  : 'hover:opacity-90'
+                  }`}
+                disabled={buttonIsDisabled}
+              >
+                <div className="flex items-center justify-center gap-2">
+                  {isSubmitting && (
+                    <svg
+                      className="animate-spin h-4 w-4"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                  )}
+                  <span>{buttonText}</span>
+                </div>
+              </Button>
+            )}
           </form>
 
           {extraLinkText && extraLinkTo && (

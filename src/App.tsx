@@ -30,10 +30,10 @@ import { PageProvider } from '@/context/PageContext';
 
 // Routes
 import ProtectedRoute from "./routes/protectedRoute";
-import ForgotPasswordForm from "./pages/Auth/ForgotPasswordForm";
 import ErrorFallback from "./pages/Errors/ErrorFallback";
 import LoadingSpinner from "./components/layouts/LoadingSpinner";
-
+import ResetPassword from "./pages/Auth/ResetPassword";
+import ForgotPasswordForm from "./pages/Auth/ForgotPasswordForm";
 
 
 
@@ -57,7 +57,8 @@ function App() {
                 <Route path="/registro" element={<RegisterPage />} />
                 <Route path="/correo-enviado" element={<SendEmail />} />
                 <Route path="/verificar-correo" element={<EmailVerificationPage />} />
-                <Route path="/restablecer-contraseña" element={<ForgotPasswordForm />} />
+                <Route path="/recuperar-contraseña" element={<ForgotPasswordForm />} />
+                <Route path="/restablecer-contraseña" element={<ResetPassword />} />
               </Route>
 
               {/* Rutas protegidas para usuarios autenticados */}

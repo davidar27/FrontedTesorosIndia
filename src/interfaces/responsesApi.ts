@@ -39,3 +39,9 @@ export interface ApiError {
   code?: number;
   redirectTo?: string;
 }
+
+export interface SendPasswordResetEmailResponse {
+  message: string;
+  success: boolean;
+}
+
