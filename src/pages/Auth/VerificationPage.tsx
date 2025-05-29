@@ -1,19 +1,27 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { verifyEmail } from '@/services/auth/verifyEmailService';
-import Button from '@/components/ui/buttons/Button';
-import background from "/images/FondoDesktop.webp";
+import { MailCheck, MailWarning } from 'lucide-react';
+import AuthForm from '@/components/layouts/AuthForm';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 
-
-import { MailCheck } from 'lucide-react';
-import { MailWarning } from 'lucide-react';
-import Picture from '@/components/ui/Picture';
+const emptySchema = z.object({});
+type EmptyFormData = z.infer<typeof emptySchema>;
 
 const EmailVerificationPage = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const [status, setStatus] = useState<'verifying' | 'success' | 'error'>('verifying');
-    const [error, setError] = useState<string | null>(null);
+    const [Message, setMessage] = useState<string | null>(null);
+
+    const {
+        handleSubmit,
+        formState: { isSubmitting },
+    } = useForm<EmptyFormData>({
+        resolver: zodResolver(emptySchema)
+    });
 
     useEffect(() => {
         const verifyToken = async () => {
@@ -21,12 +29,15 @@ const EmailVerificationPage = () => {
 
             if (!token) {
                 setStatus('error');
+                setMessage('No se encontró el token de verificación');
                 return;
             }
 
             try {
+                await new Promise(resolve => setTimeout(resolve, 2000));
                 await verifyEmail(token);
                 setStatus('success');
+                setMessage('¡Email verificado exitosamente! Serás redirigido al inicio de sesión...');
 
                 setTimeout(() => {
                     navigate('/login', {
@@ -37,8 +48,8 @@ const EmailVerificationPage = () => {
                 }, 2000);
             } catch (err) {
                 setStatus('error');
-                setError(
-                    err instanceof Error ? err.message : 'No pudimos verificar su correo electrónico. Asegúrese de que el enlace de verificación no haya caducado y haga clic en el botón "Reintentar".'
+                setMessage(
+                    err instanceof Error ? err.message : 'No pudimos verificar su correo electrónico. Asegúrese de que el enlace de verificación no haya caducado.'
                 );
             }
         };
@@ -46,72 +57,80 @@ const EmailVerificationPage = () => {
         verifyToken();
     }, [searchParams, navigate]);
 
+    const getStatusIcon = () => {
+        switch (status) {
+            case 'success':
+                return <MailCheck className="w-24 h-24 text-green-500 animate-bounce" />;
+            case 'error':
+                return <MailWarning className="w-24 h-24 text-red-500 animate-pulse" />;
+            case 'verifying':
+                return <MailCheck className="w-24 h-24 text-primary animate-pulse" />;
+            default:
+                return null;
+        }
+    };
+
+    const getTitle = () => {
+        switch (status) {
+            case 'verifying':
+                return 'Verificando tu email...';
+            case 'success':
+                return '¡Verificación exitosa!';
+            case 'error':
+                return 'Error en verificación';
+        }
+    };
+
+    const getSubtitle = () => {
+        switch (status) {
+            case 'verifying':
+                return (
+                    <div className="flex flex-col items-center space-y-4">
+                        {getStatusIcon()}
+                        <p>Estamos confirmando tu dirección de email. Por favor espera...</p>
+                    </div>
+                );
+            case 'success':
+                return (
+                    <div className="flex flex-col items-center space-y-4">
+                        {getStatusIcon()}
+                        <p className="text-green-600">Tu email ha sido verificado correctamente. Serás redirigido automáticamente.</p>
+                    </div>
+                );
+            case 'error':
+                return (
+                    <div className="flex flex-col items-center space-y-4">
+                        {getStatusIcon()}
+                        <p>{Message}</p>
+                    </div>
+                );
+        }
+    };
+
+    const onSubmit = async () => {
+        if (status === 'error') {
+            navigate('/registro');
+        }
+    };
+
     return (
-        <section className="min-h-screen bg-cover bg-center flex items-center justify-center text-black"
-            style={{ backgroundImage: `url(${background})` }}>
-            <div className="max-w-md w-full bg-white  rounded-lg shadow-md flex flex-col items-center p-8 gap-8">
-                <div className="text-center">
-                    <h2 className="text-3xl font-extrabold text-gray-900">
-                        {status === 'verifying' && 'Verificando tu email...'}
-                        {status === 'success' && '¡Verificación exitosa!'}
-                        {status === 'error' && 'Error en verificación'}
-                    </h2>
-                </div>
-
-                <div className="text-center gap-8">
-                    {status === 'verifying' && (
-                        <>
-                            <p className="text-gray-600">
-                                Estamos confirmando tu dirección de email. Por favor espera...
-                            </p>
-                        </>
-                    )}
-
-                    {status === 'success' && (
-                        <div className='flex flex-col items-center text-center gap-8'>
-                            <Picture
-                                icon={<MailCheck />}
-                                alt="Verificación exitosa"
-                            />
-                            <p className="text-gray-600">
-                                Tu email ha sido verificado correctamente. Serás redirigido automáticamente.
-                            </p>
-                            <div className="mt-4">
-                                <Button onClick={() => navigate('/login')}>
-                                    Ir al inicio de sesión
-                                </Button>
-                            </div>
-                        </div>
-                    )}
-
-                    {status === 'error' && (
-                        <div className='flex flex-col items-center gap-4 '>
-                            <Picture
-                                icon={<MailWarning className='w-24 h-24 text-red-500' />}
-                                alt="Error en verificación"
-                            />
-
-                            <p className="text-gray-600">
-                                {error || (
-                                    <>
-                                        No pudimos verificar su correo electrónico. Asegúrese de que el enlace de verificación no haya caducado y haga clic en el botón
-                                        <span className="text-primary font-semibold"> "Reintentar Registro" </span>.
-                                    </>
-                                )}
-                            </p>
-                            <div className="flex flex-col sm:flex-row gap-4 mt-4">
-                                <Button onClick={() => navigate('/registro')}>
-                                    Reintentar Registro
-                                </Button>
-                                <Button onClick={() => navigate('/contact')}>
-                                    Actualizar Correo
-                                </Button>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </div>
-        </section>
+        <AuthForm
+            title={getTitle()}
+            subtitle={getSubtitle()}
+            fields={[]}
+            submitText={status === 'error' ? "Reintentar registro" : ""}
+            bottomText={status === 'error' ? "¿Necesitas ayuda?" : ""}
+            bottomLinkText={status === 'error' ? "Contacta con soporte" : ""}
+            bottomLinkTo={status === 'error' ? "/contacto" : ""}
+            onSubmit={handleSubmit(onSubmit)}
+            onChange={() => {}}
+            // @ts-expect-error - Este formulario no tiene campos, por lo que el register no se usa
+            register={() => ({})}
+            errors={{}}
+            errorType="general"
+            isSubmitting={isSubmitting || status === 'verifying'}
+            hideSubmitButton={status !== 'error'}
+        />
     );
 };
 

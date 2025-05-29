@@ -29,7 +29,6 @@ const registerService = async (
             confirm_password,
         });
 
-        // Respuestas exitosas (200-299)
         if (Number(response.status) >= 200 && Number(response.status) < 300) {
             return {
                 success: true,

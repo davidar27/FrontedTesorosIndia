@@ -1,12 +1,18 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from 'react';
 import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from '@/context/useAuth';
-import { loginSchema } from "@/validations/auth/loginSchema";
-import { Credentials } from '@/interfaces/formInterface';
-import AuthForm from '@/components/layouts/AuthForm';
+import { z } from "zod";
+import AuthForm from "@/components/layouts/AuthForm";
 import { AuthError } from '@/interfaces/responsesApi';
+
+const loginSchema = z.object({
+    email: z.string().email("Correo electrónico inválido"),
+    password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+});
+
+type LoginFormData = z.infer<typeof loginSchema>;
 
 const LoginPage = () => {
     const { login } = useAuth();
@@ -19,16 +25,16 @@ const LoginPage = () => {
         formState: { errors, isSubmitting },
         setError: setFormError,
         clearErrors
-    } = useForm<Credentials>({
-        resolver: yupResolver(loginSchema)
+    } = useForm<LoginFormData>({
+        resolver: zodResolver(loginSchema)
     });
 
-    const onSubmit = async (credentials: Credentials) => {
+    const onSubmit = async (data: LoginFormData) => {
         setIsRedirecting(false);
         clearErrors();
 
         try {
-            const user = await login(credentials);
+            const user = await login(data);
 
             setIsRedirecting(true);
 
@@ -67,40 +73,38 @@ const LoginPage = () => {
 
     const fields = [
         {
-            label: "Email",
-            placeholder: "usuario@ejemplo.com",
+            label: "Correo electrónico",
+            placeholder: "correo@ejemplo.com",
             type: "email",
             name: "email",
-            autoComplete: "username"
         },
         {
             label: "Contraseña",
-            placeholder: "Ingresa tu contraseña",
+            placeholder: "••••••••",
             type: "password",
             name: "password",
-            autoComplete: "current-password"
         },
     ];
 
     return (
-        <AuthForm
-            title="Iniciar sesión"
-            subtitle="Inicia sesión con tu cuenta de"
-            bold="Tesoros de la India"
-            fields={fields}
-            submitText={isSubmitting ? "Procesando..." :
-                isRedirecting ? "Redirigiendo..." : "Ingresar"}
-            extraLinkText="¿Has olvidado la contraseña?"
-            extraLinkTo="/restablecer-contraseña"
-            bottomText="¿No tienes cuenta?"
-            bottomLinkText="Regístrate"
-            bottomLinkTo="/registro"
-            onSubmit={handleSubmit(onSubmit)}
-            register={register}
-            errors={errors}
-            isSubmitting={isSubmitting || isRedirecting}
-            onChange={handleFormChange}
-        />
+            <AuthForm
+                title="Inicio de sesión"
+                subtitle="Inicia  sesión con tu cuenta de"
+                bold="Tesoros India"
+                fields={fields}
+                submitText={isSubmitting ? "Procesando..." :
+                    isRedirecting ? "Redirigiendo..." : "Iniciar sesión"}
+                bottomText="¿No tienes una cuenta?"
+                bottomLinkText="Regístrate aquí"
+                bottomLinkTo="/registro"
+                extraLinkText="¿Olvidaste tu contraseña?"
+                extraLinkTo="/recuperar-contraseña"
+                onSubmit={handleSubmit(onSubmit)}
+                onChange={handleFormChange}
+                register={register}
+                errors={errors}
+                isSubmitting={isSubmitting || isRedirecting}
+            />
     );
 };
 

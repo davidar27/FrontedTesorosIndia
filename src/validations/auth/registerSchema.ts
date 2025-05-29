@@ -1,15 +1,23 @@
-import * as yup from "yup";
+import { z } from "zod";
 
-export const registerSchema = yup.object().shape({
-    name: yup.string().required("El nombre es requerido").max(50, "El nombre debe tener máximo 50 caracteres"),
-    email: yup.string().email("Correo electrónico inválido").required("El correo es obligatorio"),
-    phone_number: yup.string().required("El teléfono es requerido").matches(/^\d{10}$/, "El teléfono debe tener 10 dígitos"),
-    password: yup.string()
-        .required("La contraseña es requerida")
-        .min(8, "La contraseña debe tener mínimo 8 caracteres")
-        .max(32, "Máximo 32 caracteres")
-        .matches(/^[a-zA-Z0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+$/, "Solo se permiten caracteres especiales válidos"),
-    confirm_password: yup.string()
-        .required("Confirma tu contraseña")
-        .oneOf([yup.ref("password")], "Las contraseñas no coinciden"),
+export const registerSchema = z.object({
+  name: z.string()
+    .min(1, "El nombre es requerido")
+    .max(50, "El nombre debe tener máximo 50 caracteres"),
+  email: z.string()
+    .email("Correo electrónico inválido")
+    .min(1, "El correo es obligatorio"),
+  phone_number: z.string()
+    .min(1, "El teléfono es requerido")
+    .regex(/^\d{10}$/, "El teléfono debe tener 10 dígitos"),
+  password: z.string()
+    .min(8, "La contraseña debe tener al menos 8 caracteres")
+    .regex(/[A-Z]/, "La contraseña debe tener al menos una mayúscula")
+    .regex(/[a-z]/, "La contraseña debe tener al menos una minúscula")
+    .regex(/[0-9]/, "La contraseña debe tener al menos un número"),
+  confirm_password: z.string()
+    .min(1, "Confirma tu contraseña")
+}).refine((data) => data.password === data.confirm_password, {
+  message: "Las contraseñas no coinciden",
+  path: ["confirm_password"]
 });

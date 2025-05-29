@@ -1,14 +1,24 @@
-import { forwardRef, useState } from 'react';
+import { forwardRef, InputHTMLAttributes, ReactNode } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
+import FieldValidation from '../forms/FieldValidation';
+import { useState } from 'react';
 
 type InputVariant = 'default' | 'error' | 'success' | 'disabled';
 type InputSize = 'sm' | 'md' | 'lg';
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface ValidationRule {
+    message: string;
+    isValid: boolean;
+}
+
+interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
     className?: string;
     variant?: InputVariant;
     inputSize?: InputSize;
     fullWidth?: boolean;
+    rightElement?: ReactNode;
+    validationRules?: ValidationRule[];
+    showValidation?: boolean;
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -19,6 +29,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             inputSize = 'md',
             fullWidth = true,
             type,
+            rightElement,
+            validationRules,
+            showValidation = false,
             ...props
         },
         ref
@@ -41,12 +54,14 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
         const widthClass = fullWidth ? 'w-full' : '';
 
+        const finalClassName = `${widthClass} ${sizeClasses[inputSize]} ${variantClasses[variant]} border rounded-md shadow-sm focus:outline-none focus:ring-1 disabled:opacity-70 pr-10 ${className}`;
+
         return (
             <div className="relative">
                 <input
                     ref={ref}
                     type={isPassword ? (showPassword ? 'text' : 'password') : type}
-                    className={`${widthClass} ${sizeClasses[inputSize]} ${variantClasses[variant]} border rounded-md shadow-sm focus:outline-none focus:ring-1 disabled:opacity-70 pr-10 ${className}`}
+                    className={finalClassName}
                     {...props}
                 />
                 {isPassword && (
@@ -62,6 +77,18 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                             <Eye className="w-5 h-5" />
                         )}
                     </button>
+                )}
+                {rightElement && (
+                    <div className="absolute right-0 top-0 h-full flex items-center pr-3">
+                        {rightElement}
+                    </div>
+                )}
+                {validationRules && (
+                    <FieldValidation
+                        value={props.value?.toString() || ''}
+                        rules={validationRules}
+                        showValidation={showValidation}
+                    />
                 )}
             </div>
         );

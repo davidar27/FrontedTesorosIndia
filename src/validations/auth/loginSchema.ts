@@ -1,6 +1,9 @@
-import * as yup from 'yup';
+import { z } from 'zod';
 
-export const loginSchema = yup.object({
-    email: yup.string().email('Correo inválido').required('El correo es obligatorio'),
-    password: yup.string().required('La contraseña es obligatoria')
+export const loginSchema = z.object({
+    email: z.string()
+        .email('Correo inválido')
+        .min(1, 'El correo es obligatorio'),
+    password: z.string()
+        .min(1, 'La contraseña es obligatoria')
 });

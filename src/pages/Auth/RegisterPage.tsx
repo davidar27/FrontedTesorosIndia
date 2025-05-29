@@ -2,20 +2,24 @@
 import AuthForm from '@/components/layouts/AuthForm';
 //hooks
 import { useNavigate, useLocation } from "react-router-dom";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from 'react';
 //services
 import registerService from '@/services/auth/registerService';
 //validations
 import { registerSchema } from "@/validations/auth/registerSchema";
+import { z } from 'zod';
 //interfaces
-import { RegistrationData } from '@/interfaces/formInterface';
 import { AuthError } from '@/interfaces/responsesApi';
+import { useFieldValidation, passwordRules, emailRules, phoneRules } from '@/hooks/useFieldValidation';
+
+type RegistrationData = z.infer<typeof registerSchema>;
 
 const RegisterPage = () => {
-    const [errorMessage, setErrorMessage] = useState('');
+    const [Message, setMessage] = useState('');
     const [isRedirecting, setIsRedirecting] = useState(false);
+    const [showValidations, setShowValidations] = useState<Record<string, boolean>>({});
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -25,24 +29,37 @@ const RegisterPage = () => {
         formState: { errors, isSubmitting },
         setValue,
         clearErrors,
-        setError: setFormError
+        setError: setFormError,
+        watch
     } = useForm<RegistrationData>({
-        resolver: yupResolver(registerSchema),
+        resolver: zodResolver(registerSchema),
     });
+
+    const watchedFields = {
+        password: watch('password') || '',
+        email: watch('email') || '',
+        phone_number: watch('phone_number') || ''
+    };
+
+    const validations = {
+        password: useFieldValidation(watchedFields.password, passwordRules),
+        email: useFieldValidation(watchedFields.email, emailRules),
+        phone_number: useFieldValidation(watchedFields.phone_number, phoneRules)
+    };
 
     useEffect(() => {
         if (location.state?.prefilledEmail) {
             setValue('email', location.state.prefilledEmail);
         }
         if (location.state?.message) {
-            setErrorMessage(location.state.message);
+            setMessage(location.state.message);
         }
     }, [location.state, setValue]);
 
     const onSubmit = async (data: RegistrationData) => {
         try {
             setIsRedirecting(false);
-            setErrorMessage(''); 
+            setMessage('');
             clearErrors();
 
             const result = await registerService(
@@ -53,55 +70,47 @@ const RegisterPage = () => {
                 data.confirm_password
             );
 
-
             if (result.success) {
                 setIsRedirecting(true);
-
                 setTimeout(() => {
                     navigate('/correo-enviado', {
                         state: {
                             registrationSuccess: true,
                             email: result.user?.email || data.email
-                        }                        
+                        }
                     });
                 }, 1000);
             } else {
-                setErrorMessage(result.message);
+                setMessage(result.message);
                 setFormError('email', {
                     type: 'manual',
                     message: result.message
                 });
             }
-
         } catch (error: unknown) {
             setIsRedirecting(false);
 
             if (error instanceof AuthError) {
-                setErrorMessage(error.message);
-
-                const errorType = error.errorType || error.errorType;
+                setMessage(error.message);
+                const errorType = error.errorType;
 
                 if (errorType === 'email') {
                     setFormError('email', {
                         type: 'manual',
                         message: error.message
                     });
-                } else if (errorType === 'general') {
-                    // The errorMessage state will handle displaying the error
                 }
             } else {
                 const errorMsg = "Ocurrió un error inesperado. Por favor, intenta nuevamente.";
-                setErrorMessage(errorMsg);
+                setMessage(errorMsg);
                 console.error('Registration error:', error);
             }
-
-            
         }
     };
 
     const handleFormChange = () => {
-        if (errorMessage) {
-            setErrorMessage("");
+        if (Message) {
+            setMessage("");
         }
         if (isRedirecting) {
             setIsRedirecting(false);
@@ -109,6 +118,10 @@ const RegisterPage = () => {
         if (Object.keys(errors).length > 0) {
             clearErrors();
         }
+    };
+
+    const handleFocus = (fieldName: string) => {
+        setShowValidations(prev => ({ ...prev, [fieldName]: true }));
     };
 
     const fields = [
@@ -120,51 +133,50 @@ const RegisterPage = () => {
         },
         {
             label: "Email",
-            placeholder: "user@ejemplo.com",
+            placeholder: "correo@ejemplo.com",
             type: "email",
-            name: "email"
+            name: "email",
+            validationRules: validations.email.validations,
+            showValidation: showValidations.email,
+            onFocus: () => handleFocus('email')
         },
         {
             label: "Número Celular",
             placeholder: "3123446735",
             type: "tel",
-            name: "phone_number"
+            name: "phone_number",
+            validationRules: validations.phone_number.validations,
+            showValidation: showValidations.phone_number,
+            onFocus: () => handleFocus('phone_number')
         },
         {
             label: "Contraseña",
-            placeholder: "Ingresa tu contraseña",
+            placeholder: "••••••••",
             type: "password",
-            name: "password"
+            name: "password",
+            validationRules: validations.password.validations,
+            showValidation: showValidations.password,
+            onFocus: () => handleFocus('password')
         },
         {
             label: "Confirmar contraseña",
-            placeholder: "Confirma tu contraseña",
+            placeholder: "••••••••",
             type: "password",
             name: "confirm_password"
         },
     ];
 
-    // Determine error type for AuthForm
-    const getErrorType = () => {
-        if (errors.email) return "email";
-        return "general";
-    };
-
     return (
         <AuthForm
-            title="Registro"
-            subtitle="Regístrate ingresando los siguientes datos"
+            title="Crear cuenta"
+            subtitle="Únete a Tesoros de la India"
             fields={fields}
-            submitText={
-                isSubmitting ? "Procesando..." :
-                    isRedirecting ? "Redirigiendo..." :
-                        "Crear cuenta"
-            }
-            bottomText="¿Ya tienes cuenta?"
-            bottomLinkText="Inicia sesión"
+            submitText="Registrarse"
+            bottomText="¿Ya tienes una cuenta?"
+            bottomLinkText="Inicia sesión aquí"
             bottomLinkTo="/login"
-            errorMessage={errorMessage}
-            errorType={getErrorType()}
+            Message={Message}
+            errorType={errors.email ? "email" : "general"}
             onSubmit={handleSubmit(onSubmit)}
             register={register}
             errors={errors}

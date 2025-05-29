@@ -33,37 +33,37 @@ axiosInstance.interceptors.response.use(
 
     // Handle different response structures
     if (errorData) {
-      let errorMessage: string;
+      let Message: string;
       let errorType: "email" | "password" | "general" = "general";
 
       // Check if errorData has the structure { error: { message: "...", type: "..." } }
       if (errorData.error && typeof errorData.error === 'object' && errorData.error.message) {
-        errorMessage = errorData.error.message;
+        Message = errorData.error.message;
         errorType = normalizeErrorType(errorData.error.type);
       }
       // Check if errorData has the structure { error: "message string" }
       else if (errorData.error && typeof errorData.error === 'string') {
-        errorMessage = errorData.error;
+        Message = errorData.error;
 
         // Determine error type based on status code and message content
-        if (status === 409 || errorMessage.toLowerCase().includes('correo') || errorMessage.toLowerCase().includes('email')) {
+        if (status === 409 || Message.toLowerCase().includes('correo') || Message.toLowerCase().includes('email')) {
           errorType = "email";
-        } else if (errorMessage.toLowerCase().includes('contraseña') || errorMessage.toLowerCase().includes('password')) {
+        } else if (Message.toLowerCase().includes('contraseña') || Message.toLowerCase().includes('password')) {
           errorType = "password";
         }
       }
       // Check if errorData has message directly
       else if (errorData.message) {
-        errorMessage = errorData.message;
+        Message = errorData.message;
         errorType = normalizeErrorType(errorData.type);
       }
       // Fallback
       else {
-        errorMessage = "Ha ocurrido un error";
+        Message = "Ha ocurrido un error";
       }
 
       const authError = new AuthError(
-        errorMessage || "Contraseña o correo incorrecto",
+        Message || "Contraseña o correo incorrecto",
         {
           redirectTo: errorData.redirectTo,
           errorType: errorType,
