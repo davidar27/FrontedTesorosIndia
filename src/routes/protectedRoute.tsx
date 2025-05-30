@@ -1,4 +1,4 @@
-import { useAuth } from '@/context/useAuth';
+import useAuth from '@/context/useAuth';
 import { Navigate, Outlet } from 'react-router-dom';
 
 const ProtectedRoute = ({ roles = [] }: { roles?: string[] }) => {

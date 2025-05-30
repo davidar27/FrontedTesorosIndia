@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useQueryClient } from '@tanstack/react-query';
 import GenericManagement from '@/components/admin/GenericManagent';
-import { useAuth } from '@/hooks/useAuth';
+import useAuth from '@/context/useAuth';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useAuthenticatedQuery } from '@/hooks/useAuthenticatedQuery';
 import { useProtectedMutation } from '@/hooks/useProtectedMutation';
