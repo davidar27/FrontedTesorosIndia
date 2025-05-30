@@ -8,8 +8,8 @@ import { useAuthenticatedQuery } from '@/hooks/useAuthenticatedQuery';
 import { useProtectedMutation } from '@/hooks/useProtectedMutation';
 import { Farm } from '@/features/admin/farms/FarmTypes';
 import { farmsApi } from '@/services/admin/farms';
-import { CreateFarmsConfig } from '@/features/admin/farms/CreateFarmsConfig';
 import FarmCard from '@/features/admin/farms/FamCard'
+import { CreateFarmsConfig } from './CreateFarmsConfig';
 
 export default function FarmsManagement() {
     const queryClient = useQueryClient();
