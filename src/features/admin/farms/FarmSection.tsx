@@ -40,11 +40,9 @@ export default function FarmsManagement() {
         );
     }
 
-    // Verificar permisos
     const canEdit = isAdmin() || hasPermission('fincas:edit');
     const canDelete = isAdmin() || hasPermission('fincas:delete');
 
-    // Query autenticada para obtener fincas
     const {
         data: farms = [],
         isLoading,

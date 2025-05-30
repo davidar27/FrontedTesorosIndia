@@ -1,10 +1,10 @@
 import { useState } from "react";
-import ButtonIcon from "../ui/buttons/ButtonIcon";
-import Button from "../ui/buttons/Button";
+import ButtonIcon from "@/components/ui/buttons/ButtonIcon";
+import Button from "@/components/ui/buttons/Button";
 import { ShoppingCart } from "lucide-react";
-import UserMenu from "./menu/UserMenu";
+import UserMenu from "@/components/layouts/menu/UserMenu";
 import { motion } from "framer-motion";
-import SidebarEstates from "./SidebarEstates";
+import SidebarFarms from "@/components/layouts/SidebarFarms";
 
 const HeaderActions = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -32,7 +32,7 @@ const HeaderActions = () => {
             </motion.div>
 
             {/* Integramos la barra lateral que se abrirá al hacer clic en el botón */}
-            <SidebarEstates
+            <SidebarFarms
                 isOpen={sidebarOpen}
                 onClose={() => setSidebarOpen(false)}
             />

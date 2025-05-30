@@ -9,17 +9,21 @@ import authService from "@/services/auth/authService";
 import { PUBLIC_ROUTES } from '@/routes/publicRoutes';
 import { Credentials } from '@/interfaces/formInterface';
 
-export const AuthContext = createContext<AuthContextType>(null!);
+const AuthContext = createContext<AuthContextType>(null!);
 
 const AUTH_QUERY_KEY = ['auth', 'user'];
 const TOKEN_REFRESH_INTERVAL = 14 * 60 * 1000; 
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+function AuthProvider({ children }: { children: ReactNode }) {
     const [error, setError] = useState<string | null>(null);
     const [isInitializing, setIsInitializing] = useState(true);
     const navigate = useNavigate();
     const location = useLocation();
     const queryClient = useQueryClient();
+
+    const isPublicRoute = useCallback((path: string): boolean => {
+        return PUBLIC_ROUTES.includes(path);
+    }, []);
 
     const {
         data: user,
@@ -31,43 +35,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             try {
                 const result = await authService.verifyToken();
                 if (!result.isValid || !result.user) {
-                    throw new Error('No authenticated');
+                    return null;
                 }
                 return result.user;
-            } catch (error) {
-                if (!isPublicRoute(location.pathname)) {
-                    navigate('/login', { 
-                        replace: true,
-                        state: { from: location.pathname }
-                    });
-                }
-                throw error;
+            } catch {
+                return null;
             }
         },
-        retry: (failureCount, error: any) => {
-            if (error?.response?.status === 401) {
-                return false;
-            }
-            return failureCount < 2;
-        },
+        retry: false,
         staleTime: Infinity,
         gcTime: Infinity,
         refetchOnWindowFocus: true,
         refetchInterval: TOKEN_REFRESH_INTERVAL,
         refetchOnMount: true,
+        enabled: !isPublicRoute(location.pathname)
     });
 
     useEffect(() => {
         const initializeAuth = async () => {
-            try {
+            if (!isPublicRoute(location.pathname)) {
                 await refetchAuth();
-            } finally {
-                setIsInitializing(false);
             }
+            setIsInitializing(false);
         };
 
         initializeAuth();
-    }, []);
+    }, [location.pathname]);
+
+    useEffect(() => {
+        if (!isInitializing && !isPublicRoute(location.pathname) && !user) {
+            navigate('/login', { 
+                replace: true,
+                state: { from: location.pathname }
+            });
+        }
+    }, [isInitializing, user, location.pathname]);
 
     useEffect(() => {
         let refreshTimeout: NodeJS.Timeout;
@@ -181,14 +183,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setError(error);
     }, []);
 
-    const isPublicRoute = useCallback((path: string): boolean => {
-        return PUBLIC_ROUTES.includes(path);
-    }, []);
-
     const value: AuthContextType = useMemo(() => ({
         user: user || null,
         isAuthenticated: !!user,
-        isLoading: isLoading || isInitializing || loginMutation.isPending || logoutMutation.isPending,
+        isLoading: isLoading && !isPublicRoute(location.pathname),
         error,
         role: user?.role || null,
         isAdmin,
@@ -204,9 +202,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }), [
         user,
         isLoading,
-        isInitializing,
-        loginMutation.isPending,
-        logoutMutation.isPending,
+        location.pathname,
         error,
         isAdmin,
         isEntrepreneur,
@@ -220,9 +216,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isPublicRoute
     ]);
 
-    if (isInitializing) {
-        return null;
-    }
 
     return (
         <AuthContext.Provider value={value}>
@@ -231,10 +224,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 }
 
-export function useAuth(): AuthContextType {
+function useAuth(): AuthContextType {
     const context = useContext(AuthContext);
     if (!context) {
         throw new Error('useAuth must be used within an AuthProvider');
     }
     return context;
 }
+
+export { AuthProvider, useAuth };
+export default AuthContext;

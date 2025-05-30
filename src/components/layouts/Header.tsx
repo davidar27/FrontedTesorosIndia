@@ -58,7 +58,7 @@ const Header: React.FC = () => {
       initial="hidden"
       animate="visible"
       variants={headerAnimations}
-      className="fixed z-50 w-full text-white backdrop-blur-xs bg-black/30"
+      className="fixed z-50 w-full text-white backdrop-blur-sm bg-black/30"
     >
       <AnimatePresence>
         {(!isHome || isAboutUs) && (
