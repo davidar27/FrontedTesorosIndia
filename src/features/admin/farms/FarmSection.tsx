@@ -7,7 +7,7 @@ import { useProtectedMutation } from '@/hooks/useProtectedMutation';
 import { Farm } from '@/features/admin/farms/FarmTypes';
 import { farmsApi } from '@/services/admin/farms';
 import FarmCard from '@/features/admin/farms/FamCard'
-import CreateFarmsConfig from '@/features/admin/farms/CreateFarmsConfig';
+import CreateFarmsConfig from '@/features/admin/farms/createFarmConfig';
 
 export default function FarmsManagement() {
     const queryClient = useQueryClient();
