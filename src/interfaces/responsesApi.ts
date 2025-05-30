@@ -11,6 +11,22 @@ export interface AuthResponse {
   success?: boolean;
 }
 
+export interface TokenVerificationResponse {
+  success: boolean;
+  user: {
+    data: {
+      userId: number;
+      name: string;
+      role: string;
+    };
+    jti: string;
+    token_version: number;
+    iat: number;
+    exp: number;
+  };
+  code: string;
+}
+
 export class AuthError extends Error {
   redirectTo?: string;
   errorType: "email" | "password" | "general" | "authentication";

@@ -1,4 +1,4 @@
-import { BaseEntity } from "@/components/admin/GenericManagent";
+import { BaseEntity } from "@/features/admin/types";
 
 export interface Entrepreneur extends BaseEntity<'active' | 'inactive' | 'pending'> {
     name: string;
@@ -10,6 +10,7 @@ export interface Entrepreneur extends BaseEntity<'active' | 'inactive' | 'pendin
     name_farm: string;
     createdAt?: string;
     updatedAt?: string;
+    [key: string]: string | number | boolean | Date | null | undefined;
 }
 
 export interface CreateEntrepreneurData {

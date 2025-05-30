@@ -8,6 +8,7 @@ interface ButtonProps {
     type?: "button" | "submit" | "reset";
     bgColor?: string;
     hoverColor?: string;
+    hoverBg?: string;
     textColor?: string;
     disabled?: boolean;
     onClick?: React.MouseEventHandler<HTMLButtonElement>;
@@ -20,6 +21,7 @@ const Button: React.FC<ButtonProps> = ({
     bgColor = "bg-primary",
     hoverColor = "hover:bg-white",
     textColor = "text-white",
+    hoverBg = "",
     onClick,
 }) => {
     return (
@@ -35,6 +37,7 @@ const Button: React.FC<ButtonProps> = ({
                 bgColor,
                 hoverColor,
                 textColor,
+                hoverBg,
                 "hover:text-primary",
                 className
             )}

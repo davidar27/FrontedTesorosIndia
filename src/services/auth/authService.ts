@@ -1,8 +1,8 @@
 import { axiosInstance } from "@/api/axiosInstance";
-import { AuthResponse } from "@/interfaces/responsesApi";
+import { AuthResponse, TokenVerificationResponse, AuthError } from "@/interfaces/responsesApi";
 import { User } from "@/interfaces/user";
-import { AuthError } from "@/interfaces/responsesApi";
 import { Credentials } from "@/interfaces/formInterface";
+import { UserRole } from "@/interfaces/role";
 
 const authService = {
   login: async (credentials: Credentials): Promise<User> => {
@@ -41,11 +41,21 @@ const authService = {
 
   verifyToken: async (): Promise<{ isValid: boolean; user?: User }> => {
     try {
-      const { data } = await axiosInstance.get<AuthResponse>("/auth/verificar-token");
+      const { data } = await axiosInstance.get<TokenVerificationResponse>("/auth/verificar-token");
 
-      if (data.error) return { isValid: false };
+      if (!data.success || data.code !== "VALITED_TOKEN") {
+        return { isValid: false };
+      }
 
-      return { isValid: true, user: data.user };
+      const user: User = {
+        id: data.user.data.userId.toString(),
+        name: data.user.data.name,
+        role: data.user.data.role as UserRole,
+        email: '', 
+        isVerified: true
+      };
+
+      return { isValid: true, user };
     } catch (error) {
       if (error instanceof AuthError && error.shouldRedirect()) {
         return { isValid: false };

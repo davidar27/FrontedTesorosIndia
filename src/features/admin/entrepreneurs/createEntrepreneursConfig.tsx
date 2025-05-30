@@ -1,25 +1,26 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { BaseEntity, EntityConfig } from "@/components/admin/GenericManagent";
+import { EntityConfig } from "@/features/admin/types";
+import { EntrepreneursFilter } from "./EntrepreneursFilter";
+import { Entrepreneur } from "./EntrepreneursTypes";
 
-interface CreateConfigParams<T extends BaseEntity<any>> {
-    data: T[];
+interface CreateConfigParams {
+    data: Entrepreneur[];
     CardComponent: React.ComponentType<{
-        item: T;
-        onEdit: (item: T) => void;
+        item: Entrepreneur;
+        onEdit: (item: Entrepreneur) => void;
         onDelete: (id: number) => void;
     }>;
     actions: {
-        onEdit?: (item: T) => void;
+        onEdit?: (item: Entrepreneur) => void;
         onDelete?: (id: number) => void;
         onCreate?: () => void;
     };
 }
 
-export const CreateEntrepreneursConfig = <T extends BaseEntity<any>>({
+export const CreateEntrepreneursConfig = ({
     data,
     CardComponent,
     actions
-}: CreateConfigParams<T>): EntityConfig<T> => ({
+}: CreateConfigParams): EntityConfig<Entrepreneur> => ({
     entityName: "Emprendedor",
     entityNamePlural: "Emprendedores",
     searchPlaceholder: "Buscar emprendedores...",
@@ -34,8 +35,17 @@ export const CreateEntrepreneursConfig = <T extends BaseEntity<any>>({
     maxResults: 50,
     enableAnimations: true,
     showResultsCount: true,
-    customFilters: () => null,
-    searchFunction: () => true,
+    customFilters: EntrepreneursFilter,
+    searchFunction: (item, searchTerm) => {
+        const searchLower = searchTerm.toLowerCase();
+        const entrepreneur = item as Entrepreneur;
+        return (
+            entrepreneur.name?.toLowerCase().includes(searchLower) ||
+            entrepreneur.email?.toLowerCase().includes(searchLower) ||
+            entrepreneur.phone_number?.toLowerCase().includes(searchLower) ||
+            entrepreneur.name_farm?.toLowerCase().includes(searchLower)
+        );
+    },
     onEdit: actions.onEdit || (() => {}),
     onDelete: actions.onDelete || (() => {}),
     onCreate: actions.onCreate || (() => {}),
