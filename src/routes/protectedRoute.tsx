@@ -1,9 +1,13 @@
 import useAuth from '@/context/useAuth';
 import { Navigate, Outlet } from 'react-router-dom';
+import LoadingSpinner from '@/components/layouts/LoadingSpinner';
 
 const ProtectedRoute = ({ roles = [] }: { roles?: string[] }) => {
-    const { isAuthenticated, user } = useAuth();
+    const { isAuthenticated, user, isLoading } = useAuth();
 
+    if (isLoading) {
+        return <LoadingSpinner message="Verificando autenticación..." />;
+    }
 
     if (!isAuthenticated) {
         return <Navigate to="/login" replace />;

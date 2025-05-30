@@ -1,9 +1,9 @@
 // Interfaces base
-export interface BaseEntity<T = number> {
-    id: T;
+export interface BaseEntity<T> {
+    id: number;
     name: string;
-    status?: string;
-    description?: string;
+    description: string;
+    status: T;
     email?: string;
     phone?: string;
     category?: string;

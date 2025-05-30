@@ -6,17 +6,16 @@ import useAuth from '@/context/useAuth';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useAuthenticatedQuery } from '@/hooks/useAuthenticatedQuery';
 import { useProtectedMutation } from '@/hooks/useProtectedMutation';
-import { farmsApi } from '@/services/admin/farms';
 import { Farm } from '@/features/admin/farms/FarmTypes';
 import { CreateFarmsConfig } from '@/features/admin/farms/createFarmsConfig';
 import FarmCard  from '@/features/admin/farms/FamCard';
+import { farmsApi } from '@/services/admin/farms';
 
 export default function FarmsManagement() {
     const queryClient = useQueryClient();
     const { isAuthenticated, isLoading: authLoading } = useAuth();
     const { hasPermission, isAdmin } = usePermissions();
 
-    // Verificar autenticación antes de cargar
     if (authLoading) {
         return (
             <div className="flex justify-center items-center h-64">
@@ -40,11 +39,9 @@ export default function FarmsManagement() {
         );
     }
 
-    // Verificar permisos
     const canEdit = isAdmin() || hasPermission('fincas:edit');
     const canDelete = isAdmin() || hasPermission('fincas:delete');
 
-    // Query autenticada para obtener fincas
     const {
         data: farms = [],
         isLoading,
@@ -52,10 +49,11 @@ export default function FarmsManagement() {
         refetch
     } = useAuthenticatedQuery<Farm[]>({
         queryKey: ['farms'],
-        queryFn: () => farmsApi.getAll(),
+        queryFn: () => farmsApi.getAllFarms(),
         staleTime: 5 * 60 * 1000, // 5 minutos
         retry: 2
     });
+
 
 
     // const updateMutation = useProtectedMutation({
@@ -74,7 +72,7 @@ export default function FarmsManagement() {
     // });
 
     const deleteMutation = useProtectedMutation({
-        mutationFn: farmsApi.delete,
+        mutationFn: farmsApi.deleteFarm,
         requiredPermission: 'fincas:delete',
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['farms'] });
