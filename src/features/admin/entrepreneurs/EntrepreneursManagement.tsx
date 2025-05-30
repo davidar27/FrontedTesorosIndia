@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// EntrepreneursManagement.tsx
 import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import GenericManagement from '@/components/admin/GenericManagent';
@@ -110,7 +109,6 @@ export default function EntrepreneursManagement() {
             return;
         }
         console.log('Editing entrepreneur:', entrepreneur);
-        // Aquí puedes abrir un modal de edición o navegar a una página de edición
     };
 
     const handleDelete = (entrepreneurId: number) => {

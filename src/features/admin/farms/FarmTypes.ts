@@ -7,7 +7,7 @@ export interface FarmResponse {
     id: number;
     name: string;
     description: string;
-    location: string;
+    location: string | 'Por definir';
     type: string | ' ';
     created_at: string;
     status: FarmStatus;
@@ -17,7 +17,7 @@ export interface FarmResponse {
 // Tipo para el manejo interno en la aplicación
 export interface Farm extends BaseEntity<FarmStatus> {
     description: string;
-    location: string;
+    location: string | 'Por definir';
     type: string | ' ';
     created_at: string;
     entrepreneur_id: string | number;

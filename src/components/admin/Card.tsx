@@ -15,8 +15,8 @@ interface ContactInfo {
     icon: LucideIcon;
     value: string;
     label?: string;
-    onClick?: () => void; // Para hacer clickeable (ej: teléfono, email)
-    copyable?: boolean; // Para poder copiar al clipboard
+    onClick?: () => void; 
+    copyable?: boolean;
 }
 
 interface StatInfo {

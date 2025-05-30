@@ -6,7 +6,7 @@ import { JSX } from 'react';
 
 // Tipos
 export interface BaseEntity<TStatus extends string = 'active' | 'inactive' | 'draft'> {
-    id: number;
+    id?: number;
     name: string;
     status: TStatus;
     [key: string]: string | number | boolean | Date | null | undefined;

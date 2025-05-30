@@ -12,7 +12,7 @@ import { Credentials } from '@/interfaces/formInterface';
 const AuthContext = createContext<AuthContextType>(null!);
 
 const AUTH_QUERY_KEY = ['auth', 'user'];
-const TOKEN_REFRESH_INTERVAL = 14 * 60 * 1000; 
+const TOKEN_REFRESH_INTERVAL = 4.5 * 60 * 1000; 
 
 function AuthProvider({ children }: { children: ReactNode }) {
     const [error, setError] = useState<string | null>(null);

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BaseEntity, EntityConfig } from "@/components/admin/GenericManagent";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 interface CreateConfigParams<T extends BaseEntity<any>> {
     data: T[];
     CardComponent: React.ComponentType<{

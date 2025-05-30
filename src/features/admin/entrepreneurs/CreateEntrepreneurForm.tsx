@@ -1,4 +1,3 @@
-// CreateEntrepreneurForm.tsx
 import { useState } from 'react';
 import { CreateEntrepreneurData } from './EntrepreneursTypes';
 import Button from '@/components/ui/buttons/Button';
@@ -14,8 +13,8 @@ export function CreateEntrepreneurForm({ onSubmit, onCancel, isLoading }: Create
         name: '',
         email: '',
         password: '',
-        phone: '',
-        farm: ''
+        phone_number: '',
+        name_farm: ''
     });
 
     const [errors, setErrors] = useState<Partial<CreateEntrepreneurData>>({});
@@ -39,12 +38,12 @@ export function CreateEntrepreneurForm({ onSubmit, onCancel, isLoading }: Create
             newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
         }
 
-        if (!formData.phone.trim()) {
-            newErrors.phone = 'El teléfono es requerido';
+        if (!formData.phone_number.trim()) {
+            newErrors.phone_number = 'El teléfono es requerido';
         }
 
-        if (!formData.farm.trim()) {
-            newErrors.farm = 'El nombre de la finca es requerido';
+        if (!formData.name_farm.trim()) {
+            newErrors.name_farm = 'El nombre de la finca es requerido';
         }
 
         setErrors(newErrors);
@@ -148,34 +147,34 @@ export function CreateEntrepreneurForm({ onSubmit, onCancel, isLoading }: Create
                         <input
                             type="tel"
                             id="phone"
-                            value={formData.phone}
-                            onChange={handleChange('phone')}
-                            className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.phone ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                            value={formData.phone_number}
+                            onChange={handleChange('phone_number')}
+                            className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.phone_number ? 'border-red-300 bg-red-50' : 'border-gray-300'
                                 }`}
                             placeholder="+57 300 123 4567"
                         />
-                        {errors.phone && (
-                            <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
+                        {errors.phone_number && (
+                            <p className="mt-1 text-sm text-red-600">{errors.phone_number}</p>
                         )}
                     </div>
                 </div>
 
                 {/* Nombre de la Finca */}
                 <div>
-                    <label htmlFor="farm" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="name_farm" className="block text-sm font-medium text-gray-700 mb-2">
                         Nombre de la Finca *
                     </label>
                     <input
                         type="text"
-                        id="farm"
-                        value={formData.farm}
-                        onChange={handleChange('farm')}
-                        className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.farm ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                        id="name_farm"
+                        value={formData.name_farm}
+                        onChange={handleChange('name_farm')}
+                        className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.name_farm ? 'border-red-300 bg-red-50' : 'border-gray-300'
                             }`}
                         placeholder="Ingresa el nombre de la finca"
                     />
-                    {errors.farm && (
-                        <p className="mt-1 text-sm text-red-600">{errors.farm}</p>
+                    {errors.name_farm && (
+                        <p className="mt-1 text-sm text-red-600">{errors.name_farm}</p>
                     )}
                 </div>
 

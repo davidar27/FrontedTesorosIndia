@@ -34,10 +34,17 @@ export function EntrepreneurCard({ item, onEdit, onDelete }: EntrepreneurCardPro
         <ReusableCard
             item={{
                 ...item,
-                image: item.image || undefined
+                id: item.id || 0,
+                image: item.image || ''
             }}
-            contactInfo={contactInfo}
-            stats={stats}
+            contactInfo={contactInfo.map(info => ({
+                ...info,
+                value: String(info.value || '')
+            }))}
+            stats={stats.map(stat => ({
+                ...stat,
+                value: String(stat.value || '')
+            }))}
             onEdit={(baseItem) => onEdit(baseItem as Entrepreneur)}
             onDelete={onDelete}
         />

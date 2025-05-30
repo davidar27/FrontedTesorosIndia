@@ -7,9 +7,9 @@ import { usePermissions } from '@/hooks/usePermissions';
 import { useAuthenticatedQuery } from '@/hooks/useAuthenticatedQuery';
 import { useProtectedMutation } from '@/hooks/useProtectedMutation';
 import { Farm } from '@/features/admin/farms/FarmTypes';
-import { CreateFarmsConfig } from '@/features/admin/farms/createFarmsConfig';
 import FarmCard  from '@/features/admin/farms/FamCard';
 import { farmsApi } from '@/services/admin/farms';
+import { CreateFarmsConfig } from '@/features/admin/farms/CreateFarmsConfig';
 
 export default function FarmsManagement() {
     const queryClient = useQueryClient();

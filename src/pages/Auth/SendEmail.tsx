@@ -7,13 +7,16 @@ import AuthForm from '@/components/layouts/AuthForm';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { AuthError } from '@/interfaces/responsesApi';
+import { ProgressBar } from '@/components/ui/display/ProgressBar';
 
 const RESEND_COOLDOWN = 60;
 
 const emailSchema = z.object({
     email: z.string()
         .email("Correo electrónico inválido")
-        .min(1, "El correo es obligatorio"),
+        .min(1, "El correo es obligatorio")
+        .trim(),
 });
 
 type EmailFormData = z.infer<typeof emailSchema>;
@@ -22,24 +25,23 @@ const SendEmail = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const email = location.state?.email;
-    const [Message, setMessage] = useState('');
-    const [hideButton, setHideButton] = useState(false);
-    const [isVerified, setIsVerified] = useState(false);
+    const [message, setMessage] = useState('');
 
-    const handleVerified = () => {
-        setIsVerified(true);
-        setMessage('¡Email verificado con éxito! Redirigiendo al inicio de sesión...');
-        setTimeout(() => {
-            navigate('/login', {
-                state: { message: '¡Email verificado con éxito! Ya puedes iniciar sesión.' }
-            });
-        }, 2000);
-    };
-
-    const { isChecking, error: verificationError } = useVerificationStatus({
+    const {
+        isVerified,
+        restart
+    } = useVerificationStatus({
         email: email || '',
-        onVerified: handleVerified,
-        pollingInterval: 3000 
+        onVerified: () => {
+            navigate('/login', {
+                state: {
+                    message: 'Correo verificado exitosamente. Ya puedes iniciar sesión.',
+                    email: email
+                }
+            });
+        },
+        pollingInterval: 6000,
+        maxDuration: 300000
     });
 
     const {
@@ -49,14 +51,13 @@ const SendEmail = () => {
         isActive
     } = useResetCooldown({
         initialDuration: RESEND_COOLDOWN,
-        storageKey: 'resendVerificationCooldown',
-        onComplete: () => setHideButton(false)
+        storageKey: 'resendVerificationCooldown'
     });
 
     const {
         register,
         handleSubmit,
-        formState: { errors, isSubmitting },
+        formState: { errors },
         clearErrors
     } = useForm<EmailFormData>({
         resolver: zodResolver(emailSchema),
@@ -71,35 +72,60 @@ const SendEmail = () => {
             return;
         }
 
+        if (isVerified) {
+            setMessage('Tu correo ya ha sido verificado');
+            return;
+        }
+
         clearErrors();
         setMessage('');
 
         try {
-            await resendVerificationEmail(data.email);
-            setMessage('¡Correo reenviado con éxito! Revisa tu bandeja de entrada.');
-            setHideButton(true);
+            const result = await resendVerificationEmail(data.email);
+            setMessage(result.message);
             startCooldown();
-        } catch {
-            setMessage('Error al reenviar el correo. Intenta nuevamente.');
+            restart(); // Reiniciar la verificación
+        } catch (error) {
+            if (error instanceof AuthError) {
+                setMessage(error.message);
+            } else {
+                setMessage('Error al reenviar el correo. Por favor, intenta nuevamente.');
+            }
         }
     };
 
     const handleFormChange = () => {
-        if (Message && !isVerified) {
+        if (message && !isVerified) {
             setMessage('');
-            setHideButton(false);
         }
     };
 
     const getSubmitText = () => {
-        if (isSubmitting) return "Enviando...";
         if (isActive) return `Reenviar en ${cooldown}s`;
         return "Reenviar correo de verificación";
     };
 
-    const messageStyle = {
-        textColor: Message?.includes('éxito') ? 'text-green-600' : 'text-red-500',
-        backgroundColor: Message?.includes('éxito') ? 'bg-green-50' : 'bg-red-50'
+    const getMessageStyle = () => {
+        if (!message) return {};
+
+        if (message.includes('éxito')) {
+            return {
+                textColor: 'text-green-600',
+                backgroundColor: 'text-green-600'
+            };
+        }
+
+        if (message.includes('Error')) {
+            return {
+                textColor: 'text-red-500',
+                backgroundColor: 'bg-red-50'
+            };
+        }
+
+        return {
+            textColor: 'text-green-600',
+            backgroundColor: 'text-green-600'
+        };
     };
 
     return (
@@ -111,17 +137,18 @@ const SendEmail = () => {
                         Hemos enviado un enlace de verificación a tu <span className="!font-bold !text-black">{email}</span>.
                         Por favor revisa tu bandeja de entrada y haz clic en el enlace para completar tu registro.
                     </p>
-                    <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 text-left">
-                        <p className="text-yellow-700">
-                            <strong>¿No ves el correo?</strong> Revisa tu carpeta de spam o solicita un nuevo enlace.
-                        </p>
-                    </div>
-                    {(isActive || isChecking) && (
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                            <div
-                                className="bg-primary h-2 rounded-full transition-all duration-1000"
-                                style={{ width: `${isChecking ? 100 : progressPercentage}%` }}
+
+                    {/* Barra de progreso */}
+                    {isActive && (
+                        <div className="space-y-2">
+                            <ProgressBar 
+                                progress={progressPercentage} 
+                                className="w-full"
+                                barClassName="!bg-primary"
                             />
+                            <p className="text-xs text-center text-gray-500">
+                                Espera {cooldown} segundos para reenviar
+                            </p>
                         </div>
                     )}
                 </div>
@@ -134,11 +161,11 @@ const SendEmail = () => {
             onChange={handleFormChange}
             register={register}
             errors={errors}
-            Message={Message || verificationError || ''}
-            messageStyle={messageStyle}
+            Message={message}
+            messageStyle={getMessageStyle()}
             errorType="general"
-            isSubmitting={isSubmitting || isActive}
-            hideSubmitButton={hideButton || isVerified}
+            isSubmitting={isActive}
+            hideSubmitButton={isActive || isVerified}
         />
     );
 };
