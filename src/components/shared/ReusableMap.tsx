@@ -3,15 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import ZoomWithShift from '@/hooks/ZoomWithShift';
-
-
-interface Location {
-    id: number;
-    name: string;
-    position: { lat: number; lng: number };
-    description: string;
-    type: string;
-}
+import { Location } from '@/types';
 
 interface ReusableMapProps {
     locations: Location[];
@@ -21,7 +13,6 @@ interface ReusableMapProps {
 }
 
 
-// Componente para ajustar la vista del mapa
 const MapViewAdjuster = ({ locations }: { locations: Location[] }) => {
     const map = useMap();
 

@@ -1,5 +1,6 @@
-import axios from "axios";
+import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { AuthError } from "@/interfaces/responsesApi";
+import authService from "@/services/auth/authService";
 
 export const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -10,9 +11,24 @@ export const axiosInstance = axios.create({
   timeout: 10000,
 });
 
-function normalizeErrorType(type?: string): "email" | "password" | "general" {
-  return type === "email" || type === "password" ? type : "general";
+function normalizeErrorType(type?: string): "email" | "password" | "general" | "authentication" {
+  if (type === "email" || type === "password" || type === "authentication") {
+    return type;
+  }
+  return "general";
 }
+
+let isRefreshing = false;
+let refreshSubscribers: (() => void)[] = [];
+
+const addRefreshSubscriber = (callback: () => void) => {
+  refreshSubscribers.push(callback);
+};
+
+const onRefreshed = () => {
+  refreshSubscribers.forEach((callback) => callback());
+  refreshSubscribers = [];
+};
 
 axiosInstance.interceptors.request.use(
   (config) => {
@@ -27,54 +43,76 @@ axiosInstance.interceptors.response.use(
   (response) => {
     return response;
   },
-  (error) => {
+  async (error: AxiosError) => {
+    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      if (!isRefreshing) {
+        isRefreshing = true;
+        originalRequest._retry = true;
+
+        try {
+          await authService.refreshToken();
+          isRefreshing = false;
+          onRefreshed();
+          
+          return axiosInstance(originalRequest);
+        } catch {
+          isRefreshing = false;
+          refreshSubscribers = [];
+          return Promise.reject(
+            new AuthError("Sesión expirada", {
+              redirectTo: "/login",
+              errorType: "authentication",
+            })
+          );
+        }
+      } else {
+        return new Promise((resolve) => {
+          addRefreshSubscriber(() => {
+            resolve(axiosInstance(originalRequest));
+          });
+        });
+      }
+    }
+
     const status = error.response?.status;
     const errorData = error.response?.data;
 
     if (errorData) {
-      let Message: string;
-      let errorType: "email" | "password" | "general" = "general";
+      let Message = "Ha ocurrido un error";
+      let errorType: "email" | "password" | "general" | "authentication" = "general";
 
-      if (errorData.error && typeof errorData.error === 'object' && errorData.error.message) {
-        Message = errorData.error.message;
-        errorType = normalizeErrorType(errorData.error.type);
-      }
-      else if (errorData.error && typeof errorData.error === 'string') {
-        Message = errorData.error;
+      if (typeof errorData === 'object' && errorData !== null) {
+        if ('error' in errorData) {
+          if (typeof errorData.error === 'object' && errorData.error !== null && 'message' in errorData.error) {
+            Message = String(errorData.error.message);
+            errorType = normalizeErrorType((errorData.error as {type?: string}).type);
+          } else if (typeof errorData.error === 'string') {
+            Message = errorData.error;
 
-        if (status === 409 || Message.toLowerCase().includes('correo') || Message.toLowerCase().includes('email')) {
-          errorType = "email";
-        } else if (Message.toLowerCase().includes('contraseña') || Message.toLowerCase().includes('password')) {
-          errorType = "password";
+            if (status === 409 || Message.toLowerCase().includes('correo') || Message.toLowerCase().includes('email')) {
+              errorType = "email";
+            } else if (Message.toLowerCase().includes('contraseña') || Message.toLowerCase().includes('password')) {
+              errorType = "password";
+            }
+          }
+        } else if ('message' in errorData && errorData.message) {
+          Message = String(errorData.message);
+          if ('type' in errorData) {
+            errorType = normalizeErrorType(errorData.type as string);
+          }
         }
-      }
-      else if (errorData.message) {
-        Message = errorData.message;
-        errorType = normalizeErrorType(errorData.type);
-      }
-       
-      else {
-        Message = "Ha ocurrido un error";
-      }
 
-      const authError = new AuthError(
-        Message || "Contraseña o correo incorrecto",
-        {
-          redirectTo: errorData.redirectTo,
-          errorType: errorType,
-        }
-      );
+        const authError = new AuthError(Message || "Ha ocurrido un error",
+          {
+            redirectTo: 'redirectTo' in errorData ? String(errorData.redirectTo) : undefined,
+            errorType: errorType,
+          }
+        );
 
-      return Promise.reject(authError);
-    }
-
-    if (status === 401) {
-      return Promise.reject(
-        new AuthError("Sesión expirada o no autorizada", {
-          redirectTo: "/login",
-          errorType: "general",
-        })
-      );
+        return Promise.reject(authError);
+      }
     }
 
     if (!error.response) {

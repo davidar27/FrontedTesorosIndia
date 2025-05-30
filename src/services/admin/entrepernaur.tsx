@@ -6,7 +6,6 @@ import { Entrepreneur, CreateEntrepreneurData, UpdateEntrepreneurData, Entrepren
 
 
 export const entrepreneursApi = {
-    // Obtener todos los emprendedores
     getAll: async (params?: { page?: number; limit?: number; search?: string }): Promise<Entrepreneur[]> => {
         try {
             const response = await axiosInstance.get<EntrepreneurApiResponse>('usuario/emprendedores', { params });

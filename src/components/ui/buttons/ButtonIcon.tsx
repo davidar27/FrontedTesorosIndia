@@ -25,7 +25,7 @@ const ButtonIcon: React.FC<ButtonIconProps> = ({
   onClick,
 }) => {
   const baseClasses = clsx(
-    "text-sm py-1 rounded flex items-center gap-2 transition-colors",
+    "text-sm py-1 rounded flex items-center gap-2 transition-colors cursor-pointer",
     textColor,
     hoverColor,
     className

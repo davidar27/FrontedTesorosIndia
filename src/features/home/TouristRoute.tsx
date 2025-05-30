@@ -1,7 +1,7 @@
 import Button from '@/components/ui/buttons/Button';
 import { TreePalm, MapPin, Coffee, Mountain } from 'lucide-react';
-import ReusableMap from '@/components/layouts/ReusableMap';
-import AnimatedTitle from '@/components/ui/AnimatedTitle';
+import ReusableMap from '@/components/shared/ReusableMap';
+import AnimatedTitle from '@/components/ui/display/AnimatedTitle';
 
 const locations = [
   {

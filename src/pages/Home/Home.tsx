@@ -1,9 +1,9 @@
-import Hero from "@/components/home/Hero";
-import PackageSelector from "@/components/home/PackageSelector";
-import TouristRoute from "@/components/home/TouristRoute";
-import UniqueExperiences from "@/components/home/UniqueExperiences";
-import Leaders from "@/components/home/Leaders";
-import HandleReservation from "@/components/home/HandleReservation";
+import Hero from "@/features/home/Hero";
+import PackageSelector from "@/features/home/PackageSelector";
+import TouristRoute from "@/features/home/TouristRoute";
+import UniqueExperiences from "@/features/home/UniqueExperiences";
+import Leaders from "@/features/home/Leaders";
+import HandleReservation from "@/features/home/HandleReservation";
 
 const Home: React.FC = () => {
 

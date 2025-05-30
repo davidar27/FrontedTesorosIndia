@@ -2,7 +2,7 @@ import React from 'react';
 import rioBarbas from '@/assets/images/cañonRioBarbas.webp';
 import flores from '@/assets/images/paquete1.webp';
 import gastronomiaImage from '@/assets/images/experincia3.webp';
-import AnimatedTitle from '@/components/ui/AnimatedTitle';
+import AnimatedTitle from '@/components/ui/display/AnimatedTitle';
 
 const UniqueExperiences: React.FC = () => {
   const experiences = [

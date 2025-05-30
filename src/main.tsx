@@ -9,8 +9,8 @@ import { AuthProvider } from './context/AuthContext';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000,
-      gcTime: 10 * 60 * 1000,
+      staleTime: Infinity, 
+      gcTime: Infinity,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       retry: (failureCount, error: any) => {
         if (error?.response?.status >= 400 && error?.response?.status < 500) {

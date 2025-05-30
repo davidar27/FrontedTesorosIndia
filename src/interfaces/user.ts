@@ -7,6 +7,8 @@ export interface User {
     role: UserRole;
     avatar?: string;
     phone_number?: string;
+    token?: string;
+    isVerified?: boolean;
 
     // Campos condicionales por rol
     address?: string;        // Para clientes

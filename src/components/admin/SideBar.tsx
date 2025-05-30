@@ -3,7 +3,7 @@ import {
     LucideIcon,
 } from 'lucide-react';
 import logo from '@/assets/icons/logotesorosindiaPequeño.webp';
-import Picture from '@/components/ui/Picture';
+import Picture from '@/components/ui/display/Picture';
 
 // Tipos
 export interface SidebarItem {

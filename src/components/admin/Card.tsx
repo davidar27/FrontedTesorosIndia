@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Edit, Trash2, LucideIcon, ExternalLink } from 'lucide-react';
-import Picture from '@/components/ui/Picture';
-import Avatar from '@/components/ui/Avatar';
+import Picture from '@/components/ui/display/Picture';
+import Avatar from '@/components/ui/display/Avatar';
 
 // Interfaces genéricas para hacer el componente reutilizable
 interface StatusConfig {

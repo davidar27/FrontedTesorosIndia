@@ -43,7 +43,6 @@ const authService = {
     try {
       const { data } = await axiosInstance.get<AuthResponse>("/auth/verificar-token");
 
-
       if (data.error) return { isValid: false };
 
       return { isValid: true, user: data.user };
@@ -57,7 +56,7 @@ const authService = {
 
   refreshToken: async (): Promise<User> => {
     try {
-      const { data } = await axiosInstance.post<AuthResponse>("/refrescar-token");
+      const { data } = await axiosInstance.post<AuthResponse>("/auth/refrescar-token");
 
       if (data.error) {
         throw new AuthError(data.error.message, {
@@ -74,7 +73,10 @@ const authService = {
       return data.user;
     } catch (error) {
       if (error instanceof AuthError) throw error;
-      throw new AuthError("La sesión ha expirado", { errorType: "general" });
+      throw new AuthError("La sesión ha expirado", { 
+        errorType: "authentication",
+        redirectTo: "/login"
+      });
     }
   },
 };

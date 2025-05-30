@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 
 interface BackButtonProps {
@@ -11,6 +11,7 @@ interface BackButtonProps {
     hoverColor?: string;
     size?: 'sm' | 'md' | 'lg';
     onClick?: () => void;
+    fixed?: boolean;
 }
 
 const sizeMap = {
@@ -27,7 +28,7 @@ const positionMap = {
 };
 
 const BackButton: React.FC<BackButtonProps> = ({
-    to = '/',
+    to,
     className = '',
     iconClassName = '',
     position = 'top-left',
@@ -35,19 +36,34 @@ const BackButton: React.FC<BackButtonProps> = ({
     hoverColor = 'gray-700',
     size = 'md',
     onClick,
+    fixed = false,
 }) => {
+    const navigate = useNavigate();
     const positionClasses = positionMap[position];
     const sizeClass = sizeMap[size];
 
+    const handleClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        if (onClick) {
+            onClick();
+            return;
+        }
+        
+        if (to) {
+            navigate(to);
+        } else {
+            navigate(-1);
+        }
+    };
+
     return (
-        <Link
-            to={to}
-            className={`absolute ${positionClasses} text-${color} hover:text-${hoverColor} transition duration-200 ${className}`}
-            onClick={onClick}
+        <button
+            onClick={handleClick}
+            className={`${fixed ? 'fixed' : 'absolute'} ${positionClasses} text-${color} hover:text-${hoverColor} transition-colors duration-200 ${className} cursor-pointer`}
             aria-label="Regresar"
         >
             <ChevronLeft className={`${sizeClass} ${iconClassName}`} />
-        </Link>
+        </button>
     );
 };
 
