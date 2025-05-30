@@ -5,6 +5,8 @@ import LoadingSpinner from '@/components/layouts/LoadingSpinner';
 import { useNavigate } from 'react-router-dom';
 import { homeApi } from '@/services/home/home';
 import clsx from 'clsx';
+import { useScroll, useMotionValueEvent } from 'framer-motion';
+import ButtonIcon from '../ui/buttons/ButtonIcon';
 
 interface SidebarFarmsProps {
     isOpen: boolean;
@@ -29,6 +31,12 @@ const SidebarFarms: React.FC<SidebarFarmsProps> = ({ isOpen, onClose }) => {
     const [farms, setFarms] = useState<Farm[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [scrolled, setScrolled] = useState(false);
+    const { scrollY } = useScroll();
+
+    useMotionValueEvent(scrollY, "change", (latest) => {
+        setScrolled(latest > 50);
+    });
 
     useEffect(() => {
         const fetchFarms = async () => {
@@ -64,20 +72,20 @@ const SidebarFarms: React.FC<SidebarFarmsProps> = ({ isOpen, onClose }) => {
     if (!isOpen) return null;
 
     const sidebarContent = (
-        <aside className={`bg-white border-r border-gray-200 transition-all duration-300 ${
+        <aside className={`fixed right-0 z-40 w-64 h-[calc(100vh-${scrolled ? '70px' : '90px'})] transition-all duration-300 bg-white border-r border-gray-200 ${
             isOpen ? 'translate-x-0' : '-translate-x-full'
-        } fixed right-0 z-30 w-64 h-fit`}>
-            <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+        }`} style={{ top: scrolled ? '70px' : '90px' }}>
+            <div className='p-4 border-b border-gray-200 flex justify-between items-center  '>
                 <h2 className="text-lg font-semibold text-gray-800 animate-fade-in-right">
                     Nuestras Fincas
                 </h2>
-                <button
+                <ButtonIcon
                     onClick={onClose}
-                    className="text-gray-500 hover:text-gray-700 transition-colors p-2 rounded-full hover:bg-gray-50"
+                    className="!text-gray-500 hover:text-gray-700 transition-colors p-2 rounded-full hover:bg-gray-50 "
                     aria-label="Cerrar barra lateral"
                 >
                     <X size={20} />
-                </button>
+                </ButtonIcon>
             </div>
 
             {isLoading ? (
@@ -89,7 +97,7 @@ const SidebarFarms: React.FC<SidebarFarmsProps> = ({ isOpen, onClose }) => {
                     {error ? (
                         <div className="p-4 text-center text-red-600">
                             <p>{error}</p>
-                            <button 
+                            <ButtonIcon 
                                 onClick={() => {
                                     setError(null);
                                     setFarms([]);
@@ -98,7 +106,7 @@ const SidebarFarms: React.FC<SidebarFarmsProps> = ({ isOpen, onClose }) => {
                                 className="mt-2 text-sm text-primary hover:underline"
                             >
                                 Intentar de nuevo
-                            </button>
+                            </ButtonIcon>
                         </div>
                     ) : !Array.isArray(farms) || farms.length === 0 ? (
                         <div className="flex flex-col items-center justify-center h-full p-4 text-center text-gray-500">
@@ -115,18 +123,18 @@ const SidebarFarms: React.FC<SidebarFarmsProps> = ({ isOpen, onClose }) => {
                                         className="animate-fade-in-up"
                                         style={{ animationDelay: `${index * 0.1}s` }}
                                     >
-                                        <button
+                                        <ButtonIcon
                                             onClick={() => navigateToEstate(Number(farm.id))}
                                             className={clsx(
-                                                'w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200',
+                                                '!text-primary w-full flex items-center gap-3 !px-4 !py-3 !text-lg rounded-xl transition-all duration-200',
                                                 activeEstateId === Number(farm.id)  
                                                     ? 'bg-primary text-white shadow-lg'
-                                                    : 'text-gray-600 hover:bg-gray-50 hover:text-primary'
+                                                    : 'text-gray-600 hover:bg-gray-100 hover:text-primary'
                                             )}
                                         >
                                             <IconComponent className="w-5 h-5" />
                                             <span className="font-medium truncate">{farm.name}</span>
-                                        </button>
+                                        </ButtonIcon>
                                     </li>
                                 );
                             })}
@@ -156,11 +164,6 @@ const SidebarFarms: React.FC<SidebarFarmsProps> = ({ isOpen, onClose }) => {
     return (
         <>
             {sidebarContent}
-            {/* Overlay para móvil */}
-            <div
-                className="fixed inset-0 bg-black/50 z-20"
-                onClick={onClose}
-            />
         </>
     );
 };

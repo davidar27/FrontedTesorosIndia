@@ -56,7 +56,20 @@ axiosInstance.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
     
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Handle 401 Unauthorized errors
+    if (Number(error.response?.status) === 401) {
+      // If we're already retrying or if this is a refresh token request, don't retry
+      if (originalRequest._retry || (typeof originalRequest.url === 'string' && originalRequest.url.includes('/auth/refrescar-token'))) {
+        isRefreshing = false;
+        refreshSubscribers = [];
+        return Promise.reject(
+          new AuthError("Sesión expirada", {
+            redirectTo: "/login",
+            errorType: "authentication",
+          })
+        );
+      }
+
       if (!isRefreshing) {
         isRefreshing = true;
         originalRequest._retry = true;
@@ -67,7 +80,7 @@ axiosInstance.interceptors.response.use(
           onRefreshed();
           
           return axiosInstance(originalRequest);
-        } catch {
+        } catch  {
           isRefreshing = false;
           refreshSubscribers = [];
           return Promise.reject(
@@ -101,7 +114,7 @@ axiosInstance.interceptors.response.use(
           } else if (typeof errorData.error === 'string') {
             Message = errorData.error;
 
-            if (status === 409 || Message.toLowerCase().includes('correo') || Message.toLowerCase().includes('email')) {
+            if (Number(status) === 409 || Message.toLowerCase().includes('correo') || Message.toLowerCase().includes('email')) {
               errorType = "email";
             } else if (Message.toLowerCase().includes('contraseña') || Message.toLowerCase().includes('password')) {
               errorType = "password";

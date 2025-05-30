@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useQueryClient } from '@tanstack/react-query';
 import GenericManagement from '@/components/admin/GenericManagent';
 import useAuth from '@/context/useAuth';
@@ -7,14 +5,43 @@ import { usePermissions } from '@/hooks/usePermissions';
 import { useAuthenticatedQuery } from '@/hooks/useAuthenticatedQuery';
 import { useProtectedMutation } from '@/hooks/useProtectedMutation';
 import { Farm } from '@/features/admin/farms/FarmTypes';
-import { CreateFarmsConfig } from '@/features/admin/farms/createFarmsConfig';
-import FarmCard  from '@/features/admin/farms/FamCard';
 import { farmsApi } from '@/services/admin/farms';
+import FarmCard from '@/features/admin/farms/FamCard'
+import CreateFarmsConfig from '@/features/admin/farms/createFarmConfig';
 
 export default function FarmsManagement() {
     const queryClient = useQueryClient();
     const { isAuthenticated, isLoading: authLoading } = useAuth();
     const { hasPermission, isAdmin } = usePermissions();
+
+    const canEdit = isAdmin() || hasPermission('fincas:edit');
+    const canDelete = isAdmin() || hasPermission('fincas:delete');
+
+    const {
+        data: farms = [],
+        isLoading,
+        error,
+        refetch
+    } = useAuthenticatedQuery<Farm[]>({
+        queryKey: ['farms'],
+        queryFn: () => farmsApi.getAllFarms(),
+        staleTime: 5 * 60 * 1000, // 5 minutos
+        retry: 2
+    });
+
+    const deleteMutation = useProtectedMutation({
+        mutationFn: farmsApi.deleteFarm,
+        requiredPermission: 'fincas:delete',
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['farms'] });
+        },
+        onError: (error: Error) => {
+            console.error('Error deleting farm:', error);
+        },
+        onUnauthorized: () => {
+            alert('No tienes permisos para eliminar fincas');
+        }
+    });
 
     if (authLoading) {
         return (
@@ -39,59 +66,12 @@ export default function FarmsManagement() {
         );
     }
 
-    const canEdit = isAdmin() || hasPermission('fincas:edit');
-    const canDelete = isAdmin() || hasPermission('fincas:delete');
-
-    const {
-        data: farms = [],
-        isLoading,
-        error,
-        refetch
-    } = useAuthenticatedQuery<Farm[]>({
-        queryKey: ['farms'],
-        queryFn: () => farmsApi.getAllFarms(),
-        staleTime: 5 * 60 * 1000, // 5 minutos
-        retry: 2
-    });
-
-
-
-    // const updateMutation = useProtectedMutation({
-    //     mutationFn: ({ id, data }: { id: number; data: UpdateEntrepreneurData }) =>
-    //         entrepreneursApi.update(id, data),
-    //     requiredPermission: 'entrepreneurs:edit',
-    //     onSuccess: () => {
-    //         queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] });
-    //     },
-    //     onError: (error: any) => {
-    //         console.error('Error updating entrepreneur:', error);
-    //     },
-    //     onUnauthorized: () => {
-    //         alert('No tienes permisos para editar emprendedores');
-    //     }
-    // });
-
-    const deleteMutation = useProtectedMutation({
-        mutationFn: farmsApi.deleteFarm,
-        requiredPermission: 'fincas:delete',
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['farms'] });
-        },
-        onError: (error: any) => {
-            console.error('Error deleting farm:', error);
-        },
-        onUnauthorized: () => {
-            alert('No tienes permisos para eliminar fincas');
-        }
-    });
-
     const handleEdit = (farm: Farm) => {
         if (!canEdit) {
             alert('No tienes permisos para editar fincas');
             return;
         }
         console.log('Editing farm:', farm);
-        // Aquí puedes abrir un modal de edición o navegar a una página de edición
     };
 
     const handleDelete = (farmId: number) => {
@@ -122,6 +102,7 @@ export default function FarmsManagement() {
             </div>
         );
     }
+
     const config = CreateFarmsConfig<Farm>({
         data: farms,
         CardComponent: FarmCard,
@@ -131,7 +112,5 @@ export default function FarmsManagement() {
         }
     });
 
-    return <GenericManagement<Farm> config={config} />
-       
-        
+    return <GenericManagement<Farm> config={config} />;
 }

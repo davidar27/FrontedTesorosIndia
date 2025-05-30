@@ -15,7 +15,7 @@ interface CreateConfigParams<T extends BaseEntity<any>> {
     };
 }
 
-export const CreateFarmsConfig = <T extends BaseEntity<any>>({
+const CreateFarmsConfig = <T extends BaseEntity<any>>({
     data,
     CardComponent,
     actions
@@ -41,3 +41,4 @@ export const CreateFarmsConfig = <T extends BaseEntity<any>>({
     onCreate: actions.onCreate || (() => { }),
     onRetry: () => { },
 });
+export default CreateFarmsConfig;

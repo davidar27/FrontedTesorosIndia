@@ -1,14 +1,13 @@
 import { BaseEntity } from "@/components/admin/GenericManagent";
 
 export interface Entrepreneur extends BaseEntity<'active' | 'inactive' | 'pending'> {
-    id: number;
     name: string;
     email: string;
-    phone: string;
+    phone_number: string;
     image?: string | null;
     joinDate: string;
     status: 'active' | 'inactive' | 'pending';
-    farm: string;
+    name_farm: string;
     createdAt?: string;
     updatedAt?: string;
 }
@@ -17,15 +16,15 @@ export interface CreateEntrepreneurData {
     name: string;
     email: string;
     password: string;
-    phone: string;
-    farm: string;
+    phone_number: string;
+    name_farm: string;
 }
 
 export interface UpdateEntrepreneurData {
     name?: string;
     email?: string;
-    phone?: string;
-    farm?: string;
+    phone_number?: string;
+    name_farm?: string;
     status?: 'active' | 'inactive' | 'pending';
     image?: string;
 }

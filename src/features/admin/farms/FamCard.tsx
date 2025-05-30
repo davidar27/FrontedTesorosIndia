@@ -69,9 +69,9 @@ const FarmCard: React.FC<FarmCardProps> = ({ item, onEdit, onDelete }) => {
                     <div>
                         <span className="font-medium">Ubicación:</span>
                         <p className="ml-1 text-gray-500 mt-1 leading-relaxed">
-                            {item.location.length > 80
+                            {item.location && item.location.length > 80
                                 ? `${item.location.substring(0, 80)}...`
-                                : item.location
+                                : item.location || 'Por definir'
                             }
                         </p>
                     </div>

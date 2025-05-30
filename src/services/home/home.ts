@@ -1,5 +1,5 @@
 import { publicAxiosInstance } from "@/api/axiosInstance";
-import { Farm, FarmApiResponse, FarmStatus } from "@/features/admin/farms/FarmTypes";
+import { Farm, FarmStatus } from "@/features/admin/farms/FarmTypes";
 
 interface RawFarmResponse {
     id: number;
@@ -25,7 +25,7 @@ const transformFarmResponse = (farm: RawFarmResponse): Farm => ({
 
 export const homeApi = {
     getFarms: async (): Promise<Farm[]> => {
-        const response = await publicAxiosInstance.get<FarmApiResponse>('/finca/nombres?estado=Publicada');
+        const response = await publicAxiosInstance.get<{farms: RawFarmResponse[]}>('/finca/nombres?estado=Publicada');
         return response.data.farms.map(transformFarmResponse);
     }
 };
