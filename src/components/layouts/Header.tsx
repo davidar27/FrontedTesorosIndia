@@ -2,11 +2,11 @@ import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import Picture from "@/components/ui/Picture";
+import Picture from "@/components/ui/display/Picture";
 import Navbar from "@/components/layouts/nav/Navbar";
 import imgLogo from "@/assets/icons/logotesorosindia.webp";
 import background from "/images/FondoMobile.webp";
-import SearchBar from "../ui/SearchBar";
+import SearchBar from "../ui/display/SearchBar";
 import HeaderActions from "./HeaderActions";
 
 const excludedPaths = ["/login", "/registro"];

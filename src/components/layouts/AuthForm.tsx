@@ -7,8 +7,8 @@ import Card from "@/components/ui/cards/Card";
 import CardContent from "@/components/ui/cards/CardContent";
 import Button from "@/components/ui/buttons/Button";
 import Input from "@/components/ui/inputs/Input";
-import Label from "@/components/ui/Label";
-import CircularLogo from "@/components/ui/CircularLogo";
+import Label from "@/components/ui/display/Label";
+import CircularLogo from "@/components/ui/display/CircularLogo";
 import BackButton from "@/components/ui/buttons/BackButton";
 
 //hooks
@@ -121,7 +121,6 @@ const AuthForm = ({
           />
 
           <BackButton
-            to="/"
             position="top-left"
             size="lg"
             color="black"

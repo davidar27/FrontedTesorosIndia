@@ -31,7 +31,7 @@ const Button: React.FC<ButtonProps> = ({
             onClick={onClick}
 
             className={clsx(
-                "font-semibold py-2 px-4 rounded transition-colors cursor-pointer shadow-lg border-2 border-primary",
+                "font-semibold py-2 px-4 rounded transition-colors cursor-pointer shadow-lg border-2 border-primary cursor-pointer",
                 bgColor,
                 hoverColor,
                 textColor,

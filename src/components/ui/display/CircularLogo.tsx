@@ -1,5 +1,5 @@
 import React from 'react';
-import Picture from '@/components/ui/Picture';
+import Picture from '@/components/ui/display/Picture';
 
 interface CircularLogoProps {
     src: string;

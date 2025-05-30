@@ -4,7 +4,7 @@ export interface AuthResponse {
   user?: User;
   token?: string;
   error?: {
-    type: "email" | "password" | "general";
+    type: "email" | "password" | "general" | "authentication";
     message: string;
     redirectTo?: string;
   };
@@ -13,13 +13,13 @@ export interface AuthResponse {
 
 export class AuthError extends Error {
   redirectTo?: string;
-  errorType: "email" | "password" | "general";
+  errorType: "email" | "password" | "general" | "authentication";
 
   constructor(
     message: string,
     options?: {
       redirectTo?: string;
-      errorType?: "email" | "password" | "general";
+      errorType?: "email" | "password" | "general" | "authentication";
     }
   ) {
     super(message);

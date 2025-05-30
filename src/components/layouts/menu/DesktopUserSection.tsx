@@ -1,7 +1,7 @@
 import ButtonIcon from "@/components/ui/buttons/ButtonIcon";
 import MenuButton from "./MenuButton";
 import { User, LogOut } from "lucide-react"
-import Avatar from "@/components/ui/Avatar";
+import Avatar from "@/components/ui/display/Avatar";
 
 const DesktopUserSection = ({
     user,

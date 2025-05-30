@@ -9,7 +9,9 @@ import { AuthError } from '@/interfaces/responsesApi';
 
 const loginSchema = z.object({
     email: z.string().email("Correo electrónico inválido"),
-    password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+    password: z.string()
+        .min(8, "La contraseña debe tener al menos 8 caracteres")
+        .regex(/^\S*$/, "La contraseña no puede contener espacios")
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -17,6 +19,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 const LoginPage = () => {
     const { login } = useAuth();
     const [isRedirecting, setIsRedirecting] = useState(false);
+    const [Message, setMessage] = useState('');
     const navigate = useNavigate();
 
     const {
@@ -32,10 +35,11 @@ const LoginPage = () => {
     const onSubmit = async (data: LoginFormData) => {
         setIsRedirecting(false);
         clearErrors();
+        setMessage('');
 
         try {
             const user = await login(data);
-
+            setMessage('¡Inicio de sesión exitoso!');
             setIsRedirecting(true);
 
             if (user.role === 'administrador') {
@@ -57,6 +61,7 @@ const LoginPage = () => {
                         message: error.message
                     });
                 }
+                setMessage(error.message);
             }
             throw error;
         }
@@ -65,6 +70,9 @@ const LoginPage = () => {
     const handleFormChange = () => {
         if (isRedirecting) {
             setIsRedirecting(false);
+        }
+        if (Message) {
+            setMessage('');
         }
         if (Object.keys(errors).length > 0) {
             clearErrors();
@@ -86,25 +94,33 @@ const LoginPage = () => {
         },
     ];
 
+    const messageStyle = {
+        textColor: Message?.includes('éxito') ? 'text-green-600' : 'text-red-500',
+        backgroundColor: Message?.includes('éxito') ? 'bg-green-50' : 'bg-red-50'
+    };
+
     return (
-            <AuthForm
-                title="Inicio de sesión"
-                subtitle="Inicia  sesión con tu cuenta de"
-                bold="Tesoros India"
-                fields={fields}
-                submitText={isSubmitting ? "Procesando..." :
-                    isRedirecting ? "Redirigiendo..." : "Iniciar sesión"}
-                bottomText="¿No tienes una cuenta?"
-                bottomLinkText="Regístrate aquí"
-                bottomLinkTo="/registro"
-                extraLinkText="¿Olvidaste tu contraseña?"
-                extraLinkTo="/recuperar-contraseña"
-                onSubmit={handleSubmit(onSubmit)}
-                onChange={handleFormChange}
-                register={register}
-                errors={errors}
-                isSubmitting={isSubmitting || isRedirecting}
-            />
+        <AuthForm
+            title="Inicio de sesión"
+            subtitle="Inicia  sesión con tu cuenta de"
+            bold="Tesoros India"
+            fields={fields}
+            submitText={isSubmitting ? "Procesando..." :
+                isRedirecting ? "Redirigiendo..." : "Iniciar sesión"}
+            bottomText="¿No tienes una cuenta?"
+            bottomLinkText="Regístrate aquí"
+            bottomLinkTo="/registro"
+            extraLinkText="¿Olvidaste tu contraseña?"
+            extraLinkTo="/recuperar-contraseña"
+            onSubmit={handleSubmit(onSubmit)}
+            loadingText="Iniciando sesión..."
+            Message={Message}
+            messageStyle={messageStyle}
+            onChange={handleFormChange}
+            register={register}
+            errors={errors}
+            isSubmitting={isSubmitting || isRedirecting}
+        />
     );
 };
 

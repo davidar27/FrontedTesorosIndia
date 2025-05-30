@@ -2,7 +2,7 @@ import ProductCard from "@/components/products/ProductCard";
 import imgCafe from "@/assets/images/cafetalero-bolsa-sola-tag.webp";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import AnimatedTitle from "@/components/ui/AnimatedTitle";
+import AnimatedTitle from "@/components/ui/display/AnimatedTitle";
 
 const categories = ["Café", "Miel", "Artesanías", "Productos Orgánicos"];
 

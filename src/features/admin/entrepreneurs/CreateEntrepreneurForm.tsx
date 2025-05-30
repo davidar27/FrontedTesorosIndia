@@ -1,6 +1,7 @@
 // CreateEntrepreneurForm.tsx
 import { useState } from 'react';
 import { CreateEntrepreneurData } from './EntrepreneursTypes';
+import Button from '@/components/ui/buttons/Button';
 
 interface CreateEntrepreneurFormProps {
     onSubmit: (data: CreateEntrepreneurData) => void;
@@ -65,7 +66,6 @@ export function CreateEntrepreneurForm({ onSubmit, onCancel, isLoading }: Create
             [field]: e.target.value
         }));
 
-        // Limpiar error del campo cuando el usuario empiece a escribir
         if (errors[field]) {
             setErrors(prev => ({
                 ...prev,
@@ -133,7 +133,7 @@ export function CreateEntrepreneurForm({ onSubmit, onCancel, isLoading }: Create
                             onChange={handleChange('password')}
                             className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.password ? 'border-red-300 bg-red-50' : 'border-gray-300'
                                 }`}
-                            placeholder="Mínimo 6 caracteres"
+                            placeholder="Mínimo 8 caracteres"
                         />
                         {errors.password && (
                             <p className="mt-1 text-sm text-red-600">{errors.password}</p>
@@ -181,15 +181,18 @@ export function CreateEntrepreneurForm({ onSubmit, onCancel, isLoading }: Create
 
                 {/* Botones */}
                 <div className="flex gap-4 pt-6 border-t">
-                    <button
+                    <Button
                         type="button"
                         onClick={onCancel}
                         disabled={isLoading}
-                        className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className='flex-1  rounded-md hover:!text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center border border-red-500'
+                        bgColor='bg-red-500'
+                        hoverColor='bg-red-600'
+                        textColor='text-white'
                     >
                         Cancelar
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                         type="submit"
                         disabled={isLoading}
                         className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
@@ -202,7 +205,7 @@ export function CreateEntrepreneurForm({ onSubmit, onCancel, isLoading }: Create
                         ) : (
                             'Crear Emprendedor'
                         )}
-                    </button>
+                    </Button>
                 </div>
             </form>
         </div>

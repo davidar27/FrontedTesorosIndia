@@ -1,6 +1,6 @@
 
 
-import AnimatedTitle from "../ui/AnimatedTitle";
+import AnimatedTitle from "../ui/display/AnimatedTitle";
 
 interface SectionUsProps {
     title: string;

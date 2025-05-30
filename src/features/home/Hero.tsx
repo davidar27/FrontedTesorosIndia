@@ -1,4 +1,4 @@
-import HeroSection from "../layouts/HeroSection";
+import HeroSection from "@/components/layouts/HeroSection";
 import { useNavigate } from "react-router-dom";
 
 const Hero = () => {

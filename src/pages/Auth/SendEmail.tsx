@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { resendVerificationEmail } from '@/services/auth/resendService';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useResetCooldown } from '@/hooks/useResetCooldown';
+import { useVerificationStatus } from '@/hooks/useVerificationStatus';
 import AuthForm from '@/components/layouts/AuthForm';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -19,9 +20,27 @@ type EmailFormData = z.infer<typeof emailSchema>;
 
 const SendEmail = () => {
     const location = useLocation();
+    const navigate = useNavigate();
     const email = location.state?.email;
     const [Message, setMessage] = useState('');
     const [hideButton, setHideButton] = useState(false);
+    const [isVerified, setIsVerified] = useState(false);
+
+    const handleVerified = () => {
+        setIsVerified(true);
+        setMessage('¡Email verificado con éxito! Redirigiendo al inicio de sesión...');
+        setTimeout(() => {
+            navigate('/login', {
+                state: { message: '¡Email verificado con éxito! Ya puedes iniciar sesión.' }
+            });
+        }, 2000);
+    };
+
+    const { isChecking, error: verificationError } = useVerificationStatus({
+        email: email || '',
+        onVerified: handleVerified,
+        pollingInterval: 3000 
+    });
 
     const {
         cooldown,
@@ -66,7 +85,7 @@ const SendEmail = () => {
     };
 
     const handleFormChange = () => {
-        if (Message) {
+        if (Message && !isVerified) {
             setMessage('');
             setHideButton(false);
         }
@@ -97,18 +116,17 @@ const SendEmail = () => {
                             <strong>¿No ves el correo?</strong> Revisa tu carpeta de spam o solicita un nuevo enlace.
                         </p>
                     </div>
-                    {isActive && (
+                    {(isActive || isChecking) && (
                         <div className="w-full bg-gray-200 rounded-full h-2">
                             <div
                                 className="bg-primary h-2 rounded-full transition-all duration-1000"
-                                style={{ width: `${progressPercentage}%` }}
+                                style={{ width: `${isChecking ? 100 : progressPercentage}%` }}
                             />
                         </div>
                     )}
                 </div>
             }
             submitText={getSubmitText()}
-            loadingText="Enviando correo..."
             bottomText="¿Necesitas ayuda?"
             bottomLinkText="Contacta con soporte"
             bottomLinkTo="/contacto"
@@ -116,11 +134,11 @@ const SendEmail = () => {
             onChange={handleFormChange}
             register={register}
             errors={errors}
-            Message={Message}
+            Message={Message || verificationError || ''}
             messageStyle={messageStyle}
             errorType="general"
             isSubmitting={isSubmitting || isActive}
-            hideSubmitButton={hideButton}
+            hideSubmitButton={hideButton || isVerified}
         />
     );
 };

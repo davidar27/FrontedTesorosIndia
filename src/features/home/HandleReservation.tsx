@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useMemo } from "react";
-import Button from "../ui/buttons/Button";
-import SelectInput from "../ui/inputs/SelectInput";
-import DateInput from "../ui/inputs/DateInput";
+import Button from "@/components/ui/buttons/Button";
+import SelectInput from "@/components/ui/inputs/SelectInput";
+import DateInput from "@/components/ui/inputs/DateInput";
 
 interface PackageOption {
   value: string;

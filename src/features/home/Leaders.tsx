@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Picture from "../ui/Picture";
-import AnimatedTitle from "../ui/AnimatedTitle";
-import Grupo from "@/assets/images/Grupo.webp"
 
+import Grupo from "@/assets/images/Grupo.webp"
+import AnimatedTitle from "@/components/ui/display/AnimatedTitle";
+import Picture from "@/components/ui/display/Picture";
 
 
 interface Leader {

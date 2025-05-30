@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// AuthProvider con React Query - Fixed Version
-import { createContext, ReactNode, useState, useCallback, useMemo, useContext } from 'react';
+import { createContext, ReactNode, useState, useCallback, useMemo, useContext, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { User } from '@/interfaces/user';
 import { UserRole } from '@/interfaces/role';
 import { AuthContextType } from '@/interfaces/authContextInterface';
@@ -13,10 +12,13 @@ import { Credentials } from '@/interfaces/formInterface';
 export const AuthContext = createContext<AuthContextType>(null!);
 
 const AUTH_QUERY_KEY = ['auth', 'user'];
+const TOKEN_REFRESH_INTERVAL = 14 * 60 * 1000; 
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [error, setError] = useState<string | null>(null);
+    const [isInitializing, setIsInitializing] = useState(true);
     const navigate = useNavigate();
+    const location = useLocation();
     const queryClient = useQueryClient();
 
     const {
@@ -26,11 +28,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } = useQuery({
         queryKey: AUTH_QUERY_KEY,
         queryFn: async () => {
-            const result = await authService.verifyToken();
-            if (!result.isValid || !result.user) {
-                throw new Error('No authenticated');
+            try {
+                const result = await authService.verifyToken();
+                if (!result.isValid || !result.user) {
+                    throw new Error('No authenticated');
+                }
+                return result.user;
+            } catch (error) {
+                if (!PUBLIC_ROUTES.includes(location.pathname)) {
+                    const currentPath = location.pathname + location.search + location.hash;
+                    if (currentPath !== '/login') {
+                        navigate('/login', { state: { from: currentPath } });
+                    }
+                }
+                throw error;
             }
-            return result.user;
         },
         retry: (failureCount, error: any) => {
             if (error?.response?.status === 401) {
@@ -38,20 +50,70 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
             return failureCount < 2;
         },
-        staleTime: 5 * 60 * 1000,
-        gcTime: 10 * 60 * 1000,
+        staleTime: Infinity,
+        gcTime: Infinity,
         refetchOnWindowFocus: true,
-        refetchInterval: 15 * 60 * 1000,
+        refetchInterval: TOKEN_REFRESH_INTERVAL,
+        enabled: !isInitializing,
     });
+
+    useEffect(() => {
+        const initializeAuth = async () => {
+            try {
+                const result = await authService.verifyToken();
+                if (result.isValid && result.user) {
+                    queryClient.setQueryData(AUTH_QUERY_KEY, result.user);
+                }
+            } catch (error) {
+                console.log('Error durante la inicialización de auth:', error);
+            } finally {
+                setIsInitializing(false);
+            }
+        };
+
+        initializeAuth();
+    }, [queryClient]);
+
+    useEffect(() => {
+        let refreshTimeout: NodeJS.Timeout;
+
+        const scheduleTokenRefresh = () => {
+            refreshTimeout = setTimeout(async () => {
+                try {
+                    const refreshedUser = await authService.refreshToken();
+                    queryClient.setQueryData(AUTH_QUERY_KEY, refreshedUser);
+                    scheduleTokenRefresh(); // Programa el siguiente refresh
+                } catch (error) {
+                    console.error('Error refreshing token:', error);
+                    if (error instanceof Error && error.message.includes('authentication')) {
+                        await logout();
+                    }
+                }
+            }, TOKEN_REFRESH_INTERVAL);
+        };
+
+        if (user?.token) {
+            scheduleTokenRefresh();
+        }
+
+        return () => {
+            if (refreshTimeout) {
+                clearTimeout(refreshTimeout);
+            }
+        };
+    }, [user?.token]);
 
     const loginMutation = useMutation<{ user: User; }, Error, Credentials>({
         mutationFn: async (credentials: Credentials) => {
             const result = await authService.login(credentials);
-            return { user: result};
+            return { user: result };
         },
         onSuccess: (result: { user: User; }) => {
             queryClient.setQueryData(AUTH_QUERY_KEY, result.user);
             setError(null);
+            // Redirigir a la página anterior si existe
+            const from = location.state?.from || '/';
+            navigate(from, { replace: true });
         },
         onError: (error: any) => {
             setError(error.message || 'Error de autenticación');
@@ -79,8 +141,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isClient: user?.role === ('cliente' as UserRole)
     }), [user?.role]);
 
-    // ===== Funciones de autenticación =====
-
     const login = useCallback(async (credentials: Credentials): Promise<User> => {
         return new Promise((resolve, reject) => {
             loginMutation.mutate(credentials, {
@@ -104,8 +164,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const refreshAuth = useCallback(async (silent: boolean = false): Promise<boolean> => {
         try {
-            const result = await refetchAuth();
-            return !!result.data;
+            const refreshedUser = await authService.refreshToken();
+            queryClient.setQueryData(AUTH_QUERY_KEY, refreshedUser);
+            return true;
         } catch {
             if (!silent) {
                 setError('Error al actualizar la sesión');
@@ -113,9 +174,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             await logout();
             return false;
         }
-    }, [refetchAuth, logout]);
-
-    // ===== Funciones de gestión de usuario =====
+    }, [queryClient, logout]);
 
     const updateUser = useCallback((updates: Partial<User>): void => {
         if (user) {
@@ -132,12 +191,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return PUBLIC_ROUTES.includes(path);
     }, []);
 
-
-
     const value: AuthContextType = useMemo(() => ({
         user: user || null,
         isAuthenticated: !!user,
-        isLoading: isLoading || loginMutation.isPending || logoutMutation.isPending,
+        isLoading: isLoading || loginMutation.isPending || logoutMutation.isPending || isInitializing,
         error,
         role: user?.role || null,
         isAdmin,
@@ -155,6 +212,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isLoading,
         loginMutation.isPending,
         logoutMutation.isPending,
+        isInitializing,
         error,
         isAdmin,
         isEntrepreneur,
@@ -168,13 +226,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isPublicRoute
     ]);
 
+    if (isInitializing) {
+        return null;
+    }
+
     return (
         <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
     );
 }
-
 
 export function useAuth(): AuthContextType {
     const context = useContext(AuthContext);

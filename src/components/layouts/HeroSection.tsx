@@ -1,6 +1,6 @@
 import React from "react";
 import Button from "@/components/ui/buttons/Button";
-import Picture from "../ui/Picture";
+import Picture from "../ui/display/Picture";
 
 interface HeroSectionProps {
   sideImage?: string;
