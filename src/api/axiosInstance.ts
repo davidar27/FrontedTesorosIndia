@@ -2,12 +2,22 @@ import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { AuthError } from "@/interfaces/responsesApi";
 import authService from "@/services/auth/authService";
 
+// Instancia autenticada con toda la configuración existente
 export const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   headers: {
     "Content-Type": "application/json",
   },
   withCredentials: true,
+  timeout: 10000,
+});
+
+// Instancia pública sin autenticación
+export const publicAxiosInstance = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
   timeout: 10000,
 });
 
@@ -123,6 +133,21 @@ axiosInstance.interceptors.response.use(
       );
     }
 
+    return Promise.reject(error);
+  }
+);
+
+// Interceptor simple para la instancia pública
+publicAxiosInstance.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError) => {
+    if (!error.response) {
+      return Promise.reject(
+        new AuthError("Error de conexión. Por favor, verifica tu conexión a internet.", {
+          errorType: "general",
+        })
+      );
+    }
     return Promise.reject(error);
   }
 );

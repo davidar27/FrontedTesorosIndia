@@ -58,7 +58,7 @@ const FarmCard: React.FC<FarmCardProps> = ({ item, onEdit, onDelete }) => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                     <span className="font-medium">Emprendedor:</span>
-                    <span className="ml-1">{item.emprendedor_id}</span>
+                    <span className="ml-1">{item.entrepreneur_id}</span>
                 </div>
 
                 <div className="flex items-start text-sm text-gray-600">
@@ -81,7 +81,7 @@ const FarmCard: React.FC<FarmCardProps> = ({ item, onEdit, onDelete }) => {
                     <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                     </svg>
-                    <span className="font-medium">Cultivo:</span>
+                    <span className="font-medium">Tipo de finca:</span>
                     <span className="ml-1 px-2 py-1 bg-green-50 text-green-700 rounded-md text-xs">
                         {item.type?.toString()}
                     </span>
@@ -97,7 +97,7 @@ const FarmCard: React.FC<FarmCardProps> = ({ item, onEdit, onDelete }) => {
                     <span className="text-sm font-medium">Editar</span>
                 </button>
                 <button
-                    onClick={() => onDelete(item.id)}
+                    onClick={() => onDelete(Number(item.id))}
                     className="flex items-center justify-center px-3 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-colors duration-200"
                 >
                     <Trash2 className="w-4 h-4" />

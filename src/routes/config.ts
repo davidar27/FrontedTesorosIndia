@@ -9,6 +9,7 @@ export const DashboardLayout = lazy(() => import('@/components/admin/DashboardLa
 export const Home = lazy(() => import('@/pages/Home/Home'));
 export const ProductsPage = lazy(() => import('@/pages/Products/Products'));
 export const AboutUs = lazy(() => import('@/pages/AboutUs/AboutUs'));
+export const FarmPage = lazy(() => import('@/pages/Farm/FarmPage'));
 
 // Auth Pages
 export const LoginPage = lazy(() => import('@/pages/Auth/LoginPage'));
@@ -17,9 +18,6 @@ export const SendEmail = lazy(() => import('@/pages/Auth/SendEmail'));
 export const EmailVerificationPage = lazy(() => import('@/pages/Auth/VerificationPage'));
 
 // Protected Pages
-export const FarmPage = lazy(() => import('@/pages/Farm/FarmPage'));
-
-// Admin Pages
 export const FarmsPage = lazy(() => import('@/pages/Admin/FarmsPage'));
 export const EntrepreneursPage = lazy(() => import('@/pages/Admin/EntrepreneursPage'));
 export const PackagesPage = lazy(() => import('@/pages/Admin/PackagesPage'));
@@ -60,6 +58,13 @@ export const publicRoutes: RouteConfig[] = [
         layout: MainLayout,
         title: 'Nosotros',
         description: 'Información sobre la empresa'
+    },
+    {
+        path: '/fincas/:farmId',
+        element: FarmPage,
+        layout: MainLayout,
+        title: 'Detalle de Finca',
+        description: 'Información detallada de la finca'
     }
 ];
 
@@ -115,6 +120,14 @@ export const adminRoutes: RouteConfig[] = [
         protected: true,
         roles: ['administrador'],
         title: 'Gestión de Fincas'
+    },
+    {
+        path: '/dashboard/fincas/:farmId/edit',
+        element: FarmPage,
+        layout: DashboardLayout,
+        protected: true,
+        roles: ['administrador', 'emprendedor'],
+        title: 'Editar Finca'
     },
     {
         path: '/dashboard/paquetes',

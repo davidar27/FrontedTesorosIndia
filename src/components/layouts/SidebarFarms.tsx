@@ -1,106 +1,167 @@
-import React, { useState } from 'react';
-import { X } from 'lucide-react';
-import { useAuthenticatedQuery } from '@/hooks/useAuthenticatedQuery';
-import { farmsApi } from '@/services/admin/farms';
+import React, { useState, useEffect } from 'react';
+import { Coffee, X, Flower, Flower2, Leaf, Shrub, Waves, UtensilsCrossed, Tent, TreePalm } from 'lucide-react';
 import { Farm } from '@/features/admin/farms/FarmTypes';
 import LoadingSpinner from '@/components/layouts/LoadingSpinner';
+import { useNavigate } from 'react-router-dom';
+import { homeApi } from '@/services/home/home';
+import clsx from 'clsx';
 
 interface SidebarFarmsProps {
     isOpen: boolean;
     onClose: () => void;
 }
 
+const FARM_ICONS = [
+    { icon: Coffee, id: 'Coffee' },
+    { icon: Flower, id: 'Flower' },
+    { icon: Flower2, id: 'Flower2' },
+    { icon: Leaf, id: 'Leaf' },
+    { icon: Shrub, id: 'Shrub' },
+    { icon: Waves, id: 'Waves' },
+    { icon: UtensilsCrossed, id: 'UtensilsCrossed' },
+    { icon: Tent, id: 'Tent' },
+    { icon: TreePalm, id: 'TreePalm' }
+] as const;
+
 const SidebarFarms: React.FC<SidebarFarmsProps> = ({ isOpen, onClose }) => {
+    const navigate = useNavigate();
     const [activeEstateId, setActiveEstateId] = useState<number | null>(null);
-    const {
-        data: farms = [],
-        isLoading,
-        error
-    } = useAuthenticatedQuery<Farm[]>({
-        queryKey: ['farms'],
-        queryFn: () => farmsApi.getAllNames(),
-        staleTime: 5 * 60 * 1000, // 5 minutos
-        retry: 2,
-    });
+    const [farms, setFarms] = useState<Farm[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchFarms = async () => {
+            setIsLoading(true);
+            setError(null);
+            try {
+                const farmsData = await homeApi.getFarms();
+                setFarms(farmsData || []);
+            } catch (err) {
+                setError('Error al cargar las fincas');
+                console.error('Error fetching farms:', err);
+                setFarms([]);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchFarms();
+    }, []);
 
     const navigateToEstate = (id: number) => {
         setActiveEstateId(id);
-        console.log(`Navegando a la finca con ID: ${id}`);
+        navigate(`/finca/${id}`);
         onClose();
+    };
+
+    const getIconForFarm = (farmId: number) => {
+        const safeId = Math.abs(farmId || 0);
+        const index = safeId % FARM_ICONS.length;
+        return FARM_ICONS[index] || FARM_ICONS[0];
     };
 
     if (!isOpen) return null;
 
-    if ( isLoading) {
-        return (
-            <div className="fixed top-22 right-1 z-50 flex">
-                <div className="relative w-64 h-96 bg-white border-r border-gray-200 flex flex-col shadow-lg animate-slide-in-right">
-                    <div className="flex justify-center items-center h-full">
-                        <LoadingSpinner message="Cargando fincas..." />
-                    </div>
-                </div>
+    const sidebarContent = (
+        <aside className={`bg-white border-r border-gray-200 transition-all duration-300 ${
+            isOpen ? 'translate-x-0' : '-translate-x-full'
+        } fixed right-0 z-30 w-64 h-fit`}>
+            <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+                <h2 className="text-lg font-semibold text-gray-800 animate-fade-in-right">
+                    Nuestras Fincas
+                </h2>
+                <button
+                    onClick={onClose}
+                    className="text-gray-500 hover:text-gray-700 transition-colors p-2 rounded-full hover:bg-gray-50"
+                    aria-label="Cerrar barra lateral"
+                >
+                    <X size={20} />
+                </button>
             </div>
-        );
-    }
 
-
-    return (
-        <div className="fixed top-22 right-1 z-50 flex">
-            <div className="relative w-64 h-96 bg-white border-r border-gray-200 flex flex-col shadow-lg animate-slide-in-right">
-                <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-                    <h2 className="text-lg font-semibold text-gray-800">Nuestras Fincas</h2>
-                    <button
-                        onClick={onClose}
-                        className="text-gray-500 hover:text-gray-700"
-                        aria-label="Cerrar barra lateral"
-                    >
-                        <X size={20} />
-                    </button>
+            {isLoading ? (
+                <div className="flex items-center justify-center h-32">
+                    <LoadingSpinner message="Cargando fincas..." />
                 </div>
-
-                <nav className="flex-grow overflow-y-auto">
+            ) : (
+                <nav className="p-4">
                     {error ? (
                         <div className="p-4 text-center text-red-600">
-                            Error al cargar las fincas
+                            <p>{error}</p>
+                            <button 
+                                onClick={() => {
+                                    setError(null);
+                                    setFarms([]);
+                                    homeApi.getFarms().then(data => setFarms(data || []));
+                                }}
+                                className="mt-2 text-sm text-primary hover:underline"
+                            >
+                                Intentar de nuevo
+                            </button>
                         </div>
-                    ) : farms.length === 0 ? (
+                    ) : !Array.isArray(farms) || farms.length === 0 ? (
                         <div className="flex flex-col items-center justify-center h-full p-4 text-center text-gray-500">
                             <p className="text-lg font-medium">No hay fincas disponibles</p>
                             <p className="text-sm mt-2">Aún no se han registrado fincas en el sistema</p>
                         </div>
                     ) : (
-                        <ul>
-                            {farms.map((farm) => (
-                                <li key={farm.id}>
-                                    <button
-                                        onClick={() => navigateToEstate(farm.id)}
-                                        className={`w-full px-4 py-3 text-left transition-colors ${
-                                            activeEstateId === farm.id
-                                                ? 'bg-green-50 text-green-700'
-                                                : 'text-gray-700 hover:bg-gray-100'
-                                        }`}
+                        <ul className="space-y-2">
+                            {farms.map((farm, index) => {
+                                const { icon: IconComponent, id: iconId } = getIconForFarm(Number(farm.id));
+                                return (
+                                    <li
+                                        key={`farm-${farm.id}-${iconId}`}
+                                        className="animate-fade-in-up"
+                                        style={{ animationDelay: `${index * 0.1}s` }}
                                     >
-                                        <span className="truncate block">{farm.name}</span>
-                                    </button>
-                                </li>
-                            ))}
+                                        <button
+                                            onClick={() => navigateToEstate(Number(farm.id))}
+                                            className={clsx(
+                                                'w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200',
+                                                activeEstateId === Number(farm.id)  
+                                                    ? 'bg-primary text-white shadow-lg'
+                                                    : 'text-gray-600 hover:bg-gray-50 hover:text-primary'
+                                            )}
+                                        >
+                                            <IconComponent className="w-5 h-5" />
+                                            <span className="font-medium truncate">{farm.name}</span>
+                                        </button>
+                                    </li>
+                                );
+                            })}
                         </ul>
                     )}
-                </nav>
 
-                <div className="p-4 mt-auto border-t border-gray-200">
-                    <button
-                        className="w-full py-2 bg-green-50 text-green-600 rounded-md text-sm font-medium hover:bg-green-100 transition-colors"
-                        onClick={() => {
-                            console.log('Ver todas las fincas');
-                            onClose();
-                        }}
-                    >
-                        Ver todas las fincas
-                    </button>
-                </div>
-            </div>
-        </div>
+                    <div className="mt-4">
+                        <button
+                            className={clsx(
+                                'w-full py-3 px-4 rounded-xl',
+                                'bg-primary text-white shadow-lg',
+                                'transition-all duration-200 hover:bg-primary-hover'
+                            )}
+                            onClick={() => {
+                                navigate('/fincas');
+                                onClose();
+                            }}
+                        >
+                            Ver todas las fincas
+                        </button>
+                    </div>
+                </nav>
+            )}
+        </aside>
+    );
+
+    return (
+        <>
+            {sidebarContent}
+            {/* Overlay para móvil */}
+            <div
+                className="fixed inset-0 bg-black/50 z-20"
+                onClick={onClose}
+            />
+        </>
     );
 };
 
