@@ -8,7 +8,7 @@ import { EntrepreneurCard } from '@/features/admin/entrepreneurs/EntrepreneursCa
 import { CreateEntrepreneurForm } from '@/features/admin/entrepreneurs/CreateEntrepreneurForm';
 import { CreateEntrepreneursConfig } from '@/features/admin/entrepreneurs/createEntrepreneursConfig';
 import { entrepreneursApi } from '@/services/admin/entrepernaur';
-import { useAuth } from '@/hooks/useAuth';
+import useAuth from '@/context/useAuth';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useAuthenticatedQuery } from '@/hooks/useAuthenticatedQuery';
 import { useProtectedMutation } from '@/hooks/useProtectedMutation';

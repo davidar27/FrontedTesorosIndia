@@ -1,5 +1,5 @@
 import { useMutation, UseMutationOptions } from '@tanstack/react-query';
-import { useAuth } from './useAuth';
+import useAuth from '@/context/useAuth';
 import { usePermissions } from '@/hooks/usePermissions';
 
 interface ProtectedMutationOptions<TData, TError, TVariables> extends UseMutationOptions<TData, TError, TVariables> {

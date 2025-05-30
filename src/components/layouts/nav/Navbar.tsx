@@ -2,7 +2,7 @@ import { useState } from "react";
 import DesktopNav from "./DesktopNav";
 import MobileNav from "./MobileNav";
 import getNavLinks from "./Links";
-import { useAuth } from "@/context/useAuth";
+import useAuth from "@/context/useAuth";
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);

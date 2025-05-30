@@ -35,11 +35,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 }
                 return result.user;
             } catch (error) {
-                if (!PUBLIC_ROUTES.includes(location.pathname)) {
-                    const currentPath = location.pathname + location.search + location.hash;
-                    if (currentPath !== '/login') {
-                        navigate('/login', { state: { from: currentPath } });
-                    }
+                if (!isPublicRoute(location.pathname)) {
+                    navigate('/login', { 
+                        replace: true,
+                        state: { from: location.pathname }
+                    });
                 }
                 throw error;
             }
@@ -54,25 +54,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         gcTime: Infinity,
         refetchOnWindowFocus: true,
         refetchInterval: TOKEN_REFRESH_INTERVAL,
-        enabled: !isInitializing,
+        refetchOnMount: true,
     });
 
     useEffect(() => {
         const initializeAuth = async () => {
             try {
-                const result = await authService.verifyToken();
-                if (result.isValid && result.user) {
-                    queryClient.setQueryData(AUTH_QUERY_KEY, result.user);
-                }
-            } catch (error) {
-                console.log('Error durante la inicialización de auth:', error);
+                await refetchAuth();
             } finally {
                 setIsInitializing(false);
             }
         };
 
         initializeAuth();
-    }, [queryClient]);
+    }, []);
 
     useEffect(() => {
         let refreshTimeout: NodeJS.Timeout;
@@ -85,7 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     scheduleTokenRefresh(); // Programa el siguiente refresh
                 } catch (error) {
                     console.error('Error refreshing token:', error);
-                    if (error instanceof Error && error.message.includes('authentication')) {
+                    if (!isPublicRoute(location.pathname)) {
                         await logout();
                     }
                 }
@@ -101,19 +96,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 clearTimeout(refreshTimeout);
             }
         };
-    }, [user?.token]);
+    }, [user?.token, location.pathname]);
 
     const loginMutation = useMutation<{ user: User; }, Error, Credentials>({
         mutationFn: async (credentials: Credentials) => {
             const result = await authService.login(credentials);
-            return { user: result };
+            return { user: result};
         },
         onSuccess: (result: { user: User; }) => {
             queryClient.setQueryData(AUTH_QUERY_KEY, result.user);
             setError(null);
-            // Redirigir a la página anterior si existe
-            const from = location.state?.from || '/';
-            navigate(from, { replace: true });
         },
         onError: (error: any) => {
             setError(error.message || 'Error de autenticación');
@@ -171,10 +163,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (!silent) {
                 setError('Error al actualizar la sesión');
             }
-            await logout();
+            if (!isPublicRoute(location.pathname)) {
+                await logout();
+            }
             return false;
         }
-    }, [queryClient, logout]);
+    }, [queryClient, logout, location.pathname]);
 
     const updateUser = useCallback((updates: Partial<User>): void => {
         if (user) {
@@ -194,7 +188,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const value: AuthContextType = useMemo(() => ({
         user: user || null,
         isAuthenticated: !!user,
-        isLoading: isLoading || loginMutation.isPending || logoutMutation.isPending || isInitializing,
+        isLoading: isLoading || isInitializing || loginMutation.isPending || logoutMutation.isPending,
         error,
         role: user?.role || null,
         isAdmin,
@@ -210,9 +204,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }), [
         user,
         isLoading,
+        isInitializing,
         loginMutation.isPending,
         logoutMutation.isPending,
-        isInitializing,
         error,
         isAdmin,
         isEntrepreneur,
