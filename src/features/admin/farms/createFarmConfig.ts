@@ -1,8 +1,7 @@
 import { BaseEntity, EntityConfig } from "@/features/admin/types";
+import { FarmStatus } from "./FarmTypes";
 
-type ValidStatus = 'active' | 'inactive' | 'draft' | 'pending';
-
-interface CreateConfigParams<T extends BaseEntity<ValidStatus>> {
+interface CreateConfigParams<T extends BaseEntity<FarmStatus>> {
     data: T[];
     CardComponent: React.ComponentType<{
         item: T;
@@ -16,7 +15,7 @@ interface CreateConfigParams<T extends BaseEntity<ValidStatus>> {
     };
 }
 
-const CreateFarmsConfig = <T extends BaseEntity<ValidStatus>>({
+const CreateFarmsConfig = <T extends BaseEntity<FarmStatus>>({
     data,
     CardComponent,
     actions

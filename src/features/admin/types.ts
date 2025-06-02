@@ -1,12 +1,11 @@
-
-export interface BaseEntity<TStatus extends string = 'active' | 'inactive' | 'draft' | 'pending'> {
+export interface BaseEntity<TStatus extends string> {
     id?: number;
     name: string;
     status: TStatus;
     [key: string]: string | number | boolean | Date | null | undefined;
 }
 
-export interface EntityConfig<T extends BaseEntity> {
+export interface EntityConfig<T extends BaseEntity<string>> {
     // Configuración específica de la entidad
     entityName: string;
     entityNamePlural: string;
@@ -49,6 +48,6 @@ export interface EntityConfig<T extends BaseEntity> {
     enableAnimations?: boolean;
 }
 
-export interface SimplifiedManagementProps<T extends BaseEntity> {
+export interface SimplifiedManagementProps<T extends BaseEntity<string>> {
     config: EntityConfig<T>;
 } 
