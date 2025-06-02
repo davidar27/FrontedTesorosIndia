@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { BaseEntity } from '@/components/admin/GenericManagent';
+import { BaseEntity } from '@/features/admin/types';
 
 export function useGenericManagement<T extends BaseEntity>(
     entityKey: string,

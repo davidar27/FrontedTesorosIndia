@@ -1,6 +1,6 @@
 import { BaseEntity } from '@/features/admin/types';
 
-export type FarmStatus = 'draft' | 'active' | 'inactive';
+export type FarmStatus = 'Borrador' | 'Publicada' | 'Inactiva';
 
 // Tipo para la respuesta del backend
 export interface FarmResponse {

@@ -1,40 +1,70 @@
+import { useEffect, useState } from 'react';
 import GenericManagement from '@/components/admin/GenericManagent';
-import { CategoryCard } from '@/features/admin/categories/CategoriesCard';
 import { createCategoriesConfig } from '@/features/admin/categories/createCategoriesConfig';
 import { Category } from '@/features/admin/categories/CategoriesTypes';
-
-
-
-
-const categories: Category[] = [
-    {
-        id: 1,
-        name: "Comida",
-        productsCount: 12,
-        status: "active",
-    },
-    // ... más categorías
-];
+import { categoriesApi } from '@/services/admin/categories';
+import { toast } from 'sonner';
 
 export default function CategoriesManagement() {
-    const handleEdit = (category: Category) => {
-        console.log('Editing category:', category);
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const fetchCategories = async () => {
+        try {
+            setIsLoading(true);
+            const data = await categoriesApi.getAllCategories();
+            setCategories(data);
+            setError(null);
+        } catch {
+            const errorMessage = 'Error al cargar las categorías';
+            setError(errorMessage);
+            toast.error(errorMessage);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-    const handleDelete = (categoryId: number) => {
-        console.log('Deleting category:', categoryId);
+    useEffect(() => {
+        fetchCategories();
+    }, []);
+
+    const handleEdit = async (category: Category) => {
+        try {
+            await categoriesApi.updateCategory(category.id, category);
+            await fetchCategories();
+            toast.success('Categoría actualizada correctamente');
+        } catch {
+            toast.error('Error al actualizar la categoría');
+        }
     };
 
-
-    const handleCreate = () => {
-        console.log('Creating new category');
+    const handleDelete = async (categoryId: number) => {
+        try {
+            await categoriesApi.deleteCategory(categoryId);
+            await fetchCategories();
+            toast.success('Categoría eliminada correctamente');
+        } catch {
+            toast.error('Error al eliminar la categoría');
+        }
     };
 
-    const config = createCategoriesConfig(
-        categories,
-        CategoryCard,
-        { onEdit: handleEdit, onDelete: handleDelete, onCreate: handleCreate }
-    );
+    const handleCreate = async () => {
+        // Note: This would typically open a modal or navigate to a create form
+        toast.info('Funcionalidad de crear categoría pendiente');
+    };
 
-    return   <GenericManagement config={config} />;
+    const config = createCategoriesConfig({
+        data: categories,
+        isLoading,
+        error,
+        actions: {
+            onEdit: handleEdit,
+            onDelete: handleDelete,
+            onCreate: handleCreate,
+            onRetry: fetchCategories
+        }
+    });
+
+    return <GenericManagement config={config} />;
 }
