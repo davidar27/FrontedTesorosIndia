@@ -1,4 +1,3 @@
-// components/admin/farms/FarmCard.tsx
 import React from 'react';
 import { Farm } from '@/features/admin/farms/FarmTypes';
 import { Edit } from 'lucide-react';

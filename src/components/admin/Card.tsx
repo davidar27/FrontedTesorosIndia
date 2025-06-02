@@ -38,7 +38,7 @@ interface ActionButton {
     tooltip?: string;
 }
 
-interface BaseItem {
+export interface BaseItem {
     id: number;
     name: string;
     status: string;
@@ -47,7 +47,7 @@ interface BaseItem {
     subtitle?: string;
 }
 
-interface ReusableCardProps<T extends BaseItem> {
+interface ReusableCardProps<T> {
     item: T;
     contactInfo?: ContactInfo[];
     stats?: StatInfo[];
@@ -110,7 +110,6 @@ const LoadingSpinner: React.FC<{ size?: number }> = ({ size = 16 }) => (
         style={{ width: size, height: size }}
     />
 );
-
 
 export function ReusableCard<T extends BaseItem>({
     item,

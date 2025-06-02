@@ -186,7 +186,6 @@ export function CreateEntrepreneurForm({ onSubmit, onCancel, isLoading }: Create
                         disabled={isLoading}
                         className='flex-1  rounded-md hover:!text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center border border-red-500'
                         bgColor='bg-red-500'
-                        hoverColor='bg-red-600'
                         textColor='text-white'
                     >
                         Cancelar

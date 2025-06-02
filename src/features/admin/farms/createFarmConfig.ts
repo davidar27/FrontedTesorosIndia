@@ -1,7 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { BaseEntity, EntityConfig } from "@/components/admin/GenericManagent";
+import { BaseEntity, EntityConfig } from "@/features/admin/types";
 
-interface CreateConfigParams<T extends BaseEntity<any>> {
+type ValidStatus = 'active' | 'inactive' | 'draft' | 'pending';
+
+interface CreateConfigParams<T extends BaseEntity<ValidStatus>> {
     data: T[];
     CardComponent: React.ComponentType<{
         item: T;
@@ -15,7 +16,7 @@ interface CreateConfigParams<T extends BaseEntity<any>> {
     };
 }
 
-const CreateFarmsConfig = <T extends BaseEntity<any>>({
+const CreateFarmsConfig = <T extends BaseEntity<ValidStatus>>({
     data,
     CardComponent,
     actions
@@ -41,4 +42,5 @@ const CreateFarmsConfig = <T extends BaseEntity<any>>({
     onCreate: actions.onCreate || (() => { }),
     onRetry: () => { },
 });
+
 export default CreateFarmsConfig;

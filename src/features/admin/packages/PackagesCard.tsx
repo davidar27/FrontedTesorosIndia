@@ -2,10 +2,13 @@ import { ReusableCard } from "@/components/admin/Card";
 import { Package } from "@/features/admin/packages/PackageTypes";
 import { Info } from "lucide-react";
 
+interface PackageCardProps {
+    item: Package;
+    onEdit?: (item: Package) => void;
+    onDelete?: (id: number) => void;
+}
 
-
-
-function PackageCard({ item, onEdit, onDelete }: { item: Package; onEdit: (item: Package) => void; onDelete: (id: number) => void }) {
+function PackageCard({ item, onEdit, onDelete }: PackageCardProps) {
     const stats = [
         { value: `$${item.price}`, label: 'Precio', bgColor: 'bg-green-50', textColor: 'text-green-600' },
         { value: item.duration, label: 'Duración', bgColor: 'bg-blue-50', textColor: 'text-blue-600' },
@@ -18,7 +21,7 @@ function PackageCard({ item, onEdit, onDelete }: { item: Package; onEdit: (item:
     ];
 
     return (
-        <ReusableCard
+        <ReusableCard<Package>
             item={item}
             contactInfo={contactInfo}
             stats={stats}

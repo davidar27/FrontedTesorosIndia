@@ -1,10 +1,12 @@
-import { BaseEntity } from '@/components/admin/GenericManagent';
+import { BaseEntity } from '@/features/admin/types';
 
-export interface Package extends BaseEntity {
+export type PackageStatus = 'active' | 'inactive' | 'draft' | 'pending';
+
+export interface Package extends BaseEntity<PackageStatus> {
     id: number;
     price: number;
-    description: string;
     category: string;
     duration: string;
     capacity: string;
+    description: string;
 }
