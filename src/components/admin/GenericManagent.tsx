@@ -10,7 +10,7 @@ import { SearchBar } from './components/SearchBar';
 import { EmptyState } from './components/EmptyState';
 import { ItemsGrid } from './components/ItemsGrid';
 
-export default function GenericManagement<T extends BaseEntity>({ 
+export default function GenericManagement<T extends BaseEntity<string>>({ 
     config 
 }: SimplifiedManagementProps<T>): React.ReactElement {
     const [searchTerm, setSearchTerm] = useState('');

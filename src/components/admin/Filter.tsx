@@ -13,7 +13,7 @@ export interface StatusFilter {
     hoverTextColor: string;
 }
 
-export const DefaultCustomFilters = <T extends BaseEntity>({
+export const DefaultCustomFilters = <T extends BaseEntity<string>>({
     items,
     onFilterChange
 }: {

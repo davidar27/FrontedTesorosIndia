@@ -8,7 +8,7 @@ export const getStringValue = (value: unknown): string => {
 };
 
 // Función de búsqueda por defecto mejorada
-export const defaultSearchFunction = <T extends BaseEntity>(item: T, searchTerm: string): boolean => {
+export const defaultSearchFunction = <T extends BaseEntity<string>>(item: T, searchTerm: string): boolean => {
     if (!searchTerm.trim()) return true;
 
     const term = searchTerm.toLowerCase().trim();

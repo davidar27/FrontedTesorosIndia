@@ -1,6 +1,6 @@
 import { BaseEntity } from '../../../features/admin/types';
 
-interface ItemsGridProps<T extends BaseEntity> {
+interface ItemsGridProps<T extends BaseEntity<string>> {
     items: T[];
     ItemCard: React.ComponentType<{
         item: T;
@@ -12,7 +12,7 @@ interface ItemsGridProps<T extends BaseEntity> {
     enableAnimations?: boolean;
 }
 
-export function ItemsGrid<T extends BaseEntity>({
+export function ItemsGrid<T extends BaseEntity<string>>({
     items,
     ItemCard,
     onEdit,
