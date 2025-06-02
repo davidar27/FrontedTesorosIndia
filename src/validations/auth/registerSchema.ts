@@ -7,7 +7,7 @@ export const registerSchema = z.object({
   email: z.string()
     .email("Correo electrónico inválido")
     .min(1, "El correo es obligatorio"),
-  phone_number: z.string()
+  phone: z.string()
     .min(1, "El teléfono es requerido")
     .regex(/^\d{10}$/, "El teléfono debe tener 10 dígitos"),
   password: z.string()

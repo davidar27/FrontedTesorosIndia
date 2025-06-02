@@ -3,7 +3,7 @@ import { BaseEntity } from "@/features/admin/types";
 export interface Entrepreneur extends BaseEntity<'active' | 'inactive' | 'pending'> {
     name: string;
     email: string;
-    phone_number: string;
+    phone: string;
     image?: string | null;
     joinDate: string;
     status: 'active' | 'inactive' | 'pending';
@@ -17,14 +17,14 @@ export interface CreateEntrepreneurData {
     name: string;
     email: string;
     password: string;
-    phone_number: string;
+    phone: string;
     name_farm: string;
 }
 
 export interface UpdateEntrepreneurData {
     name?: string;
     email?: string;
-    phone_number?: string;
+    phone?: string;
     name_farm?: string;
     status?: 'active' | 'inactive' | 'pending';
     image?: string;

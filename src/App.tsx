@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -18,6 +18,8 @@ const EmailVerificationPage = lazy(() => import('@/pages/Auth/VerificationPage')
 const FarmPage = lazy(() => import('@/pages/Farm/FarmPage'));
 const NotFoundPage = lazy(() => import('@/pages/Errors/NotFoundPage'));
 const AboutUs = lazy(() => import('@/pages/AboutUs/AboutUs'));
+const AccessDenied = lazy(() => import('@/pages/Errors/AccessDenied'));
+const ContactPage = lazy(() => import('@/pages/Contact/ContactPage'));
 
 // Admin Pages
 const FarmsPage = lazy(() => import('@/pages/Admin/FarmsPage'));
@@ -35,53 +37,73 @@ import LoadingSpinner from "./components/layouts/LoadingSpinner";
 import ResetPassword from "./pages/Auth/ResetPassword";
 import ForgotPasswordForm from "./pages/Auth/ForgotPasswordForm";
 
-
-
-
 function App() {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-        <PageProvider>
-          <Suspense fallback={<LoadingSpinner message="Cargando aplicación..." />}>
-            <Routes>
-              {/* Rutas públicas con MainLayout */}
-              <Route element={<MainLayout />}>
-                <Route path="/" element={<Home />} />
-                <Route path="/productos" element={<ProductsPage />} />
-                <Route path="/nosotros" element={<AboutUs />} />
+      <PageProvider>
+        <Suspense fallback={<LoadingSpinner message="Cargando aplicación..." />}>
+          <Routes>
+            {/* Rutas públicas con MainLayout */}
+            <Route element={<MainLayout />}>
+              <Route path="/" element={<Home />} />
+              
+              {/* Rutas de productos */}
+              <Route path="/productos">
+                <Route index element={<ProductsPage />} />
+                <Route path=":id" element={<ProductsPage />} />
+                <Route path="categorias/:categoryId" element={<ProductsPage />} />
               </Route>
 
-              {/* Rutas de autenticación */}
-              <Route element={<AuthLayout />}>
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/registro" element={<RegisterPage />} />
-                <Route path="/correo-enviado" element={<SendEmail />} />
-                <Route path="/verificar-correo" element={<EmailVerificationPage />} />
-                <Route path="/recuperar-contraseña" element={<ForgotPasswordForm />} />
-                <Route path="/restablecer-contraseña" element={<ResetPassword />} />
+              {/* Rutas informativas */}
+              <Route path="/nosotros" element={<AboutUs />} />
+              <Route path="/contacto" element={<ContactPage />} />
+              
+              {/* Rutas de fincas */}
+              <Route path="/fincas">
+                <Route index element={<FarmPage />} />
+                <Route path=":id" element={<FarmPage />} />
+                <Route path="categorias/:categoryId" element={<FarmPage />} />
               </Route>
-
-              {/* Rutas protegidas para usuarios autenticados */}
-              <Route element={<ProtectedRoute />}>
-                <Route path="/finca" element={<FarmPage />} />
+              
+              {/* Rutas específicas para emprendedores */}
+              <Route element={<ProtectedRoute roles={['emprendedor']} />}>
+                <Route path="/mi-finca" element={<FarmPage />} />
               </Route>
+            </Route>
 
-              {/* Rutas del dashboard administrativo (protegidas) */}
-              <Route element={<ProtectedRoute roles={['administrador']} />}>
-                <Route path="/dashboard" element={<DashboardLayout />}>
-                  <Route index element={<EntrepreneursPage />} />
-                  <Route path="emprendedores" element={<EntrepreneursPage />} />
-                  <Route path="fincas" element={<FarmsPage />} />
-                  <Route path="paquetes" element={<PackagesPage />} />
-                  <Route path="categorias" element={<CategoriesPage />} />
-                </Route>
+            {/* Rutas de autenticación */}
+            <Route path="/auth" element={<AuthLayout />}>
+              <Route path="iniciar-sesion" element={<LoginPage />} />
+              <Route path="registro" element={<RegisterPage />} />
+              <Route path="verificacion" element={<SendEmail />} />
+              <Route path="verificacion/correo" element={<EmailVerificationPage />} />
+              <Route path="password">
+                <Route path="recuperar" element={<ForgotPasswordForm />} />
+                <Route path="restablecer" element={<ResetPassword />} />
               </Route>
+            </Route>
 
-              {/* Página 404 */}
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-          </Suspense>
-        </PageProvider>
+            {/* Rutas del dashboard administrativo */}
+            <Route element={<ProtectedRoute roles={['administrador']} />}>
+              <Route path="/dashboard" element={<DashboardLayout />}>
+                <Route index element={<EntrepreneursPage />} />
+                <Route path="emprendedores" element={<EntrepreneursPage />} />
+                <Route path="fincas" element={<FarmsPage />} />
+                <Route path="paquetes" element={<PackagesPage />} />
+                <Route path="categorias" element={<CategoriesPage />} />
+              </Route>
+            </Route>
+
+            {/* Páginas de error */}
+            <Route path="/error">
+              <Route path="acceso-denegado" element={<AccessDenied />} />
+              <Route path="no-encontrado" element={<NotFoundPage />} />
+            </Route>
+            
+            <Route path="*" element={<Navigate to="/error/no-encontrado" replace />} />
+          </Routes>
+        </Suspense>
+      </PageProvider>
 
       {/* React Query Devtools - solo en desarrollo */}
       {process.env.NODE_ENV === 'development' && (

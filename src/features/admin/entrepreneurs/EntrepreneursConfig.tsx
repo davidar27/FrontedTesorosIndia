@@ -2,7 +2,7 @@ import { EntityConfig } from "@/features/admin/types";
 import { EntrepreneursFilter } from "./EntrepreneursFilter";
 import { Entrepreneur } from "./EntrepreneursTypes";
 
-interface CreateConfigParams {
+interface EntrepreneursConfigParams {
     data: Entrepreneur[];
     CardComponent: React.ComponentType<{
         item: Entrepreneur;
@@ -16,11 +16,11 @@ interface CreateConfigParams {
     };
 }
 
-export const CreateEntrepreneursConfig = ({
+export const EntrepreneursConfig = ({
     data,
     CardComponent,
     actions
-}: CreateConfigParams): EntityConfig<Entrepreneur> => ({
+}: EntrepreneursConfigParams): EntityConfig<Entrepreneur> => ({
     entityName: "Emprendedor",
     entityNamePlural: "Emprendedores",
     searchPlaceholder: "Buscar emprendedores...",
@@ -42,7 +42,7 @@ export const CreateEntrepreneursConfig = ({
         return (
             entrepreneur.name?.toLowerCase().includes(searchLower) ||
             entrepreneur.email?.toLowerCase().includes(searchLower) ||
-            entrepreneur.phone_number?.toLowerCase().includes(searchLower) ||
+            entrepreneur.phone?.toLowerCase().includes(searchLower) ||
             entrepreneur.name_farm?.toLowerCase().includes(searchLower)
         );
     },

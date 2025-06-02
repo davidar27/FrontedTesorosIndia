@@ -6,7 +6,7 @@ export interface User {
     name: string;
     role: UserRole;
     avatar?: string;
-    phone_number?: string;
+    phone?: string;
     token?: string;
     isVerified?: boolean;
 

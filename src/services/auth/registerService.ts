@@ -8,7 +8,7 @@ interface RegisterResponse {
         id: string;
         name: string;
         email: string;
-        phone_number?: string;
+        phone?: string;
     };
     token?: string;
 }
@@ -16,15 +16,15 @@ interface RegisterResponse {
 const registerService = async (
     name: string,
     email: string,
-    phone_number: string,
+    phone: string,
     password: string,
     confirm_password: string
 ): Promise<RegisterResponse> => {
     try {
-        const response = await axiosInstance.post("/usuario/registro", {
+        const response = await axiosInstance.post("/auth/registro", {
             name,
             email,
-            phone_number,
+            phone,
             password,
             confirm_password,
         });

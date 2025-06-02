@@ -3,6 +3,9 @@ import { User } from "@/interfaces/user";
 export interface AuthResponse {
   user?: User;
   token?: string;
+  accessToken?: string;
+  refreshToken?: string;
+  token_version?: number;
   error?: {
     type: "email" | "password" | "general" | "authentication";
     message: string;

@@ -1,11 +1,11 @@
-import { BaseEntity } from '@/components/admin/GenericManagent';
+import { BaseEntity } from '@/features/admin/types';
 
 export type FarmStatus = 'Borrador' | 'Publicada' | 'Inactiva';
 
 // Tipo para la respuesta del backend
 export interface FarmResponse {
     id: number;
-    name: string;
+    name_farm: string;
     description: string;
     location: string | 'Por definir';
     type: string | ' ';
@@ -16,6 +16,7 @@ export interface FarmResponse {
 
 // Tipo para el manejo interno en la aplicación
 export interface Farm extends BaseEntity<FarmStatus> {
+    name_farm: string;
     description: string;
     location: string | 'Por definir';
     type: string | ' ';
@@ -35,16 +36,28 @@ export interface FarmCardProps {
 }
 
 export interface CreateFarmData {
-    name: string;
+    name_farm: string;
     description: string;
     location: string;
     type: string | ' ';
 }
 
 export interface UpdateFarmData {
-    name?: string;
+    name_farm?: string;
     description?: string;
     location?: string;
     type?: string;
     status?: FarmStatus;
 }
+
+export interface RawFarmResponse {
+    id: number;
+    name_farm: string;
+    description?: string;
+    location: string;
+    type?: string;
+    status: FarmStatus;
+    entrepreneur_id: string | number;
+    created_at: string;
+}
+

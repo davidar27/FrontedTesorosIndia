@@ -3,7 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import GenericManagement from '@/components/admin/GenericManagent';
 import { EntrepreneurCard } from '@/features/admin/entrepreneurs/EntrepreneursCard';
 import { CreateEntrepreneurForm } from '@/features/admin/entrepreneurs/CreateEntrepreneurForm';
-import { CreateEntrepreneursConfig } from '@/features/admin/entrepreneurs/createEntrepreneursConfig';
+import { EntrepreneursConfig } from '@/features/admin/entrepreneurs/EntrepreneursConfig';
 import { entrepreneursApi } from '@/services/admin/entrepernaur';
 import useAuth from '@/context/useAuth';
 import { usePermissions } from '@/hooks/usePermissions';
@@ -134,7 +134,7 @@ export default function EntrepreneursManagement() {
         );
     }
 
-    const config = CreateEntrepreneursConfig({
+    const config = EntrepreneursConfig({
         data: entrepreneurs,
         CardComponent: EntrepreneurCard,
         actions: {

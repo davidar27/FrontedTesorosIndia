@@ -3,7 +3,7 @@ import { SendPasswordResetEmailResponse } from '@/interfaces/responsesApi';
 
 export const sendPasswordResetEmail = async (email: string): Promise<SendPasswordResetEmailResponse> => {
     try {
-        const response = await axiosInstance.post<SendPasswordResetEmailResponse>('/auth/recuperar-password', { email });
+        const response = await axiosInstance.post<SendPasswordResetEmailResponse>('/auth/password/recuperar', { email });
 
         if (Number(response.status) >= 200 && Number(response.status) < 300) {
             return {

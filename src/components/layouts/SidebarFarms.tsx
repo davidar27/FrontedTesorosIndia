@@ -3,7 +3,7 @@ import { Coffee, X, Flower, Flower2, Leaf, Shrub, Waves, UtensilsCrossed, Tent, 
 import { Farm } from '@/features/admin/farms/FarmTypes';
 import LoadingSpinner from '@/components/layouts/LoadingSpinner';
 import { useNavigate } from 'react-router-dom';
-import { homeApi } from '@/services/home/home';
+import { farmsApi } from '@/services/admin/farms';
 import clsx from 'clsx';
 import { useScroll, useMotionValueEvent } from 'framer-motion';
 import ButtonIcon from '../ui/buttons/ButtonIcon';
@@ -43,7 +43,7 @@ const SidebarFarms: React.FC<SidebarFarmsProps> = ({ isOpen, onClose }) => {
             setIsLoading(true);
             setError(null);
             try {
-                const farmsData = await homeApi.getFarms();
+                const farmsData = await farmsApi.public.getFarms();
                 setFarms(farmsData || []);
             } catch (err) {
                 setError('Error al cargar las fincas');
@@ -101,7 +101,7 @@ const SidebarFarms: React.FC<SidebarFarmsProps> = ({ isOpen, onClose }) => {
                                 onClick={() => {
                                     setError(null);
                                     setFarms([]);
-                                    homeApi.getFarms().then(data => setFarms(data || []));
+                                    farmsApi.public.getFarms().then(data => setFarms(data || []));
                                 }}
                                 className="mt-2 text-sm text-primary hover:underline"
                             >

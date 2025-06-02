@@ -19,7 +19,7 @@ export const entrepreneursApi = {
     // Obtener un emprendedor por ID
     getById: async (id: number): Promise<Entrepreneur> => {
         try {
-            const response = await axiosInstance.get<Entrepreneur>(`/usuario/emprendedores/${id}`);
+            const response = await axiosInstance.get<Entrepreneur>(`/usuario/emprendedor/${id}`);
             return response.data;
         } catch (error) {
             console.error('Error fetching entrepreneur:', error);
@@ -47,9 +47,9 @@ export const entrepreneursApi = {
     },
 
     // Actualizar un emprendedor
-    update: async (id: number, data: UpdateEntrepreneurData): Promise<Entrepreneur> => {
+    update: async (id: number, data: UpdateEntrepreneurData, name_farm: string): Promise<Entrepreneur> => {
         try {
-            const response = await axiosInstance.put<Entrepreneur>(`/usuario/emprendedores/${id}`, data);
+            const response = await axiosInstance.put<Entrepreneur>(`/usuario/actualizar/emprendedor/${id}`, data);
             return response.data;
         } catch (error: any) {
             console.error('Error updating entrepreneur:', error);
@@ -68,7 +68,7 @@ export const entrepreneursApi = {
     // Eliminar un emprendedor
     delete: async (id: number): Promise<void> => {
         try {
-            await axiosInstance.delete(`/usuario/emprendedores/${id}`);
+            await axiosInstance.put(`/usuario/desactivar/emprendedor/${id}`);
         } catch (error: any) {
             console.error('Error deleting entrepreneur:', error);
 
@@ -83,7 +83,7 @@ export const entrepreneursApi = {
     // Cambiar estado de un emprendedor
     changeStatus: async (id: number, status: 'active' | 'inactive' | 'pending'): Promise<Entrepreneur> => {
         try {
-            const response = await axiosInstance.patch<Entrepreneur>(`/usuario/emprendedores/${id}/status`, { status });
+            const response = await axiosInstance.patch<Entrepreneur>(`/usuario/actualizar/emprendedor/${id}/status`, { status });
             return response.data;
         } catch (error: any) {
             console.error('Error changing entrepreneur status:', error);

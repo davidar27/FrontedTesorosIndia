@@ -33,7 +33,7 @@ const SendEmail = () => {
     } = useVerificationStatus({
         email: email || '',
         onVerified: () => {
-            navigate('/login', {
+            navigate('/auth/iniciar-sesion', {
                 state: {
                     message: 'Correo verificado exitosamente. Ya puedes iniciar sesión.',
                     email: email
@@ -84,7 +84,7 @@ const SendEmail = () => {
             const result = await resendVerificationEmail(data.email);
             setMessage(result.message);
             startCooldown();
-            restart(); // Reiniciar la verificación
+            restart(); 
         } catch (error) {
             if (error instanceof AuthError) {
                 setMessage(error.message);

@@ -7,6 +7,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocation } from 'react-router-dom';
 import { useState } from 'react';
+import { ProgressBar } from '@/components/ui/display/ProgressBar';
 
 const RESEND_COOLDOWN = 60;
 
@@ -18,11 +19,18 @@ type ResetFormData = z.infer<typeof resetSchema>;
 
 const ForgotPasswordForm = () => {
   const [Message, setMessage] = useState('');
+  const [lastEmail, setLastEmail] = useState<string>('');
   const location = useLocation();
   const email = location.state?.email;
 
-  const { startCooldown, isActive } = useResetCooldown({
-    initialDuration: RESEND_COOLDOWN
+  const {
+    cooldown,
+    progressPercentage,
+    startCooldown,
+    isActive
+  } = useResetCooldown({
+    initialDuration: RESEND_COOLDOWN,
+    storageKey: 'resetPasswordCooldown'
   });
 
   const {
@@ -39,9 +47,14 @@ const ForgotPasswordForm = () => {
 
   const { mutate: sendResetEmail } = useMutation({
     mutationFn: (email: string) => sendPasswordResetEmail(email),
-    onSuccess: (_, email) => {
-      setMessage(`¡Correo enviado con éxito! Se han enviado las instrucciones para restablecer tu contraseña a ${email}`);
-      startCooldown();
+    onSuccess: (response, email) => {
+      if (response.success) {
+        setLastEmail(email);
+        setMessage(`¡Correo enviado con éxito! Se han enviado las instrucciones para restablecer tu contraseña a ${email}`);
+        startCooldown();
+      } else {
+        setMessage(response.message || 'Error al enviar el correo');
+      }
     },
     onError: (error) => {
       setMessage(error instanceof Error ? error.message : 'Error al enviar el correo');
@@ -50,7 +63,7 @@ const ForgotPasswordForm = () => {
 
   const onSubmit = async (data: ResetFormData) => {
     if (isActive) {
-      setMessage('Por favor espera antes de solicitar otro correo');
+      setMessage(`Por favor espera ${cooldown} segundos antes de solicitar otro correo`);
       return;
     }
     clearErrors();
@@ -63,14 +76,14 @@ const ForgotPasswordForm = () => {
     }
   };
 
-  const fields = [
+  const fields = !isActive ? [
     {
       label: "Correo electrónico",
       placeholder: "correo@ejemplo.com",
       type: "email",
       name: "email"
     }
-  ];
+  ] : [];
 
   const messageStyle = {
     textColor: Message?.includes('éxito') ? 'text-green-600' : 'text-red-500',
@@ -80,12 +93,42 @@ const ForgotPasswordForm = () => {
   return (
     <AuthForm
       title="Recuperar contraseña"
-      subtitle="Te enviaremos un enlace para restablecer tu contraseña"
+      subtitle={
+        <div className="space-y-4">
+          {!isActive ? (
+            <p className="text-sm text-gray-600">
+              Te enviaremos un enlace para restablecer tu contraseña
+            </p>
+          ) : (
+            <div className="text-sm text-gray-600">
+              <p className="mb-2">
+                Se ha enviado un enlace de recuperación a:
+              </p>
+              <p className="font-medium text-gray-900">
+                {lastEmail}
+              </p>
+              <p className="mt-2">
+                Por favor, revisa tu bandeja de entrada y sigue las instrucciones.
+              </p>
+              <div className="space-y-2 mt-4">
+                <ProgressBar 
+                  progress={progressPercentage} 
+                  className="w-full"
+                  barClassName="!bg-primary"
+                />
+                <p className="text-xs text-center text-gray-500">
+                  Podrás solicitar otro correo en {cooldown} segundos
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      }
       fields={fields}
       submitText={isSubmitting ? "Enviando..." : "Enviar enlace"}
       bottomText="¿Recordaste tu contraseña?"
       bottomLinkText="Volver al inicio de sesión"
-      bottomLinkTo="/login"
+      bottomLinkTo="/auth/iniciar-sesion"
       onSubmit={handleSubmit(onSubmit)}
       onChange={handleFormChange}
       register={register}
@@ -94,6 +137,7 @@ const ForgotPasswordForm = () => {
       messageStyle={messageStyle}
       errorType="general"
       isSubmitting={isSubmitting}
+      hideSubmitButton={isActive}
     />
   );
 };
