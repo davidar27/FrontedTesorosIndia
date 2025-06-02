@@ -23,7 +23,6 @@ export function EditableEntrepreneurCard({
         email: item.email,
         phone: item.phone,
         name_farm: item.name_farm,
-        image: item.image || undefined
     });
 
     const [imagePreview, setImagePreview] = useState<string | undefined>(item.image || undefined);
@@ -36,13 +35,13 @@ export function EditableEntrepreneurCard({
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const base64String = reader.result as string;
-                setImagePreview(base64String);
-                setFormData(prev => ({ ...prev, image: base64String }));
-            };
-            reader.readAsDataURL(file);
+            // Crear URL temporal para preview
+            const previewUrl = URL.createObjectURL(file);
+            setImagePreview(previewUrl);
+            setFormData(prev => ({ ...prev, image: file }));
+
+            // Limpiar URL temporal cuando el componente se desmonte
+            return () => URL.revokeObjectURL(previewUrl);
         }
     };
 

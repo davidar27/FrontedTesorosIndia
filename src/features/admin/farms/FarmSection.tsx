@@ -57,7 +57,7 @@ export default function FarmsManagement() {
             <div className="bg-red-50 border border-red-200 rounded-md p-4">
                 <p className="text-red-800">Debes iniciar sesión para acceder a esta página</p>
                 <button
-                    onClick={() => window.location.href = '/login'}
+                    onClick={() => window.location.href = '/auth/iniciar-sesion'}
                     className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
                 >
                     Ir al Login

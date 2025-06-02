@@ -33,7 +33,7 @@ const AccessDenied = () => {
                                     Inicia sesión para acceder a esta página.
                                 </p>
                                 <Link
-                                    to="/login"
+                                    to="/auth/iniciar-sesion"
                                     className="inline-block bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-700 transition-colors"
                                 >
                                     Iniciar Sesión

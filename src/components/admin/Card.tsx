@@ -246,11 +246,11 @@ export function ReusableCard<T extends BaseItem>({
 
             {/* Contact Info */}
             {contactInfo.length > 0 && (
-                <div className={`space-y-2 mb-4 flex flex-wrap gap-2 flex-col  ${variant === 'compact' ? 'flex-row items-center justify-between ' : ''}`}>
+                <div className={`space-y-2 mb-4 flex gap-2 flex-wrap flex-col w-full  ${variant === 'compact' ? 'items-center ' : ''}`}>
                     {contactInfo.map((contact, index) => (
                         <div
                             key={index}
-                            className={`flex items-center gap-2 text-gray-600 ${contact.onClick || contact.copyable ? 'cursor-pointer hover:text-primary transition-colors' : ''}`}
+                            className={`flex items-center gap-2 text-gray-600 w-auto ${contact.onClick || contact.copyable ? 'cursor-pointer hover:text-primary transition-colors' : ''}`}
                             onClick={() => handleContactClick(contact)}
                             title={contact.copyable ? 'Click para copiar' : contact.label}
                         >

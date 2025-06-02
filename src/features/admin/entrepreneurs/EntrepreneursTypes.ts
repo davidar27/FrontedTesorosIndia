@@ -4,7 +4,7 @@ export interface Entrepreneur extends BaseEntity<'active' | 'inactive' | 'pendin
     name: string;
     email: string;
     phone: string;
-    image?: string | null;
+    image: string | null;
     joinDate: string;
     status: 'active' | 'inactive' | 'pending';
     name_farm: string;
@@ -22,12 +22,11 @@ export interface CreateEntrepreneurData {
 }
 
 export interface UpdateEntrepreneurData {
-    name?: string;
-    email?: string;
-    phone?: string;
-    name_farm?: string;
-    status?: 'active' | 'inactive' | 'pending';
-    image?: string;
+    name: string;
+    email: string;
+    phone: string;
+    name_farm: string;
+    image?: File;
 }
 
 export interface EntrepreneurApiResponse {

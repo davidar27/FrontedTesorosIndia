@@ -12,7 +12,8 @@ import { Credentials } from '@/interfaces/formInterface';
 const AuthContext = createContext<AuthContextType>(null!);
 
 const AUTH_QUERY_KEY = ['auth', 'user'];
-const TOKEN_REFRESH_INTERVAL = 4 * 60 * 1000; // Reducido a 4 minutos para dar más margen
+const TOKEN_REFRESH_INTERVAL = 4.5 * 60 * 1000;
+const TOKEN_REFRESH_SAFETY_MARGIN = 30 * 1000;
 
 // Usuario observador por defecto
 const defaultObserverUser: User = {
@@ -70,7 +71,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         if (!isInitializing && !isPublicRoute(location.pathname) && (user?.role === 'observador' || !user)) {
-            navigate('/login', { 
+            navigate('/auth/iniciar-sesion', { 
                 replace: true,
                 state: { from: location.pathname }
             });
@@ -84,6 +85,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
             console.log('[AuthContext] Programando próximo refresh token');
             refreshTimeout = setTimeout(async () => {
                 try {
+                    // Intentar refrescar TOKEN_REFRESH_SAFETY_MARGIN ms antes de que expire
                     console.log('[AuthContext] Ejecutando refresh token programado');
                     const refreshedUser = await authService.refreshToken();
                     console.log('[AuthContext] Refresh token exitoso, actualizando usuario');
@@ -95,7 +97,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
                         await logout();
                     }
                 }
-            }, TOKEN_REFRESH_INTERVAL);
+            }, TOKEN_REFRESH_INTERVAL - TOKEN_REFRESH_SAFETY_MARGIN);
         };
 
         if (user?.role !== 'observador') {

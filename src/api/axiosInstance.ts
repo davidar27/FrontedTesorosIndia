@@ -63,9 +63,9 @@ axiosInstance.interceptors.request.use(
 
 axiosInstance.interceptors.response.use(
   (response) => {
-    if (response.data?.accessToken) {
+    if (response.data?.access_token) {
       console.log('[Auth] Nuevo access token recibido');
-      setAccessToken(response.data.accessToken);
+      setAccessToken(response.data.access_token);
     }
     return response;
   },
@@ -84,7 +84,7 @@ axiosInstance.interceptors.response.use(
     }
     
     // Si es un error 401 y no es un intento de refresh token, intentamos refrescar
-    if (Number(error.response?.status) === 401 && !originalRequest.url?.includes('/auth/refrescar-token')) {
+    if (Number(error.response?.status) === 401 && !originalRequest.url?.includes('/auth/token/refrescar')) {
       console.log('[Auth] Token expirado, intentando refresh');
       
       if (originalRequest._retry) {
@@ -106,7 +106,7 @@ axiosInstance.interceptors.response.use(
         originalRequest._retry = true;
 
         try {
-          const result = await authService.refreshToken();
+          await authService.refreshToken();
           console.log('[Auth] Refresh exitoso, reintentando petición original');
           isRefreshing = false;
           onRefreshed();

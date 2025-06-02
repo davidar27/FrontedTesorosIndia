@@ -12,11 +12,11 @@ interface EntrepreneurCardProps {
     onView?: (item: Entrepreneur) => void;
 }
 
-export function EntrepreneurCard({ 
-    item, 
-    onEdit, 
+export function EntrepreneurCard({
+    item,
+    onEdit,
     onDelete,
-    onView 
+    onView
 }: EntrepreneurCardProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -61,14 +61,14 @@ export function EntrepreneurCard({
     }
 
     const contactInfo = [
-        { 
-            icon: Mail, 
+        {
+            icon: Mail,
             value: entrepreneur.email || '',
             label: 'Correo electrónico',
             copyable: true
         },
-        { 
-            icon: Phone, 
+        {
+            icon: Phone,
             value: entrepreneur.phone || '',
             label: 'Teléfono',
             copyable: true
@@ -79,7 +79,7 @@ export function EntrepreneurCard({
         const [day, month, year] = dateStr.split('/');
         return new Date(`${year}-${month}-${day}`).toLocaleDateString('es-ES', {
             year: 'numeric',
-            month: 'long',
+            month: 'numeric',
             day: 'numeric'
         });
     };
@@ -103,10 +103,11 @@ export function EntrepreneurCard({
 
     // Mapear el estado a los valores esperados por el componente
     const statusMap: { [key: string]: string } = {
-        'Activo': 'active',
-        'Inactivo': 'inactive',
-        'Pendiente': 'pending'
+        'active': 'active',
+        'inactive': 'inactive',
+        'pending': 'pending'
     };
+
 
     return (
         <ReusableCard

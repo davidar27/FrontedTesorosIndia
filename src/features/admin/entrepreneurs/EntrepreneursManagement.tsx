@@ -28,10 +28,14 @@ export default function EntrepreneursManagement() {
         refetch
     } = useAuthenticatedQuery<Entrepreneur[]>({
         queryKey: ['entrepreneurs'],
-        queryFn: () => entrepreneursApi.getAll(),
+        queryFn: async () => {
+            const data = await entrepreneursApi.getAll();
+            return data;
+        },
         staleTime: 5 * 60 * 1000,
         retry: 2
     });
+
 
     const createMutation = useProtectedMutation({
         mutationFn: entrepreneursApi.create,
@@ -76,7 +80,7 @@ export default function EntrepreneursManagement() {
             <div className="bg-red-50 border border-red-200 rounded-md p-4">
                 <p className="text-red-800">Debes iniciar sesión para acceder a esta página</p>
                 <button
-                    onClick={() => window.location.href = '/login'}
+                    onClick={() => window.location.href = '/auth/iniciar-sesion'}
                     className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
                 >
                     Ir al Login
