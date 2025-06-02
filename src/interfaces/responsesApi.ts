@@ -2,13 +2,31 @@ import { User } from "@/interfaces/user";
 
 export interface AuthResponse {
   user?: User;
-  token?: string;
+  access_token?: string;
+  refresh_token?: string;
+  token_version?: number;
   error?: {
     type: "email" | "password" | "general" | "authentication";
     message: string;
     redirectTo?: string;
   };
   success?: boolean;
+}
+
+export interface TokenVerificationResponse {
+  success: boolean;
+  user: {
+    data: {
+      userId: number;
+      name: string;
+      role: string;
+    };
+    jti: string;
+    token_version: number;
+    iat: number;
+    exp: number;
+  };
+  code: string;
 }
 
 export class AuthError extends Error {

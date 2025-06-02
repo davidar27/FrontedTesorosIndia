@@ -7,8 +7,11 @@ interface ButtonProps {
     children: React.ReactNode;
     type?: "button" | "submit" | "reset";
     bgColor?: string;
-    hoverColor?: string;
+    hoverBg?: string;
     textColor?: string;
+    hoverTextColor?: string;
+    borderColor?: string;
+    hoverBorderColor?: string;
     disabled?: boolean;
     onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
@@ -18,8 +21,11 @@ const Button: React.FC<ButtonProps> = ({
     className = "",
     type = "button",
     bgColor = "bg-primary",
-    hoverColor = "hover:bg-white",
     textColor = "text-white",
+    hoverBg = "hover:bg-transparent",
+    hoverTextColor = "hover:text-primary",
+    borderColor = "border-primary",
+    hoverBorderColor = "hover:border-primary",
     onClick,
 }) => {
     return (
@@ -31,11 +37,13 @@ const Button: React.FC<ButtonProps> = ({
             onClick={onClick}
 
             className={clsx(
-                "font-semibold py-2 px-4 rounded transition-colors cursor-pointer shadow-lg border-2 border-primary cursor-pointer",
+                "font-semibold py-2 px-4 rounded transition-colors  shadow-lg border-2 border-primary cursor-pointer",
                 bgColor,
-                hoverColor,
                 textColor,
-                "hover:text-primary",
+                hoverBg,
+                hoverTextColor,
+                borderColor,
+                hoverBorderColor,
                 className
             )}
         >

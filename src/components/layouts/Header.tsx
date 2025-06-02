@@ -9,7 +9,7 @@ import background from "/images/FondoMobile.webp";
 import SearchBar from "../ui/display/SearchBar";
 import HeaderActions from "./HeaderActions";
 
-const excludedPaths = ["/login", "/registro"];
+const excludedPaths = ["/auth/iniciar-sesion", "/auth/registro"];
 
 const headerAnimations = {
   hidden: { opacity: 0, y: -20 },

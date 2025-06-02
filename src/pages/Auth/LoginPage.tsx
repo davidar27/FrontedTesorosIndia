@@ -1,125 +1,111 @@
-import { useNavigate } from "react-router-dom";
 import { useState } from 'react';
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import useAuth from '@/context/useAuth';
-import { z } from "zod";
-import AuthForm from "@/components/layouts/AuthForm";
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { useAuth } from '@/hooks/useAuth';
+import AuthForm from '@/components/layouts/AuthForm';
+import { loginSchema } from '@/validations/auth/loginSchema';
+import { emailRules, passwordRules } from '@/hooks/useFieldValidation';
 import { AuthError } from '@/interfaces/responsesApi';
-
-const loginSchema = z.object({
-    email: z.string().email("Correo electrónico inválido"),
-    password: z.string()
-        .min(8, "La contraseña debe tener al menos 8 caracteres")
-        .regex(/^\S*$/, "La contraseña no puede contener espacios")
-});
+import { UserRole } from '@/interfaces/role';
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
+const getRedirectPath = (role: UserRole | undefined, from: string | undefined): string => {
+    if (from && from !== '/auth/iniciar-sesion') {
+        return from;
+    }
+
+    switch (role) {
+        case 'administrador':
+            return '/dashboard';
+        case 'emprendedor':
+            return '/mi-finca';
+        default:
+            return '/';
+    }
+};
+
 const LoginPage = () => {
-    const { login } = useAuth();
-    const [isRedirecting, setIsRedirecting] = useState(false);
-    const [Message, setMessage] = useState('');
     const navigate = useNavigate();
+    const location = useLocation();
+    const { login } = useAuth();
+    const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
+    const [errorType, setErrorType] = useState<"email" | "password" | "general" | null>(null);
 
     const {
         register,
         handleSubmit,
         formState: { errors, isSubmitting },
-        setError: setFormError,
-        clearErrors
     } = useForm<LoginFormData>({
         resolver: zodResolver(loginSchema)
     });
 
     const onSubmit = async (data: LoginFormData) => {
-        setIsRedirecting(false);
-        clearErrors();
-        setMessage('');
-
         try {
             const user = await login(data);
-            setMessage('¡Inicio de sesión exitoso!');
-            setIsRedirecting(true);
-
-            if (user.role === 'administrador') {
-                navigate('/dashboard');
-            } else {
-                navigate("/", { replace: true });
-            }
+            const from = location.state?.from;
+            const redirectPath = getRedirectPath(user.role, from);
+            navigate(redirectPath, { replace: true });
         } catch (error) {
-            setIsRedirecting(false);
-
             if (error instanceof AuthError) {
-                if (error.errorType === 'general') {
-                    setFormError('email', {
-                        type: 'manual',
-                        message: error.message
-                    });
-                    setFormError('password', {
-                        type: 'manual',
-                        message: error.message
-                    });
+                setErrorMessage(error.message);
+                if (error.errorType !== "authentication") {
+                    setErrorType(error.errorType);
+                } else {
+                    setErrorType("general");
                 }
-                setMessage(error.message);
+            } else {
+                setErrorMessage("Error al iniciar sesión");
+                setErrorType("general");
             }
-            throw error;
-        }
-    };
-
-    const handleFormChange = () => {
-        if (isRedirecting) {
-            setIsRedirecting(false);
-        }
-        if (Message) {
-            setMessage('');
-        }
-        if (Object.keys(errors).length > 0) {
-            clearErrors();
         }
     };
 
     const fields = [
         {
+            name: "email",
+            type: "email",
             label: "Correo electrónico",
             placeholder: "correo@ejemplo.com",
-            type: "email",
-            name: "email",
+            rules: emailRules,
         },
         {
+            name: "password",
+            type: "password",
             label: "Contraseña",
             placeholder: "••••••••",
-            type: "password",
-            name: "password",
-        },
+            rules: passwordRules,
+        }
     ];
-
-    const messageStyle = {
-        textColor: Message?.includes('éxito') ? 'text-green-600' : 'text-red-500',
-        backgroundColor: Message?.includes('éxito') ? 'bg-green-50' : 'bg-red-50'
-    };
 
     return (
         <AuthForm
-            title="Inicio de sesión"
-            subtitle="Inicia  sesión con tu cuenta de"
-            bold="Tesoros India"
+            title="Iniciar Sesión"
+            subtitle="¡Bienvenido de nuevo!"
             fields={fields}
-            submitText={isSubmitting ? "Procesando..." :
-                isRedirecting ? "Redirigiendo..." : "Iniciar sesión"}
-            bottomText="¿No tienes una cuenta?"
-            bottomLinkText="Regístrate aquí"
-            bottomLinkTo="/registro"
-            extraLinkText="¿Olvidaste tu contraseña?"
-            extraLinkTo="/recuperar-contraseña"
-            onSubmit={handleSubmit(onSubmit)}
+            submitText="Iniciar Sesión"
             loadingText="Iniciando sesión..."
-            Message={Message}
-            messageStyle={messageStyle}
-            onChange={handleFormChange}
+            bottomText="¿No tienes una cuenta?"
+            bottomLinkText="Regístrate"
+            bottomLinkTo="/auth/registro"
+            extraLinkText="¿Olvidaste tu contraseña?"
+            extraLinkTo="/auth/password/recuperar"
+            Message={errorMessage}
+            messageStyle={{
+                textColor: "text-red-600",
+                backgroundColor: "bg-red-100"
+            }}
+            isSubmitting={isSubmitting}
+            onSubmit={handleSubmit(onSubmit)}
+            onChange={() => {
+                setErrorMessage(undefined);
+                setErrorType(null);
+            }}
             register={register}
             errors={errors}
-            isSubmitting={isSubmitting || isRedirecting}
+            errorType={errorType}
         />
     );
 };

@@ -5,7 +5,7 @@
   --color-primary: var(--color-green-600);
   --color-primary-hover: var(--color-green-700);
   --color-primary-active: var(--color-green-800);
-  --color-secondary: #81c9c1;
+  --color-secondary: rgb(129, 201, 193);
   --color-secondary-hover: #6bb5ae;
   --color-accent: #eee41e;
   --color-accent-hover: #d4c91a;

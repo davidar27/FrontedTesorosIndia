@@ -38,13 +38,13 @@ const RegisterPage = () => {
     const watchedFields = {
         password: watch('password') || '',
         email: watch('email') || '',
-        phone_number: watch('phone_number') || ''
+        phone: watch('phone') || ''
     };
 
     const validations = {
         password: useFieldValidation(watchedFields.password, passwordRules),
         email: useFieldValidation(watchedFields.email, emailRules),
-        phone_number: useFieldValidation(watchedFields.phone_number, phoneRules)
+        phone: useFieldValidation(watchedFields.phone, phoneRules)
     };
 
     useEffect(() => {
@@ -65,7 +65,7 @@ const RegisterPage = () => {
             const result = await registerService(
                 data.name,
                 data.email,
-                data.phone_number,
+                data.phone,
                 data.password,
                 data.confirm_password
             );
@@ -73,7 +73,7 @@ const RegisterPage = () => {
             if (result.success) {
                 setIsRedirecting(true);
                 setTimeout(() => {
-                    navigate('/correo-enviado', {
+                    navigate('/auth/verificacion', {
                         state: {
                             registrationSuccess: true,
                             email: result.user?.email || data.email
@@ -144,10 +144,10 @@ const RegisterPage = () => {
             label: "Número Celular",
             placeholder: "3123446735",
             type: "tel",
-            name: "phone_number",
-            validationRules: validations.phone_number.validations,
-            showValidation: showValidations.phone_number,
-            onFocus: () => handleFocus('phone_number')
+            name: "phone",
+            validationRules: validations.phone.validations,
+            showValidation: showValidations.phone,
+            onFocus: () => handleFocus('phone')
         },
         {
             label: "Contraseña",
@@ -174,7 +174,7 @@ const RegisterPage = () => {
             submitText="Registrarse"
             bottomText="¿Ya tienes una cuenta?"
             bottomLinkText="Inicia sesión aquí"
-            bottomLinkTo="/login"
+            bottomLinkTo="/auth/iniciar-sesion"
             Message={Message}
             errorType={errors.email ? "email" : "general"}
             onSubmit={handleSubmit(onSubmit)}

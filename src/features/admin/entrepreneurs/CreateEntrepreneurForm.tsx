@@ -13,7 +13,7 @@ export function CreateEntrepreneurForm({ onSubmit, onCancel, isLoading }: Create
         name: '',
         email: '',
         password: '',
-        phone_number: '',
+        phone: '',
         name_farm: ''
     });
 
@@ -38,8 +38,8 @@ export function CreateEntrepreneurForm({ onSubmit, onCancel, isLoading }: Create
             newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
         }
 
-        if (!formData.phone_number.trim()) {
-            newErrors.phone_number = 'El teléfono es requerido';
+        if (!formData.phone.trim()) {
+            newErrors.phone = 'El teléfono es requerido';
         }
 
         if (!formData.name_farm.trim()) {
@@ -147,14 +147,14 @@ export function CreateEntrepreneurForm({ onSubmit, onCancel, isLoading }: Create
                         <input
                             type="tel"
                             id="phone"
-                            value={formData.phone_number}
-                            onChange={handleChange('phone_number')}
-                            className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.phone_number ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                            value={formData.phone}
+                            onChange={handleChange('phone')}
+                            className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.phone ? 'border-red-300 bg-red-50' : 'border-gray-300'
                                 }`}
                             placeholder="+57 300 123 4567"
                         />
-                        {errors.phone_number && (
-                            <p className="mt-1 text-sm text-red-600">{errors.phone_number}</p>
+                        {errors.phone && (
+                            <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
                         )}
                     </div>
                 </div>
@@ -186,7 +186,6 @@ export function CreateEntrepreneurForm({ onSubmit, onCancel, isLoading }: Create
                         disabled={isLoading}
                         className='flex-1  rounded-md hover:!text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center border border-red-500'
                         bgColor='bg-red-500'
-                        hoverColor='bg-red-600'
                         textColor='text-white'
                     >
                         Cancelar

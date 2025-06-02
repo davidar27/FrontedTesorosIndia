@@ -55,7 +55,7 @@ const ResetPasswordForm = () => {
         onSuccess: () => {
             setMessage('¡Contraseña restablecida con éxito! Redirigiendo al inicio de sesión...');
             setTimeout(() => {
-                navigate('/login', {
+                navigate('/auth/iniciar-sesion', {
                     state: { message: '¡Contraseña restablecida con éxito! Ya puedes iniciar sesión.' }
                 });
             }, 3000);
@@ -91,7 +91,7 @@ const ResetPasswordForm = () => {
                             Por favor, solicita un nuevo enlace.
                         </p>
                         <Button
-                            onClick={() => navigate('/recuperar-contraseña')}
+                            onClick={() => navigate('/recuperar-password')}
                             className="w-full bg-primary hover:bg-primary-hover text-white"
                         >
                             Solicitar nuevo enlace
@@ -151,7 +151,7 @@ const ResetPasswordForm = () => {
             submitText={isSubmitting ? "Cambiando contraseña..." : "Cambiar contraseña"}
             bottomText="¿Recordaste tu contraseña?"
             bottomLinkText="Inicia sesión"
-            bottomLinkTo="/login"
+            bottomLinkTo="/auth/iniciar-sesion"
             onSubmit={handleSubmit(onSubmit)}
             onChange={handleFormChange}
             register={register}

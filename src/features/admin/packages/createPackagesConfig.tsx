@@ -1,10 +1,20 @@
-import { EntityConfig, BaseEntity } from "@/components/admin/GenericManagent";
+import { EntityConfig } from "@/features/admin/types";
+import { Package } from "./PackageTypes";
+import { PackageCardWrapper } from "./PackageCardWrapper";
 
-export const createPackagesConfig = <T extends BaseEntity & { price: number; description: string }>(
-    items: T[],
-    ItemCard: EntityConfig<T>['ItemCard'],
-    callbacks: Pick<EntityConfig<T>, 'onEdit' | 'onDelete' | 'onCreate'>
-): EntityConfig<T> => ({
+interface PackagesConfigParams {
+    data: Package[];
+    actions: {
+        onEdit?: (item: Package) => void;
+        onDelete?: (id: number) => void;
+        onCreate?: () => void;
+    };
+}
+
+export const createPackagesConfig = ({
+    data,
+    actions
+}: PackagesConfigParams): EntityConfig<Package> => ({
     entityName: 'Paquete',
     entityNamePlural: 'Paquetes',
     description: 'Gestiona los paquetes de productos y sus precios',
@@ -12,12 +22,15 @@ export const createPackagesConfig = <T extends BaseEntity & { price: number; des
     emptyStateEmoji: '📦',
     emptyStateTitle: 'No se encontraron paquetes',
     emptyStateDescription: 'Intenta cambiar los filtros o el término de búsqueda',
-    items,
-    ItemCard,
-    ...callbacks,
+    items: data,
+    ItemCard: PackageCardWrapper,
+    onEdit: actions.onEdit || (() => {}),
+    onDelete: actions.onDelete || (() => {}),
+    onCreate: actions.onCreate || (() => {}),
+    onRetry: () => {},
     searchFunction: (item, searchTerm) => {
         const term = searchTerm.toLowerCase();
         return item.name.toLowerCase().includes(term) ||
-            item.description.toLowerCase().includes(term);
+            (item.description?.toLowerCase().includes(term) ?? false);
     }
 });

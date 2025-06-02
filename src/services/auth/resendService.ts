@@ -15,7 +15,7 @@ export const resendVerificationEmail = async (email: string): Promise<ResendResp
     }
 
     try {
-        const response = await axiosInstance.post<ResendResponse>('/auth/reenviar-correo-verificacion', { 
+        const response = await axiosInstance.post<ResendResponse>('/auth/verificacion/correo/reenviar', { 
             email: email.trim() 
         });
 

@@ -9,7 +9,7 @@ const LoginButton = ({ textColor }: { textColor?: string }) => {
         <>
            
             <Button
-                onClick={() => navigate("/login")}
+                onClick={() => navigate("/auth/iniciar-sesion")}
                 className="font-bold md:hidden "
                 textColor={textColor}
             >
@@ -17,7 +17,7 @@ const LoginButton = ({ textColor }: { textColor?: string }) => {
             </Button>
 
             <ButtonIcon
-                onClick={() => navigate("/login")}
+                onClick={() => navigate("/auth/iniciar-sesion")}
                 className="font-bold hidden md:flex"
                 textColor={textColor}
             >

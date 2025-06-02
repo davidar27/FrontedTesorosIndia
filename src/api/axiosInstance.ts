@@ -40,8 +40,20 @@ const onRefreshed = () => {
   refreshSubscribers = [];
 };
 
+// Almacenamiento en memoria del access token
+let accessToken: string | null = null;
+
+export const setAccessToken = (token: string | null) => {
+  accessToken = token;
+};
+
+export const getAccessToken = () => accessToken;
+
 axiosInstance.interceptors.request.use(
   (config) => {
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
     return config;
   },
   (error) => {
@@ -51,46 +63,69 @@ axiosInstance.interceptors.request.use(
 
 axiosInstance.interceptors.response.use(
   (response) => {
+    if (response.data?.access_token) {
+      console.log('[Auth] Nuevo access token recibido');
+      setAccessToken(response.data.access_token);
+    }
     return response;
   },
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    const errorData = error.response?.data;
     
-    // Handle 401 Unauthorized errors
-    if (Number(error.response?.status) === 401) {
-      // If we're already retrying or if this is a refresh token request, don't retry
-      if (originalRequest._retry || (typeof originalRequest.url === 'string' && originalRequest.url.includes('/auth/refrescar-token'))) {
+    // Si es un error 401 y es un intento de login, manejar como error de credenciales
+    if (Number(error.response?.status) === 401 && originalRequest.url?.includes('/auth/iniciar-sesion')) {
+      console.log('[Auth] Error de credenciales en login');
+      return Promise.reject(
+        new AuthError("El correo o la contraseña son incorrectos", {
+          errorType: "general"
+        })
+      );
+    }
+    
+    // Si es un error 401 y no es un intento de refresh token, intentamos refrescar
+    if (Number(error.response?.status) === 401 && !originalRequest.url?.includes('/auth/token/refrescar')) {
+      console.log('[Auth] Token expirado, intentando refresh');
+      
+      if (originalRequest._retry) {
+        console.log('[Auth] Ya se intentó refresh, sesión expirada');
         isRefreshing = false;
         refreshSubscribers = [];
+        setAccessToken(null);
         return Promise.reject(
           new AuthError("Sesión expirada", {
-            redirectTo: "/login",
+            redirectTo: "/auth/iniciar-sesion",
             errorType: "authentication",
           })
         );
       }
 
       if (!isRefreshing) {
+        console.log('[Auth] Iniciando proceso de refresh');
         isRefreshing = true;
         originalRequest._retry = true;
 
         try {
           await authService.refreshToken();
+          console.log('[Auth] Refresh exitoso, reintentando petición original');
           isRefreshing = false;
           onRefreshed();
           
           return axiosInstance(originalRequest);
-        } catch  {
+        } catch (error) {
+          console.error('[Auth] Error en refresh:', error);
           isRefreshing = false;
           refreshSubscribers = [];
+          setAccessToken(null);
           return Promise.reject(
             new AuthError("Sesión expirada", {
-              redirectTo: "/login",
+              redirectTo: "/auth/iniciar-sesion",
               errorType: "authentication",
             })
           );
         }
       } else {
+        console.log('[Auth] Refresh en proceso, agregando a cola de espera');
         return new Promise((resolve) => {
           addRefreshSubscriber(() => {
             resolve(axiosInstance(originalRequest));
@@ -98,9 +133,6 @@ axiosInstance.interceptors.response.use(
         });
       }
     }
-
-    const status = error.response?.status;
-    const errorData = error.response?.data;
 
     if (errorData) {
       let Message = "Ha ocurrido un error";
@@ -110,15 +142,9 @@ axiosInstance.interceptors.response.use(
         if ('error' in errorData) {
           if (typeof errorData.error === 'object' && errorData.error !== null && 'message' in errorData.error) {
             Message = String(errorData.error.message);
-            errorType = normalizeErrorType((errorData.error as {type?: string}).type);
+            errorType = normalizeErrorType((errorData.error as { type?: string }).type);
           } else if (typeof errorData.error === 'string') {
             Message = errorData.error;
-
-            if (Number(status) === 409 || Message.toLowerCase().includes('correo') || Message.toLowerCase().includes('email')) {
-              errorType = "email";
-            } else if (Message.toLowerCase().includes('contraseña') || Message.toLowerCase().includes('password')) {
-              errorType = "password";
-            }
           }
         } else if ('message' in errorData && errorData.message) {
           Message = String(errorData.message);
@@ -127,14 +153,12 @@ axiosInstance.interceptors.response.use(
           }
         }
 
-        const authError = new AuthError(Message || "Ha ocurrido un error",
-          {
+        return Promise.reject(
+          new AuthError(Message, {
             redirectTo: 'redirectTo' in errorData ? String(errorData.redirectTo) : undefined,
             errorType: errorType,
-          }
+          })
         );
-
-        return Promise.reject(authError);
       }
     }
 

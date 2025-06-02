@@ -40,7 +40,7 @@ const EmailVerificationPage = () => {
                 setMessage('¡Email verificado exitosamente! Serás redirigido al inicio de sesión...');
 
                 setTimeout(() => {
-                    navigate('/login', {
+                    navigate('/auth/iniciar-sesion', {
                         state: {
                             message: 'Email verificado exitosamente. Ahora puedes iniciar sesión.'
                         }
@@ -109,7 +109,7 @@ const EmailVerificationPage = () => {
 
     const onSubmit = async () => {
         if (status === 'error') {
-            navigate('/registro');
+            navigate('/auth/registro');
         }
     };
 

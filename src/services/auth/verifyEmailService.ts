@@ -3,7 +3,7 @@ import axios from 'axios';
 
 export const verifyEmail = async (token: string) => {
     try {
-        const response = await axiosInstance.get('/auth/verificar-correo', {
+        const response = await axiosInstance.get('/auth/verificacion/correo', {
             params: { token }
         });
         return response.data;

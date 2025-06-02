@@ -12,7 +12,17 @@ import { Credentials } from '@/interfaces/formInterface';
 const AuthContext = createContext<AuthContextType>(null!);
 
 const AUTH_QUERY_KEY = ['auth', 'user'];
-const TOKEN_REFRESH_INTERVAL = 4.5 * 60 * 1000; 
+const TOKEN_REFRESH_INTERVAL = 4.5 * 60 * 1000;
+const TOKEN_REFRESH_SAFETY_MARGIN = 30 * 1000;
+
+// Usuario observador por defecto
+const defaultObserverUser: User = {
+    id: '0',
+    name: 'Observador',
+    email: '',
+    role: 'observador' as UserRole,
+    isVerified: false
+};
 
 function AuthProvider({ children }: { children: ReactNode }) {
     const [error, setError] = useState<string | null>(null);
@@ -35,11 +45,11 @@ function AuthProvider({ children }: { children: ReactNode }) {
             try {
                 const result = await authService.verifyToken();
                 if (!result.isValid || !result.user) {
-                    return null;
+                    return defaultObserverUser;
                 }
                 return result.user;
             } catch {
-                return null;
+                return defaultObserverUser;
             }
         },
         retry: false,
@@ -47,24 +57,21 @@ function AuthProvider({ children }: { children: ReactNode }) {
         gcTime: Infinity,
         refetchOnWindowFocus: true,
         refetchInterval: TOKEN_REFRESH_INTERVAL,
-        refetchOnMount: true,
-        enabled: !isPublicRoute(location.pathname)
+        refetchOnMount: true
     });
 
     useEffect(() => {
         const initializeAuth = async () => {
-            if (!isPublicRoute(location.pathname)) {
-                await refetchAuth();
-            }
+            await refetchAuth();
             setIsInitializing(false);
         };
 
         initializeAuth();
-    }, [location.pathname]);
+    }, []);
 
     useEffect(() => {
-        if (!isInitializing && !isPublicRoute(location.pathname) && !user) {
-            navigate('/login', { 
+        if (!isInitializing && !isPublicRoute(location.pathname) && (user?.role === 'observador' || !user)) {
+            navigate('/auth/iniciar-sesion', { 
                 replace: true,
                 state: { from: location.pathname }
             });
@@ -75,30 +82,36 @@ function AuthProvider({ children }: { children: ReactNode }) {
         let refreshTimeout: NodeJS.Timeout;
 
         const scheduleTokenRefresh = () => {
+            console.log('[AuthContext] Programando próximo refresh token');
             refreshTimeout = setTimeout(async () => {
                 try {
+                    // Intentar refrescar TOKEN_REFRESH_SAFETY_MARGIN ms antes de que expire
+                    console.log('[AuthContext] Ejecutando refresh token programado');
                     const refreshedUser = await authService.refreshToken();
+                    console.log('[AuthContext] Refresh token exitoso, actualizando usuario');
                     queryClient.setQueryData(AUTH_QUERY_KEY, refreshedUser);
-                    scheduleTokenRefresh(); // Programa el siguiente refresh
+                    scheduleTokenRefresh();
                 } catch (error) {
-                    console.error('Error refreshing token:', error);
+                    console.error('[AuthContext] Error en refresh token programado:', error);
                     if (!isPublicRoute(location.pathname)) {
                         await logout();
                     }
                 }
-            }, TOKEN_REFRESH_INTERVAL);
+            }, TOKEN_REFRESH_INTERVAL - TOKEN_REFRESH_SAFETY_MARGIN);
         };
 
-        if (user?.token) {
+        if (user?.role !== 'observador') {
+            console.log('[AuthContext] Usuario autenticado, iniciando ciclo de refresh');
             scheduleTokenRefresh();
         }
 
         return () => {
             if (refreshTimeout) {
+                console.log('[AuthContext] Limpiando timeout de refresh');
                 clearTimeout(refreshTimeout);
             }
         };
-    }, [user?.token, location.pathname]);
+    }, [user?.role, location.pathname]);
 
     const loginMutation = useMutation<{ user: User; }, Error, Credentials>({
         mutationFn: async (credentials: Credentials) => {
@@ -129,10 +142,11 @@ function AuthProvider({ children }: { children: ReactNode }) {
         }
     });
 
-    const { isAdmin, isEntrepreneur, isClient } = useMemo(() => ({
+    const { isAdmin, isEntrepreneur, isClient, isObserver } = useMemo(() => ({
         isAdmin: user?.role === ('administrador' as UserRole),
         isEntrepreneur: user?.role === ('emprendedor' as UserRole),
-        isClient: user?.role === ('cliente' as UserRole)
+        isClient: user?.role === ('cliente' as UserRole),
+        isObserver: user?.role === ('observador' as UserRole)
     }), [user?.role]);
 
     const login = useCallback(async (credentials: Credentials): Promise<User> => {
@@ -184,14 +198,15 @@ function AuthProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const value: AuthContextType = useMemo(() => ({
-        user: user || null,
-        isAuthenticated: !!user,
+        user: user || defaultObserverUser,
+        isAuthenticated: !!user && user.role !== 'observador',
         isLoading: isLoading && !isPublicRoute(location.pathname),
         error,
-        role: user?.role || null,
+        role: user?.role || 'observador',
         isAdmin,
         isEntrepreneur,
         isClient,
+        isObserver,
         login,
         logout,
         updateUser,
@@ -207,6 +222,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
         isAdmin,
         isEntrepreneur,
         isClient,
+        isObserver,
         login,
         logout,
         updateUser,

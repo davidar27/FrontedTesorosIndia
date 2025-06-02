@@ -12,6 +12,7 @@ interface ButtonIconProps {
   hoverColor?: string;
   px?: string;
   onClick?: () => void;
+  type?: "button" | "submit" | "reset";
 }
 
 const ButtonIcon: React.FC<ButtonIconProps> = ({
@@ -22,12 +23,14 @@ const ButtonIcon: React.FC<ButtonIconProps> = ({
   target = "_self",
   textColor = "text-white",
   hoverColor = "hover:text-primary-hover",
+  type = "button",
   onClick,
 }) => {
   const baseClasses = clsx(
     "text-sm py-1 rounded flex items-center gap-2 transition-colors cursor-pointer",
     textColor,
     hoverColor,
+    type === "submit" && "bg-primary",
     className
   );
 

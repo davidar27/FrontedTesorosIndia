@@ -70,13 +70,13 @@ export const publicRoutes: RouteConfig[] = [
 
 export const authRoutes: RouteConfig[] = [
     {
-        path: '/login',
+        path: '/auth/inciar-sesion',
         element: LoginPage,
         layout: AuthLayout,
         title: 'Iniciar Sesión'
     },
     {
-        path: '/registro',
+        path: '/auth/registro',
         element: RegisterPage,
         layout: AuthLayout,
         title: 'Registrarse'

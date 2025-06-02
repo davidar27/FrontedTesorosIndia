@@ -1,32 +1,32 @@
-import { BaseEntity } from "@/components/admin/GenericManagent";
+import { BaseEntity } from "@/features/admin/types";
 
 export interface Entrepreneur extends BaseEntity<'active' | 'inactive' | 'pending'> {
     name: string;
     email: string;
-    phone_number: string;
-    image?: string | null;
+    phone: string;
+    image: string | null;
     joinDate: string;
     status: 'active' | 'inactive' | 'pending';
     name_farm: string;
     createdAt?: string;
     updatedAt?: string;
+    [key: string]: string | number | boolean | Date | null | undefined;
 }
 
 export interface CreateEntrepreneurData {
     name: string;
     email: string;
     password: string;
-    phone_number: string;
+    phone: string;
     name_farm: string;
 }
 
 export interface UpdateEntrepreneurData {
-    name?: string;
-    email?: string;
-    phone_number?: string;
-    name_farm?: string;
-    status?: 'active' | 'inactive' | 'pending';
-    image?: string;
+    name: string;
+    email: string;
+    phone: string;
+    name_farm: string;
+    image?: File;
 }
 
 export interface EntrepreneurApiResponse {

@@ -1,11 +1,9 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import GenericManagement from '@/components/admin/GenericManagent';
 import { EntrepreneurCard } from '@/features/admin/entrepreneurs/EntrepreneursCard';
 import { CreateEntrepreneurForm } from '@/features/admin/entrepreneurs/CreateEntrepreneurForm';
-import { CreateEntrepreneursConfig } from '@/features/admin/entrepreneurs/createEntrepreneursConfig';
+import { EntrepreneursConfig } from '@/features/admin/entrepreneurs/EntrepreneursConfig';
 import { entrepreneursApi } from '@/services/admin/entrepernaur';
 import useAuth from '@/context/useAuth';
 import { usePermissions } from '@/hooks/usePermissions';
@@ -18,6 +16,55 @@ export default function EntrepreneursManagement() {
     const queryClient = useQueryClient();
     const { isAuthenticated, isLoading: authLoading } = useAuth();
     const { hasPermission, isAdmin } = usePermissions();
+    
+    const canCreate = isAdmin() || hasPermission('entrepreneurs:create');
+    const canEdit = isAdmin() || hasPermission('entrepreneurs:edit');
+    const canDelete = isAdmin() || hasPermission('entrepreneurs:delete');
+
+    const {
+        data: entrepreneurs = [],
+        isLoading,
+        error,
+        refetch
+    } = useAuthenticatedQuery<Entrepreneur[]>({
+        queryKey: ['entrepreneurs'],
+        queryFn: async () => {
+            const data = await entrepreneursApi.getAll();
+            return data;
+        },
+        staleTime: 5 * 60 * 1000,
+        retry: 2
+    });
+
+
+    const createMutation = useProtectedMutation({
+        mutationFn: entrepreneursApi.create,
+        requiredPermission: 'entrepreneurs:create',
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] });
+            setShowCreateForm(false);
+        },
+        onError: (error: Error) => {
+            console.error('Error creating entrepreneur:', error);
+        },
+        onUnauthorized: () => {
+            alert('No tienes permisos para crear emprendedores');
+        }
+    });
+
+    const deleteMutation = useProtectedMutation({
+        mutationFn: entrepreneursApi.delete,
+        requiredPermission: 'entrepreneurs:delete',
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] });
+        },
+        onError: (error: Error) => {
+            console.error('Error deleting entrepreneur:', error);
+        },
+        onUnauthorized: () => {
+            alert('No tienes permisos para eliminar emprendedores');
+        }
+    });
 
     if (authLoading) {
         return (
@@ -33,7 +80,7 @@ export default function EntrepreneursManagement() {
             <div className="bg-red-50 border border-red-200 rounded-md p-4">
                 <p className="text-red-800">Debes iniciar sesión para acceder a esta página</p>
                 <button
-                    onClick={() => window.location.href = '/login'}
+                    onClick={() => window.location.href = '/auth/iniciar-sesion'}
                     className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
                 >
                     Ir al Login
@@ -41,67 +88,6 @@ export default function EntrepreneursManagement() {
             </div>
         );
     }
-
-    const canCreate = isAdmin() || hasPermission('entrepreneurs:create');
-    const canEdit = isAdmin() || hasPermission('entrepreneurs:edit');
-    const canDelete = isAdmin() || hasPermission('entrepreneurs:delete');
-
-    const {
-        data: entrepreneurs = [],
-        isLoading,
-        error,
-        refetch
-    } = useAuthenticatedQuery<Entrepreneur[]>({
-        queryKey: ['entrepreneurs'],
-        queryFn: () => entrepreneursApi.getAll(),
-        staleTime: 5 * 60 * 1000, // 5 minutos
-        retry: 2
-    });
-
-    // Mutaciones protegidas
-    const createMutation = useProtectedMutation({
-        mutationFn: entrepreneursApi.create,
-        requiredPermission: 'entrepreneurs:create',
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] });
-            setShowCreateForm(false);
-        },
-        onError: (error: any) => {
-            console.error('Error creating entrepreneur:', error);
-        },
-        onUnauthorized: () => {
-            alert('No tienes permisos para crear emprendedores');
-        }
-    });
-
-    // const updateMutation = useProtectedMutation({
-    //     mutationFn: ({ id, data }: { id: number; data: UpdateEntrepreneurData }) =>
-    //         entrepreneursApi.update(id, data),
-    //     requiredPermission: 'entrepreneurs:edit',
-    //     onSuccess: () => {
-    //         queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] });
-    //     },
-    //     onError: (error: any) => {
-    //         console.error('Error updating entrepreneur:', error);
-    //     },
-    //     onUnauthorized: () => {
-    //         alert('No tienes permisos para editar emprendedores');
-    //     }
-    // });
-
-    const deleteMutation = useProtectedMutation({
-        mutationFn: entrepreneursApi.delete,
-        requiredPermission: 'entrepreneurs:delete',
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] });
-        },
-        onError: (error: any) => {
-            console.error('Error deleting entrepreneur:', error);
-        },
-        onUnauthorized: () => {
-            alert('No tienes permisos para eliminar emprendedores');
-        }
-    });
 
     const handleEdit = (entrepreneur: Entrepreneur) => {
         if (!canEdit) {
@@ -151,7 +137,8 @@ export default function EntrepreneursManagement() {
             </div>
         );
     }
-    const config = CreateEntrepreneursConfig<Entrepreneur>({
+
+    const config = EntrepreneursConfig({
         data: entrepreneurs,
         CardComponent: EntrepreneurCard,
         actions: {

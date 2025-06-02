@@ -2,7 +2,7 @@ import { axiosInstance } from '@/api/axiosInstance';
 
 export const resetPassword = async (token: string, password: string, confirmPassword: string): Promise<void> => {
   try {
-    const response = await axiosInstance.put(`/auth/restablecer-password?token=${token}`, {
+    const response = await axiosInstance.put(`/auth/password/restablecer?token=${token}`, {
       password,
       confirmPassword
     });

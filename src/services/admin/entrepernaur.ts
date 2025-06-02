@@ -1,25 +1,117 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { axiosInstance } from '@/api/axiosInstance';
-import { Entrepreneur, CreateEntrepreneurData, UpdateEntrepreneurData, EntrepreneurApiResponse } from '@/features/admin/entrepreneurs/EntrepreneursTypes';
+import { Entrepreneur, CreateEntrepreneurData, UpdateEntrepreneurData } from '@/features/admin/entrepreneurs/EntrepreneursTypes';
 
+interface EntrepreneurResponse {
+    id: number;
+    name: string;
+    email: string;
+    phone: string;
+    image: string | null;
+    imageUrl?: string;
+    status: string;
+    joinDate: string;
+    name_farm: string;
+}
 
+interface EntrepreneurUpdateResponse {
+    message: string;
+    user: {
+        userId: number;
+        name: string;
+        email: string;
+        phone: string;
+        role: string;
+        verified: boolean;
+        image: string;
+        imageUrl?: string; 
+        description: string | null;
+        name_farm: string;
+        token_version: number;
+    };
+}
 
+// Función auxiliar para construir la URL completa de la imagen
+const getImageUrl = (imagePath: string | null | undefined): string | null => {
+    if (!imagePath) return null;
+
+    try {
+        // Si la ruta ya es una URL completa, devolverla
+        if (imagePath.startsWith('http')) return imagePath;
+
+        // Construir la URL completa usando la URL base de la API
+        return `${import.meta.env.VITE_API_URL}${imagePath}`;
+    } catch (error) {
+        console.error('Error procesando ruta de imagen:', error);
+        return null;
+    }
+};
 
 export const entrepreneursApi = {
     getAll: async (params?: { page?: number; limit?: number; search?: string }): Promise<Entrepreneur[]> => {
         try {
-            const response = await axiosInstance.get<EntrepreneurApiResponse>('usuario/emprendedores', { params });
-            return response.data.entrepreneurs || response.data as any;
-        } catch (error) {
-            console.error('Error fetching entrepreneurs:', error);
-            throw new Error('Error al obtener los emprendedores');
+            const response = await axiosInstance.get<EntrepreneurResponse[]>('dashboard/emprendedores', { params });
+            if (!response.data || !Array.isArray(response.data)) {
+                console.log('No entrepreneurs data found in response');
+                return [];
+            }
+
+            const entrepreneurs = response.data.map(entrepreneur => {
+                let status: 'active' | 'inactive' | 'pending';
+                switch (entrepreneur.status.toLowerCase()) {
+                    case 'activo':
+                        status = 'active';
+                        break;
+                    case 'inactivo':
+                        status = 'inactive';
+                        break;
+                    default:
+                        status = 'pending';
+                }
+
+                return {
+                    id: entrepreneur.id,
+                    name: entrepreneur.name,
+                    email: entrepreneur.email,
+                    phone: entrepreneur.phone,
+                    image: getImageUrl(entrepreneur.image),
+                    status,
+                    joinDate: entrepreneur.joinDate,
+                    name_farm: entrepreneur.name_farm
+                } as Entrepreneur;
+            });
+
+            const statusOrder = {
+                'active': 0,
+                'pending': 1,
+                'inactive': 2
+            };
+
+            const sortedEntrepreneurs = entrepreneurs.sort((a, b) => {
+                const statusDiff = statusOrder[a.status] - statusOrder[b.status];
+                if (statusDiff !== 0) return statusDiff;
+
+                const dateA = new Date(a.joinDate.split('/').reverse().join('-'));
+                const dateB = new Date(b.joinDate.split('/').reverse().join('-'));
+                return dateB.getTime() - dateA.getTime();
+            });
+
+            return sortedEntrepreneurs;
+
+        } catch (error: any) {
+            console.error('Error fetching entrepreneurs:', {
+                message: error.message,
+                response: error.response?.data,
+                status: error.response?.status
+            });
+            throw new Error(`Error al obtener los emprendedores: ${error.response?.data?.message || error.message}`);
         }
     },
 
     // Obtener un emprendedor por ID
     getById: async (id: number): Promise<Entrepreneur> => {
         try {
-            const response = await axiosInstance.get<Entrepreneur>(`/usuario/emprendedores/${id}`);
+            const response = await axiosInstance.get<Entrepreneur>(`/dashboard/emprendedor/${id}`);
             return response.data;
         } catch (error) {
             console.error('Error fetching entrepreneur:', error);
@@ -30,16 +122,66 @@ export const entrepreneursApi = {
     // Crear un nuevo emprendedor
     create: async (data: CreateEntrepreneurData): Promise<Entrepreneur> => {
         try {
-            const response = await axiosInstance.post<Entrepreneur>('usuario/registrar/emprendedor', data);
-            return response.data;
-        } catch (error: any) {
-            console.error('Error creating entrepreneur:', error);
+            // Validar campos requeridos
+            if (!data.name?.trim()) throw new Error('El nombre es requerido');
+            if (!data.email?.trim()) throw new Error('El email es requerido');
+            if (!data.password?.trim()) throw new Error('La contraseña es requerida');
+            if (!data.phone?.trim()) throw new Error('El teléfono es requerido');
+            if (!data.name_farm?.trim()) throw new Error('El nombre de la finca es requerido');
 
+            const entrepreneurData = {
+                name: data.name.trim(),
+                email: data.email.trim(),
+                password: data.password.trim(),
+                phone: data.phone.trim(),
+                name_farm: data.name_farm.trim()
+            };
+
+            console.log('Datos a enviar:', {
+                ...entrepreneurData,
+                password: '********' // No mostrar la contraseña en los logs
+            });
+
+            const response = await axiosInstance.post<EntrepreneurUpdateResponse>(
+                '/dashboard/emprendedores/crear',
+                entrepreneurData
+            );
+
+            if (!response.data || !response.data.user) {
+                throw new Error('Respuesta inválida del servidor');
+            }
+
+            const entrepreneur: Entrepreneur = {
+                id: response.data.user.userId,
+                name: response.data.user.name,
+                email: response.data.user.email,
+                phone: response.data.user.phone,
+                image: null, // Nuevo emprendedor sin imagen
+                status: 'active',
+                joinDate: new Date().toLocaleDateString(),
+                name_farm: response.data.user.name_farm,
+            };
+
+            return entrepreneur;
+
+        } catch (error: any) {
+            console.error('Error creating entrepreneur:', {
+                message: error.message,
+                response: error.response?.data,
+                status: error.response?.status
+            });
+
+            // Manejar errores específicos
             if (error.response?.status === 400) {
                 throw new Error(error.response.data.message || 'Datos inválidos');
             }
             if (error.response?.status === 409) {
                 throw new Error('Ya existe un emprendedor con este correo electrónico');
+            }
+
+            // Si es un error de validación local
+            if (error.message.includes('requerido')) {
+                throw error;
             }
 
             throw new Error('Error al crear el emprendedor');
@@ -49,26 +191,62 @@ export const entrepreneursApi = {
     // Actualizar un emprendedor
     update: async (id: number, data: UpdateEntrepreneurData): Promise<Entrepreneur> => {
         try {
-            const response = await axiosInstance.put<Entrepreneur>(`/usuario/emprendedores/${id}`, data);
-            return response.data;
+            const formData = new FormData();
+            
+            if (data.name?.trim()) formData.append('name', data.name.trim());
+            if (data.email?.trim()) formData.append('email', data.email.trim());
+            if (data.phone?.trim()) formData.append('phone', data.phone.trim());
+            if (data.name_farm?.trim()) formData.append('name_farm', data.name_farm.trim());
+            
+            if (data.image instanceof File) {
+                console.log('Subiendo imagen:', {
+                    nombre: data.image.name,
+                    tipo: data.image.type,
+                    tamaño: data.image.size
+                });
+                formData.append('file', data.image);
+            }
+
+            const response = await axiosInstance.put<EntrepreneurUpdateResponse>(
+                `/dashboard/emprendedores/actualizar/${id}`, 
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }
+            );
+
+            if (!response.data || !response.data.user) {
+                throw new Error('Respuesta inválida del servidor');
+            }
+
+            const entrepreneur: Entrepreneur = {
+                id: response.data.user.userId,
+                name: response.data.user.name,
+                email: response.data.user.email,
+                phone: response.data.user.phone,
+                image: getImageUrl(response.data.user.image),
+                status: 'active',
+                joinDate: new Date().toLocaleDateString(),
+                name_farm: response.data.user.name_farm,
+            };
+
+            return entrepreneur;
         } catch (error: any) {
-            console.error('Error updating entrepreneur:', error);
-
-            if (error.response?.status === 404) {
-                throw new Error('Emprendedor no encontrado');
-            }
-            if (error.response?.status === 400) {
-                throw new Error(error.response.data.message || 'Datos inválidos');
-            }
-
-            throw new Error('Error al actualizar el emprendedor');
+            console.error('Error updating entrepreneur:', {
+                message: error.message,
+                response: error.response?.data,
+                status: error.response?.status
+            });
+            throw new Error(error.response?.data?.message || 'Error al actualizar el emprendedor');
         }
     },
 
     // Eliminar un emprendedor
     delete: async (id: number): Promise<void> => {
         try {
-            await axiosInstance.delete(`/usuario/emprendedores/${id}`);
+            await axiosInstance.put(`/usuario/desactivar/emprendedor/${id}`);
         } catch (error: any) {
             console.error('Error deleting entrepreneur:', error);
 
@@ -83,7 +261,7 @@ export const entrepreneursApi = {
     // Cambiar estado de un emprendedor
     changeStatus: async (id: number, status: 'active' | 'inactive' | 'pending'): Promise<Entrepreneur> => {
         try {
-            const response = await axiosInstance.patch<Entrepreneur>(`/usuario/emprendedores/${id}/status`, { status });
+            const response = await axiosInstance.patch<Entrepreneur>(`/usuario/actualizar/emprendedor/${id}/status`, { status });
             return response.data;
         } catch (error: any) {
             console.error('Error changing entrepreneur status:', error);

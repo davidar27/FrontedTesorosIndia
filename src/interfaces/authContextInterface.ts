@@ -11,6 +11,7 @@ export interface AuthContextType {
     isAdmin: boolean;
     isEntrepreneur: boolean;
     isClient: boolean;
+    isObserver: boolean;
     login: (credentials: Credentials) => Promise<User>;
     logout: () => Promise<void>;
     updateUser: (updates: Partial<User>) => void;

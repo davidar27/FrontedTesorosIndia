@@ -46,7 +46,7 @@ export const useVerificationStatus = ({
 
         try {
             const response = await axiosInstance.get<VerificationResponse>(
-                `/auth/revisar-verificacion?email=${encodeURIComponent(email)}`
+                `/auth/verificacion?email=${encodeURIComponent(email)}`
             );
 
             if (!mountedRef.current) return true;

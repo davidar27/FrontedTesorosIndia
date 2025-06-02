@@ -1,9 +1,8 @@
 import React, { useMemo } from 'react';
-import { Edit, Trash2, LucideIcon, ExternalLink } from 'lucide-react';
+import { Edit, Trash2, LucideIcon } from 'lucide-react';
 import Picture from '@/components/ui/display/Picture';
 import Avatar from '@/components/ui/display/Avatar';
 
-// Interfaces genéricas para hacer el componente reutilizable
 interface StatusConfig {
     active: { bg: string; text: string; label: string };
     inactive: { bg: string; text: string; label: string };
@@ -13,14 +12,14 @@ interface StatusConfig {
 
 interface ContactInfo {
     icon: LucideIcon;
-    value: string;
+    value: string | React.ReactNode;
     label?: string;
     onClick?: () => void; 
     copyable?: boolean;
 }
 
 interface StatInfo {
-    value: string | number;
+    value: string | number | React.ReactNode;
     label: string;
     bgColor?: string;
     textColor?: string;
@@ -39,7 +38,7 @@ interface ActionButton {
     tooltip?: string;
 }
 
-interface BaseItem {
+export interface BaseItem {
     id: number;
     name: string;
     status: string;
@@ -48,7 +47,7 @@ interface BaseItem {
     subtitle?: string;
 }
 
-interface ReusableCardProps<T extends BaseItem> {
+interface ReusableCardProps<T> {
     item: T;
     contactInfo?: ContactInfo[];
     stats?: StatInfo[];
@@ -56,7 +55,6 @@ interface ReusableCardProps<T extends BaseItem> {
     statusConfig?: StatusConfig;
     onEdit?: (item: T) => void;
     onDelete?: (id: number) => void;
-    onView?: (item: T) => void;
     showImage?: boolean;
     showStatus?: boolean;
     className?: string;
@@ -64,6 +62,7 @@ interface ReusableCardProps<T extends BaseItem> {
     clickable?: boolean;
     onClick?: (item: T) => void;
     loading?: boolean;
+    children?: React.ReactNode;
 }
 
 // Configuración por defecto para estados
@@ -112,7 +111,6 @@ const LoadingSpinner: React.FC<{ size?: number }> = ({ size = 16 }) => (
     />
 );
 
-
 export function ReusableCard<T extends BaseItem>({
     item,
     contactInfo = [],
@@ -121,16 +119,15 @@ export function ReusableCard<T extends BaseItem>({
     statusConfig = DEFAULT_STATUS_CONFIG,
     onEdit,
     onDelete,
-    onView,
     showImage = true,
     showStatus = true,
     className = "",
     variant = 'default',
     clickable = false,
     onClick,
-    loading = false
+    loading = false,
+    children
 }: ReusableCardProps<T>) {
-
     const getStatusStyle = (status: string) => {
         const config = statusConfig[status] || statusConfig.active;
         return `${config.bg} ${config.text}`;
@@ -138,21 +135,11 @@ export function ReusableCard<T extends BaseItem>({
 
     const getStatusLabel = (status: string) => {
         if (!status) return 'Desconocido';
-
-        console.log('Status:', status);
         return statusConfig[status]?.label || status.charAt(0).toUpperCase() + status.slice(1);
     };
 
     // Acciones por defecto si se proporcionan callbacks
     const defaultActions: ActionButton[] = useMemo(() => [
-        ...(onView ? [{
-            icon: ExternalLink,
-            label: variant !== 'compact' ? 'Ver' : undefined,
-            onClick: () => onView(item),
-            variant: 'secondary' as const,
-            fullWidth: false,
-            tooltip: 'Ver detalles'
-        }] : []),
         ...(onEdit ? [{
             icon: Edit,
             label: variant !== 'compact' ? 'Editar' : undefined,
@@ -169,25 +156,24 @@ export function ReusableCard<T extends BaseItem>({
             fullWidth: false,
             tooltip: 'Eliminar elemento'
         }] : [])
-    ], [onView, onEdit, onDelete, item, variant]);
+    ], [onEdit, onDelete, item, variant]);
 
     const finalActions = actions.length > 0 ? actions : defaultActions;
-
-    const handleCardClick = (e: React.MouseEvent) => {
-        if (clickable && onClick && !loading) {
-            // No activar si se hizo click en un botón o elemento interactivo
-            const target = e.target as HTMLElement;
-            if (!target.closest('button')) {
-                onClick(item);
-            }
-        }
-    };
 
     const handleContactClick = (contact: ContactInfo) => {
         if (contact.onClick) {
             contact.onClick();
-        } else if (contact.copyable) {
+        } else if (contact.copyable && typeof contact.value === 'string') {
             copyToClipboard(contact.value);
+        }
+    };
+
+    const handleCardClick = (e: React.MouseEvent) => {
+        if (clickable && onClick && !loading) {
+            const target = e.target as HTMLElement;
+            if (!target.closest('button')) {
+                onClick(item);
+            }
         }
     };
 
@@ -214,9 +200,8 @@ export function ReusableCard<T extends BaseItem>({
         <div className={cardClasses} onClick={handleCardClick}>
             {/* Header */}
             <div className="relative flex items-start justify-between mb-4">
-                <div className="flex-1 min-w-0"> {/* min-w-0 para truncate */}
-                    <h3 className={`font-bold text-gray-800 group-hover:text-primary transition-colors duration-200 truncate ${variant === 'compact' ? 'text-lg' : 'text-xl'
-                        }`}>
+                <div className="flex-1 min-w-0">
+                    <h3 className={`font-bold text-gray-800 group-hover:text-primary transition-colors duration-200 truncate ${variant === 'compact' ? 'text-lg' : 'text-xl'}`}>
                         {item.name}
                     </h3>
 
@@ -246,8 +231,7 @@ export function ReusableCard<T extends BaseItem>({
                             <Picture
                                 src={item.image}
                                 alt={item.name}
-                                className={`rounded-full object-cover ${variant === 'compact' ? 'w-10 h-10' : 'w-12 h-12'
-                                    }`}
+                                className={`rounded-full object-cover ${variant === 'compact' ? 'w-10 h-10' : 'w-12 h-12'}`}
                             />
                         ) : (
                             <Avatar
@@ -261,14 +245,11 @@ export function ReusableCard<T extends BaseItem>({
 
             {/* Contact Info */}
             {contactInfo.length > 0 && (
-                <div className="space-y-2 mb-4">
+                <div className={`space-y-2 mb-4 flex gap-2 flex-wrap flex-col w-full  ${variant === 'compact' ? 'items-center ' : ''}`}>
                     {contactInfo.map((contact, index) => (
                         <div
                             key={index}
-                            className={`flex items-center gap-2 text-gray-600 ${contact.onClick || contact.copyable
-                                    ? 'cursor-pointer hover:text-primary transition-colors'
-                                    : ''
-                                }`}
+                            className={`flex items-center gap-2 text-gray-600 w-auto ${contact.onClick || contact.copyable ? 'cursor-pointer hover:text-primary transition-colors' : ''}`}
                             onClick={() => handleContactClick(contact)}
                             title={contact.copyable ? 'Click para copiar' : contact.label}
                         >
@@ -284,32 +265,27 @@ export function ReusableCard<T extends BaseItem>({
 
             {/* Stats */}
             {stats.length > 0 && (
-                <div className={`grid gap-3 mb-6 ${stats.length === 1 ? 'grid-cols-1' :
-                        stats.length === 2 ? 'grid-cols-2' :
-                            stats.length === 3 ? 'grid-cols-3' :
-                                stats.length === 4 ? 'grid-cols-2' :
-                                    'grid-cols-2'
-                    }`}>
+                <div className={`grid gap-3 mb-6 ${stats.length === 1 ? 'grid-cols-1' : stats.length === 2 ? 'grid-cols-2' : stats.length === 3 ? 'grid-cols-3' : stats.length === 4 ? 'grid-cols-2' : 'grid-cols-2'}`}>
                     {stats.map((stat, index) => (
                         <div
                             key={index}
-                            className={`text-center p-3 rounded-lg transition-colors ${stat.bgColor || 'bg-gray-50'
-                                } ${stat.onClick ? 'cursor-pointer hover:bg-opacity-80' : ''}`}
+                            className={`text-center p-3 rounded-lg transition-colors ${stat.bgColor || 'bg-gray-50'} ${stat.onClick ? 'cursor-pointer hover:bg-opacity-80' : ''}`}
                             onClick={stat.onClick}
                         >
                             {stat.icon && (
-                                <stat.icon className={`w-5 h-5 mx-auto mb-1 ${stat.textColor || 'text-primary'
-                                    }`} />
+                                <stat.icon className={`w-5 h-5 mx-auto mb-1 ${stat.textColor || 'text-primary'}`} />
                             )}
-                            <p className={`text-lg font-bold ${stat.textColor || 'text-primary'
-                                }`}>
+                            <div className={`text-lg font-bold ${stat.textColor || 'text-primary'}`}>
                                 {stat.value}
-                            </p>
+                            </div>
                             <p className="text-xs text-gray-600">{stat.label}</p>
                         </div>
                     ))}
                 </div>
             )}
+
+            {/* Children */}
+            {children}
 
             {/* Actions */}
             {finalActions.length > 0 && (

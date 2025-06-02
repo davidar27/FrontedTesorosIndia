@@ -1,9 +1,25 @@
-import { EntityConfig, BaseEntity } from "@/components/admin/GenericManagent";
-export const createCategoriesConfig = <T extends BaseEntity>(
-    items: T[],
-    ItemCard: EntityConfig<T>['ItemCard'],
-    callbacks: Pick<EntityConfig<T>, 'onEdit' | 'onDelete' | 'onCreate'>
-): EntityConfig<T> => ({
+import { EntityConfig } from "@/features/admin/types";
+import { Category } from "./CategoriesTypes";
+import { CategoryCard } from "./CategoriesCard";
+
+interface CategoriesConfigParams {
+    data: Category[];
+    isLoading?: boolean;
+    error?: string | null;
+    actions: {
+        onEdit?: (item: Category) => void;
+        onDelete?: (id: number) => void;
+        onCreate?: () => void;
+        onRetry?: () => void;
+    };
+}
+
+export const createCategoriesConfig = ({
+    data,
+    isLoading = false,
+    error = null,
+    actions
+}: CategoriesConfigParams): EntityConfig<Category> => ({
     entityName: 'Categoría',
     entityNamePlural: 'Categorías',
     description: 'Gestiona las categorías de productos',
@@ -11,11 +27,16 @@ export const createCategoriesConfig = <T extends BaseEntity>(
     emptyStateEmoji: '🏷️',
     emptyStateTitle: 'No se encontraron categorías',
     emptyStateDescription: 'Intenta cambiar los filtros o el término de búsqueda',
-    items,
-    ItemCard,
-    ...callbacks,
+    items: data,
+    isLoading,
+    error,
+    ItemCard: CategoryCard,
+    onEdit: actions.onEdit || (() => {}),
+    onDelete: actions.onDelete || (() => {}),
+    onCreate: actions.onCreate || (() => {}),
+    onRetry: actions.onRetry || (() => {}),
     searchFunction: (item, searchTerm) => {
         const term = searchTerm.toLowerCase();
-        return item.name.toLowerCase().includes(term)
+        return item.name.toLowerCase().includes(term);
     }
 });

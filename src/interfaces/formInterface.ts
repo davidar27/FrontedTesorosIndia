@@ -9,7 +9,7 @@ export interface Credentials {
 export interface RegistrationData extends Credentials {
   name: string;
   confirm_password: string;
-  phone_number: string;
+  phone: string;
 }
 
 export interface PasswordResetData {

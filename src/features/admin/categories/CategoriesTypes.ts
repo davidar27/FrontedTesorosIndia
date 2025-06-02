@@ -1,6 +1,8 @@
-import { BaseEntity } from "@/components/admin/GenericManagent";
+import { BaseEntity } from "@/features/admin/types";
 
-export interface Category extends BaseEntity {
+export type CategoryStatus = 'active' | 'inactive' | 'draft' | 'pending';
+
+export interface Category extends BaseEntity<CategoryStatus> {
     id: number;
     productsCount: number;
 }
