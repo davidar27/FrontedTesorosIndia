@@ -4,6 +4,8 @@ import { Phone, Home, X, Check, Mail } from 'lucide-react';
 import { Entrepreneur, UpdateEntrepreneurData } from '@/features/admin/entrepreneurs/EntrepreneursTypes';
 import Button from '@/components/ui/buttons/Button';
 import Avatar from '@/components/ui/display/Avatar';
+import { fileToWebp } from '@/utils/imageToWebp';
+import { entrepreneursApi } from '@/services/admin/entrepernaur';
 
 interface EditableEntrepreneurCardProps {
     item: Entrepreneur;
@@ -16,7 +18,6 @@ export function EditableEntrepreneurCard({
     item,
     onSave,
     onCancel,
-    isLoading
 }: EditableEntrepreneurCardProps) {
     const [formData, setFormData] = useState<UpdateEntrepreneurData>({
         name: item.name,
@@ -25,32 +26,65 @@ export function EditableEntrepreneurCard({
         name_farm: item.name_farm,
     });
 
-    const [imagePreview, setImagePreview] = useState<string | undefined>(item.image || undefined);
+    const [imagePreview, setImagePreview] = useState<string | undefined>(item.image as string || '' );
+    const [imageError, setImageError] = useState(false);
+    const [retryCount, setRetryCount] = useState(0);
+    const [loadingImage, setLoadingImage] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            // Crear URL temporal para preview
-            const previewUrl = URL.createObjectURL(file);
-            setImagePreview(previewUrl);
-            setFormData(prev => ({ ...prev, image: file }));
+            try {
+                const webpFile = await fileToWebp(file);
+                const previewUrl = URL.createObjectURL(webpFile);
+                setImagePreview(previewUrl);
+                setFormData(prev => ({ ...prev, image: webpFile }));
 
-            // Limpiar URL temporal cuando el componente se desmonte
-            return () => URL.revokeObjectURL(previewUrl);
+                return () => URL.revokeObjectURL(previewUrl);
+            } catch  {
+                alert('No se pudo convertir la imagen a webp');
+            }
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (item.id) {
-            onSave(item.id, formData);
+            const changedFields = getChangedFields(item, formData);
+            if (Object.keys(changedFields).length === 0) {
+                alert('No realizaste ningún cambio.');
+                return;
+            }
+            try {
+                setIsLoading(true);
+                const updatedFields = await entrepreneursApi.update(item.id, changedFields as UpdateEntrepreneurData);
+                onSave(item.id, updatedFields);
+                setIsLoading(false);
+
+                if (updatedFields.image) {
+                    window.location.reload();
+                }
+            } catch (error) {
+                console.error('Error al actualizar el emprendedor:', error);
+            }
         }
     };
+
+    function getChangedFields(original: Entrepreneur, data: UpdateEntrepreneurData): Partial<UpdateEntrepreneurData> {
+        const changed: Partial<UpdateEntrepreneurData> = {};
+        if (data.name && data.name !== original.name) changed.name = data.name;
+        if (data.email && data.email !== original.email) changed.email = data.email;
+        if (data.phone && data.phone !== original.phone) changed.phone = data.phone;
+        if (data.name_farm && data.name_farm !== original.name_farm) changed.name_farm = data.name_farm;
+        if (data.image) changed.image = data.image;
+        return changed;
+    }
 
     const contactInfo = [
         {
@@ -109,16 +143,34 @@ export function EditableEntrepreneurCard({
         <form onSubmit={handleSubmit} className="text-center flex flex-col items-center shadow-xl border-1 border-gray-200 rounded-lg p-4 hover:shadow-2xl transition-all duration-300">
              <div className=" flex flex-col items-center mb-6">
                     <div className="relative">
-                        {imagePreview ? (
-                            <img
-                                src={imagePreview}
-                                alt={formData.name || 'Avatar'}
-                                className="w-24 h-24 rounded-full object-cover"
-                            />
+                        {loadingImage ? (
+                            <div className="w-24 h-24 flex items-center justify-center">
+                                <span className="loader" />
+                            </div>
+                        ) : imageError ? (
+                            <Avatar name={item.name} size={96} />
                         ) : (
-                            <Avatar
-                                name={formData.name || item.name}
-                                size={96}
+                            <img
+                                src={imagePreview || item.image || ''}
+                                alt={item.name || 'Avatar'}
+                                className="w-24 h-24 rounded-full object-cover"
+                                onError={() => {
+                                    if (retryCount < 3) {
+                                        setLoadingImage(true);
+                                        setTimeout(() => {
+                                            setRetryCount(c => c + 1);
+                                            setLoadingImage(false);
+                                        }, 1500); // 1.5 segundos de espera antes de reintentar
+                                    } else {
+                                        setImageError(true);
+                                    }
+                                }}
+                                onLoad={() => {
+                                    setLoadingImage(false);
+                                    setImageError(false);
+                                    setRetryCount(0);
+                                }}
+                                key={retryCount}
                             />
                         )}
                         <input
@@ -188,4 +240,5 @@ export function EditableEntrepreneurCard({
             </ReusableCard>
         </form>
     );
-} 
+}
+

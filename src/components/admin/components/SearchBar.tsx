@@ -22,7 +22,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
             placeholder={placeholder}
             value={searchTerm}
             onChange={onSearchChange}
-            className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-4 focus:ring-green-100 transition-all duration-300 bg-white"
+            className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-4 focus:ring-green-100 transition-all duration-300 bg-white shadow-md"
             aria-label={`Buscar ${entityNamePlural.toLowerCase()}`}
         />
         {searchTerm && (

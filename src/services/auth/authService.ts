@@ -86,7 +86,7 @@ const authService = {
     }
   },
 
-  refreshToken: async (): Promise<User> => {
+  refresh_token: async (): Promise<User> => {
     try {
       console.log('[AuthService] Iniciando refresh token');
       const { data } = await axiosInstance.post<AuthResponse>("/auth/token/refrescar");

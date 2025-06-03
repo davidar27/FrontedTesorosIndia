@@ -39,13 +39,13 @@ export default function CategoriesManagement() {
         }
     };
 
-    const handleDelete = async (categoryId: number) => {
+    const handleDisable = async (categoryId: number) => {
         try {
-            await categoriesApi.deleteCategory(categoryId);
+            await categoriesApi.disableCategory(categoryId);
             await fetchCategories();
-            toast.success('Categoría eliminada correctamente');
+            toast.success('Categoría inhabilitada correctamente');
         } catch {
-            toast.error('Error al eliminar la categoría');
+            toast.error('Error al Desactivar la categoría');
         }
     };
 
@@ -60,7 +60,7 @@ export default function CategoriesManagement() {
         error,
         actions: {
             onEdit: handleEdit,
-            onDelete: handleDelete,
+            onDelete: handleDisable,
             onCreate: handleCreate,
             onRetry: fetchCategories
         }

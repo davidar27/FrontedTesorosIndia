@@ -64,7 +64,6 @@ export default function GenericManagement<T extends BaseEntity<string>>({
         setSearchTerm('');
     }, []);
 
-    // Actualizar filtros cuando cambien los items
     useEffect(() => {
         setFilteredByCustomFilters(items);
     }, [items]);
@@ -117,8 +116,8 @@ export default function GenericManagement<T extends BaseEntity<string>>({
 
             {/* Results count */}
             {showResultsCount && (
-                <div className="mb-6">
-                    <p className="text-gray-600">
+                <div className="mb-6 z-10">
+                    <p className="text-gray-600 z-10">
                         {finalFilteredItems.length === items.length ? (
                             `${items.length} ${entityNamePlural.toLowerCase()}`
                         ) : (

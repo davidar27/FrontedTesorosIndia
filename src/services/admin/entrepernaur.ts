@@ -171,7 +171,6 @@ export const entrepreneursApi = {
                 status: error.response?.status
             });
 
-            // Manejar errores específicos
             if (error.response?.status === 400) {
                 throw new Error(error.response.data.message || 'Datos inválidos');
             }
@@ -179,12 +178,11 @@ export const entrepreneursApi = {
                 throw new Error('Ya existe un emprendedor con este correo electrónico');
             }
 
-            // Si es un error de validación local
             if (error.message.includes('requerido')) {
                 throw error;
             }
 
-            throw new Error('Error al crear el emprendedor');
+            throw new Error(error.message || 'Error al crear el emprendedor');
         }
     },
 
@@ -244,17 +242,17 @@ export const entrepreneursApi = {
     },
 
     // Eliminar un emprendedor
-    delete: async (id: number): Promise<void> => {
+    disable: async (userId: number): Promise<void> => {
         try {
-            await axiosInstance.put(`/usuario/desactivar/emprendedor/${id}`);
+            await axiosInstance.put(`/dashboard/emprendedores/desactivar/${userId}`);
         } catch (error: any) {
-            console.error('Error deleting entrepreneur:', error);
+            console.error('Error disabling entrepreneur:', error);
 
             if (error.response?.status === 404) {
                 throw new Error('Emprendedor no encontrado');
             }
 
-            throw new Error('Error al eliminar el emprendedor');
+            throw new Error('Error al Desactivar el emprendedor');
         }
     },
 

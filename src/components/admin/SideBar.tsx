@@ -23,18 +23,18 @@ const Sidebar: React.FC<{
     
     return (
         <>
-            <aside className={`bg-white border-r border-gray-200 transition-all duration-300 ${showMobileMenu ? 'translate-x-0' : '-translate-x-full'
-                } lg:translate-x-0 fixed lg:relative z-30 w-64 h-screen`}>
-                <div className="p-6 border-b border-gray-200">
+            <aside className={`bg-white border-r border-gray-200 transition-all duration-300 shadow-lg ${showMobileMenu ? 'translate-x-0' : '-translate-x-full'
+                } lg:translate-x-0 lg:relative z-30 w-64 h-screen`}>
+                <div className="p-6 border-b border-gray-200  ">
                     <div className="flex items-center gap-3 animate-fade-in-right">
                         <Picture
                             src={logo}
                             alt="Logo"
-                            className="w-10 h-10 object-center object-contain"
+                            className="w-14 h-14 object-center object-contain"
                         />
                         <div>
-                            <h1 className="font-bold text-gray-800">Tesoros de la India</h1>
-                            <p className="text-xs text-gray-500">Gestión del Sistema</p>
+                            <h1 className="font-bold text-gray-800 text-xl">Tesoros de la India</h1>
+                            <p className="text-sm text-gray-500 ">Gestión del Sistema</p>
                         </div>
                     </div>
                 </div>

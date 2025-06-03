@@ -61,12 +61,12 @@ export const categoriesApi = {
         }
     },
 
-    deleteCategory: async (id: number): Promise<void> => {
+    disableCategory: async (id: number): Promise<void> => {
         try {
-            await axiosInstance.delete(`/dashboard/categorias/${id}`);
+            await axiosInstance.put(`/dashboard/categorias/desactivar/${id}`);
         } catch (error) {
-            console.error('Error deleting category:', error);
-            throw new Error('Error al eliminar la categoría');
+            console.error('Error disabling category:', error);
+            throw new Error('Error al Desactivar la categoría');
         }
     }
 }; 

@@ -40,19 +40,45 @@ const onRefreshed = () => {
   refreshSubscribers = [];
 };
 
-// Almacenamiento en memoria del access token
-let accessToken: string | null = null;
+// Almacenamiento del access token
+const TOKEN_KEY = 'auth_token';
+let access_token: string | null = null;
 
 export const setAccessToken = (token: string | null) => {
-  accessToken = token;
+  if (token) {
+    localStorage.setItem(TOKEN_KEY, token);
+  } else {
+    localStorage.removeItem(TOKEN_KEY);
+  }
+  access_token = token;
 };
 
-export const getAccessToken = () => accessToken;
+export const getAccessToken = () => {
+  if (!access_token) {
+    // Recuperar token del localStorage si existe
+    access_token = localStorage.getItem(TOKEN_KEY);
+  }
+  return access_token;
+};
 
 axiosInstance.interceptors.request.use(
-  (config) => {
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
+  async (config) => {
+    const token = getAccessToken();
+    
+    // Si el token está próximo a expirar, intentamos refrescarlo
+    if (token && isTokenExpiringSoon(token) && !config.url?.includes('/auth/token/refrescar')) {
+      try {
+        console.log('[Auth] Token próximo a expirar, iniciando refresh proactivo');
+        await authService.refresh_token();
+      } catch (error) {
+        console.error('[Auth] Error en refresh proactivo:', error);
+        // Continuamos con la petición aunque falle el refresh
+      }
+    }
+
+    const currentToken = getAccessToken();
+    if (currentToken) {
+      config.headers.Authorization = `Bearer ${currentToken}`;
     }
     return config;
   },
@@ -106,7 +132,7 @@ axiosInstance.interceptors.response.use(
         originalRequest._retry = true;
 
         try {
-          await authService.refreshToken();
+          await authService.refresh_token();
           console.log('[Auth] Refresh exitoso, reintentando petición original');
           isRefreshing = false;
           onRefreshed();
@@ -188,3 +214,21 @@ publicAxiosInstance.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+// Función para verificar si el token está próximo a expirar
+const isTokenExpiringSoon = (token: string | null): boolean => {
+  if (!token) return true;
+  
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const expirationTime = payload.exp * 1000; // Convertir a milisegundos
+    const currentTime = Date.now();
+    const timeUntilExpiration = expirationTime - currentTime;
+    
+    // Retorna true si faltan menos de 5 minutos para que expire
+    return timeUntilExpiration < 5 * 60 * 1000;
+  } catch (error) {
+    console.error('[Auth] Error al decodificar token:', error);
+    return true;
+  }
+};

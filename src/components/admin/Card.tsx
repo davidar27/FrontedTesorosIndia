@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { Edit, Trash2, LucideIcon } from 'lucide-react';
 import Picture from '@/components/ui/display/Picture';
 import Avatar from '@/components/ui/display/Avatar';
+import { toast } from 'sonner';
 
 interface StatusConfig {
     active: { bg: string; text: string; label: string };
@@ -70,7 +71,7 @@ const DEFAULT_STATUS_CONFIG: StatusConfig = {
     active: { bg: 'bg-green-100', text: 'text-green-800', label: 'Activo' },
     inactive: { bg: 'bg-red-100', text: 'text-red-800', label: 'Inactivo' },
     draft: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'Borrador' },
-    pending: { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Pendiente' },
+    pending: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'Pendiente' },
     completed: { bg: 'bg-purple-100', text: 'text-purple-800', label: 'Completado' },
     archived: { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Archivado' },
     processing: { bg: 'bg-indigo-100', text: 'text-indigo-800', label: 'Procesando' },
@@ -78,7 +79,7 @@ const DEFAULT_STATUS_CONFIG: StatusConfig = {
 
 // Estilos para variantes de botones
 const BUTTON_VARIANTS = {
-    primary: 'bg-blue-100 hover:bg-blue-200 text-blue-700 disabled:bg-blue-50 disabled:text-blue-400',
+    primary: 'bg-blue-100 hover:bg-blue-200 text-blue-700 disabled:bg-blue-50 disabled:text-blue-400 ',
     secondary: 'bg-gray-100 hover:bg-gray-200 text-gray-700 disabled:bg-gray-50 disabled:text-gray-400',
     danger: 'bg-red-100 hover:bg-red-200 text-red-700 disabled:bg-red-50 disabled:text-red-400',
     success: 'bg-green-100 hover:bg-green-200 text-green-700 disabled:bg-green-50 disabled:text-green-400',
@@ -96,7 +97,7 @@ const CARD_VARIANTS = {
 const copyToClipboard = async (text: string) => {
     try {
         await navigator.clipboard.writeText(text);
-        // Aquí podrías agregar un toast notification
+        toast.success(`Copiado al portapapeles: ${text}`);
         console.log('Copiado al portapapeles:', text);
     } catch (err) {
         console.error('Error al copiar:', err);
@@ -139,24 +140,38 @@ export function ReusableCard<T extends BaseItem>({
     };
 
     // Acciones por defecto si se proporcionan callbacks
-    const defaultActions: ActionButton[] = useMemo(() => [
-        ...(onEdit ? [{
-            icon: Edit,
-            label: variant !== 'compact' ? 'Editar' : undefined,
-            onClick: () => onEdit(item),
-            variant: 'primary' as const,
-            fullWidth: variant === 'compact' ? false : true,
-            tooltip: 'Editar elemento'
-        }] : []),
-        ...(onDelete ? [{
-            icon: Trash2,
-            label: variant === 'detailed' ? 'Eliminar' : undefined,
-            onClick: () => onDelete(item.id),
-            variant: 'danger' as const,
-            fullWidth: false,
-            tooltip: 'Eliminar elemento'
-        }] : [])
-    ], [onEdit, onDelete, item, variant]);
+    const defaultActions: ActionButton[] = useMemo(() => {
+        const isInactive = item.status === 'inactive';
+        return [
+            ...(onEdit ? [{
+                icon: Edit,
+                label: variant !== 'compact' ? 'Editar' : undefined,
+                onClick: () => onEdit(item),
+                variant: 'primary' as const,
+                fullWidth: variant === 'compact' ? false : true,
+                tooltip: 'Editar elemento'
+            }] : []),
+            ...(onDelete ? [
+                isInactive
+                    ? {
+                        icon: Edit, // Puedes usar otro icono como Check si tienes uno
+                        label: variant === 'detailed' ? 'Activar' : undefined,
+                        onClick: () => onDelete(item.id),
+                        variant: 'success' as const,
+                        fullWidth: false,
+                        tooltip: 'Activar elemento'
+                    }
+                    : {
+                        icon: Trash2,
+                        label: variant === 'detailed' ? 'Desactivar' : undefined,
+                        onClick: () => onDelete(item.id),
+                        variant: 'danger' as const,
+                        fullWidth: false,
+                        tooltip: 'Desactivar elemento'
+                    }
+            ] : [])
+        ];
+    }, [onEdit, onDelete, item, variant]);
 
     const finalActions = actions.length > 0 ? actions : defaultActions;
 
@@ -201,7 +216,10 @@ export function ReusableCard<T extends BaseItem>({
             {/* Header */}
             <div className="relative flex items-start justify-between mb-4">
                 <div className="flex-1 min-w-0">
-                    <h3 className={`font-bold text-gray-800 group-hover:text-primary transition-colors duration-200 truncate ${variant === 'compact' ? 'text-lg' : 'text-xl'}`}>
+                    <h3
+                        className={`font-bold text-gray-800 group-hover:text-primary transition-colors duration-200 truncate ${variant === 'compact' ? 'text-lg' : 'text-xl'}`}
+                        title={item.name}
+                    >
                         {item.name}
                     </h3>
 
@@ -275,7 +293,8 @@ export function ReusableCard<T extends BaseItem>({
                             {stat.icon && (
                                 <stat.icon className={`w-5 h-5 mx-auto mb-1 ${stat.textColor || 'text-primary'}`} />
                             )}
-                            <div className={`text-lg font-bold ${stat.textColor || 'text-primary'}`}>
+                            <div className={`text-lg font-bold truncate ${stat.textColor || 'text-primary'}`}
+                            title={stat.value?.toString() || ''}>
                                 {stat.value}
                             </div>
                             <p className="text-xs text-gray-600">{stat.label}</p>
@@ -298,10 +317,10 @@ export function ReusableCard<T extends BaseItem>({
                             title={action.tooltip}
                             className={`
                                 ${action.fullWidth ? 'flex-1' : ''} 
-                                flex items-center justify-center gap-2 px-4 py-2 rounded-lg 
-                                transition-all duration-200 font-medium text-sm
+                                flex items-center justify-center !gap-2 !px-4 !py-2 !rounded-lg 
+                                transition-all duration-200 font-medium text-sm cursor-pointer
                                 ${BUTTON_VARIANTS[action.variant || 'primary']}
-                                ${action.disabled ? 'cursor-not-allowed' : 'hover:scale-105'}
+                                ${action.disabled ? 'cursor-not-allowed' : 'hover:!scale-105'}
                             `}
                         >
                             {action.loading ? (

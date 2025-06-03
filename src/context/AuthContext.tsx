@@ -87,7 +87,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
                 try {
                     // Intentar refrescar TOKEN_REFRESH_SAFETY_MARGIN ms antes de que expire
                     console.log('[AuthContext] Ejecutando refresh token programado');
-                    const refreshedUser = await authService.refreshToken();
+                    const refreshedUser = await authService.refresh_token();
                     console.log('[AuthContext] Refresh token exitoso, actualizando usuario');
                     queryClient.setQueryData(AUTH_QUERY_KEY, refreshedUser);
                     scheduleTokenRefresh();
@@ -172,7 +172,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
 
     const refreshAuth = useCallback(async (silent: boolean = false): Promise<boolean> => {
         try {
-            const refreshedUser = await authService.refreshToken();
+            const refreshedUser = await authService.refresh_token();
             queryClient.setQueryData(AUTH_QUERY_KEY, refreshedUser);
             return true;
         } catch {
