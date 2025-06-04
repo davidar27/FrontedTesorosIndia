@@ -41,7 +41,10 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({ item, onEdit, onDelete 
             {/* Header */}
             <div className="flex justify-between items-start mb-4">
                 <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                    <h3
+                        className="text-lg font-semibold text-gray-900 mb-1 truncate"
+                        title={item.name}
+                    >
                         {item.name}
                     </h3>
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(item.status)}`}>
@@ -57,7 +60,7 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({ item, onEdit, onDelete 
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                     <span className="font-medium">Emprendedor:</span>
-                    <span className="ml-1">{item.entrepreneur_id}</span>
+                    <span className="ml-1 truncate">{item.entrepreneur_id}</span>
                 </div>
 
                 <div className="flex items-start text-sm text-gray-600">

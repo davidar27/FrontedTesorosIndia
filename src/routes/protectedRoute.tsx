@@ -2,7 +2,7 @@ import useAuth from '@/context/useAuth';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import LoadingSpinner from '@/components/layouts/LoadingSpinner';
 import { UserRole } from '@/interfaces/role';
-import { ExperiencesApi } from '@/services/admin/Experiences';
+import { ExperiencesApi } from '@/services/admin/experiences';
 import { useEffect, useState } from 'react';
 
 interface ProtectedRouteProps {
