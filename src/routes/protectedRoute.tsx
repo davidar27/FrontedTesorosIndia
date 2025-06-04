@@ -8,9 +8,10 @@ import { useEffect, useState } from 'react';
 interface ProtectedRouteProps {
     roles?: UserRole[];
     requireAuth?: boolean;
+    allowAdmin?: boolean;
 }
 
-const ProtectedRoute = ({ roles = [], requireAuth = true }: ProtectedRouteProps) => {
+const ProtectedRoute = ({ roles = [], requireAuth = true, allowAdmin = true }: ProtectedRouteProps) => {
     const { isAuthenticated, user, isLoading } = useAuth();
     const location = useLocation();
     const [isPublicFarm, setIsPublicFarm] = useState(false);
@@ -18,7 +19,6 @@ const ProtectedRoute = ({ roles = [], requireAuth = true }: ProtectedRouteProps)
 
     useEffect(() => {
         const checkFarmAccess = async () => {
-            // Solo verificar si es una ruta de finca específica
             if (location.pathname.startsWith('/fincas/')) {
                 setCheckingFarmStatus(true);
                 try {
@@ -39,23 +39,22 @@ const ProtectedRoute = ({ roles = [], requireAuth = true }: ProtectedRouteProps)
         return <LoadingSpinner message="Verificando acceso..." />;
     }
 
-    // Si es una finca publicada, permitir acceso
+    if (user?.role === 'administrador' && !allowAdmin && !location.pathname.startsWith('/dashboard')) {
+        return <Navigate to="/dashboard" replace />;
+    }
+
     if (isPublicFarm) {
         return <Outlet />;
     }
 
-    // Si la ruta requiere autenticación y el usuario no está autenticado
     if (requireAuth && !isAuthenticated) {
         return <Navigate to="/auth/iniciar-sesion" state={{ from: location.pathname }} replace />;
     }
 
-    // Si hay roles específicos y el usuario no tiene el rol requerido
     if (roles.length > 0 && (!user?.role || !roles.includes(user.role))) {
-        // Si el usuario está autenticado pero no tiene permiso, ir a una página de acceso denegado
         if (isAuthenticated) {
             return <Navigate to="/acceso-denegado" replace />;
         }
-        // Si el usuario no está autenticado, redirigir al login
         return <Navigate to="/auth/iniciar-sesion" state={{ from: location.pathname }} replace />;
     }
 

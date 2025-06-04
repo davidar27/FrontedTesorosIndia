@@ -35,6 +35,7 @@ export interface RouteConfig {
     roles?: string[];
     title?: string;
     description?: string;
+    allowAdmin?: boolean;
 }
 
 export const publicRoutes: RouteConfig[] = [
@@ -43,28 +44,32 @@ export const publicRoutes: RouteConfig[] = [
         element: Home,
         layout: MainLayout,
         title: 'Inicio',
-        description: 'Página principal'
+        description: 'Página principal',
+        allowAdmin: true
     },
     {
         path: '/productos',
         element: ProductsPage,
         layout: MainLayout,
         title: 'Productos',
-        description: 'Catálogo de productos'
+        description: 'Catálogo de productos',
+        allowAdmin: false
     },
     {
         path: '/nosotros',
         element: AboutUs,
         layout: MainLayout,
         title: 'Nosotros',
-        description: 'Información sobre la empresa'
+        description: 'Información sobre la empresa',
+        allowAdmin: false
     },
     {
         path: '/fincas/:farmId',
         element: FarmPage,
         layout: MainLayout,
         title: 'Detalle de Finca',
-        description: 'Información detallada de la finca'
+        description: 'Información detallada de la finca',
+        allowAdmin: false
     }
 ];
 
@@ -105,6 +110,14 @@ export const protectedRoutes: RouteConfig[] = [
 ];
 
 export const adminRoutes: RouteConfig[] = [
+    {
+        path: '/dashboard',
+        element: DashboardLayout,
+        layout: DashboardLayout,
+        protected: true,
+        roles: ['administrador'],
+        title: 'Dashboard'
+    },
     {
         path: '/dashboard/emprendedores',
         element: EntrepreneursPage,

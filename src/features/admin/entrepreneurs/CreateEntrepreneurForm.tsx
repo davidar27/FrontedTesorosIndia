@@ -74,7 +74,7 @@ export function CreateEntrepreneurForm({ onSubmit, onCancel, isLoading }: Create
     };
 
     return (
-        <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-6">
+        <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6">
             <div className="mb-6">
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">Crear Nuevo Emprendedor</h2>
                 <p className="text-gray-600">Completa la información para registrar un nuevo emprendedor</p>

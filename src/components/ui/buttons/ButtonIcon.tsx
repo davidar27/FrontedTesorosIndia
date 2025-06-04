@@ -10,9 +10,11 @@ interface ButtonIconProps {
   target?: string;
   textColor?: string;
   hoverColor?: string;
+  disabled?: boolean;
   px?: string;
   onClick?: () => void;
   type?: "button" | "submit" | "reset";
+  title?: string;
 }
 
 const ButtonIcon: React.FC<ButtonIconProps> = ({
@@ -24,6 +26,8 @@ const ButtonIcon: React.FC<ButtonIconProps> = ({
   textColor = "text-white",
   hoverColor = "hover:text-primary-hover",
   type = "button",
+  disabled = false,
+  title,
   onClick,
 }) => {
   const baseClasses = clsx(
@@ -41,6 +45,8 @@ const ButtonIcon: React.FC<ButtonIconProps> = ({
     whileHover: { scale: 1.03 },
     whileTap: { scale: 0.97 },
     transition: {duration: 0.15, ease: "easeInOut" },
+    disabled,
+    title,
   };
 
   return url ? (

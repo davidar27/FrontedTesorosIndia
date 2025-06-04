@@ -54,9 +54,8 @@ export const packagesApi = {
         try {
             const response = await axiosInstance.post<PackageResponse>('/dashboard/paquetes/crear', data);
             return mapToPackage(response.data);
-        } catch (error) {
-            console.error('Error creating package:', error);
-            throw new Error('Error al crear el paquete');
+        } catch (error: any) {
+            throw new Error(error.response?.data?.message || 'Error al crear el paquete');
         }
     },
 

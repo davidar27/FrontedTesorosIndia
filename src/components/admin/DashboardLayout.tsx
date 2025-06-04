@@ -19,8 +19,8 @@ const DashboardLayout: React.FC = () => {
     const { pageInfo } = usePageContext();
 
     return (
-        <div className="min-h-screen to-green-50/30">
-            <div className="flex">
+        <div className="min-h-screen bg-gradient-to-b from-green-50 to-green-30">
+            <div className="flex h-screen">
                 {/* Sidebar persistente */}
                 <Sidebar
                     items={sidebarItems}
@@ -30,9 +30,9 @@ const DashboardLayout: React.FC = () => {
                 />
 
                 {/* Contenido principal que cambia con las rutas */}
-                <main className="flex-1 min-h-screen">
+                <main className="flex-1 flex flex-col min-h-0">
                     {/* Header fijo para todas las páginas */}
-                    <header className="backdrop-blur-sm border-b border-gray-200/50 sticky top-0 z-10">
+                    <header className="backdrop-blur-sm border-b border-gray-200/50  top-0 z-10 shadow-sm">
                         <div className=" flex flex-col md:flex-row    md:items-center responsive-padding-x py-0 md:py-4">
                             {/* Información de la página actual */}
                             {pageInfo && (
@@ -75,7 +75,7 @@ const DashboardLayout: React.FC = () => {
                         </div>
                     </header>
                     {/* Aquí se renderizan las páginas específicas */}
-                    <div className="responsive-padding-x responsive-padding-y">
+                    <div className="responsive-padding-x flex-1 min-h-0 overflow-auto responsive-padding-y">
                         <Outlet />
                     </div>
                 </main>
