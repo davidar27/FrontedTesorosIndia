@@ -44,7 +44,7 @@ export function EntrepreneurCard({
             if (data.name && data.name !== item.name) changedFields.name = data.name;
             if (data.email && data.email !== item.email) changedFields.email = data.email;
             if (data.phone && data.phone !== item.phone) changedFields.phone = data.phone;
-            if (data.name_farm && data.name_farm !== item.name_farm) changedFields.name_farm = data.name_farm;
+            if (data.name_experience && data.name_experience !== item.name_experience) changedFields.name_experience = data.name_experience;
             if (data.image) changedFields.image = data.image;
 
             if (Object.keys(changedFields).length === 0) {
@@ -103,8 +103,8 @@ export function EntrepreneurCard({
         icon: Calendar
     },
     {
-        value: item.name_farm,
-        label: 'Nombre de la finca',
+        value: item.name_experience,
+        label: 'Nombre de la experiencia',
         bgColor: 'bg-green-50',
         textColor: 'text-green-600',
         icon: Home

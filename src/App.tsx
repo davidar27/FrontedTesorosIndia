@@ -16,14 +16,13 @@ const LoginPage = lazy(() => import('@/pages/Auth/LoginPage'));
 const RegisterPage = lazy(() => import('@/pages/Auth/RegisterPage'));
 const SendEmail = lazy(() => import('@/pages/Auth/SendEmail'));
 const EmailVerificationPage = lazy(() => import('@/pages/Auth/VerificationPage'));
-const FarmPage = lazy(() => import('@/pages/Farm/FarmPage'));
 const NotFoundPage = lazy(() => import('@/pages/Errors/NotFoundPage'));
 const AboutUs = lazy(() => import('@/pages/AboutUs/AboutUs'));
 const AccessDenied = lazy(() => import('@/pages/Errors/AccessDenied'));
 const ContactPage = lazy(() => import('@/pages/Contact/ContactPage'));
 
 // Admin Pages
-const FarmsPage = lazy(() => import('@/pages/Admin/FarmsPage'));
+const ExperiencesPage = lazy(() => import('@/pages/Admin/ExperiencesPage'));
 const EntrepreneursPage = lazy(() => import('@/pages/Admin/EntrepreneursPage'));
 const PackagesPage = lazy(() => import('@/pages/Admin/PackagesPage'));
 const CategoriesPage = lazy(() => import('@/pages/Admin/CategoriesPage'));
@@ -37,6 +36,7 @@ import ErrorFallback from "./pages/Errors/ErrorFallback";
 import LoadingSpinner from "./components/layouts/LoadingSpinner";
 import ResetPassword from "./pages/Auth/ResetPassword";
 import ForgotPasswordForm from "./pages/Auth/ForgotPasswordForm";
+import ExperiencePage from "./pages/Experience/ExperiencePage";
 
 function App() {
   return (
@@ -60,16 +60,16 @@ function App() {
               <Route path="/nosotros" element={<AboutUs />} />
               <Route path="/contacto" element={<ContactPage />} />
               
-              {/* Rutas de fincas */}
-              <Route path="/fincas">
-                <Route index element={<FarmPage />} />
-                <Route path=":id" element={<FarmPage />} />
-                <Route path="categorias/:categoryId" element={<FarmPage />} />
+              {/* Rutas de experiencias */}
+              <Route path="/experiencias">
+                <Route index element={<ExperiencePage />} />
+                <Route path=":id" element={<ExperiencePage />} />
+                <Route path="categorias/:categoryId" element={<ExperiencePage />} />
               </Route>
               
               {/* Rutas específicas para emprendedores */}
               <Route element={<ProtectedRoute roles={['emprendedor']} />}>
-                <Route path="/mi-finca" element={<FarmPage />} />
+                <Route path="/mi-experiencia" element={<ExperiencePage />} />
               </Route>
             </Route>
 
@@ -90,7 +90,7 @@ function App() {
               <Route path="/dashboard" element={<DashboardLayout />}>
                 <Route index element={<EntrepreneursPage />} />
                 <Route path="emprendedores" element={<EntrepreneursPage />} />
-                <Route path="fincas" element={<FarmsPage />} />
+                <Route path="experiencias" element={<ExperiencesPage />} />
                 <Route path="paquetes" element={<PackagesPage />} />
                 <Route path="categorias" element={<CategoriesPage />} />
               </Route>

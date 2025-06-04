@@ -69,8 +69,7 @@ axiosInstance.interceptors.request.use(
     if (token && isTokenExpiringSoon(token) && !config.url?.includes('/auth/token/refrescar')) {
       try {
         await authService.refresh_token();
-      } catch (error) {
-        console.error('[Auth] Error en refresh proactivo:', error);
+      } catch {
         // Continuamos con la petición aunque falle el refresh
       }
     }
@@ -131,8 +130,7 @@ axiosInstance.interceptors.response.use(
           onRefreshed();
           
           return axiosInstance(originalRequest);
-        } catch (error) {
-          console.error('[Auth] Error en refresh:', error);
+        } catch  {
           isRefreshing = false;
           refreshSubscribers = [];
           setAccessToken(null);

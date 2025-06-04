@@ -9,7 +9,7 @@ export const DashboardLayout = lazy(() => import('@/components/admin/DashboardLa
 export const Home = lazy(() => import('@/pages/Home/Home'));
 export const ProductsPage = lazy(() => import('@/pages/Products/Products'));
 export const AboutUs = lazy(() => import('@/pages/AboutUs/AboutUs'));
-export const FarmPage = lazy(() => import('@/pages/Farm/FarmPage'));
+export const ExperiencePage = lazy(() => import('@/pages/Experience/ExperiencePage'));
 
 // Auth Pages
 export const LoginPage = lazy(() => import('@/pages/Auth/LoginPage'));
@@ -18,7 +18,7 @@ export const SendEmail = lazy(() => import('@/pages/Auth/SendEmail'));
 export const EmailVerificationPage = lazy(() => import('@/pages/Auth/VerificationPage'));
 
 // Protected Pages
-export const FarmsPage = lazy(() => import('@/pages/Admin/FarmsPage'));
+export const ExperiencesPage = lazy(() => import('@/pages/Admin/ExperiencesPage'));
 export const EntrepreneursPage = lazy(() => import('@/pages/Admin/EntrepreneursPage'));
 export const PackagesPage = lazy(() => import('@/pages/Admin/PackagesPage'));
 export const CategoriesPage = lazy(() => import('@/pages/Admin/CategoriesPage'));
@@ -64,11 +64,11 @@ export const publicRoutes: RouteConfig[] = [
         allowAdmin: false
     },
     {
-        path: '/fincas/:farmId',
-        element: FarmPage,
+        path: '/experiencias/:experienceId',
+        element: ExperiencePage,
         layout: MainLayout,
-        title: 'Detalle de Finca',
-        description: 'Información detallada de la finca',
+        title: 'Detalle de Experiencia',
+        description: 'Información detallada de la experiencia',
         allowAdmin: false
     }
 ];
@@ -102,10 +102,10 @@ export const authRoutes: RouteConfig[] = [
 
 export const protectedRoutes: RouteConfig[] = [
     {
-        path: '/finca',
-        element: FarmPage,
+        path: '/experiencia',
+        element: ExperiencePage,
         protected: true,
-        title: 'Mi Finca'
+        title: 'Mi Experiencia'
     }
 ];
 
@@ -127,20 +127,20 @@ export const adminRoutes: RouteConfig[] = [
         title: 'Gestión de Emprendedores'
     },
     {
-        path: '/dashboard/fincas',
-        element: FarmsPage,
+        path: '/dashboard/experiencias',
+        element: ExperiencesPage,
         layout: DashboardLayout,
         protected: true,
         roles: ['administrador'],
-        title: 'Gestión de Fincas'
+        title: 'Gestión de Experiencias'
     },
     {
-        path: '/dashboard/fincas/:farmId/edit',
-        element: FarmPage,
+        path: '/dashboard/experiencias/:experienceId/edit',
+        element: ExperiencePage,
         layout: DashboardLayout,
         protected: true,
         roles: ['administrador', 'emprendedor'],
-        title: 'Editar Finca'
+        title: 'Editar Experiencia'
     },
     {
         path: '/dashboard/paquetes',
@@ -170,7 +170,7 @@ export const navigationConfig = {
     admin: [
         { path: '/dashboard', label: 'Dashboard', icon: 'dashboard' },
         { path: '/dashboard/emprendedores', label: 'Emprendedores', icon: 'users' },
-        { path: '/dashboard/fincas', label: 'Fincas', icon: 'farm' },
+        { path: '/dashboard/experiencias', label: 'Experiencias', icon: 'Experience' },
         { path: '/dashboard/paquetes', label: 'Paquetes', icon: 'package' },
         { path: '/dashboard/categorias', label: 'Categorías', icon: 'category' }
     ]

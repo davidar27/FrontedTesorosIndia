@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Edit3, Eye, MapPin, Coffee, Users, Calendar } from 'lucide-react';
 import clsx from 'clsx';
 import LoadingSpinner from '@/components/layouts/LoadingSpinner';
-import { useFarmQuery } from '@/hooks/useFarmQuery';
+import { useExperienceQuery } from '@/hooks/useExperienceQuery';
 
 interface AuthUser {
     id: number;
@@ -22,18 +22,18 @@ const renderValue = (value: string | number | boolean | Date | null | undefined)
     return String(value || 'No disponible');
 };
 
-const FarmPage: React.FC = () => {
-    const { farmId } = useParams<{ farmId: string }>();
+const ExperiencePage: React.FC = () => {
+    const { experienceId } = useParams<{ experienceId: string }>();
     const { user } = useAuth() as AuthContextType;
-    const { data: farm, isLoading, error } = useFarmQuery(farmId);
+    const { data: Experience, isLoading, error } = useExperienceQuery(experienceId);
 
     const isEntrepreneur = user?.role === 'emprendedor';
-    const isOwner = isEntrepreneur && farm?.entrepreneurId === user?.id;
+    const isOwner = isEntrepreneur && Experience?.entrepreneurId === user?.id;
 
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
-                <LoadingSpinner message="Cargando información de la finca..." />
+                <LoadingSpinner message="Cargando información de la experiencia..." />
             </div>
         );
     }
@@ -41,17 +41,17 @@ const FarmPage: React.FC = () => {
     if (error) {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen">
-                <p className="text-red-600 text-lg">Error al cargar la información de la finca</p>
+                <p className="text-red-600 text-lg">Error al cargar la información de la experiencia</p>
                 <p className="text-gray-500 mt-2">Por favor, intente más tarde</p>
             </div>
         );
     }
 
-    if (!farm) {
+    if (!Experience) {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen">
-                <p className="text-gray-600 text-lg">Finca no encontrada</p>
-                <p className="text-gray-500 mt-2">La finca que busca no existe o fue eliminada</p>
+                <p className="text-gray-600 text-lg">Experiencia no encontrada</p>
+                <p className="text-gray-500 mt-2">La experiencia que busca no existe o fue eliminada</p>
             </div>
         );
     }
@@ -65,10 +65,10 @@ const FarmPage: React.FC = () => {
                     <div className="absolute bottom-0 left-0 right-0 p-6">
                         <div className="flex justify-between items-end">
                             <div>
-                                <h1 className="text-3xl font-bold text-white mb-2">{farm.name}</h1>
+                                <h1 className="text-3xl font-bold text-white mb-2">{Experience.name}</h1>
                                 <div className="flex items-center text-white/90">
                                     <MapPin className="w-4 h-4 mr-2" />
-                                    <span>{renderValue(farm.location)}</span>
+                                    <span>{renderValue(Experience.location)}</span>
                                 </div>
                             </div>
                             {isOwner && (
@@ -80,7 +80,7 @@ const FarmPage: React.FC = () => {
                                     )}
                                 >
                                     <Edit3 className="w-4 h-4" />
-                                    <span>Editar Finca</span>
+                                    <span>Editar Experiencia</span>
                                 </button>
                             )}
                             {!isOwner && (
@@ -101,7 +101,7 @@ const FarmPage: React.FC = () => {
                             <section>
                                 <h2 className="text-xl font-semibold text-gray-800 mb-4">Descripción</h2>
                                 <p className="text-gray-600">
-                                    {renderValue(farm.description)}
+                                    {renderValue(Experience.description)}
                                 </p>
                             </section>
 
@@ -111,22 +111,22 @@ const FarmPage: React.FC = () => {
                                     <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
                                         <Coffee className="w-5 h-5 text-green-600" />
                                         <div>
-                                            <p className="text-sm text-gray-500">Tipo de Finca</p>
-                                            <p className="font-medium text-gray-800">{renderValue(farm.cropType)}</p>
+                                            <p className="text-sm text-gray-500">Tipo de Experiencia</p>
+                                            <p className="font-medium text-gray-800">{renderValue(Experience.cropType)}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
                                         <Users className="w-5 h-5 text-green-600" />
                                         <div>
                                             <p className="text-sm text-gray-500">Capacidad de Visitantes</p>
-                                            <p className="font-medium text-gray-800">{renderValue(farm.visitorCapacity)}</p>
+                                            <p className="font-medium text-gray-800">{renderValue(Experience.visitorCapacity)}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
                                         <Calendar className="w-5 h-5 text-green-600" />
                                         <div>
                                             <p className="text-sm text-gray-500">Horario de Visitas</p>
-                                            <p className="font-medium text-gray-800">{renderValue(farm.visitSchedule)}</p>
+                                            <p className="font-medium text-gray-800">{renderValue(Experience.visitSchedule)}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -139,13 +139,13 @@ const FarmPage: React.FC = () => {
                                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Información de Contacto</h3>
                                 <div className="space-y-3">
                                     <p className="text-gray-600">
-                                        <span className="font-medium">Email:</span> {renderValue(farm.email)}
+                                        <span className="font-medium">Email:</span> {renderValue(Experience.email)}
                                     </p>
                                     <p className="text-gray-600">
-                                        <span className="font-medium">Teléfono:</span> {renderValue(farm.phone)}
+                                        <span className="font-medium">Teléfono:</span> {renderValue(Experience.phone)}
                                     </p>
                                     <p className="text-gray-600">
-                                        <span className="font-medium">Dirección:</span> {renderValue(farm.address)}
+                                        <span className="font-medium">Dirección:</span> {renderValue(Experience.address)}
                                     </p>
                                 </div>
                             </div>
@@ -171,4 +171,4 @@ const FarmPage: React.FC = () => {
     );
 };
 
-export default FarmPage; 
+export default ExperiencePage; 

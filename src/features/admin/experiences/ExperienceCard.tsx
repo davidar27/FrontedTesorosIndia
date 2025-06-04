@@ -1,15 +1,15 @@
 import React from 'react';
-import { Farm } from '@/features/admin/farms/FarmTypes';
+import { Experience } from '@/features/admin/experiences/ExperienceTypes';
 import { Edit } from 'lucide-react';
 import { Trash2 } from 'lucide-react';
 
-interface FarmCardProps {
-    item: Farm;
-    onEdit: (farm: Farm) => void;
+interface ExperienceCardProps {
+    item: Experience;
+    onEdit: (Experience: Experience) => void;
     onDelete: (id: number) => void;
 }
 
-const FarmCard: React.FC<FarmCardProps> = ({ item, onEdit, onDelete }) => {
+const ExperienceCard: React.FC<ExperienceCardProps> = ({ item, onEdit, onDelete }) => {
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'Publicada':
@@ -80,7 +80,7 @@ const FarmCard: React.FC<FarmCardProps> = ({ item, onEdit, onDelete }) => {
                     <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                     </svg>
-                    <span className="font-medium">Tipo de finca:</span>
+                    <span className="font-medium">Tipo de experiencia:</span>
                     <span className="ml-1 px-2 py-1 bg-green-50 text-green-700 rounded-md text-xs">
                         {item.type?.toString()}
                     </span>
@@ -106,4 +106,4 @@ const FarmCard: React.FC<FarmCardProps> = ({ item, onEdit, onDelete }) => {
     );
 };
 
-export default FarmCard;
+export default ExperienceCard;

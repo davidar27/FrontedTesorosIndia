@@ -21,7 +21,7 @@ const getRedirectPath = (role: UserRole | undefined, from: string | undefined): 
         case 'administrador':
             return '/dashboard';
         case 'emprendedor':
-            return '/mi-finca';
+            return '/mi-experiencia';
         default:
             return '/';
     }

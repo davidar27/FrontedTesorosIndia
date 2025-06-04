@@ -28,11 +28,11 @@ const useSidebarLogic = () => {
             active: activeSection === 'emprendedores'
         },
         {
-            id: 'fincas',
-            label: 'Fincas',
+            id: 'experiencias',
+            label: 'Experiencias',
             icon: MapPin,
-            path: '/dashboard/fincas',
-            active: activeSection === 'fincas'
+            path: '/dashboard/experiencias',
+            active: activeSection === 'experiencias'
         },
         {
             id: 'paquetes',

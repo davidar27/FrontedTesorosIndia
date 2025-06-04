@@ -7,7 +7,7 @@ export interface Entrepreneur extends BaseEntity<'active' | 'inactive' | 'pendin
     image: string | null;
     joinDate: string;
     status: 'active' | 'inactive' | 'pending';
-    name_farm: string;
+    name_experience: string;
     createdAt?: string;
     updatedAt?: string;
     [key: string]: string | number | boolean | Date | null | undefined;
@@ -18,14 +18,14 @@ export interface CreateEntrepreneurData {
     email: string;
     password: string;
     phone: string;
-    name_farm: string;
+    name_experience: string;
 }
 
 export interface UpdateEntrepreneurData {
     name: string;
     email: string;
     phone: string;
-    name_farm: string;
+    name_experience: string;
     image?: File;
 }
 
