@@ -97,7 +97,6 @@ export default function EntrepreneursManagement() {
     }
 
     const handleEdit = (id: number, updatedFields: Partial<Entrepreneur>) => {
-        console.log('updatedFields', updatedFields.image);
         if (updatedFields.image) {
             updatedFields.image = `${updatedFields.image}?t=${Date.now()}`;
         }

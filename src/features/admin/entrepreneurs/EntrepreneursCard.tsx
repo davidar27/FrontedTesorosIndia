@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { ReusableCard } from '@/components/admin/Card';
 import { Phone, Mail, Calendar, Home } from 'lucide-react';
-import { Entrepreneur, UpdateEntrepreneurData } from '@/features/admin/entrepreneurs/EntrepreneursTypes';
+import { Entrepreneur } from '@/features/admin/entrepreneurs/EntrepreneursTypes';
 import { EditableEntrepreneurCard } from './EditableEntrepreneurCard';
 import { entrepreneursApi } from '@/services/admin/entrepernaur';
 import { formatDate } from './entrepreneurHelpers';
+import { toast } from 'react-hot-toast';
+
 interface EntrepreneurCardProps {
     item: Entrepreneur;
     onEdit: (id: number, updatedFields: Partial<Entrepreneur>) => void;
@@ -34,14 +36,20 @@ export function EntrepreneurCard({
         setIsEditing(false);
     };
 
-    const handleSave = async (id: number, data: UpdateEntrepreneurData) => {
+    const handleSave = async (id: number, data: Entrepreneur) => {
         try {
             setIsLoading(true);
-            const updatedFields = await entrepreneursApi.update(id, data);
-            onEdit(id, updatedFields);
+            const updatedEntrepreneur = await entrepreneursApi.update(id, {
+                name: data.name,
+                email: data.email,
+                phone: data.phone,
+                name_farm: data.name_farm
+            });
+            onEdit(id, updatedEntrepreneur);
             setIsEditing(false);
         } catch (error) {
             console.error('Error al actualizar el emprendedor:', error);
+            toast.error('Error al actualizar el emprendedor');
         } finally {
             setIsLoading(false);
         }

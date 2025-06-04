@@ -9,7 +9,7 @@ import { entrepreneursApi } from '@/services/admin/entrepernaur';
 
 interface EditableEntrepreneurCardProps {
     item: Entrepreneur;
-    onSave: (id: number, data: UpdateEntrepreneurData) => void;
+    onSave: (id: number, data: Entrepreneur) => void;
     onCancel: () => void;
     isLoading?: boolean;
 }
