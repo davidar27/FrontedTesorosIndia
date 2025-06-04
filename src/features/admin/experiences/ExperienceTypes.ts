@@ -1,22 +1,22 @@
 import { BaseEntity } from '@/features/admin/types';
 
-export type FarmStatus = 'Borrador' | 'Publicada' | 'Inactiva';
+export type Experiencestatus = 'Borrador' | 'Publicada' | 'Inactiva';
 
 // Tipo para la respuesta del backend
-export interface FarmResponse {
+export interface ExperienceResponse {
     id: number;
-    name_farm: string;
+    name_experience: string;
     description: string;
     location: string | 'Por definir';
     type: string | ' ';
     created_at: string;
-    status: FarmStatus;
+    status: Experiencestatus;
     entrepreneur_id: string | number;
 }
 
 // Tipo para el manejo interno en la aplicación
-export interface Farm extends BaseEntity<FarmStatus> {
-    name_farm: string;
+export interface Experience extends BaseEntity<Experiencestatus> {
+    name_experience: string;
     description: string;
     location: string | 'Por definir';
     type: string | ' ';
@@ -24,39 +24,39 @@ export interface Farm extends BaseEntity<FarmStatus> {
     entrepreneur_id: string | number;
 }
 
-export interface FarmApiResponse {
+export interface ExperienceApiResponse {
     status: string;
-    farms: Farm[];
+    experiences: Experience[];
 }
 
-export interface FarmCardProps {
-    farm: Farm;
+export interface ExperienceCardProps {
+    Experience: Experience;
     onEdit: (id: number) => void;
     onDelete: (id: number) => void;
 }
 
-export interface CreateFarmData {
-    name_farm: string;
+export interface CreateExperienceData {
+    name_experience: string;
     description: string;
     location: string;
     type: string | ' ';
 }
 
-export interface UpdateFarmData {
-    name_farm?: string;
+export interface UpdateExperienceData {
+    name_experience?: string;
     description?: string;
     location?: string;
     type?: string;
-    status?: FarmStatus;
+    status?: Experiencestatus;
 }
 
-export interface RawFarmResponse {
+export interface RawExperienceResponse {
     id: number;
-    name_farm: string;
+    name_experience: string;
     description?: string;
     location: string;
     type?: string;
-    status: FarmStatus;
+    status: Experiencestatus;
     entrepreneur_id: string | number;
     created_at: string;
 }

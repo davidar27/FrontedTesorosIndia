@@ -87,8 +87,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
                     const refreshedUser = await authService.refresh_token();
                     queryClient.setQueryData(AUTH_QUERY_KEY, refreshedUser);
                     scheduleTokenRefresh();
-                } catch (error) {
-                    console.error('[AuthContext] Error en refresh token programado:', error);
+                } catch  {
                     if (!isPublicRoute(location.pathname)) {
                         await logout();
                     }

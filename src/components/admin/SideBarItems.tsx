@@ -10,10 +10,10 @@ export const defaultSidebarItems: SidebarItem[] = [
         active: false
     },
     {
-        id: 'fincas',
-        label: 'Fincas',
+        id: 'experiencias',
+        label: 'Experiencias',
         icon: MapPin,
-        path: '/dashboard/fincas',
+        path: '/dashboard/experiencias',
         active: false
     },
     {

@@ -1,15 +1,15 @@
 import React from 'react';
-import { Farm } from '@/features/admin/farms/FarmTypes';
+import { Experience } from '@/features/admin/experiences/ExperienceTypes';
 import { Edit } from 'lucide-react';
 import { Trash2 } from 'lucide-react';
 
-interface FarmCardProps {
-    item: Farm;
-    onEdit: (farm: Farm) => void;
+interface ExperienceCardProps {
+    item: Experience;
+    onEdit: (Experience: Experience) => void;
     onDelete: (id: number) => void;
 }
 
-const FarmCard: React.FC<FarmCardProps> = ({ item, onEdit, onDelete }) => {
+const ExperienceCard: React.FC<ExperienceCardProps> = ({ item, onEdit, onDelete }) => {
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'Publicada':
@@ -41,7 +41,10 @@ const FarmCard: React.FC<FarmCardProps> = ({ item, onEdit, onDelete }) => {
             {/* Header */}
             <div className="flex justify-between items-start mb-4">
                 <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                    <h3
+                        className="text-lg font-semibold text-gray-900 mb-1 truncate"
+                        title={item.name}
+                    >
                         {item.name}
                     </h3>
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(item.status)}`}>
@@ -57,7 +60,7 @@ const FarmCard: React.FC<FarmCardProps> = ({ item, onEdit, onDelete }) => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                     <span className="font-medium">Emprendedor:</span>
-                    <span className="ml-1">{item.entrepreneur_id}</span>
+                    <span className="ml-1 truncate">{item.entrepreneur_id}</span>
                 </div>
 
                 <div className="flex items-start text-sm text-gray-600">
@@ -80,7 +83,7 @@ const FarmCard: React.FC<FarmCardProps> = ({ item, onEdit, onDelete }) => {
                     <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                     </svg>
-                    <span className="font-medium">Tipo de finca:</span>
+                    <span className="font-medium">Tipo de experiencia:</span>
                     <span className="ml-1 px-2 py-1 bg-green-50 text-green-700 rounded-md text-xs">
                         {item.type?.toString()}
                     </span>
@@ -106,4 +109,4 @@ const FarmCard: React.FC<FarmCardProps> = ({ item, onEdit, onDelete }) => {
     );
 };
 
-export default FarmCard;
+export default ExperienceCard;

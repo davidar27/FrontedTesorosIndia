@@ -2,7 +2,7 @@ import useAuth from '@/context/useAuth';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import LoadingSpinner from '@/components/layouts/LoadingSpinner';
 import { UserRole } from '@/interfaces/role';
-import { farmsApi } from '@/services/admin/farms';
+import { ExperiencesApi } from '@/services/admin/experiences';
 import { useEffect, useState } from 'react';
 
 interface ProtectedRouteProps {
@@ -14,28 +14,28 @@ interface ProtectedRouteProps {
 const ProtectedRoute = ({ roles = [], requireAuth = true, allowAdmin = true }: ProtectedRouteProps) => {
     const { isAuthenticated, user, isLoading } = useAuth();
     const location = useLocation();
-    const [isPublicFarm, setIsPublicFarm] = useState(false);
-    const [checkingFarmStatus, setCheckingFarmStatus] = useState(false);
+    const [isPublicExperience, setIsPublicExperience] = useState(false);
+    const [checkingExperiencestatus, setCheckingExperiencestatus] = useState(false);
 
     useEffect(() => {
-        const checkFarmAccess = async () => {
-            if (location.pathname.startsWith('/fincas/')) {
-                setCheckingFarmStatus(true);
+        const checkExperienceAccess = async () => {
+            if (location.pathname.startsWith('/experiencias/')) {
+                setCheckingExperiencestatus(true);
                 try {
-                    const farmId = location.pathname.split('/')[2];
-                    const farm = await farmsApi.public.getFarmById(Number(farmId));
-                    setIsPublicFarm(farm.status === 'Publicada');
+                    const experienceId = location.pathname.split('/')[2];
+                    const Experience = await ExperiencesApi.public.getExperienceById(Number(experienceId));
+                    setIsPublicExperience(Experience.status === 'Publicada');
                 } catch {
-                    setIsPublicFarm(false);
+                    setIsPublicExperience(false);
                 }
-                setCheckingFarmStatus(false);
+                setCheckingExperiencestatus(false);
             }
         };
 
-        checkFarmAccess();
+        checkExperienceAccess();
     }, [location.pathname]);
 
-    if (isLoading || checkingFarmStatus) {
+    if (isLoading || checkingExperiencestatus) {
         return <LoadingSpinner message="Verificando acceso..." />;
     }
 
@@ -43,7 +43,7 @@ const ProtectedRoute = ({ roles = [], requireAuth = true, allowAdmin = true }: P
         return <Navigate to="/dashboard" replace />;
     }
 
-    if (isPublicFarm) {
+    if (isPublicExperience) {
         return <Outlet />;
     }
 

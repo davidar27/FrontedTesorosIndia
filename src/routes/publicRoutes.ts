@@ -19,8 +19,8 @@ export const PUBLIC_ROUTES = [
     '/productos/:id',
     '/productos/categorias/:categoryId',
     
-    // Rutas de fincas
-    '/fincas',
-    '/fincas/:id',
-    '/fincas/categorias/:categoryId'
+    // Rutas de experiencias
+    '/experiencias',
+    '/experiencias/:id',
+    '/experiencias/categorias/:categoryId'
 ];

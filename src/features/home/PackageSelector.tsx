@@ -8,7 +8,7 @@ import { Package } from '@/types';
 const packages: Package[] = [
   {
     image: paquete1,
-    title: "Recorrido Finca",
+    title: "Recorrido Experiencia",
     price: "$45.000",
     category: "Educativo",
     description: "Los visitantes podrán disfrutar de una experiencia inmersiva y enriquecedora, diseñada para despertar su curiosidad y conectar con la naturaleza.",
@@ -18,7 +18,7 @@ const packages: Package[] = [
       "Degustación de productos",
       "Souvenir de regalo"
     ],
-    onClick: () => console.log("Recorrido Finca")
+    onClick: () => console.log("Recorrido Experiencia")
   },
   {
     image: paquete2,

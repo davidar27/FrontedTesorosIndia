@@ -6,7 +6,7 @@ import AnimatedTitle from '@/components/ui/display/AnimatedTitle';
 const locations = [
   {
     id: 1,
-    name: 'Finca Puerto Arturo',
+    name: 'Experiencia Puerto Arturo',
     position: { lat: 4.6969524975159604, lng: -75.6779047288352 },
     description: 'Correg. La India-Filandia, Filandia, Quindío, Colombia',
     type: 'cafe'
@@ -147,7 +147,7 @@ const TouristRoute = () => {
                 </li>
                 <li className="flex items-start">
                   <span className="text-green-500 mr-2">•</span>
-                  <span>Prueba la gastronomía local en las fincas de la zona</span>
+                  <span>Prueba la gastronomía local en las experiencias de la zona</span>
                 </li>
               </ul>
             </div>

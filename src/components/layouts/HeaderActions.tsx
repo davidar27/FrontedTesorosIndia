@@ -4,7 +4,7 @@ import Button from "@/components/ui/buttons/Button";
 import { ShoppingCart } from "lucide-react";
 import UserMenu from "@/components/layouts/menu/UserMenu";
 import { motion } from "framer-motion";
-import SidebarFarms from "@/components/layouts/SidebarFarms";
+import SidebarExperiences from "@/components/layouts/SidebarExperience";
 
 const HeaderActions = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -24,7 +24,7 @@ const HeaderActions = () => {
                     className="hidden md:block"
                     onClick={() => setSidebarOpen(true)}
                 >
-                    <span>Fincas</span>
+                    <span>Experiencias</span>
                 </Button>
                 <div className="hidden md:block">
                     <UserMenu />
@@ -32,7 +32,7 @@ const HeaderActions = () => {
             </motion.div>
 
             {/* Integramos la barra lateral que se abrirá al hacer clic en el botón */}
-            <SidebarFarms
+            <SidebarExperiences
                 isOpen={sidebarOpen}
                 onClose={() => setSidebarOpen(false)}
             />

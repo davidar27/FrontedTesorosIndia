@@ -11,7 +11,7 @@ interface EntrepreneurResponse {
     imageUrl?: string;
     status: string;
     joinDate: string;
-    name_farm: string;
+    name_experience: string;
 }
 
 interface EntrepreneurUpdateResponse {
@@ -65,7 +65,7 @@ export const entrepreneursApi = {
                     image: getImageUrl(entrepreneur.image),
                     status,
                     joinDate: entrepreneur.joinDate,
-                    name_farm: entrepreneur.name_farm
+                    name_experience: entrepreneur.name_experience
                 } as Entrepreneur;
             });
 
@@ -115,14 +115,14 @@ export const entrepreneursApi = {
             if (!data.email?.trim()) throw new Error('El email es requerido');
             if (!data.password?.trim()) throw new Error('La contraseña es requerida');
             if (!data.phone?.trim()) throw new Error('El teléfono es requerido');
-            if (!data.name_farm?.trim()) throw new Error('El nombre de la finca es requerido');
+            if (!data.name_experience?.trim()) throw new Error('El nombre de la experiencia es requerido');
 
             const entrepreneurData = {
                 name: data.name.trim(),
                 email: data.email.trim(),
                 password: data.password.trim(),
                 phone: data.phone.trim(),
-                name_farm: data.name_farm.trim()
+                name_experience: data.name_experience.trim()
             };
 
             console.log('Datos a enviar:', {
@@ -147,7 +147,7 @@ export const entrepreneursApi = {
                 image: getImageUrl(response.data.updatedFields.image) ?? null,
                 status: response.data.updatedFields.status ?? 'active',
                 joinDate: response.data.updatedFields.joinDate ?? '',
-                name_farm: response.data.updatedFields.name_farm ?? '',
+                name_experience: response.data.updatedFields.name_experience ?? '',
             };
 
             return entrepreneur;
@@ -182,7 +182,7 @@ export const entrepreneursApi = {
             if (data.name?.trim()) formData.append('name', data.name.trim());
             if (data.email?.trim()) formData.append('email', data.email.trim());
             if (data.phone?.trim()) formData.append('phone', data.phone.trim());
-            if (data.name_farm?.trim()) formData.append('name_farm', data.name_farm.trim());
+            if (data.name_experience?.trim()) formData.append('name_experience', data.name_experience.trim());
             
             if (data.image instanceof File) {
                 console.log('Subiendo imagen:', {
@@ -216,7 +216,7 @@ export const entrepreneursApi = {
                 image: getImageUrl(updated.image) ?? null,
                 status: updated.status ?? 'active',
                 joinDate: updated.joinDate ?? '',
-                name_farm: updated.name_farm ?? '',
+                name_experience: updated.name_experience ?? '',
             };
             return entrepreneur;
         } catch (error: any) {

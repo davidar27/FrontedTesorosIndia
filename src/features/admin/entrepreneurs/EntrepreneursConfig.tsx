@@ -43,7 +43,7 @@ export const EntrepreneursConfig = ({
             entrepreneur.name?.toLowerCase().includes(searchLower) ||
             entrepreneur.email?.toLowerCase().includes(searchLower) ||
             entrepreneur.phone?.toLowerCase().includes(searchLower) ||
-            entrepreneur.name_farm?.toLowerCase().includes(searchLower)
+            entrepreneur.name_experience?.toLowerCase().includes(searchLower)
         );
     },
     onEdit: actions.onEdit || (() => {}),

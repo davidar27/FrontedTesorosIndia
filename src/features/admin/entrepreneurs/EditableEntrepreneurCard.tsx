@@ -23,7 +23,7 @@ export function EditableEntrepreneurCard({
         name: item.name,
         email: item.email,
         phone: item.phone,
-        name_farm: item.name_farm,
+        name_experience: item.name_experience,
     });
     const [imagePreview, setImagePreview] = useState<string | undefined>(item.image as string || '' );
     const [imageError, setImageError] = useState(false);
@@ -93,15 +93,15 @@ export function EditableEntrepreneurCard({
             value: (
                 <input
                     type="text"
-                    name="name_farm"
-                    value={formData.name_farm || ''}
+                    name="name_experience"
+                    value={formData.name_experience || ''}
                     onChange={handleChange}
                     className="bg-transparent border-b border-gray-300 focus:border-primary outline-none text-center w-auto text-lg font-bold text-green-600"
                     required
-                    placeholder="Nombre de la finca"
+                    placeholder="Nombre de la experiencia"
                 />
             ),
-            label: 'Nombre de la finca',
+            label: 'Nombre de la experiencia',
             bgColor: 'bg-green-50',
             textColor: 'text-green-600',
             icon: Home

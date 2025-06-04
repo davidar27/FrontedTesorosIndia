@@ -4,42 +4,42 @@ import useAuth from '@/context/useAuth';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useAuthenticatedQuery } from '@/hooks/useAuthenticatedQuery';
 import { useProtectedMutation } from '@/hooks/useProtectedMutation';
-import { Farm } from '@/features/admin/farms/FarmTypes';
-import { farmsApi } from '@/services/admin/farms';
-import FarmCard from '@/features/admin/farms/FamCard'
-import CreateFarmsConfig from '@/features/admin/farms/createFarmConfig';
+import { Experience } from '@/features/admin/experiences/ExperienceTypes';
+import { ExperiencesApi } from '@/services/admin/experiences';
+import ExperienceCard from '@/features/admin/experiences/ExperienceCard'
+import CreateExperiencesConfig from '@/features/admin/experiences/CreateExperiencesConfig';
 
-export default function FarmsManagement() {
+export default function ExperiencesManagement() {
     const queryClient = useQueryClient();
     const { isAuthenticated, isLoading: authLoading } = useAuth();
     const { hasPermission, isAdmin } = usePermissions();
 
-    const canEdit = isAdmin() || hasPermission('fincas:edit');
-    const canDelete = isAdmin() || hasPermission('fincas:delete');
+    const canEdit = isAdmin() || hasPermission('experiencias:edit');
+    const canDelete = isAdmin() || hasPermission('experiencias:delete');
 
     const {
-        data: farms = [],
+        data: Experiences = [],
         isLoading,
         error,
         refetch
-    } = useAuthenticatedQuery<Farm[]>({
-        queryKey: ['farms'],
-        queryFn: () => farmsApi.getAllFarms(),
+    } = useAuthenticatedQuery<Experience[]>({
+        queryKey: ['Experiences'],
+        queryFn: () => ExperiencesApi.getAllExperiences(),
         staleTime: 5 * 60 * 1000, // 5 minutos
         retry: 2
     });
 
     const deleteMutation = useProtectedMutation({
-        mutationFn: farmsApi.deleteFarm,
-        requiredPermission: 'fincas:delete',
+        mutationFn: ExperiencesApi.deleteExperience,
+        requiredPermission: 'experiencias:delete',
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['farms'] });
+            queryClient.invalidateQueries({ queryKey: ['Experiences'] });
         },
         onError: (error: Error) => {
-            console.error('Error deleting farm:', error);
+            console.error('Error deleting Experience:', error);
         },
         onUnauthorized: () => {
-            alert('No tienes permisos para eliminar fincas');
+            alert('No tienes permisos para eliminar experiencias');
         }
     });
 
@@ -66,17 +66,17 @@ export default function FarmsManagement() {
         );
     }
 
-    const handleEdit = (farm: Farm) => {
+    const handleEdit = (Experience: Experience) => {
         if (!canEdit) {
-            alert('No tienes permisos para editar fincas');
+            alert('No tienes permisos para editar experiencias');
             return;
         }
-        console.log('Editing farm:', farm);
+        console.log('Editing Experience:', Experience);
     };
 
-    const handleDelete = (farmId: number) => {
-        if (window.confirm('¿Estás seguro de que quieres eliminar esta finca?')) {
-            deleteMutation.mutate(farmId);
+    const handleDelete = (experienceId: number) => {
+        if (window.confirm('¿Estás seguro de que quieres eliminar esta experiencia?')) {
+            deleteMutation.mutate(experienceId);
         }
     };
 
@@ -84,7 +84,7 @@ export default function FarmsManagement() {
         return (
             <div className="flex justify-center items-center h-64">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-                <span className="ml-3 text-gray-600">Cargando fincas...</span>
+                <span className="ml-3 text-gray-600">Cargando experiencias...</span>
             </div>
         );
     }
@@ -92,7 +92,7 @@ export default function FarmsManagement() {
     if (error) {
         return (
             <div className="bg-red-50 border border-red-200 rounded-md p-4">
-                <p className="text-red-800">Error al cargar las fincas</p>
+                <p className="text-red-800">Error al cargar las experiencias</p>
                 <button
                     onClick={() => refetch()}
                     className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
@@ -103,14 +103,14 @@ export default function FarmsManagement() {
         );
     }
 
-    const config = CreateFarmsConfig<Farm>({
-        data: farms,
-        CardComponent: FarmCard,
+    const config = CreateExperiencesConfig<Experience>({
+        data: Experiences,
+        CardComponent: ExperienceCard,
         actions: {
             onEdit: canEdit ? handleEdit : undefined,
             onDelete: canDelete ? handleDelete : undefined,
         }
     });
 
-    return <GenericManagement<Farm> config={config} />;
+    return <GenericManagement<Experience> config={config} />;
 }

@@ -1,7 +1,7 @@
 import { BaseEntity, EntityConfig } from "@/features/admin/types";
-import { FarmStatus } from "./FarmTypes";
+import { Experiencestatus } from "@/features/admin/experiences/ExperienceTypes";
 
-interface CreateConfigParams<T extends BaseEntity<FarmStatus>> {
+interface CreateConfigParams<T extends BaseEntity<Experiencestatus>> {
     data: T[];
     CardComponent: React.ComponentType<{
         item: T;
@@ -15,19 +15,19 @@ interface CreateConfigParams<T extends BaseEntity<FarmStatus>> {
     };
 }
 
-const CreateFarmsConfig = <T extends BaseEntity<FarmStatus>>({
+const CreateExperiencesConfig = <T extends BaseEntity<Experiencestatus>>({
     data,
     CardComponent,
     actions
 }: CreateConfigParams<T>): EntityConfig<T> => ({
-    entityName: "Finca",
-    entityNamePlural: "Fincas",
-    searchPlaceholder: "Buscar fincas...",
+    entityName: "Experiencia",
+    entityNamePlural: "Experiencias",
+    searchPlaceholder: "Buscar experiencias...",
     emptyStateEmoji: "🏠",
     ItemCard: CardComponent,
-    emptyStateTitle: "No hay fincas",
-    emptyStateDescription: "Crea la primera finca para comenzar",
-    description: "Gestiona fincas",
+    emptyStateTitle: "No hay experiencias",
+    emptyStateDescription: "Crea la primera experiencia para comenzar",
+    description: "Gestiona experiencias",
     items: data,
     isLoading: false,
     error: null,
@@ -42,4 +42,4 @@ const CreateFarmsConfig = <T extends BaseEntity<FarmStatus>>({
     onRetry: () => { },
 });
 
-export default CreateFarmsConfig;
+export default CreateExperiencesConfig;
