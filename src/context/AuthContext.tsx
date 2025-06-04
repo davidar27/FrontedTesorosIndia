@@ -82,13 +82,9 @@ function AuthProvider({ children }: { children: ReactNode }) {
         let refreshTimeout: NodeJS.Timeout;
 
         const scheduleTokenRefresh = () => {
-            console.log('[AuthContext] Programando próximo refresh token');
             refreshTimeout = setTimeout(async () => {
                 try {
-                    // Intentar refrescar TOKEN_REFRESH_SAFETY_MARGIN ms antes de que expire
-                    console.log('[AuthContext] Ejecutando refresh token programado');
                     const refreshedUser = await authService.refresh_token();
-                    console.log('[AuthContext] Refresh token exitoso, actualizando usuario');
                     queryClient.setQueryData(AUTH_QUERY_KEY, refreshedUser);
                     scheduleTokenRefresh();
                 } catch (error) {
@@ -101,13 +97,11 @@ function AuthProvider({ children }: { children: ReactNode }) {
         };
 
         if (user?.role !== 'observador') {
-            console.log('[AuthContext] Usuario autenticado, iniciando ciclo de refresh');
             scheduleTokenRefresh();
         }
 
         return () => {
             if (refreshTimeout) {
-                console.log('[AuthContext] Limpiando timeout de refresh');
                 clearTimeout(refreshTimeout);
             }
         };

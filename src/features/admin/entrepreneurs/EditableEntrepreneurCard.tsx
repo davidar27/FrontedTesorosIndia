@@ -5,11 +5,10 @@ import { Entrepreneur, UpdateEntrepreneurData } from '@/features/admin/entrepren
 import Button from '@/components/ui/buttons/Button';
 import Avatar from '@/components/ui/display/Avatar';
 import { fileToWebp } from '@/utils/imageToWebp';
-import { entrepreneursApi } from '@/services/admin/entrepernaur';
 
 interface EditableEntrepreneurCardProps {
     item: Entrepreneur;
-    onSave: (id: number, data: Entrepreneur) => void;
+    onSave: (id: number, data: UpdateEntrepreneurData) => void;
     onCancel: () => void;
     isLoading?: boolean;
 }
@@ -18,6 +17,7 @@ export function EditableEntrepreneurCard({
     item,
     onSave,
     onCancel,
+    isLoading
 }: EditableEntrepreneurCardProps) {
     const [formData, setFormData] = useState<UpdateEntrepreneurData>({
         name: item.name,
@@ -25,12 +25,10 @@ export function EditableEntrepreneurCard({
         phone: item.phone,
         name_farm: item.name_farm,
     });
-
     const [imagePreview, setImagePreview] = useState<string | undefined>(item.image as string || '' );
     const [imageError, setImageError] = useState(false);
     const [retryCount, setRetryCount] = useState(0);
     const [loadingImage, setLoadingImage] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -45,7 +43,6 @@ export function EditableEntrepreneurCard({
                 const previewUrl = URL.createObjectURL(webpFile);
                 setImagePreview(previewUrl);
                 setFormData(prev => ({ ...prev, image: webpFile }));
-
                 return () => URL.revokeObjectURL(previewUrl);
             } catch  {
                 alert('No se pudo convertir la imagen a webp');
@@ -53,38 +50,10 @@ export function EditableEntrepreneurCard({
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (item.id) {
-            const changedFields = getChangedFields(item, formData);
-            if (Object.keys(changedFields).length === 0) {
-                alert('No realizaste ningún cambio.');
-                return;
-            }
-            try {
-                setIsLoading(true);
-                const updatedFields = await entrepreneursApi.update(item.id, changedFields as UpdateEntrepreneurData);
-                onSave(item.id, updatedFields);
-                setIsLoading(false);
-
-                if (updatedFields.image) {
-                    window.location.reload();
-                }
-            } catch (error) {
-                console.error('Error al actualizar el emprendedor:', error);
-            }
-        }
+        onSave(item.id ?? 0, formData);
     };
-
-    function getChangedFields(original: Entrepreneur, data: UpdateEntrepreneurData): Partial<UpdateEntrepreneurData> {
-        const changed: Partial<UpdateEntrepreneurData> = {};
-        if (data.name && data.name !== original.name) changed.name = data.name;
-        if (data.email && data.email !== original.email) changed.email = data.email;
-        if (data.phone && data.phone !== original.phone) changed.phone = data.phone;
-        if (data.name_farm && data.name_farm !== original.name_farm) changed.name_farm = data.name_farm;
-        if (data.image) changed.image = data.image;
-        return changed;
-    }
 
     const contactInfo = [
         {
@@ -141,50 +110,49 @@ export function EditableEntrepreneurCard({
 
     return (
         <form onSubmit={handleSubmit} className="text-center flex flex-col items-center shadow-xl border-1 border-gray-200 rounded-lg p-4 hover:shadow-2xl transition-all duration-300">
-             <div className=" flex flex-col items-center mb-6">
-                    <div className="relative">
-                        {loadingImage ? (
-                            <div className="w-24 h-24 flex items-center justify-center">
-                                <span className="loader" />
-                            </div>
-                        ) : imageError ? (
-                            <Avatar name={item.name} size={96} />
-                        ) : (
-                            <img
-                                src={imagePreview || item.image || ''}
-                                alt={item.name || 'Avatar'}
-                                className="w-24 h-24 rounded-full object-cover"
-                                onError={() => {
-                                    if (retryCount < 3) {
-                                        setLoadingImage(true);
-                                        setTimeout(() => {
-                                            setRetryCount(c => c + 1);
-                                            setLoadingImage(false);
-                                        }, 1500); // 1.5 segundos de espera antes de reintentar
-                                    } else {
-                                        setImageError(true);
-                                    }
-                                }}
-                                onLoad={() => {
-                                    setLoadingImage(false);
-                                    setImageError(false);
-                                    setRetryCount(0);
-                                }}
-                                key={retryCount}
-                            />
-                        )}
-                        <input
-                            type="file"
-                            name="image"
-                            onChange={handleImageChange}
-                            accept="image/*"
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                            title="Cambiar imagen"
+            <div className=" flex flex-col items-center mb-6">
+                <div className="relative">
+                    {loadingImage ? (
+                        <div className="w-24 h-24 flex items-center justify-center">
+                            <span className="loader" />
+                        </div>
+                    ) : imageError ? (
+                        <Avatar name={item.name} size={96} />
+                    ) : (
+                        <img
+                            src={imagePreview || item.image || ''}
+                            alt={item.name || 'Avatar'}
+                            className="w-24 h-24 rounded-full object-cover"
+                            onError={() => {
+                                if (retryCount < 3) {
+                                    setLoadingImage(true);
+                                    setTimeout(() => {
+                                        setRetryCount(c => c + 1);
+                                        setLoadingImage(false);
+                                    }, 1500);
+                                } else {
+                                    setImageError(true);
+                                }
+                            }}
+                            onLoad={() => {
+                                setLoadingImage(false);
+                                setImageError(false);
+                                setRetryCount(0);
+                            }}
+                            key={retryCount}
                         />
-                    </div>
-                    <span className="text-xs text-gray-500 mt-2">Click para cambiar imagen</span>
+                    )}
+                    <input
+                        type="file"
+                        name="image"
+                        onChange={handleImageChange}
+                        accept="image/*"
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        title="Cambiar imagen"
+                    />
                 </div>
-
+                <span className="text-xs text-gray-500 mt-2">Click para cambiar imagen</span>
+            </div>
 
             <ReusableCard
                 item={{
@@ -200,7 +168,6 @@ export function EditableEntrepreneurCard({
                 variant="compact"
                 className="shadow-none py-0 border-none bg-transparent  w-full hover:!shadow-none hover:border-none hover:bg-transparent"
             >
-
                 <div className="">
                     <input
                         type="text"
@@ -212,7 +179,6 @@ export function EditableEntrepreneurCard({
                         placeholder="Nombre del emprendedor"
                     />
                 </div>
-
                 <div className="flex gap-2 w-full mt-4">
                     <Button
                         type="button"
