@@ -23,7 +23,7 @@ export function ItemsGrid<T extends BaseEntity<string>>({
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {items.map((item, index) => (
                 <div
-                    key={`${item.id}-${item.name}-${index}`}
+                    key={`${item.id}-${item.name}-${item.email}-${item.phone}-${item.name_farm}`}
                     className={enableAnimations ? "animate-fade-in-up" : ""}
                     style={enableAnimations ? {
                         animationDelay: `${Math.min(index * 0.05, 0.5)}s`

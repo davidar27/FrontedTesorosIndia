@@ -16,19 +16,7 @@ interface EntrepreneurResponse {
 
 interface EntrepreneurUpdateResponse {
     message: string;
-    user: {
-        userId: number;
-        name: string;
-        email: string;
-        phone: string;
-        role: string;
-        verified: boolean;
-        image: string;
-        imageUrl?: string; 
-        description: string | null;
-        name_farm: string;
-        token_version: number;
-    };
+    updatedFields: Partial<Entrepreneur>;
 }
 
 // Función auxiliar para construir la URL completa de la imagen
@@ -139,7 +127,7 @@ export const entrepreneursApi = {
 
             console.log('Datos a enviar:', {
                 ...entrepreneurData,
-                password: '********' // No mostrar la contraseña en los logs
+                password: '********'
             });
 
             const response = await axiosInstance.post<EntrepreneurUpdateResponse>(
@@ -147,19 +135,19 @@ export const entrepreneursApi = {
                 entrepreneurData
             );
 
-            if (!response.data || !response.data.user) {
+            if (!response.data || !response.data.updatedFields) {
                 throw new Error('Respuesta inválida del servidor');
             }
 
             const entrepreneur: Entrepreneur = {
-                id: response.data.user.userId,
-                name: response.data.user.name,
-                email: response.data.user.email,
-                phone: response.data.user.phone,
-                image: null, // Nuevo emprendedor sin imagen
-                status: 'active',
-                joinDate: new Date().toLocaleDateString(),
-                name_farm: response.data.user.name_farm,
+                id: response.data.updatedFields.id ?? 0,
+                name: response.data.updatedFields.name ?? '',
+                email: response.data.updatedFields.email ?? '',
+                phone: response.data.updatedFields.phone ?? '',
+                image: getImageUrl(response.data.updatedFields.image) ?? null,
+                status: response.data.updatedFields.status ?? 'active',
+                joinDate: response.data.updatedFields.joinDate ?? '',
+                name_farm: response.data.updatedFields.name_farm ?? '',
             };
 
             return entrepreneur;
@@ -187,7 +175,7 @@ export const entrepreneursApi = {
     },
 
     // Actualizar un emprendedor
-    update: async (id: number, data: UpdateEntrepreneurData): Promise<Entrepreneur> => {
+    update: async (id: number, data: Partial<UpdateEntrepreneurData>): Promise<Partial<Entrepreneur>> => {
         try {
             const formData = new FormData();
             
@@ -215,21 +203,21 @@ export const entrepreneursApi = {
                 }
             );
 
-            if (!response.data || !response.data.user) {
+            if (!response.data || !response.data.updatedFields) {
                 throw new Error('Respuesta inválida del servidor');
             }
 
+            const updated = response.data.updatedFields;
             const entrepreneur: Entrepreneur = {
-                id: response.data.user.userId,
-                name: response.data.user.name,
-                email: response.data.user.email,
-                phone: response.data.user.phone,
-                image: getImageUrl(response.data.user.image),
-                status: 'active',
-                joinDate: new Date().toLocaleDateString(),
-                name_farm: response.data.user.name_farm,
+                id: updated.id ?? id,
+                name: updated.name ?? '',
+                email: updated.email ?? '',
+                phone: updated.phone ?? '',
+                image: getImageUrl(updated.image) ?? null,
+                status: updated.status ?? 'active',
+                joinDate: updated.joinDate ?? '',
+                name_farm: updated.name_farm ?? '',
             };
-
             return entrepreneur;
         } catch (error: any) {
             console.error('Error updating entrepreneur:', {

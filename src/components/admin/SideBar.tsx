@@ -4,6 +4,7 @@ import {
 } from 'lucide-react';
 import logo from '@/assets/icons/logotesorosindiaPequeño.webp';
 import Picture from '@/components/ui/display/Picture';
+import { useNavigate } from 'react-router-dom';
 
 export interface SidebarItem {
     id: string;
@@ -18,7 +19,9 @@ const Sidebar: React.FC<{
     showMobileMenu: boolean;
     onItemClick: (itemId: string) => void;
     onMobileMenuClose: () => void;
+    
 }> = React.memo(({ items, showMobileMenu, onItemClick, onMobileMenuClose }) => {
+    const navigate = useNavigate();
 
     
     return (
@@ -26,12 +29,15 @@ const Sidebar: React.FC<{
             <aside className={`bg-white border-r border-gray-200 transition-all duration-300 shadow-lg ${showMobileMenu ? 'translate-x-0' : '-translate-x-full'
                 } lg:translate-x-0 lg:relative z-30 w-64 h-screen`}>
                 <div className="p-6 border-b border-gray-200  ">
-                    <div className="flex items-center gap-3 animate-fade-in-right">
+                    <div 
+                        onClick={() => navigate('/')}
+                        className="flex items-center gap-3 animate-fade-in-right cursor-pointer hover:bg-gray-50 transition-all duration-200 rounded-xl p-2">
+                        
                         <Picture
                             src={logo}
                             alt="Logo"
-                            className="w-14 h-14 object-center object-contain"
-                        />
+                                className="w-14 h-14 object-center object-contain"
+                            />
                         <div>
                             <h1 className="font-bold text-gray-800 text-xl">Tesoros de la India</h1>
                             <p className="text-sm text-gray-500 ">Gestión del Sistema</p>

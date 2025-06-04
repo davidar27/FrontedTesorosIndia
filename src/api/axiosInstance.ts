@@ -68,7 +68,6 @@ axiosInstance.interceptors.request.use(
     // Si el token está próximo a expirar, intentamos refrescarlo
     if (token && isTokenExpiringSoon(token) && !config.url?.includes('/auth/token/refrescar')) {
       try {
-        console.log('[Auth] Token próximo a expirar, iniciando refresh proactivo');
         await authService.refresh_token();
       } catch (error) {
         console.error('[Auth] Error en refresh proactivo:', error);
@@ -90,7 +89,6 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => {
     if (response.data?.access_token) {
-      console.log('[Auth] Nuevo access token recibido');
       setAccessToken(response.data.access_token);
     }
     return response;
@@ -101,7 +99,6 @@ axiosInstance.interceptors.response.use(
     
     // Si es un error 401 y es un intento de login, manejar como error de credenciales
     if (Number(error.response?.status) === 401 && originalRequest.url?.includes('/auth/iniciar-sesion')) {
-      console.log('[Auth] Error de credenciales en login');
       return Promise.reject(
         new AuthError("El correo o la contraseña son incorrectos", {
           errorType: "general"
@@ -111,10 +108,8 @@ axiosInstance.interceptors.response.use(
     
     // Si es un error 401 y no es un intento de refresh token, intentamos refrescar
     if (Number(error.response?.status) === 401 && !originalRequest.url?.includes('/auth/token/refrescar')) {
-      console.log('[Auth] Token expirado, intentando refresh');
       
       if (originalRequest._retry) {
-        console.log('[Auth] Ya se intentó refresh, sesión expirada');
         isRefreshing = false;
         refreshSubscribers = [];
         setAccessToken(null);
@@ -127,13 +122,11 @@ axiosInstance.interceptors.response.use(
       }
 
       if (!isRefreshing) {
-        console.log('[Auth] Iniciando proceso de refresh');
         isRefreshing = true;
         originalRequest._retry = true;
 
         try {
           await authService.refresh_token();
-          console.log('[Auth] Refresh exitoso, reintentando petición original');
           isRefreshing = false;
           onRefreshed();
           
@@ -151,7 +144,6 @@ axiosInstance.interceptors.response.use(
           );
         }
       } else {
-        console.log('[Auth] Refresh en proceso, agregando a cola de espera');
         return new Promise((resolve) => {
           addRefreshSubscriber(() => {
             resolve(axiosInstance(originalRequest));

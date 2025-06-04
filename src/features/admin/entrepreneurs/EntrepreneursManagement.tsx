@@ -198,6 +198,7 @@ export default function EntrepreneursManagement() {
                 {...props}
                 onEdit={handleEdit}
                 onDelete={canDelete ? handleDelete : () => {}}
+                refetch={refetch}
             />
         ),
         actions: {
