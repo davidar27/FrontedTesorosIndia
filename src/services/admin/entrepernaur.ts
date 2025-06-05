@@ -229,25 +229,11 @@ export const entrepreneursApi = {
         }
     },
 
-    // Eliminar un emprendedor
-    disable: async (userId: number): Promise<void> => {
-        try {
-            await axiosInstance.put(`/dashboard/emprendedores/desactivar/${userId}`);
-        } catch (error: any) {
-            console.error('Error disabling entrepreneur:', error);
-
-            if (error.response?.status === 404) {
-                throw new Error('Emprendedor no encontrado');
-            }
-
-            throw new Error('Error al Desactivar el emprendedor');
-        }
-    },
 
     // Cambiar estado de un emprendedor
     changeStatus: async (id: number, status: 'active' | 'inactive' | 'pending'): Promise<Entrepreneur> => {
         try {
-            const response = await axiosInstance.patch<Entrepreneur>(`/usuario/actualizar/emprendedor/${id}/status`, { status });
+            const response = await axiosInstance.patch<Entrepreneur>(`/dashboard/emprendedores/estado/${id}`, { status });
             return response.data;
         } catch (error: any) {
             console.error('Error changing entrepreneur status:', error);
@@ -270,6 +256,19 @@ export const entrepreneursApi = {
         } catch (error) {
             console.error('Error searching entrepreneurs:', error);
             throw new Error('Error al buscar emprendedores');
+        }
+    },
+
+    // Eliminar un emprendedor completamente
+    delete: async (userId: number): Promise<void> => {
+        try {
+            await axiosInstance.delete(`/dashboard/emprendedores/${userId}`);
+        } catch (error: any) {
+            console.error('Error deleting entrepreneur:', error);
+            if (error.response?.status === 404) {
+                throw new Error('Emprendedor no encontrado');
+            }
+            throw new Error('Error al eliminar el emprendedor');
         }
     }
 };

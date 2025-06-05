@@ -57,19 +57,31 @@ export default function EntrepreneursManagement() {
         }
     });
 
-    const disableMutation = useProtectedMutation({
-        mutationFn: entrepreneursApi.disable,
+    const statusMutation = useProtectedMutation({
+        mutationFn: ({ id, status }: { id: number; status: 'active' | 'inactive' }) =>
+            entrepreneursApi.changeStatus(id, status),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] });
+            queryClient.invalidateQueries({ queryKey: ['Experiences'] });
+            toast.success('Estado del emprendedor actualizado exitosamente');
+        },
+        onError: (error: Error) => {
+            toast.error('Error al cambiar el estado del emprendedor: ' + error.message);
+        }
+    });
+
+    const deleteMutation = useProtectedMutation({
+        mutationFn: (id: number) => entrepreneursApi.delete(id),
         requiredPermission: 'entrepreneurs:delete',
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] });
-            toast.success('Emprendedor inhabilitado exitosamente');
+            toast.success('Emprendedor eliminado exitosamente');
         },
         onError: (error: Error) => {
-            console.error('Error disabling entrepreneur:', error);
-            toast.error('Error al Desactivar el emprendedor: ' + error.message);
+            toast.error('Error al eliminar el emprendedor: ' + error.message);
         },
         onUnauthorized: () => {
-            toast.error('No tienes permisos para Desactivar emprendedores');
+            toast.error('No tienes permisos para eliminar emprendedores');
         }
     });
 
@@ -110,20 +122,11 @@ export default function EntrepreneursManagement() {
         });
     };
 
-    const handleDelete = (entrepreneurId: number) => {
-        if (!canDelete) {
-            toast.error('No tienes permisos para eliminar emprendedores');
-            return;
-        }
-        setToDeleteId(entrepreneurId);
-        setConfirmOpen(true);
-    };
-
     const handleConfirmDelete = async () => {
         if (toDeleteId == null) return;
         setDeleteLoading(true);
         try {
-            await disableMutation.mutateAsync(toDeleteId);
+            await statusMutation.mutateAsync({ id: toDeleteId, status: 'inactive' });
             setConfirmOpen(false);
             setToDeleteId(null);
         } finally {
@@ -157,6 +160,20 @@ export default function EntrepreneursManagement() {
 
     const handleCancelCreate = () => {
         setShowCreateForm(false);
+    };
+
+    const handleStatusChange = (id: number, status: 'active' | 'inactive') => {
+        statusMutation.mutate({ id, status });
+    };
+
+    const handleDelete = (entrepreneurId: number) => {
+        if (!canDelete) {
+            toast.error('No tienes permisos para eliminar emprendedores');
+            return;
+        }
+        if (window.confirm('¿Estás seguro de que quieres eliminar este emprendedor? Esta acción no se puede deshacer.')) {
+            deleteMutation.mutate(entrepreneurId);
+        }
     };
 
     if (isLoading) {
@@ -197,6 +214,8 @@ export default function EntrepreneursManagement() {
             <EntrepreneurCard
                 {...props}
                 onEdit={handleEdit}
+                onDisable={() => handleStatusChange(props.item.id!, 'inactive')}
+                onActivate={() => handleStatusChange(props.item.id!, 'active')}
                 onDelete={canDelete ? handleDelete : () => {}}
                 refetch={refetch}
             />

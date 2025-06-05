@@ -8,6 +8,7 @@ import { Experience } from '@/features/admin/experiences/ExperienceTypes';
 import { ExperiencesApi } from '@/services/admin/experiences';
 import ExperienceCard from '@/features/admin/experiences/ExperienceCard'
 import CreateExperiencesConfig from '@/features/admin/experiences/CreateExperiencesConfig';
+import { toast } from 'sonner';
 
 export default function ExperiencesManagement() {
     const queryClient = useQueryClient();
@@ -34,9 +35,12 @@ export default function ExperiencesManagement() {
         requiredPermission: 'experiencias:delete',
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['Experiences'] });
+            queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] });
+            toast.success('Experiencia desactivada exitosamente');
         },
         onError: (error: Error) => {
             console.error('Error deleting Experience:', error);
+            toast.error('Error al desactivar la experiencia: ' + error.message);
         },
         onUnauthorized: () => {
             alert('No tienes permisos para eliminar experiencias');

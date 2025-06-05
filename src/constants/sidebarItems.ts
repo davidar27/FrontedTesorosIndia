@@ -7,7 +7,7 @@ export const defaultSidebarItems: SidebarItem[] = [
         label: 'Emprendedores',
         icon: User,
         path: '/dashboard/emprendedores',
-        active: false
+        active: true
     },
     {
         id: 'experiencias',
