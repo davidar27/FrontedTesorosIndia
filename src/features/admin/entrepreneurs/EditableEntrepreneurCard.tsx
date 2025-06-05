@@ -25,7 +25,7 @@ export function EditableEntrepreneurCard({
         phone: item.phone,
         name_experience: item.name_experience,
     });
-    const [imagePreview, setImagePreview] = useState<string | undefined>(item.image as string || '' );
+    const [imagePreview, setImagePreview] = useState<string | undefined>(item.image as string || ' ');
     const [imageError, setImageError] = useState(false);
     const [retryCount, setRetryCount] = useState(0);
     const [loadingImage, setLoadingImage] = useState(false);
@@ -116,11 +116,11 @@ export function EditableEntrepreneurCard({
                         <div className="w-24 h-24 flex items-center justify-center">
                             <span className="loader" />
                         </div>
-                    ) : imageError ? (
+                    ) : imageError || !item.image ? (
                         <Avatar name={item.name} size={96} />
                     ) : (
                         <img
-                            src={imagePreview || item.image || ''}
+                            src={imagePreview || item.image}
                             alt={item.name || 'Avatar'}
                             className="w-24 h-24 rounded-full object-cover"
                             onError={() => {

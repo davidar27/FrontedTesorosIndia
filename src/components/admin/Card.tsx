@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Edit, Trash2, LucideIcon } from 'lucide-react';
+import { Edit, LucideIcon, Check, X, Trash } from 'lucide-react';
 import Picture from '@/components/ui/display/Picture';
 import Avatar from '@/components/ui/display/Avatar';
 import { toast } from 'sonner';
@@ -55,6 +55,8 @@ interface ReusableCardProps<T> {
     actions?: ActionButton[];
     statusConfig?: StatusConfig;
     onEdit?: (item: T) => void;
+    onDisable?: (id: number) => void;
+    onActivate?: (id: number) => void;  
     onDelete?: (id: number) => void;
     showImage?: boolean;
     showStatus?: boolean;
@@ -118,6 +120,8 @@ export function ReusableCard<T extends BaseItem>({
     actions = [],
     statusConfig = DEFAULT_STATUS_CONFIG,
     onEdit,
+    onDisable,
+    onActivate,
     onDelete,
     showImage = true,
     showStatus = true,
@@ -138,39 +142,50 @@ export function ReusableCard<T extends BaseItem>({
         return statusConfig[status]?.label || status.charAt(0).toUpperCase() + status.slice(1);
     };
 
-    // Acciones por defecto si se proporcionan callbacks
     const defaultActions: ActionButton[] = useMemo(() => {
-        const isInactive = item.status === 'inactive';
-        return [
-            ...(onEdit ? [{
+        const actionsArr: ActionButton[] = [];
+        const status = (item.status || '').toLowerCase();
+        
+        if (onEdit) {
+            actionsArr.push({
                 icon: Edit,
                 label: variant !== 'compact' ? 'Editar' : undefined,
                 onClick: () => onEdit(item),
-                variant: 'primary' as const,
+                variant: 'primary',
                 fullWidth: variant === 'compact' ? false : true,
                 tooltip: 'Editar elemento'
-            }] : []),
-            ...(onDelete ? [
-                isInactive
-                    ? {
-                        icon: Edit, // Puedes usar otro icono como Check si tienes uno
-                        label: variant === 'detailed' ? 'Activar' : undefined,
-                        onClick: () => onDelete(item.id),
-                        variant: 'success' as const,
-                        fullWidth: false,
-                        tooltip: 'Activar elemento'
-                    }
-                    : {
-                        icon: Trash2,
-                        label: variant === 'detailed' ? 'Desactivar' : undefined,
-                        onClick: () => onDelete(item.id),
-                        variant: 'danger' as const,
-                        fullWidth: false,
-                        tooltip: 'Desactivar elemento'
-                    }
-            ] : [])
-        ];
-    }, [onEdit, onDelete, item, variant]);
+            });
+        }
+        if (status === 'active' && onDisable) {
+            actionsArr.push({
+                icon: X,
+                label: variant === 'default' ? 'Desactivar' : undefined,
+                onClick: () => onDisable(item.id),
+                variant: 'danger',
+                fullWidth: false,
+                tooltip: 'Desactivar elemento'
+            });
+        } else if (status === 'inactive' && onActivate) {
+            actionsArr.push({
+                icon: Check,
+                label: variant === 'default' ? 'Activar' : undefined,
+                onClick: () => onActivate(item.id),
+                variant: 'success',
+                fullWidth: false,
+                tooltip: 'Activar elemento'
+            });
+        } else if (status === 'pending' && onDelete) {
+            actionsArr.push({
+                icon: Trash,
+                label: variant === 'default' ? 'Eliminar' : undefined,
+                onClick: () => onDelete(item.id),
+                variant: 'danger',
+                fullWidth: false,
+                tooltip: 'Eliminar elemento'
+            });
+        }
+        return actionsArr;
+    }, [onEdit, onDisable, onActivate, onDelete, item, variant]);
 
     const finalActions = actions.length > 0 ? actions : defaultActions;
 

@@ -13,6 +13,8 @@ interface EntrepreneursConfigParams {
         onEdit?: (item: Entrepreneur) => void;
         onDelete?: (id: number) => void;
         onCreate?: () => void;
+        onDisable?: (id: number) => void;
+        onActivate?: (id: number) => void;
     };
 }
 

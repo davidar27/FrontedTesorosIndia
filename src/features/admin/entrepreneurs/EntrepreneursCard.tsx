@@ -11,14 +11,18 @@ import { QueryObserverResult } from '@tanstack/react-query';
 interface EntrepreneurCardProps {
     item: Entrepreneur;
     onEdit: (id: number, updatedFields: Partial<Entrepreneur>) => void;
-    onDelete: (id: number) => void;
+    onDisable: (id: number) => void;
+    onActivate: (id: number) => void;
     onView?: (item: Entrepreneur) => void;
+    onDelete?: (id: number) => void;
     refetch: () => Promise<QueryObserverResult<Entrepreneur[], unknown>>;
 }
 
 export function EntrepreneurCard({
     item,
     onEdit,
+    onDisable,
+    onActivate,
     onDelete,
     onView,
     refetch
@@ -39,7 +43,6 @@ export function EntrepreneurCard({
         try {
             setIsLoading(true);
 
-            // Solo envía los campos que cambiaron
             const changedFields: Partial<UpdateEntrepreneurData> = {};
             if (data.name && data.name !== item.name) changedFields.name = data.name;
             if (data.email && data.email !== item.email) changedFields.email = data.email;
@@ -111,26 +114,37 @@ export function EntrepreneurCard({
     }
 ];
 
-const statusMap: { [key: string]: string } = {
-    'active': 'active',
-    'inactive': 'inactive',
-    'pending': 'pending'
+const normalizeStatus = (status: string) => {
+    switch (status.toLowerCase()) {
+        case 'activo':
+        case 'active':
+            return 'active';
+        case 'inactivo':
+        case 'inactive':
+            return 'inactive';
+        case 'pendiente':
+        case 'pending':
+            return 'pending';
+        default:
+            return 'inactive';
+    }
 };
-
 
 return (
     <ReusableCard
         item={{
             id: item.id ?? 0,
             name: item.name,
-            status: statusMap[item.status] || 'inactive',
+            status: normalizeStatus(item.status),
             image: item.image as string || '',
             description: `Emprendedor registrado el ${formatDate(item.joinDate)}`
         }}
         contactInfo={contactInfo}
         stats={stats}
         onEdit={handleEditClick}
-        onDelete={() => onDelete(item.id ?? 0)}
+        onDisable={() => onDisable(item.id ?? 0)}
+        onActivate={() => onActivate(item.id ?? 0)}
+        onDelete={() => onDelete?.(item.id ?? 0)}
         showImage={true}
         showStatus={true}
         variant="default"
