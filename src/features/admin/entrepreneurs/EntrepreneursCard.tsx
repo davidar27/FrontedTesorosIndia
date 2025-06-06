@@ -7,6 +7,7 @@ import { entrepreneursApi } from '@/services/admin/entrepernaur';
 import { formatDate } from './entrepreneurHelpers';
 import { toast } from 'react-hot-toast';
 import { QueryObserverResult } from '@tanstack/react-query';
+import React from 'react';
 
 interface EntrepreneurCardProps {
     item: Entrepreneur;
@@ -16,9 +17,10 @@ interface EntrepreneurCardProps {
     onView?: (item: Entrepreneur) => void;
     onDelete?: (id: number) => void;
     refetch: () => Promise<QueryObserverResult<Entrepreneur[], unknown>>;
+    onRetry?: () => void;
 }
 
-export function EntrepreneurCard({
+export const EntrepreneurCard = React.memo(function EntrepreneurCard({
     item,
     onEdit,
     onDisable,
@@ -149,7 +151,8 @@ return (
         showStatus={true}
         variant="default"
         clickable={!!onView}
+        title='Emprendedor'
     >
     </ReusableCard>
 );
-}
+});

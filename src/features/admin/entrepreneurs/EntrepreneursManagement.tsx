@@ -11,14 +11,11 @@ import { usePermissions } from '@/hooks/usePermissions';
 import { useAuthenticatedQuery } from '@/hooks/useAuthenticatedQuery';
 import { useProtectedMutation } from '@/hooks/useProtectedMutation';
 import { Entrepreneur, CreateEntrepreneurData } from '@/features/admin/entrepreneurs/EntrepreneursTypes';
-import ConfirmDialog from '@/components/ui/feedback/ConfirmDialog';
+import { normalizeStatus } from '@/features/admin/entrepreneurs/normalizeStatus';
 
 
 export default function EntrepreneursManagement() {
     const [showCreateForm, setShowCreateForm] = useState(false);
-    const [confirmOpen, setConfirmOpen] = useState(false);
-    const [toDeleteId, setToDeleteId] = useState<number | null>(null);
-    const [deleteLoading, setDeleteLoading] = useState(false);
     const queryClient = useQueryClient();
     const { isAuthenticated, isLoading: authLoading } = useAuth();
     const { hasPermission, isAdmin } = usePermissions();
@@ -37,15 +34,15 @@ export default function EntrepreneursManagement() {
             const data = await entrepreneursApi.getAll();
             return data;
         },
-        staleTime: 5 * 60 * 1000,
-        retry: 2
+        staleTime: 5 * 60 * 1000, 
+        retry: 1
     });
 
     const createMutation = useProtectedMutation({
         mutationFn: entrepreneursApi.create,
         requiredPermission: 'entrepreneurs:create',
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] });
+            // queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] });
             setShowCreateForm(false);
             toast.success('Emprendedor creado exitosamente');
         },
@@ -60,9 +57,15 @@ export default function EntrepreneursManagement() {
     const statusMutation = useProtectedMutation({
         mutationFn: ({ id, status }: { id: number; status: 'active' | 'inactive' }) =>
             entrepreneursApi.changeStatus(id, status),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] });
-            queryClient.invalidateQueries({ queryKey: ['Experiences'] });
+        onSuccess: (data, variables) => {
+            queryClient.setQueryData<Entrepreneur[]>(['entrepreneurs'], (old) => {
+                if (!old) return old;
+                return old.map(e =>
+                    e.id === variables.id
+                        ? { ...e, status: normalizeStatus(data.status) }
+                        : e
+                );
+            });
             toast.success('Estado del emprendedor actualizado exitosamente');
         },
         onError: (error: Error) => {
@@ -74,7 +77,7 @@ export default function EntrepreneursManagement() {
         mutationFn: (id: number) => entrepreneursApi.delete(id),
         requiredPermission: 'entrepreneurs:delete',
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] });
+            // queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] });
             toast.success('Emprendedor eliminado exitosamente');
         },
         onError: (error: Error) => {
@@ -122,23 +125,6 @@ export default function EntrepreneursManagement() {
         });
     };
 
-    const handleConfirmDelete = async () => {
-        if (toDeleteId == null) return;
-        setDeleteLoading(true);
-        try {
-            await statusMutation.mutateAsync({ id: toDeleteId, status: 'inactive' });
-            setConfirmOpen(false);
-            setToDeleteId(null);
-        } finally {
-            setDeleteLoading(false);
-        }
-    };
-
-    const handleCancelDelete = () => {
-        setConfirmOpen(false);
-        setToDeleteId(null);
-    };
-
     const handleCreate = () => {
         if (!canCreate) {
             toast.error('No tienes permisos para crear emprendedores');
@@ -163,7 +149,14 @@ export default function EntrepreneursManagement() {
     };
 
     const handleStatusChange = (id: number, status: 'active' | 'inactive') => {
-        statusMutation.mutate({ id, status });
+        toast.promise(
+            statusMutation.mutateAsync({ id, status }),
+            {
+                loading: 'Cambiando estado del emprendedor...',
+                success: 'Estado del emprendedor actualizado exitosamente',
+                error: 'Error al cambiar el estado del emprendedor'
+            }
+        );
     };
 
     const handleDelete = (entrepreneurId: number) => {
@@ -213,6 +206,7 @@ export default function EntrepreneursManagement() {
         CardComponent: (props) => (
             <EntrepreneurCard
                 {...props}
+                key={`${props.item.id}-${props.item.name}-${props.item.email}-${props.item.phone}-${props.item.name_experience}`}
                 onEdit={handleEdit}
                 onDisable={() => handleStatusChange(props.item.id!, 'inactive')}
                 onActivate={() => handleStatusChange(props.item.id!, 'active')}
@@ -227,16 +221,6 @@ export default function EntrepreneursManagement() {
 
     return (
         <>
-            <ConfirmDialog
-                open={confirmOpen}
-                title="¿Desactivar emprendedor?"
-                description="Esta acción no se puede deshacer. ¿Deseas continuar?"
-                confirmText="Desactivar"
-                cancelText="Cancelar"
-                onConfirm={handleConfirmDelete}
-                onCancel={handleCancelDelete}
-                loading={deleteLoading}
-            />
             {showCreateForm ? (
                 <CreateEntrepreneurForm
                     onSubmit={handleCreateSubmit}

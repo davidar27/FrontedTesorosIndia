@@ -1,8 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Edit, LucideIcon, Check, X, Trash } from 'lucide-react';
 import Picture from '@/components/ui/display/Picture';
 import Avatar from '@/components/ui/display/Avatar';
 import { toast } from 'sonner';
+import ConfirmDialog from '@/components/ui/feedback/ConfirmDialog';
+import { normalizeStatus } from '@/features/admin/entrepreneurs/normalizeStatus';
 
 interface StatusConfig {
     active: { bg: string; text: string; label: string };
@@ -66,6 +68,7 @@ interface ReusableCardProps<T> {
     onClick?: (item: T) => void;
     loading?: boolean;
     children?: React.ReactNode;
+    title?: string;
 }
 
 // Configuración por defecto para estados
@@ -130,8 +133,12 @@ export function ReusableCard<T extends BaseItem>({
     clickable = false,
     onClick,
     loading = false,
-    children
+    children,
+    title
 }: ReusableCardProps<T>) {
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [confirmAction, setConfirmAction] = useState<'delete' | 'activate' | 'disable' | null>(null);
+
     const getStatusStyle = (status: string) => {
         const config = statusConfig[status] || statusConfig.active;
         return `${config.bg} ${config.text}`;
@@ -144,7 +151,8 @@ export function ReusableCard<T extends BaseItem>({
 
     const defaultActions: ActionButton[] = useMemo(() => {
         const actionsArr: ActionButton[] = [];
-        const status = (item.status || '').toLowerCase();
+        const status = normalizeStatus(item.status);
+
         
         if (onEdit) {
             actionsArr.push({
@@ -160,32 +168,32 @@ export function ReusableCard<T extends BaseItem>({
             actionsArr.push({
                 icon: X,
                 label: variant === 'default' ? 'Desactivar' : undefined,
-                onClick: () => onDisable(item.id),
+                onClick: () => handleActionWithConfirm('disable'),
                 variant: 'danger',
                 fullWidth: false,
-                tooltip: 'Desactivar elemento'
+                tooltip: `Desactivar ${title}`
             });
         } else if (status === 'inactive' && onActivate) {
             actionsArr.push({
                 icon: Check,
                 label: variant === 'default' ? 'Activar' : undefined,
-                onClick: () => onActivate(item.id),
+                onClick: () => handleActionWithConfirm('activate'),
                 variant: 'success',
                 fullWidth: false,
-                tooltip: 'Activar elemento'
+                tooltip: `Activar ${title}`
             });
         } else if (status === 'pending' && onDelete) {
             actionsArr.push({
                 icon: Trash,
                 label: variant === 'default' ? 'Eliminar' : undefined,
-                onClick: () => onDelete(item.id),
+                onClick: () => handleActionWithConfirm('delete'),
                 variant: 'danger',
                 fullWidth: false,
-                tooltip: 'Eliminar elemento'
+                tooltip: `Eliminar ${title}`
             });
         }
         return actionsArr;
-    }, [onEdit, onDisable, onActivate, onDelete, item, variant]);
+    }, [onEdit, onDisable, onActivate, onDelete, item, variant,title]);
 
     const finalActions = actions.length > 0 ? actions : defaultActions;
 
@@ -206,6 +214,21 @@ export function ReusableCard<T extends BaseItem>({
         }
     };
 
+    const handleActionWithConfirm = (action: 'delete' | 'activate' | 'disable') => {
+        setConfirmAction(action);
+        setConfirmOpen(true);
+    };
+
+    const handleConfirm = () => {
+        if (confirmAction === 'delete' && onDelete) onDelete(item.id);
+        if (confirmAction === 'activate' && onActivate) onActivate(item.id);
+        if (confirmAction === 'disable' && onDisable) onDisable(item.id);
+        setConfirmOpen(false);
+        setConfirmAction(null);
+    };
+
+    const isActionDisabled = confirmOpen || loading;
+
     const cardClasses = `
         bg-white rounded-2xl shadow-lg border border-gray-100 
         hover:shadow-xl transition-all duration-300 group animate-fade-in-up 
@@ -223,6 +246,11 @@ export function ReusableCard<T extends BaseItem>({
                 </div>
             </div>
         );
+    }
+
+    if (!item.id) {
+        toast.error('ID de emprendedor no definido');
+        return;
     }
 
     return (
@@ -327,7 +355,7 @@ export function ReusableCard<T extends BaseItem>({
                         <button
                             key={index}
                             onClick={action.onClick}
-                            disabled={action.disabled || action.loading}
+                            disabled={action.disabled || action.loading || isActionDisabled}
                             title={action.tooltip}
                             className={`
                                 ${action.fullWidth ? 'flex-1' : ''} 
@@ -347,6 +375,33 @@ export function ReusableCard<T extends BaseItem>({
                     ))}
                 </div>
             )}
+
+            <ConfirmDialog
+                open={confirmOpen}
+                onConfirm={handleConfirm}
+                onCancel={() => setConfirmOpen(false)}
+                title={
+                    confirmAction === 'delete'
+                        ? `¿Eliminar ${title}?`
+                        : confirmAction === 'activate'
+                        ? `¿Activar ${title}?`
+                        : `¿Desactivar ${title}?`
+                }
+                description={
+                    confirmAction === 'delete'
+                        ? 'Esta acción no se puede deshacer. ¿Deseas continuar?'
+                        : confirmAction === 'activate'
+                        ? `¿Deseas activar ${item.name}?`
+                        : `¿Deseas desactivar ${item.name}?`
+                }
+                confirmText={
+                    confirmAction === 'delete'
+                        ? 'Eliminar'
+                        : confirmAction === 'activate'
+                        ? 'Activar'
+                        : 'Desactivar'
+                }
+            />
         </div>
     );
 }

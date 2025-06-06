@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { axiosInstance } from '@/api/axiosInstance';
 import { Entrepreneur, CreateEntrepreneurData, UpdateEntrepreneurData } from '@/features/admin/entrepreneurs/EntrepreneursTypes';
+import { normalizeStatus } from '@/features/admin/entrepreneurs/normalizeStatus';
 
 interface EntrepreneurResponse {
     id: number;
@@ -63,7 +64,7 @@ export const entrepreneursApi = {
                     email: entrepreneur.email,
                     phone: entrepreneur.phone,
                     image: getImageUrl(entrepreneur.image),
-                    status,
+                    status: normalizeStatus(status),
                     joinDate: entrepreneur.joinDate,
                     name_experience: entrepreneur.name_experience
                 } as Entrepreneur;
@@ -145,7 +146,7 @@ export const entrepreneursApi = {
                 email: response.data.updatedFields.email ?? '',
                 phone: response.data.updatedFields.phone ?? '',
                 image: getImageUrl(response.data.updatedFields.image) ?? null,
-                status: response.data.updatedFields.status ?? 'active',
+                status: normalizeStatus(response.data.updatedFields.status ?? 'active'),
                 joinDate: response.data.updatedFields.joinDate ?? '',
                 name_experience: response.data.updatedFields.name_experience ?? '',
             };
@@ -214,7 +215,7 @@ export const entrepreneursApi = {
                 email: updated.email ?? '',
                 phone: updated.phone ?? '',
                 image: getImageUrl(updated.image) ?? null,
-                status: updated.status ?? 'active',
+                status: normalizeStatus(updated.status ?? 'active'),
                 joinDate: updated.joinDate ?? '',
                 name_experience: updated.name_experience ?? '',
             };
@@ -237,11 +238,9 @@ export const entrepreneursApi = {
             return response.data;
         } catch (error: any) {
             console.error('Error changing entrepreneur status:', error);
-
             if (error.response?.status === 404) {
                 throw new Error('Emprendedor no encontrado');
             }
-
             throw new Error('Error al cambiar el estado del emprendedor');
         }
     },

@@ -6,9 +6,13 @@ interface ItemsGridProps<T extends BaseEntity<string>> {
         item: T;
         onEdit: (item: T) => void;
         onDelete: (id: number) => void;
+        onActivate: (id: number) => void;
+        onDisable: (id: number) => void;
     }>;
     onEdit: (item: T) => void;
     onDelete: (id: number) => void;
+    onActivate: (id: number) => void;
+    onDisable: (id: number) => void;
     enableAnimations?: boolean;
 }
 
@@ -17,6 +21,8 @@ export function ItemsGrid<T extends BaseEntity<string>>({
     ItemCard,
     onEdit,
     onDelete,
+    onActivate,
+    onDisable,
     enableAnimations = true
 }: ItemsGridProps<T>) {
     return (
@@ -30,9 +36,12 @@ export function ItemsGrid<T extends BaseEntity<string>>({
                     } : undefined}
                 >
                     <ItemCard
+                        key={`${item.id}-${item.name}-${item.email}-${item.phone}-${item.name_experience}`}
                         item={item}
                         onEdit={onEdit}
                         onDelete={onDelete}
+                        onActivate={onActivate}
+                        onDisable={onDisable}
                     />
                 </div>
             ))}

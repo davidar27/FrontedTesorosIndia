@@ -25,6 +25,9 @@ export interface EntityConfig<T extends BaseEntity<string>> {
         item: T;
         onEdit: (item: T) => void;
         onDelete: (id: number) => void;
+        onActivate: (id: number) => void;
+        onDisable: (id: number) => void;
+        onRetry?: () => void;
     }>;
 
     // Callbacks
@@ -32,6 +35,8 @@ export interface EntityConfig<T extends BaseEntity<string>> {
     onDelete: (id: number) => void;
     onCreate: () => void;
     onRetry?: () => void;
+    onActivate: (id: number) => void;
+    onDisable: (id: number) => void;   
 
     // Filtros personalizados (opcional)
     customFilters?: React.ComponentType<{

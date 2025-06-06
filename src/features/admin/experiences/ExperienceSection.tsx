@@ -1,4 +1,4 @@
-import { useQueryClient } from '@tanstack/react-query';
+// import { useQueryClient } from '@tanstack/react-query';
 import GenericManagement from '@/components/admin/GenericManagent';
 import useAuth from '@/context/useAuth';
 import { usePermissions } from '@/hooks/usePermissions';
@@ -11,7 +11,7 @@ import CreateExperiencesConfig from '@/features/admin/experiences/CreateExperien
 import { toast } from 'sonner';
 
 export default function ExperiencesManagement() {
-    const queryClient = useQueryClient();
+    // const queryClient = useQueryClient();
     const { isAuthenticated, isLoading: authLoading } = useAuth();
     const { hasPermission, isAdmin } = usePermissions();
 
@@ -34,8 +34,8 @@ export default function ExperiencesManagement() {
         mutationFn: ExperiencesApi.deleteExperience,
         requiredPermission: 'experiencias:delete',
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['Experiences'] });
-            queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] });
+            // queryClient.invalidateQueries({ queryKey: ['Experiences'] });
+            // queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] });
             toast.success('Experiencia desactivada exitosamente');
         },
         onError: (error: Error) => {

@@ -8,6 +8,9 @@ interface EntrepreneursConfigParams {
         item: Entrepreneur;
         onEdit: (item: Entrepreneur) => void;
         onDelete: (id: number) => void;
+        onActivate: (id: number) => void;
+        onDisable: (id: number) => void;
+        onRetry?: () => void;
     }>;
     actions: {
         onEdit?: (item: Entrepreneur) => void;
@@ -15,6 +18,7 @@ interface EntrepreneursConfigParams {
         onCreate?: () => void;
         onDisable?: (id: number) => void;
         onActivate?: (id: number) => void;
+        onRetry?: () => void;
     };
 }
 
@@ -51,5 +55,7 @@ export const EntrepreneursConfig = ({
     onEdit: actions.onEdit || (() => {}),
     onDelete: actions.onDelete || (() => {}),
     onCreate: actions.onCreate || (() => {}),
-    onRetry: () => {},
+    onRetry: actions.onRetry || (() => {}),
+    onActivate: actions.onActivate || (() => {}),
+    onDisable: actions.onDisable || (() => {}),
 });

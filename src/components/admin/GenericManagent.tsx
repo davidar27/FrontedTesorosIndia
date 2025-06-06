@@ -33,7 +33,9 @@ export default function GenericManagement<T extends BaseEntity<string>>({
         onEdit,
         onDelete,
         onCreate,
-        onRetry
+        onRetry,
+        onActivate,
+        onDisable
     } = config;
 
     const searchFunction = config.searchFunction || defaultSearchFunction;
@@ -152,7 +154,15 @@ export default function GenericManagement<T extends BaseEntity<string>>({
                     items={finalFilteredItems}
                     ItemCard={ItemCard}
                     onEdit={onEdit}
-                    onDelete={onDelete}
+                    onDelete={(id: number) => {
+                        onDelete(id);
+                    }}
+                    onActivate={(id: number) => {
+                        onActivate(id);
+                    }}
+                    onDisable={(id: number) => {
+                        onDisable(id);
+                    }}
                     enableAnimations={enableAnimations}
                 />
             )}
