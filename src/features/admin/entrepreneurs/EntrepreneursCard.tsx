@@ -16,7 +16,7 @@ interface EntrepreneurCardProps {
     onActivate: (id: number) => void;
     onView?: (item: Entrepreneur) => void;
     onDelete?: (id: number) => void;
-    refetch: () => Promise<QueryObserverResult<Entrepreneur[], unknown>>;
+    refetch?: () => Promise<QueryObserverResult<Entrepreneur[], unknown>>;
     onRetry?: () => void;
 }
 
@@ -64,7 +64,7 @@ export const EntrepreneurCard = React.memo(function EntrepreneurCard({
                 ...updatedFields, 
                 image: typeof updatedFields.image === 'string' ? updatedFields.image : item.image 
             });
-            await refetch();
+            await refetch?.();
         } catch (error) {
             console.error('Error al actualizar el emprendedor:', error);
             toast.error('Error al actualizar el emprendedor');
