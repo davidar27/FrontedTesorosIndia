@@ -5,6 +5,7 @@ import Avatar from '@/components/ui/display/Avatar';
 import { toast } from 'sonner';
 import ConfirmDialog from '@/components/ui/feedback/ConfirmDialog';
 import { normalizeStatus } from '@/features/admin/entrepreneurs/normalizeStatus';
+import LoadingSpinner from '@/components/layouts/LoadingSpinner';
 
 interface StatusConfig {
     active: { bg: string; text: string; label: string };
@@ -57,8 +58,7 @@ interface ReusableCardProps<T> {
     actions?: ActionButton[];
     statusConfig?: StatusConfig;
     onEdit?: (item: T) => void;
-    onDisable?: (id: number) => void;
-    onActivate?: (id: number) => void;  
+    onChangeStatus?: (id: number, status: string) => void;
     onDelete?: (id: number) => void;
     showImage?: boolean;
     showStatus?: boolean;
@@ -108,13 +108,6 @@ const copyToClipboard = async (text: string) => {
     }
 };
 
-// Componente de Loading Spinner
-const LoadingSpinner: React.FC<{ size?: number }> = ({ size = 16 }) => (
-    <div
-        className="animate-spin rounded-full border-2 border-current border-t-transparent"
-        style={{ width: size, height: size }}
-    />
-);
 
 export function ReusableCard<T extends BaseItem>({
     item,
@@ -123,8 +116,7 @@ export function ReusableCard<T extends BaseItem>({
     actions = [],
     statusConfig = DEFAULT_STATUS_CONFIG,
     onEdit,
-    onDisable,
-    onActivate,
+    onChangeStatus,
     onDelete,
     showImage = true,
     showStatus = true,
@@ -164,7 +156,7 @@ export function ReusableCard<T extends BaseItem>({
                 tooltip: 'Editar elemento'
             });
         }
-        if (status === 'active' && onDisable) {
+        if (status === 'active' && onChangeStatus) {
             actionsArr.push({
                 icon: X,
                 label: variant === 'default' ? 'Desactivar' : undefined,
@@ -173,7 +165,7 @@ export function ReusableCard<T extends BaseItem>({
                 fullWidth: false,
                 tooltip: `Desactivar ${title}`
             });
-        } else if (status === 'inactive' && onActivate) {
+        } else if (status === 'inactive' && onChangeStatus) {
             actionsArr.push({
                 icon: Check,
                 label: variant === 'default' ? 'Activar' : undefined,
@@ -193,7 +185,7 @@ export function ReusableCard<T extends BaseItem>({
             });
         }
         return actionsArr;
-    }, [onEdit, onDisable, onActivate, onDelete, item, variant,title]);
+    }, [onEdit, onChangeStatus, onDelete, item, variant,title]);
 
     const finalActions = actions.length > 0 ? actions : defaultActions;
 
@@ -221,8 +213,8 @@ export function ReusableCard<T extends BaseItem>({
 
     const handleConfirm = () => {
         if (confirmAction === 'delete' && onDelete) onDelete(item.id);
-        if (confirmAction === 'activate' && onActivate) onActivate(item.id);
-        if (confirmAction === 'disable' && onDisable) onDisable(item.id);
+        if (confirmAction === 'activate' && onChangeStatus) onChangeStatus(item.id, 'active');
+        if (confirmAction === 'disable' && onChangeStatus) onChangeStatus(item.id, 'inactive');
         setConfirmOpen(false);
         setConfirmAction(null);
     };
@@ -238,23 +230,23 @@ export function ReusableCard<T extends BaseItem>({
         ${className}
     `.trim();
 
-    if (loading) {
-        return (
-            <div className={cardClasses}>
-                <div className="flex items-center justify-center h-32">
-                    <LoadingSpinner size={32} />
-                </div>
-            </div>
-        );
-    }
-
-    if (!item.id) {
-        toast.error('ID de emprendedor no definido');
-        return;
-    }
 
     return (
-        <div className={cardClasses} onClick={handleCardClick}>
+        <div className={cardClasses} style={{ position: 'relative' }} onClick={handleCardClick}>
+            {/* Loading Spinner superpuesto */}
+            {loading && (
+                <div style={{
+                    position: 'absolute',
+                    top: 0, left: 0, right: 0, bottom: 0,
+                    background: 'rgba(255,255,255,0.7)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 20
+                }}>
+                    <LoadingSpinner message="Cargando..." />
+                </div>
+                )}
             {/* Header */}
             <div className="relative flex items-start justify-between mb-4">
                 <div className="flex-1 min-w-0">

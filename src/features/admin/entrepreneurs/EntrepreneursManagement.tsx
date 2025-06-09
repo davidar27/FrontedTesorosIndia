@@ -5,27 +5,26 @@ import { EntrepreneurCard } from '@/features/admin/entrepreneurs/EntrepreneursCa
 import { CreateEntrepreneurForm } from '@/features/admin/entrepreneurs/CreateEntrepreneurForm';
 import { EntrepreneursConfig } from '@/features/admin/entrepreneurs/EntrepreneursConfig';
 import { Entrepreneur, CreateEntrepreneurData } from '@/features/admin/entrepreneurs/EntrepreneursTypes';
-import { useGenericManagement } from '@/hooks/useGenericManagement';
+import { useEntrepreneursManagement } from '@/services/admin/useEntrepreneursManagement';
 
 export default function EntrepreneursManagement() {
     const [showCreateForm, setShowCreateForm] = useState(false);
     const {
-        items: entrepreneurs,
-        isLoading = false,
-        error,
+        items,
         create,
-        update,
-        delete: deleteItem,
         isCreating,
-        // isUpdating,
-        // isDeleting
-    } = useGenericManagement<Entrepreneur>('entrepreneurs', '/dashboard/emprendedores');
+    } = useEntrepreneursManagement();
+
+    const entrepreneurs = Array.isArray(items) ? items : [];
 
     const handleCreateSubmit = (data: CreateEntrepreneurData) => {
         toast.promise(
             new Promise((resolve, reject) => {
                 create(data as unknown as Entrepreneur, {
-                    onSuccess: resolve,
+                    onSuccess: () => {
+                        resolve(true);
+                        setShowCreateForm(false);
+                    },
                     onError: reject
                 });
             }),
@@ -34,7 +33,7 @@ export default function EntrepreneursManagement() {
                 success: 'Emprendedor creado exitosamente',
                 error: (err) => err.message
             }
-        ).then(() => setShowCreateForm(false));
+        );
     };
 
     const config = EntrepreneursConfig({
@@ -42,16 +41,19 @@ export default function EntrepreneursManagement() {
         CardComponent: (props) => (
             <EntrepreneurCard
                 {...props}
-                onEdit={(id, updatedFields) => update({ id, ...updatedFields } as Entrepreneur)}
-                onDelete={deleteItem}
-                onActivate={() => {}}
-                onDisable={() => {}}
             />
         ),
         actions: {
             onCreate: () => setShowCreateForm(true),
-            onEdit: (item) => update(item),
-            onDelete: deleteItem
+            onUpdate: () => {
+                toast.success('Emprendedor actualizado');
+            },
+            onDelete: () => {
+                toast.success('Emprendedor eliminado');
+            },
+            onChangeStatus: () => {
+               
+            }
         }
     });
 
@@ -64,11 +66,7 @@ export default function EntrepreneursManagement() {
                     isLoading={isCreating}
                 />
             ) : (
-                <GenericManagement<Entrepreneur>
-                    config={config}
-                    isLoading={ isLoading}
-                    error={error as string | null}
-                />
+                <GenericManagement<Entrepreneur> config={config} />
             )}
         </>
     );

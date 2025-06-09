@@ -5,6 +5,7 @@ import { Entrepreneur, UpdateEntrepreneurData } from '@/features/admin/entrepren
 import Button from '@/components/ui/buttons/Button';
 import Avatar from '@/components/ui/display/Avatar';
 import { fileToWebp } from '@/utils/imageToWebp';
+import { getImageUrl } from '@/features/admin/entrepreneurs/entrepreneurHelpers';
 
 interface EditableEntrepreneurCardProps {
     item: Entrepreneur;
@@ -25,7 +26,7 @@ export function EditableEntrepreneurCard({
         phone: item.phone,
         name_experience: item.name_experience,
     });
-    const [imagePreview, setImagePreview] = useState<string | undefined>(item.image as string || ' ');
+    const [imagePreview, setImagePreview] = useState<string | undefined>(undefined);
     const [imageError, setImageError] = useState(false);
     const [retryCount, setRetryCount] = useState(0);
     const [loadingImage, setLoadingImage] = useState(false);
@@ -107,7 +108,6 @@ export function EditableEntrepreneurCard({
             icon: Home
         }
     ];
-
     return (
         <form onSubmit={handleSubmit} className="text-center flex flex-col items-center shadow-xl border-1 border-gray-200 rounded-lg p-4 hover:shadow-2xl transition-all duration-300">
             <div className=" flex flex-col items-center mb-6">
@@ -120,7 +120,7 @@ export function EditableEntrepreneurCard({
                         <Avatar name={item.name} size={96} />
                     ) : (
                         <img
-                            src={imagePreview || item.image}
+                            src={imagePreview ? imagePreview : getImageUrl(item.image) || ''}
                             alt={item.name || 'Avatar'}
                             className="w-24 h-24 rounded-full object-cover"
                             onError={() => {

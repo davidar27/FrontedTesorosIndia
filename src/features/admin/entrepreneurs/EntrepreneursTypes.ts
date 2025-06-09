@@ -40,6 +40,7 @@ export interface EntrepreneurCardProps {
     entrepreneur: Entrepreneur;
     onEdit: (entrepreneur: Entrepreneur) => void;
     onDelete: (id: number) => void;
+    onChangeStatus: (id: number, status: string) => void;
 }
 
 // Tipos para autenticación

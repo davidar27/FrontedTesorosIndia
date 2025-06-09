@@ -6,20 +6,35 @@ interface EntrepreneursConfigParams {
     data: Entrepreneur[];
     CardComponent: React.ComponentType<{
         item: Entrepreneur;
-        onEdit: (item: Entrepreneur) => void;
+        onUpdate: (item: Entrepreneur) => void;
         onDelete: (id: number) => void;
-        onActivate: (id: number) => void;
-        onDisable: (id: number) => void;
+        onChangeStatus: (id: number, status: string) => void;
         onRetry?: () => void;
     }>;
     actions: {
-        onEdit?: (item: Entrepreneur) => void;
+        onUpdate?: (item: Entrepreneur) => void;
         onDelete?: (id: number) => void;
         onCreate?: () => void;
-        onDisable?: (id: number) => void;
-        onActivate?: (id: number) => void;
+        onChangeStatus?: (id: number, status: string) => void;
         onRetry?: () => void;
     };
+}
+
+const statusPriority = {
+    active: 1,
+    pending: 2,
+    inactive: 3
+};
+
+function sortByStatus(a: Entrepreneur, b: Entrepreneur) {
+    const getStatus = (e: Entrepreneur) => {
+        const s = (e.status || '').toLowerCase();
+        if (s === 'activo' || s === 'active') return 'active';
+        if (s === 'pendiente' || s === 'pending') return 'pending';
+        if (s === 'inactivo' || s === 'inactive') return 'inactive';
+        return 'inactive';
+    };
+    return statusPriority[getStatus(a)] - statusPriority[getStatus(b)];
 }
 
 export const EntrepreneursConfig = ({
@@ -35,7 +50,7 @@ export const EntrepreneursConfig = ({
     emptyStateTitle: "No hay emprendedores",
     emptyStateDescription: "Crea el primer emprendedor para comenzar",
     description: "Gestiona emprendedores",
-    items: data,
+    items: data.sort(sortByStatus),
     isLoading: false,
     error: null,
     maxResults: 50,
@@ -52,10 +67,9 @@ export const EntrepreneursConfig = ({
             entrepreneur.name_experience?.toLowerCase().includes(searchLower)
         );
     },
-    onEdit: actions.onEdit || (() => {}),
+    onUpdate: actions.onUpdate || (() => {}),
     onDelete: actions.onDelete || (() => {}),
     onCreate: actions.onCreate || (() => {}),
     onRetry: actions.onRetry || (() => {}),
-    onActivate: actions.onActivate || (() => {}),
-    onDisable: actions.onDisable || (() => {}),
+    onChangeStatus: actions.onChangeStatus || (() => {}),
 });

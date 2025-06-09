@@ -6,9 +6,11 @@ export type Experiencestatus = 'Borrador' | 'Publicada' | 'Inactiva';
 export interface ExperienceResponse {
     id: number;
     name_experience: string;
+    name_entrepreneur: string;
     description: string;
     location: string | 'Por definir';
     type: string | ' ';
+    image: string | ' ';
     created_at: string;
     status: Experiencestatus;
     entrepreneur_id: string | number;
@@ -17,9 +19,11 @@ export interface ExperienceResponse {
 // Tipo para el manejo interno en la aplicación
 export interface Experience extends BaseEntity<Experiencestatus> {
     name_experience: string;
+    name_entrepreneur: string;
     description: string;
     location: string | 'Por definir';
     type: string | ' ';
+    image: string | ' ';
     created_at: string;
     entrepreneur_id: string | number;
 }
@@ -31,16 +35,11 @@ export interface ExperienceApiResponse {
 
 export interface ExperienceCardProps {
     Experience: Experience;
-    onEdit: (id: number) => void;
+    onUpdate: (id: number) => void;
     onDelete: (id: number) => void;
 }
 
-export interface CreateExperienceData {
-    name_experience: string;
-    description: string;
-    location: string;
-    type: string | ' ';
-}
+
 
 export interface UpdateExperienceData {
     name_experience?: string;
@@ -53,6 +52,7 @@ export interface UpdateExperienceData {
 export interface RawExperienceResponse {
     id: number;
     name_experience: string;
+    name_entrepreneur: string;
     description?: string;
     location: string;
     type?: string;

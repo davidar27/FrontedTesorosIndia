@@ -1,6 +1,6 @@
 import React from 'react';
 import { PageWrapper } from '@/components/admin/PageWrapper';
-import ExperiencesManagement from '@/features/admin/experiences/ExperienceSection';
+import ExperiencesManagement from '@/features/admin/experiences/ExperiencesManagement';
 
 const ExperiencesPage: React.FC = () => (
     <PageWrapper

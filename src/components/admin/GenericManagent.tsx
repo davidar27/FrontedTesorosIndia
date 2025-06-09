@@ -30,12 +30,11 @@ export default function GenericManagement<T extends BaseEntity<string>>({
         emptyStateDescription,
         items,
         ItemCard,
-        onEdit,
+        onUpdate,
         onDelete,
         onCreate,
         onRetry,
-        onActivate,
-        onDisable
+        onChangeStatus
     } = config;
 
     const searchFunction = config.searchFunction || defaultSearchFunction;
@@ -69,6 +68,16 @@ export default function GenericManagement<T extends BaseEntity<string>>({
     useEffect(() => {
         setFilteredByCustomFilters(items);
     }, [items]);
+
+
+
+
+    const handleUpdate = useCallback(
+        async (item: T) => {
+            await onUpdate(item);
+        },
+        [onUpdate]
+    );
 
     if (isLoading) {
         return <LoadingState entityNamePlural={entityNamePlural} />;
@@ -153,15 +162,12 @@ export default function GenericManagement<T extends BaseEntity<string>>({
                 <ItemsGrid
                     items={finalFilteredItems}
                     ItemCard={ItemCard}
-                    onEdit={onEdit}
+                    onUpdate={handleUpdate}
                     onDelete={(id: number) => {
                         onDelete(id);
                     }}
-                    onActivate={(id: number) => {
-                        onActivate(id);
-                    }}
-                    onDisable={(id: number) => {
-                        onDisable(id);
+                    onChangeStatus={(id: number, status: string) => {
+                        onChangeStatus(id, status);
                     }}
                     enableAnimations={enableAnimations}
                 />
@@ -176,6 +182,7 @@ export default function GenericManagement<T extends BaseEntity<string>>({
                     </p>
                 </div>
             )}
+
         </>
     );
 }

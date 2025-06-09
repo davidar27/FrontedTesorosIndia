@@ -23,20 +23,19 @@ export interface EntityConfig<T extends BaseEntity<string>> {
     // Componentes
     ItemCard: React.ComponentType<{
         item: T;
-        onEdit: (item: T) => void;
+        onCreate?: () => void;
+        onUpdate: (item: T) => void;
         onDelete: (id: number) => void;
-        onActivate: (id: number) => void;
-        onDisable: (id: number) => void;
+        onChangeStatus: (id: number, status: string) => void;
         onRetry?: () => void;
     }>;
 
     // Callbacks
-    onEdit: (item: T) => void;
+    onUpdate: (item: T) => void;
     onDelete: (id: number) => void;
-    onCreate: () => void;
+    onCreate?: () => void;
     onRetry?: () => void;
-    onActivate: (id: number) => void;
-    onDisable: (id: number) => void;   
+    onChangeStatus: (id: number, status: string) => void;
 
     // Filtros personalizados (opcional)
     customFilters?: React.ComponentType<{

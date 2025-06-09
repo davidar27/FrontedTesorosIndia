@@ -3,34 +3,25 @@ import { ReusableCard } from '@/components/admin/Card';
 import { Phone, Mail, Calendar, Home } from 'lucide-react';
 import { Entrepreneur, UpdateEntrepreneurData } from '@/features/admin/entrepreneurs/EntrepreneursTypes';
 import { EditableEntrepreneurCard } from './EditableEntrepreneurCard';
-import { entrepreneursApi } from '@/services/admin/entrepernaur';
-import { formatDate } from './entrepreneurHelpers';
+import { useEntrepreneursManagement } from '@/services/admin/useEntrepreneursManagement';
+import { formatDate, normalizeStatus, getImageUrl } from './entrepreneurHelpers';
 import { toast } from 'react-hot-toast';
-import { QueryObserverResult } from '@tanstack/react-query';
 import React from 'react';
 
 interface EntrepreneurCardProps {
     item: Entrepreneur;
-    onEdit: (id: number, updatedFields: Partial<Entrepreneur>) => void;
-    onDisable: (id: number) => void;
-    onActivate: (id: number) => void;
-    onView?: (item: Entrepreneur) => void;
+    onUpdate: (item: Entrepreneur) => void;
     onDelete?: (id: number) => void;
-    refetch?: () => Promise<QueryObserverResult<Entrepreneur[], unknown>>;
-    onRetry?: () => void;
 }
 
 export const EntrepreneurCard = React.memo(function EntrepreneurCard({
     item,
-    onEdit,
-    onDisable,
-    onActivate,
+    onUpdate,
     onDelete,
-    onView,
-    refetch
 }: EntrepreneurCardProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const { update, changeStatus } = useEntrepreneursManagement();
 
     const handleEditClick = () => {
         setIsEditing(true);
@@ -40,37 +31,45 @@ export const EntrepreneurCard = React.memo(function EntrepreneurCard({
         setIsEditing(false);
     };
 
-    const handleSave = async (id: number, data: UpdateEntrepreneurData) => {
+    const handleSave = (id: number, data: UpdateEntrepreneurData) => {
         setIsEditing(false);
-        try {
-            setIsLoading(true);
+        setIsLoading(true);
 
-            const changedFields: Partial<UpdateEntrepreneurData> = {};
-            if (data.name && data.name !== item.name) changedFields.name = data.name;
-            if (data.email && data.email !== item.email) changedFields.email = data.email;
-            if (data.phone && data.phone !== item.phone) changedFields.phone = data.phone;
-            if (data.name_experience && data.name_experience !== item.name_experience) changedFields.name_experience = data.name_experience;
-            if (data.image) changedFields.image = data.image;
+        const changedFields: Partial<UpdateEntrepreneurData> = {};
+        if (data.name && data.name !== item.name) changedFields.name = data.name;
+        if (data.email && data.email !== item.email) changedFields.email = data.email;
+        if (data.phone && data.phone !== item.phone) changedFields.phone = data.phone;
+        if (data.name_experience && data.name_experience !== item.name_experience) changedFields.name_experience = data.name_experience;
+        if (data.image) changedFields.image = data.image;
 
-            if (Object.keys(changedFields).length === 0) {
-                toast.error('No realizaste ningún cambio.');
-                setIsLoading(false);
-                return;
-            }
-
-            const updatedFields = await entrepreneursApi.update(id, changedFields);
-            onEdit(id, { 
-                ...item, 
-                ...updatedFields, 
-                image: typeof updatedFields.image === 'string' ? updatedFields.image : item.image 
-            });
-            await refetch?.();
-        } catch (error) {
-            console.error('Error al actualizar el emprendedor:', error);
-            toast.error('Error al actualizar el emprendedor');
-        } finally {
+        if (Object.keys(changedFields).length === 0) {
+            toast.error('No realizaste ningún cambio.');
             setIsLoading(false);
+            return;
         }
+
+        update(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            { id, ...changedFields } as any,
+            {
+                onSuccess: (data) => {
+                    onUpdate({ 
+                        ...item, 
+                        ...changedFields,   
+                        image: data.image
+                    });
+                },
+                onError: () => {
+                    setIsLoading(false);
+                }
+            }
+        );
+    };
+
+    const handleChangeStatus = () => {
+        const normalizedStatus = normalizeStatus(item.status);
+        const newStatus = normalizedStatus === 'active' ? 'inactive' : 'active';
+        changeStatus(item.id ?? 0, newStatus);
     };
 
     if (isEditing) {
@@ -102,57 +101,42 @@ export const EntrepreneurCard = React.memo(function EntrepreneurCard({
     const stats = [
         {
             value: formatDate(item.joinDate),
-        label: 'Fecha de registro',
-        bgColor: 'bg-blue-50',
-        textColor: 'text-blue-600',
-        icon: Calendar
-    },
-    {
-        value: item.name_experience,
-        label: 'Nombre de la experiencia',
-        bgColor: 'bg-green-50',
-        textColor: 'text-green-600',
-        icon: Home
-    }
-];
+            label: 'Fecha de registro',
+            bgColor: 'bg-blue-50',
+            textColor: 'text-blue-600',
+            icon: Calendar
+        },
+        {
+            value: item.name_experience,
+            label: 'Nombre de la experiencia',
+            bgColor: 'bg-green-50',
+            textColor: 'text-green-600',
+            icon: Home
+        }
+    ];
 
-const normalizeStatus = (status: string) => {
-    switch (status.toLowerCase()) {
-        case 'activo':
-        case 'active':
-            return 'active';
-        case 'inactivo':
-        case 'inactive':
-            return 'inactive';
-        case 'pendiente':
-        case 'pending':
-            return 'pending';
-        default:
-            return 'inactive';
-    }
-};
 
-return (
-    <ReusableCard
-        item={{
-            id: item.id ?? 0,
-            name: item.name,
-            status: normalizeStatus(item.status),
-            image: item.image as string || '',
-            description: `Emprendedor registrado el ${formatDate(item.joinDate)}`
-        }}
-        contactInfo={contactInfo}
-        stats={stats}
-        onEdit={handleEditClick}
-        onDisable={() => onDisable(item.id ?? 0)}
-        onActivate={() => onActivate(item.id ?? 0)}
-        onDelete={() => onDelete?.(item.id ?? 0)}
-        showImage={true}
-        showStatus={true}
-        variant="default"
-        clickable={!!onView}
-        title='Emprendedor'
-    >
-    </ReusableCard>
-);
+    return (
+        <ReusableCard
+            item={{
+                ...item,
+                status: normalizeStatus(item.status),
+                id: item.id ?? 0,
+                name: item.name,
+                image: getImageUrl(item.image) || '',
+                description: `Emprendedor registrado el ${formatDate(item.joinDate)}`
+            }}
+            contactInfo={contactInfo}
+            stats={stats}
+            onEdit={handleEditClick}
+            onChangeStatus={handleChangeStatus}
+            onDelete={() => onDelete?.(item.id ?? 0)}
+            showImage={true}
+            showStatus={true}
+            variant="default"
+            title='Emprendedor'
+            loading={isLoading}
+            >
+        </ReusableCard>
+    );
 });
