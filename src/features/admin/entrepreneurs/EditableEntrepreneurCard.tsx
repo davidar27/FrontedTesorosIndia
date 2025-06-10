@@ -5,7 +5,7 @@ import { Entrepreneur, UpdateEntrepreneurData } from '@/features/admin/entrepren
 import Button from '@/components/ui/buttons/Button';
 import Avatar from '@/components/ui/display/Avatar';
 import { fileToWebp } from '@/utils/imageToWebp';
-import { getImageUrl } from '@/features/admin/entrepreneurs/entrepreneurHelpers';
+import { getImageUrl } from '@/features/admin/adminHelpers';
 
 interface EditableEntrepreneurCardProps {
     item: Entrepreneur;

@@ -1,12 +1,15 @@
 import { BaseEntity } from "@/features/admin/types";
 
-export interface Entrepreneur extends BaseEntity<'active' | 'inactive' | 'pending'> {
+export type EntrepreneurStatus = 'active' | 'inactive' | 'pending';
+
+export interface Entrepreneur extends BaseEntity<EntrepreneurStatus, number> {
+    id: number;
     name: string;
     email: string;
     phone: string;
     image: string | null;
     joinDate: string;
-    status: 'active' | 'inactive' | 'pending';
+    status: EntrepreneurStatus;
     name_experience: string;
     createdAt?: string;
     updatedAt?: string;

@@ -1,6 +1,6 @@
 import { DefaultCustomFilters } from '@/components/admin/Filter';
 import { Entrepreneur } from './EntrepreneursTypes';
-import { normalizeStatus } from './normalizeStatus';
+import { normalizeEntrepreneurStatus } from '../adminHelpers';
 
 interface EntrepreneursFilterProps {
     items: Entrepreneur[];
@@ -12,7 +12,7 @@ export function EntrepreneursFilter({ items, onFilterChange }: EntrepreneursFilt
         <DefaultCustomFilters<Entrepreneur>
             items={items.map(item => ({
                 ...item,
-                status: normalizeStatus(item.status)
+                status: normalizeEntrepreneurStatus(item.status)
             }))}
             onFilterChange={onFilterChange}
         />

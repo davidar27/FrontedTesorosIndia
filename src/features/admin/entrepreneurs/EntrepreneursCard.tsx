@@ -4,7 +4,7 @@ import { Phone, Mail, Calendar, Home } from 'lucide-react';
 import { Entrepreneur, UpdateEntrepreneurData } from '@/features/admin/entrepreneurs/EntrepreneursTypes';
 import { EditableEntrepreneurCard } from './EditableEntrepreneurCard';
 import { useEntrepreneursManagement } from '@/services/admin/useEntrepreneursManagement';
-import { formatDate, normalizeStatus, getImageUrl } from './entrepreneurHelpers';
+import { formatDate, normalizeEntrepreneurStatus, getImageUrl } from '../adminHelpers';
 import { toast } from 'react-hot-toast';
 import React from 'react';
 
@@ -12,16 +12,18 @@ interface EntrepreneurCardProps {
     item: Entrepreneur;
     onUpdate: (item: Entrepreneur) => void;
     onDelete?: (id: number) => void;
+    onChangeStatus?: (id: number, status: string) => void;
 }
 
 export const EntrepreneurCard = React.memo(function EntrepreneurCard({
     item,
     onUpdate,
     onDelete,
+    onChangeStatus,
 }: EntrepreneurCardProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const { update, changeStatus } = useEntrepreneursManagement();
+    const { update } = useEntrepreneursManagement();
 
     const handleEditClick = () => {
         setIsEditing(true);
@@ -67,9 +69,9 @@ export const EntrepreneurCard = React.memo(function EntrepreneurCard({
     };
 
     const handleChangeStatus = () => {
-        const normalizedStatus = normalizeStatus(item.status);
-        const newStatus = normalizedStatus === 'active' ? 'inactive' : 'active';
-        changeStatus(item.id ?? 0, newStatus);
+        const normalizedStatus = normalizeEntrepreneurStatus(item.status);
+        const newStatus = normalizedStatus === 'inactive' ? 'active' : 'inactive';
+        onChangeStatus?.(item.id ?? 0, newStatus);
     };
 
     if (isEditing) {
@@ -120,7 +122,7 @@ export const EntrepreneurCard = React.memo(function EntrepreneurCard({
         <ReusableCard
             item={{
                 ...item,
-                status: normalizeStatus(item.status),
+                status: normalizeEntrepreneurStatus(item.status),
                 id: item.id ?? 0,
                 name: item.name,
                 image: getImageUrl(item.image) || '',

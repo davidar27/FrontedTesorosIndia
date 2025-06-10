@@ -9,12 +9,14 @@ import { ErrorState } from './components/ErrorState';
 import { SearchBar } from './components/SearchBar';
 import { EmptyState } from './components/EmptyState';
 import { ItemsGrid } from './components/ItemsGrid';
+import { useLocation } from 'react-router-dom';
 
-export default function GenericManagement<T extends BaseEntity<string>>({ 
-    config 
+export default function GenericManagement<T extends BaseEntity<string>>({
+    config
 }: SimplifiedManagementProps<T>): React.ReactElement {
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredByCustomFilters, setFilteredByCustomFilters] = useState<T[]>([]);
+    const location = useLocation();
 
     const {
         showResultsCount = true,
@@ -37,6 +39,8 @@ export default function GenericManagement<T extends BaseEntity<string>>({
         onChangeStatus
     } = config;
 
+
+
     const searchFunction = config.searchFunction || defaultSearchFunction;
 
     // Filtrado por búsqueda
@@ -48,7 +52,7 @@ export default function GenericManagement<T extends BaseEntity<string>>({
     // Aplicar límite de resultados si está configurado
     const finalFilteredItems = useMemo(() => {
         const safeSearchItems = Array.isArray(searchFilteredItems) ? searchFilteredItems : [];
-        
+
         if (maxResults && safeSearchItems.length > maxResults) {
             return safeSearchItems.slice(0, maxResults);
         }
@@ -106,17 +110,18 @@ export default function GenericManagement<T extends BaseEntity<string>>({
                     onClearSearch={clearSearch}
                     entityNamePlural={entityNamePlural}
                 />
-
-                <Button
-                    onClick={onCreate}
-                    type="button"
-                    className="flex items-center gap-2 rounded-lg"
-                    aria-label={`Crear nuevo ${entityName.toLowerCase()}`}
-                >
-                    <Plus className="w-5 h-5" />
-                    <span className="hidden sm:inline">{`Crear ${entityName}`}</span>
-                    <span className="sm:hidden">Crear</span>
-                </Button>
+                {location.pathname === '/dashboard/experiencias' ? null : (
+                    <Button
+                        onClick={onCreate}
+                        type="button"
+                        className="flex items-center gap-2 rounded-lg"
+                        aria-label={`Crear nuevo ${entityName.toLowerCase()}`}
+                    >
+                        <Plus className="w-5 h-5" />
+                        <span className="hidden sm:inline">{`Crear ${entityName}`}</span>
+                        <span className="sm:hidden">Crear</span>
+                    </Button>
+                )}
             </div>
 
             {/* Custom Filters */}

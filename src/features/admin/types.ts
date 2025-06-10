@@ -1,8 +1,8 @@
-export interface BaseEntity<TStatus extends string> {
-    id?: number;
+export interface BaseEntity<TStatus extends string, TId = number> {
+    id?: TId;
     name: string;
     status: TStatus;
-    [key: string]: string | number | boolean | Date | null | undefined;
+    [key: string]: string | number | boolean | Date | null | undefined | TId;
 }
 
 export interface EntityConfig<T extends BaseEntity<string>> {

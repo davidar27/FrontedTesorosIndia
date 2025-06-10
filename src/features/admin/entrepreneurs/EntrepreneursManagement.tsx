@@ -13,6 +13,7 @@ export default function EntrepreneursManagement() {
         items,
         create,
         isCreating,
+        changeStatus
     } = useEntrepreneursManagement();
 
     const entrepreneurs = Array.isArray(items) ? items : [];
@@ -36,6 +37,26 @@ export default function EntrepreneursManagement() {
         );
     };
 
+    const handleChangeStatus = (id: number, status: string) => {
+        toast.promise(
+            new Promise((resolve, reject) => {
+                changeStatus({
+                    id,
+                    status,
+                    entityType: 'entrepreneur'
+                }, {
+                    onSuccess: resolve,
+                    onError: reject
+                });
+            }),
+            {
+                loading: 'Cambiando estado...',
+                success: 'Estado actualizado exitosamente',
+                error: (err) => err.message
+            }
+        );
+    };
+
     const config = EntrepreneursConfig({
         data: entrepreneurs,
         CardComponent: (props) => (
@@ -45,15 +66,9 @@ export default function EntrepreneursManagement() {
         ),
         actions: {
             onCreate: () => setShowCreateForm(true),
-            onUpdate: () => {
-                toast.success('Emprendedor actualizado');
-            },
-            onDelete: () => {
-                toast.success('Emprendedor eliminado');
-            },
-            onChangeStatus: () => {
-               
-            }
+            onUpdate: () => {},
+            onDelete: () => {},
+            onChangeStatus: handleChangeStatus
         }
     });
 

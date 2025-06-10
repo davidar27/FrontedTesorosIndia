@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ReusableCard } from '@/components/admin/Card';
-import { Home, X, Check, House } from 'lucide-react';
+import { X, Check, MapPin, Bird } from 'lucide-react';
 import Button from '@/components/ui/buttons/Button';
 import { Experience } from './ExperienceTypes';
 import { UpdateExperienceData } from './ExperienceTypes';
@@ -20,10 +20,8 @@ export function EditableExperienceCard({
 }: EditableExperienceCardProps) {
     const [formData, setFormData] = useState<UpdateExperienceData>({
         name_experience: item.name_experience,
-        description: item.description,
         location: item.location,
         type: item.type,
-        status: item.status,
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,35 +37,20 @@ export function EditableExperienceCard({
 
     const contactInfo = [
         {
-            icon: House,
+            icon: MapPin,
             value: (
                 <input
                     type="text"
-                    name="name_experience"
-                    value={formData.name_experience || ''}
+                    name="location"
+                    value={formData.location || ''}
                     onChange={handleChange}
                     className="bg-transparent border-b border-gray-300 focus:border-primary outline-none  w-auto text-sm text-gray-600"
                     required
-                    placeholder="Nombre de la experiencia"
+                    placeholder="Ubicación de la experiencia"
                 />
             ),
-            label: 'Nombre de la experiencia'
-        },
-        // {
-        //     icon: Phone,
-        //     value: (
-        //         <input
-        //             type="tel"
-        //             name="phone"
-        //             value={formData.phone || ''}
-        //             onChange={handleChange}
-        //             className="bg-transparent border-b border-gray-300 focus:border-primary outline-nonen w-auto text-sm text-gray-600"
-        //             required
-        //             placeholder="Número de teléfono"
-        //         />
-        //     ),
-        //     label: 'Teléfono'
-        // }
+            label: 'Ubicación de la experiencia'
+        }
     ];
 
     const stats = [
@@ -75,18 +58,18 @@ export function EditableExperienceCard({
             value: (
                 <input
                     type="text"
-                    name="name_experience"
-                    value={formData.name_experience || ''}
+                    name="type"
+                    value={formData.type || ''}
                     onChange={handleChange}
                     className="bg-transparent border-b border-gray-300 focus:border-primary outline-none text-center w-auto text-lg font-bold text-green-600"
                     required
-                    placeholder="Nombre de la experiencia"
+                    placeholder="Tipo de experiencia"
                 />
             ),
-            label: 'Nombre de la experiencia',
+            label: 'Tipo de experiencia',
             bgColor: 'bg-green-50',
             textColor: 'text-green-600',
-            icon: Home
+            icon: Bird
         }
     ];
     return (
