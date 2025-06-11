@@ -122,32 +122,58 @@ export function useGenericApi<T extends BaseEntity<TId>, TId extends string | nu
     });
 
     // UPDATE
-    const updateMutation = useMutation<T, AxiosError, T>({
-        mutationFn: async ({ id, ...data }) => {
-            if (!id) throw new Error('ID is required for update');
-            if (methods.update) return methods.update(id, data as Partial<T>);
+    const updateMutation = useMutation<T, AxiosError, any>({
+        mutationFn: async (dataOrFormData) => {
+            console.log('DEBUG - updateMutation called with:', dataOrFormData, 'is FormData:', dataOrFormData instanceof FormData);
 
-            const endpoint = endpoints.update;
-            if (!endpoint) throw new Error('No update endpoint or method provided');
-
-            // Verificar si hay FormData en los datos
-            const hasFormData = Object.values(data).some(value => value instanceof FormData);
-            
-            // Configurar los headers según el tipo de datos
-            const config = {
-                headers: {
-                    'Content-Type': hasFormData ? 'multipart/form-data' : 'application/json'
+            if (dataOrFormData instanceof FormData) {
+                for (const pair of dataOrFormData.entries()) {
+                    console.log('DEBUG - FormData in updateMutation:', pair[0], pair[1]);
                 }
-            };
+                // Extrae el id del FormData
+                const id = dataOrFormData.get('id');
+                if (!id) throw new Error('ID is required for update');
+                const endpoint = endpoints.update;
+                if (!endpoint) throw new Error('No update endpoint or method provided');
+                // NO elimines el id del FormData aquí
+                const response = await axiosInstance.put<T>(buildUrl(endpoint, id as string | number), dataOrFormData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+                return response.data;
+            } else {
+                console.log('DEBUG - Object in updateMutation:', dataOrFormData);
+                const { id, ...data } = dataOrFormData;
+                if (!id) throw new Error('ID is required for update');
+                if (methods.update) return methods.update(id, data as Partial<T>);
 
-            const response = await axiosInstance.put<T>(buildUrl(endpoint, id), data, config);
-            return response.data;
+                const endpoint = endpoints.update;
+                if (!endpoint) throw new Error('No update endpoint or method provided');
+
+                const hasFormData = Object.values(data).some(value => value instanceof FormData);
+                const config = {
+                    headers: {
+                        'Content-Type': hasFormData ? 'multipart/form-data' : 'application/json'
+                    }
+                };
+
+                const response = await axiosInstance.put<T>(buildUrl(endpoint, id), data, config);
+                return response.data;
+            }
         },
-        onSuccess: (data) => {
+        onSuccess: (data, variables) => {
             queryClient.setQueryData(Array.isArray(entityKey) ? entityKey : [entityKey], (old: T[] = []) =>
-                old.map(item => item.id === data.id ? data : item)
+                old.map(item => {
+                    const id = variables instanceof FormData ? variables.get('id') : variables.id;
+                    if (String(item.id) === String(id)) {
+                        if (data.updatedFields) {
+                            return { ...item, ...data.updatedFields };
+                        }
+                        return data;
+                    }
+                    return item;
+                })
             );
-            defaultMutationOptions.onSuccess?.(data, null, null);
+            defaultMutationOptions.onSuccess?.(data, variables, null);
         },
         onError: defaultMutationOptions.onError,
     });

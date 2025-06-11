@@ -16,6 +16,8 @@ export function useEntrepreneursManagement() {
                 changeStatus: (id) => `/dashboard/estado/${id}`,
                 search: '/usuario/emprendedores/search',
             },
+            
         }
     );
 }
+
