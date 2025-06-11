@@ -34,7 +34,7 @@ const Sidebar: React.FC<{
                     <div
                         onClick={() => navigate('/')}
                         className="flex items-center gap-3 animate-fade-in-right cursor-pointer hover:bg-gray-50 transition-all duration-200 ">
-
+                        
                         <Picture
                             src={logo}
                             alt="Logo"
@@ -44,6 +44,7 @@ const Sidebar: React.FC<{
                             <h1 className="font-bold text-gray-800 text-md lg:text-xl">Tesoros de la India</h1>
                             <p className="text-sm text-gray-500 ">Gestión del Sistema</p>
                         </div>
+
                     </div>
                 </div>
 
@@ -61,7 +62,13 @@ const Sidebar: React.FC<{
                                 style={{ animationDelay: `${index * 0.1}s` }}
                             >
                                 <button
-                                    onClick={() => onItemClick(item.id)}
+                                    onClick={() => {
+                                        if (item.id === 'home') {
+                                            navigate('/');
+                                        } else {
+                                            onItemClick(item.id);
+                                        }
+                                    }}
                                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer ${item.active
                                         ? 'bg-primary text-white shadow-lg'
                                         : 'text-gray-600 hover:bg-gray-100 hover:text-primary'

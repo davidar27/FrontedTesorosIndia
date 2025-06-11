@@ -12,7 +12,7 @@ const publicLinks: NavLink[] = [
 ];
 
 const adminLinks: NavLink[] = [
-    { path: "/dashboard", label: "Dashboard" }
+    { path: "/dashboard", label: "Gestionar" }
 ];
 
 export const getNavLinks = (user: User | null): NavLink[] => {
