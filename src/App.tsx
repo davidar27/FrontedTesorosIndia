@@ -89,6 +89,7 @@ function App() {
             <Route element={<ProtectedRoute roles={['administrador']} />}>
               <Route path="/dashboard" element={<DashboardLayout />}>
                 <Route index element={<EntrepreneursPage />} />
+                <Route path="estadisticas" />
                 <Route path="emprendedores" element={<EntrepreneursPage />} />
                 <Route path="experiencias" element={<ExperiencesPage />} />
                 <Route path="paquetes" element={<PackagesPage />} />
