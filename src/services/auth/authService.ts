@@ -1,4 +1,4 @@
-import { axiosInstance, setAccessToken } from "@/api/axiosInstance";
+import { axiosInstance } from "@/api/axiosInstance";
 import { AuthResponse, TokenVerificationResponse, AuthError } from "@/interfaces/responsesApi";
 import { User } from "@/interfaces/user";
 import { Credentials } from "@/interfaces/formInterface";
@@ -22,13 +22,6 @@ const authService = {
         });
       }
 
-      // Almacenar el access token en memoria
-      if (data.access_token) {
-        setAccessToken(data.access_token);
-      } else {
-        ///
-      }
-
       return data.user;
     } catch (error: unknown) {
       if (error instanceof AuthError) throw error;
@@ -41,7 +34,6 @@ const authService = {
   logout: async (): Promise<void> => {
     try {
       await axiosInstance.post("/auth/cerrar-sesion");
-      setAccessToken(null);
     } catch  {
       throw new AuthError("Error al cerrar sesión", { errorType: "general" });
     }
@@ -52,7 +44,6 @@ const authService = {
       const { data } = await axiosInstance.get<TokenVerificationResponse>("/auth/token/verificar");
 
       if (!data.success || data.code !== "VALITED_TOKEN") {
-        setAccessToken(null);
         return { isValid: false };
       }
 
@@ -66,7 +57,6 @@ const authService = {
 
       return { isValid: true, user };
     } catch (error) {
-      setAccessToken(null);
       if (error instanceof AuthError && error.shouldRedirect()) {
         return { isValid: false };
       }
@@ -90,16 +80,8 @@ const authService = {
         });
       }
 
-      // Almacenar el nuevo access token en memoria
-      if (data.access_token) {
-        setAccessToken(data.access_token);
-      } else {
-        ///
-      }
-
       return data.user;
     } catch (error) {
-      setAccessToken(null);
       if (error instanceof AuthError) throw error;
       throw new AuthError("La sesión ha expirado", { 
         errorType: "authentication",
