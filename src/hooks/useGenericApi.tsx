@@ -35,7 +35,9 @@ interface MethodConfig<T> {
 interface QueryOptions {
     staleTime?: number;
     cacheTime?: number;
-    refetchOnWindowFocus?: boolean;
+    refetchOnWindowFocus: false;
+    refetchOnMount: false;
+    refetchOnReconnect: false;
     enabled?: boolean;
 }
 
@@ -130,12 +132,10 @@ export function useGenericApi<T extends BaseEntity<TId>, TId extends string | nu
                 for (const pair of dataOrFormData.entries()) {
                     console.log('DEBUG - FormData in updateMutation:', pair[0], pair[1]);
                 }
-                // Extrae el id del FormData
                 const id = dataOrFormData.get('id');
                 if (!id) throw new Error('ID is required for update');
                 const endpoint = endpoints.update;
                 if (!endpoint) throw new Error('No update endpoint or method provided');
-                // NO elimines el id del FormData aquí
                 const response = await axiosInstance.put<T>(buildUrl(endpoint, id as string | number), dataOrFormData, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });

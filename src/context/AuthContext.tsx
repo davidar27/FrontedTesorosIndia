@@ -55,9 +55,9 @@ function AuthProvider({ children }: { children: ReactNode }) {
         retry: false,
         staleTime: Infinity,
         gcTime: Infinity,
-        refetchOnWindowFocus: true,
+        refetchOnWindowFocus: false,
         refetchInterval: TOKEN_REFRESH_INTERVAL,
-        refetchOnMount: true
+        refetchOnMount: false
     });
 
     useEffect(() => {

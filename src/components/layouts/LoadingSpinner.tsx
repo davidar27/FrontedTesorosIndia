@@ -1,7 +1,7 @@
 
 const LoadingSpinner = ({ message = "Cargando..." }: { message?: string }) => {
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-transparent">
             <div className="relative">
                 <div className="animate-spin h-12 w-12 border-4 border-primary/20 border-t-primary rounded-full"></div>
                 <div className="absolute inset-0 animate-pulse">

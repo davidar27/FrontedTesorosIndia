@@ -5,7 +5,6 @@ import { Entrepreneur,UpdateEntrepreneurData } from '@/features/admin/entreprene
 import { EditableEntrepreneurCard } from './EditableEntrepreneurCard';
 import { useEntrepreneursManagement } from '@/services/admin/useEntrepreneursManagement';
 import { formatDate, normalizeEntrepreneurStatus, getImageUrl } from '../adminHelpers';
-import { toast } from 'react-hot-toast';
 import React from 'react';
 
 interface EntrepreneurCardProps {
@@ -48,7 +47,6 @@ export const EntrepreneurCard = React.memo(function EntrepreneurCard({
             setIsLoading(false);
         } catch (error) {
             console.error('Error updating entrepreneur:', error);
-            toast.error('Error al actualizar el emprendedor');
             setIsLoading(false);
         }
     };
