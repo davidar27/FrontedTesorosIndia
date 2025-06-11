@@ -5,6 +5,7 @@ export type CategoryStatus = 'active' | 'inactive' | 'draft' | 'pending';
 export interface Category extends BaseEntity<CategoryStatus> {
     id: number;
     productsCount: number;
+    joinDate: string;
 }
 
 export interface CreateCategoryData {

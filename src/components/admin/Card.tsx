@@ -64,6 +64,8 @@ interface ReusableCardProps<T> {
     onDelete?: (id: number) => void;
     showImage?: boolean;
     showStatus?: boolean;
+    showContactInfo?: boolean;
+    showStats?: boolean;
     className?: string;
     variant?: 'default' | 'compact' | 'detailed';
     clickable?: boolean;
@@ -71,6 +73,8 @@ interface ReusableCardProps<T> {
     loading?: boolean;
     children?: React.ReactNode;
     title?: string;
+    editable?: boolean;
+    onFieldChange?: (field: string, value: string) => void;
 }
 
 // Configuración por defecto para estados
@@ -120,13 +124,17 @@ export function ReusableCard<T extends BaseItem>({
     onDelete,
     showImage = true,
     showStatus = true,
+    showContactInfo = true,
+    showStats = true,
     className = "",
     variant = 'default',
     clickable = false,
     onClick,
     loading = false,
     children,
-    title
+    title,
+    editable = false,
+    onFieldChange,
 }: ReusableCardProps<T>) {
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [confirmAction, setConfirmAction] = useState<'delete' | 'activate' | 'disable' | 'publish' | 'draft' | null>(null);
@@ -304,20 +312,48 @@ export function ReusableCard<T extends BaseItem>({
                         className={`font-bold text-gray-800 group-hover:text-primary transition-colors duration-200 truncate ${variant === 'compact' ? 'text-lg' : 'text-xl'}`}
                         title={item.name}
                     >
-                        {item.name}
+                        {editable ? (
+                            <input
+                                type="text"
+                                value={item.name}
+                                onChange={e => onFieldChange && onFieldChange('name', e.target.value)}
+                                className="bg-transparent border-b border-primary outline-none font-bold w-full"
+                            />
+                        ) : (
+                            item.name
+                        )}
                     </h3>
-
-                    {item.subtitle && (
-                        <p className="text-sm text-gray-500 truncate mt-1">
+                    <div className="flex flex-col gap-2">
+                    {item.subtitle && 
+                        editable ? (
+                            <input
+                                type="text"
+                                value={item.subtitle}
+                                onChange={e => onFieldChange && onFieldChange('subtitle', e.target.value)}
+                                className="bg-transparent border-b border-primary outline-none font-bold w-full"
+                            />
+                        ) : (
+                            <p className="text-sm text-gray-500 truncate mt-1">
                             {item.subtitle}
                         </p>
-                    )}
+                        )}
+                    
+                    </div>
 
-                    {item.description && variant === 'detailed' && (
-                        <p className="text-sm text-gray-600 mt-2 line-clamp-2">
+                    {item.description && variant === 'detailed' && 
+                        editable ? (
+                            <input
+                                type="text"
+                                value={item.description}
+                                onChange={e => onFieldChange && onFieldChange('description', e.target.value)}
+                                className="bg-transparent border-b border-primary outline-none font-bold w-full"
+                            />
+                        ) : (
+                            <p className="text-sm text-gray-600 mt-2 line-clamp-2">
                             {item.description}
                         </p>
-                    )}
+                        )}
+                    </div>
 
                     {showStatus && (
                         <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium mt-2 ${getStatusStyle(item.status)}`}>
@@ -343,10 +379,10 @@ export function ReusableCard<T extends BaseItem>({
                         )}
                     </div>
                 )}
-            </div>
+            
 
             {/* Contact Info */}
-            {contactInfo.length > 0 && (
+            {showContactInfo && contactInfo && contactInfo.length > 0 && (
                 <div className={`space-y-2 mb-4 flex gap-2 flex-wrap flex-col w-full  ${variant === 'compact' ? 'items-center ' : ''}`}>
                     {contactInfo.map((contact, index) => (
                         <div
@@ -366,7 +402,7 @@ export function ReusableCard<T extends BaseItem>({
             )}
 
             {/* Stats */}
-            {stats.length > 0 && (
+            {showStats && stats && stats.length > 0 && (
                 <div className={`grid gap-3 mb-6 ${stats.length === 1 ? 'grid-cols-1' : stats.length === 2 ? 'grid-cols-2' : stats.length === 3 ? 'grid-cols-3' : stats.length === 4 ? 'grid-cols-2' : 'grid-cols-2'}`}>
                     {stats.map((stat, index) => (
                         <div
