@@ -63,7 +63,7 @@ export default function ExperiencesManagement() {
                 toast.error('No tienes permisos para eliminar experiencias');
             },
         onChangeStatus: (id, status) => {
-            changeStatus(id, status);
+            changeStatus({ id, status, entityType: 'experience' });
             toast.success('Estado de la experiencia actualizado');
         }
     };

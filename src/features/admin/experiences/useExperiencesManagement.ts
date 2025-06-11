@@ -4,7 +4,7 @@ import { useGenericApi } from '@/hooks/useGenericApi';
 
 export function useExperiencesManagement() {
 
-    return useGenericApi<Experience>(
+    return useGenericApi<Experience, number>(
         {
             entityKey: 'experiences',
             endpoints: {
