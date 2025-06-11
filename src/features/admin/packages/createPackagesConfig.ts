@@ -8,6 +8,7 @@ interface PackagesConfigParams {
         onUpdate?: (item: Package) => void;
         onDelete?: (id: number) => void;
         onCreate?: () => void;
+        onChangeStatus?: (id: number, status: string) => void;
     };
 }
 
@@ -27,6 +28,7 @@ export const createPackagesConfig = ({
     onUpdate: actions.onUpdate || (() => {}),
     onDelete: actions.onDelete || (() => {}),
     onCreate: actions.onCreate || (() => {}),
+    onChangeStatus: actions.onChangeStatus || (() => {}),
     onRetry: () => {},
     searchFunction: (item, searchTerm) => {
         const term = searchTerm.toLowerCase();
