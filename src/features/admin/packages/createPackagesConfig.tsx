@@ -5,7 +5,7 @@ import { PackageCardWrapper } from "./PackageCardWrapper";
 interface PackagesConfigParams {
     data: Package[];
     actions: {
-        onEdit?: (item: Package) => void;
+        onUpdate?: (item: Package) => void;
         onDelete?: (id: number) => void;
         onCreate?: () => void;
     };
@@ -24,7 +24,7 @@ export const createPackagesConfig = ({
     emptyStateDescription: 'Intenta cambiar los filtros o el término de búsqueda',
     items: data,
     ItemCard: PackageCardWrapper,
-    onEdit: actions.onEdit || (() => {}),
+    onUpdate: actions.onUpdate || (() => {}),
     onDelete: actions.onDelete || (() => {}),
     onCreate: actions.onCreate || (() => {}),
     onRetry: () => {},

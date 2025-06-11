@@ -59,7 +59,7 @@ interface ReusableCardProps<T> {
     stats?: StatInfo[];
     actions?: ActionButton[];
     statusConfig?: StatusConfig;
-    onEdit?: (item: T) => void;
+    onUpdate?: (item: T) => void;
     onChangeStatus?: (id: number, status: string) => void;
     onDelete?: (id: number) => void;
     showImage?: boolean;
@@ -115,7 +115,7 @@ export function ReusableCard<T extends BaseItem>({
     stats = [],
     actions = [],
     statusConfig = DEFAULT_STATUS_CONFIG,
-    onEdit,
+    onUpdate,
     onChangeStatus,
     onDelete,
     showImage = true,
@@ -148,11 +148,11 @@ export function ReusableCard<T extends BaseItem>({
             ? normalizeExperienceStatus(item.status)
             : normalizeEntrepreneurStatus(item.status);
         
-        if (onEdit) {
+        if (onUpdate) {
             actionsArr.push({
                 icon: Edit,
                 label: variant !== 'compact' ? 'Editar' : undefined,
-                onClick: () => onEdit(item),
+                onClick: () => onUpdate(item),
                 variant: 'primary',
                 fullWidth: variant === 'compact' ? false : true,
                 tooltip: 'Editar elemento'
@@ -219,7 +219,7 @@ export function ReusableCard<T extends BaseItem>({
             }
         }
         return actionsArr;
-    }, [onEdit, onChangeStatus, onDelete, item, variant, title]);
+    }, [onUpdate, onChangeStatus, onDelete, item, variant, title]);
 
     const finalActions = actions.length > 0 ? actions : defaultActions;
 

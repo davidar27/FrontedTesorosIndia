@@ -4,11 +4,11 @@ import { Info } from "lucide-react";
 
 interface PackageCardProps {
     item: Package;
-    onEdit?: (item: Package) => void;
+    onUpdate?: (item: Package) => void;
     onDelete?: (id: number) => void;
 }
 
-function PackageCard({ item, onEdit, onDelete }: PackageCardProps) {
+function PackageCard({ item, onUpdate, onDelete }: PackageCardProps) {
     const stats = [
         { value: `$${item.price}`, label: 'Precio', bgColor: 'bg-green-50', textColor: 'text-green-600' },
         { value: item.duration, label: 'Duración', bgColor: 'bg-blue-50', textColor: 'text-blue-600' },
@@ -25,7 +25,7 @@ function PackageCard({ item, onEdit, onDelete }: PackageCardProps) {
             item={item}
             contactInfo={contactInfo}
             stats={stats}
-            onEdit={onEdit}
+            onUpdate={onUpdate}
             onDelete={onDelete}
         />
     );

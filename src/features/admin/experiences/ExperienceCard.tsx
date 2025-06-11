@@ -141,7 +141,7 @@ export const ExperienceCard = React.memo(function ExperienceCard({
             }}
             contactInfo={contactInfo}
             stats={stats}
-            onEdit={handleEditClick}
+            onUpdate={handleEditClick}
             onChangeStatus={handleChangeStatus}
             onDelete={() => onDelete?.(item.id ?? 0)}
             showImage={false}

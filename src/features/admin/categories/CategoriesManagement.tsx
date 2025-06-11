@@ -59,7 +59,7 @@ export default function CategoriesManagement() {
         isLoading,
         error,
         actions: {
-            onEdit: handleEdit,
+            onUpdate: handleEdit,
             onDelete: handleDisable,
             onCreate: handleCreate,
             onRetry: fetchCategories

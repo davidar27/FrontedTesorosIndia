@@ -113,7 +113,7 @@ export const EntrepreneurCard = React.memo(function EntrepreneurCard({
             }}
             contactInfo={contactInfo}
             stats={stats}
-            onEdit={handleEditClick}
+            onUpdate={handleEditClick}
             onChangeStatus={handleChangeStatus}
             onDelete={() => onDelete?.(item.id ?? 0)}
             showImage={true}
