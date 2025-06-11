@@ -116,7 +116,7 @@ export const adminRoutes: RouteConfig[] = [
         layout: DashboardLayout,
         protected: true,
         roles: ['administrador'],
-        title: 'Dashboard'
+        title: 'Panel de Control'
     },
     {
         path: '/dashboard/emprendedores',

@@ -6,3 +6,11 @@ export interface Category extends BaseEntity<CategoryStatus> {
     id: number;
     productsCount: number;
 }
+
+export interface CreateCategoryData {
+    name: string;
+}
+
+export interface UpdateCategoryData {
+    name: string;
+}

@@ -19,7 +19,7 @@ export const ExperiencesApi = {
         },
         
         getExperiences: async (): Promise<Experience[]> => {
-            const response = await publicAxiosInstance.get<{experiences: RawExperienceResponse[]}>('/dashboard/experiencias/nombre?estado=Publicada');
+            const response = await publicAxiosInstance.get<{experiences: RawExperienceResponse[]}>('/experiencias/nombre?estado=Publicada');
             return response.data.experiences.map(transformExperienceResponse);
         }
     },
