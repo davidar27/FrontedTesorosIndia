@@ -130,7 +130,17 @@ export function useGenericApi<T extends BaseEntity<TId>, TId extends string | nu
             const endpoint = endpoints.update;
             if (!endpoint) throw new Error('No update endpoint or method provided');
 
-            const response = await axiosInstance.put<T>(buildUrl(endpoint, id), data);
+            // Verificar si hay FormData en los datos
+            const hasFormData = Object.values(data).some(value => value instanceof FormData);
+            
+            // Configurar los headers según el tipo de datos
+            const config = {
+                headers: {
+                    'Content-Type': hasFormData ? 'multipart/form-data' : 'application/json'
+                }
+            };
+
+            const response = await axiosInstance.put<T>(buildUrl(endpoint, id), data, config);
             return response.data;
         },
         onSuccess: (data) => {

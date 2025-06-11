@@ -31,6 +31,15 @@ export function EditableEntrepreneurCard({
     const [retryCount, setRetryCount] = useState(0);
     const [loadingImage, setLoadingImage] = useState(false);
 
+    // Efecto para limpiar la URL de vista previa cuando se desmonta el componente
+    React.useEffect(() => {
+        return () => {
+            if (imagePreview) {
+                URL.revokeObjectURL(imagePreview);
+            }
+        };
+    }, [imagePreview]);
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
@@ -38,21 +47,51 @@ export function EditableEntrepreneurCard({
 
     const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
+        console.log('File selected:', file);
+        
         if (file) {
             try {
-                const webpFile = await fileToWebp(file);
-                const previewUrl = URL.createObjectURL(webpFile);
+                // Limpiar la URL de vista previa anterior si existe
+                if (imagePreview) {
+                    URL.revokeObjectURL(imagePreview);
+                }
+
+                // Mostrar vista previa inmediatamente
+                const previewUrl = URL.createObjectURL(file);
+                console.log('Preview URL created:', previewUrl);
                 setImagePreview(previewUrl);
-                setFormData(prev => ({ ...prev, image: webpFile }));
-                return () => URL.revokeObjectURL(previewUrl);
-            } catch  {
+                
+                // Convertir a WebP en segundo plano
+                console.log('Converting to WebP...');
+                const webpFile = await fileToWebp(file);
+                console.log('WebP file created:', webpFile);
+                
+                // Crear un FormData para la imagen
+                const formData = new FormData();
+                formData.append('image', webpFile);
+                console.log('FormData created:', formData);
+                console.log('FormData entries:', Array.from(formData.entries()));
+                
+                setFormData(prev => {
+                    console.log('Previous formData:', prev);
+                    const newData = { ...prev, image: formData };
+                    console.log('New formData:', newData);
+                    return newData;
+                });
+            } catch (error) {
+                console.error('Error converting image:', error);
                 alert('No se pudo convertir la imagen a webp');
+                // Si falla la conversión, usar la imagen original
+                const formData = new FormData();
+                formData.append('image', file);
+                setFormData(prev => ({ ...prev, image: formData }));
             }
         }
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        console.log('Submitting form with data:', formData);
         onSave(item.id ?? 0, formData);
     };
 
@@ -110,7 +149,7 @@ export function EditableEntrepreneurCard({
     ];
     return (
         <form onSubmit={handleSubmit} className="text-center flex flex-col items-center shadow-xl border-1 border-gray-200 rounded-lg p-4 hover:shadow-2xl transition-all duration-300">
-            <div className=" flex flex-col items-center mb-6">
+            <div className="flex flex-col items-center mb-6">
                 <div className="relative">
                     {loadingImage ? (
                         <div className="w-24 h-24 flex items-center justify-center">
@@ -120,10 +159,11 @@ export function EditableEntrepreneurCard({
                         <Avatar name={item.name} size={96} />
                     ) : (
                         <img
-                            src={imagePreview ? imagePreview : getImageUrl(item.image) || ''}
+                            src={imagePreview || getImageUrl(item.image) || ''}
                             alt={item.name || 'Avatar'}
                             className="w-24 h-24 rounded-full object-cover"
-                            onError={() => {
+                            onError={(e) => {
+                                console.error('Image load error:', e);
                                 if (retryCount < 3) {
                                     setLoadingImage(true);
                                     setTimeout(() => {
@@ -134,7 +174,8 @@ export function EditableEntrepreneurCard({
                                     setImageError(true);
                                 }
                             }}
-                            onLoad={() => {
+                            onLoad={(e) => {
+                                console.log('Image loaded successfully:', e);
                                 setLoadingImage(false);
                                 setImageError(false);
                                 setRetryCount(0);
@@ -159,14 +200,14 @@ export function EditableEntrepreneurCard({
                     id: item.id || 0,
                     name: '',
                     status: item.status,
-                    image: undefined,
+                    image: imagePreview || getImageUrl(item.image) || '',
                 }}
                 contactInfo={contactInfo}
                 stats={stats}
                 showImage={false}
                 showStatus={false}
                 variant="compact"
-                className="shadow-none py-0 border-none bg-transparent  w-full hover:!shadow-none hover:border-none hover:bg-transparent"
+                className="shadow-none py-0 border-none bg-transparent w-full hover:!shadow-none hover:border-none hover:bg-transparent"
             >
                 <div className="">
                     <input

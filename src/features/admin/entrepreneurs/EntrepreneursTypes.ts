@@ -29,7 +29,7 @@ export interface UpdateEntrepreneurData {
     email: string;
     phone: string;
     name_experience: string;
-    image?: File;
+    image?: File | FormData;
 }
 
 export interface EntrepreneurApiResponse {

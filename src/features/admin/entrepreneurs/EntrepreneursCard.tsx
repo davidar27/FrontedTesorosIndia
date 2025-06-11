@@ -34,6 +34,7 @@ export const EntrepreneurCard = React.memo(function EntrepreneurCard({
     };
 
     const handleSave = (id: number, data: UpdateEntrepreneurData) => {
+        console.log('handleSave called with:', { id, data });
         setIsEditing(false);
         setIsLoading(true);
 
@@ -42,7 +43,22 @@ export const EntrepreneurCard = React.memo(function EntrepreneurCard({
         if (data.email && data.email !== item.email) changedFields.email = data.email;
         if (data.phone && data.phone !== item.phone) changedFields.phone = data.phone;
         if (data.name_experience && data.name_experience !== item.name_experience) changedFields.name_experience = data.name_experience;
-        if (data.image) changedFields.image = data.image;
+        if (data.image) {
+            console.log('Image data:', data.image);
+            // Si es FormData, lo enviamos directamente
+            if (data.image instanceof FormData) {
+                console.log('Image is FormData');
+                changedFields.image = data.image;
+            } else {
+                // Si es File, creamos un FormData
+                console.log('Image is File, creating FormData');
+                const formData = new FormData();
+                formData.append('image', data.image);
+                changedFields.image = formData;
+            }
+        }
+
+        console.log('Changed fields:', changedFields);
 
         if (Object.keys(changedFields).length === 0) {
             toast.error('No realizaste ningún cambio.');
@@ -55,13 +71,17 @@ export const EntrepreneurCard = React.memo(function EntrepreneurCard({
             { id, ...changedFields } as any,
             {
                 onSuccess: (data) => {
+                    console.log('Update successful:', data);
                     onUpdate({ 
                         ...item, 
                         ...changedFields,   
                         image: data.image
                     });
+                    setIsLoading(false);
                 },
-                onError: () => {
+                onError: (error) => {
+                    console.error('Error updating entrepreneur:', error);
+                    toast.error('Error al actualizar el emprendedor');
                     setIsLoading(false);
                 }
             }

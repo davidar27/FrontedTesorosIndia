@@ -40,43 +40,15 @@ const onRefreshed = () => {
   refreshSubscribers = [];
 };
 
-// Almacenamiento del access token
-const TOKEN_KEY = 'auth_token';
-let access_token: string | null = null;
-
-export const setAccessToken = (token: string | null) => {
-  if (token) {
-    localStorage.setItem(TOKEN_KEY, token);
-  } else {
-    localStorage.removeItem(TOKEN_KEY);
-  }
-  access_token = token;
-};
-
-export const getAccessToken = () => {
-  if (!access_token) {
-    // Recuperar token del localStorage si existe
-    access_token = localStorage.getItem(TOKEN_KEY);
-  }
-  return access_token;
-};
-
 axiosInstance.interceptors.request.use(
   async (config) => {
-    const token = getAccessToken();
-    
-    // Si el token está próximo a expirar, intentamos refrescarlo
-    if (token && isTokenExpiringSoon(token) && !config.url?.includes('/auth/token/refrescar')) {
+    // Verificar si el token está próximo a expirar
+    if (isTokenExpiringSoon() && !config.url?.includes('/auth/token/refrescar')) {
       try {
         await authService.refresh_token();
       } catch {
         // Continuamos con la petición aunque falle el refresh
       }
-    }
-
-    const currentToken = getAccessToken();
-    if (currentToken) {
-      config.headers.Authorization = `Bearer ${currentToken}`;
     }
     return config;
   },
@@ -86,17 +58,11 @@ axiosInstance.interceptors.request.use(
 );
 
 axiosInstance.interceptors.response.use(
-  (response) => {
-    if (response.data?.access_token) {
-      setAccessToken(response.data.access_token);
-    }
-    return response;
-  },
+  (response) => response,
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
     const errorData = error.response?.data;
     
-    // Si es un error 401 y es un intento de login, manejar como error de credenciales
     if (Number(error.response?.status) === 401 && originalRequest.url?.includes('/auth/iniciar-sesion')) {
       return Promise.reject(
         new AuthError("El correo o la contraseña son incorrectos", {
@@ -105,13 +71,11 @@ axiosInstance.interceptors.response.use(
       );
     }
     
-    // Si es un error 401 y no es un intento de refresh token, intentamos refrescar
     if (Number(error.response?.status) === 401 && !originalRequest.url?.includes('/auth/token/refrescar')) {
       
       if (originalRequest._retry) {
         isRefreshing = false;
         refreshSubscribers = [];
-        setAccessToken(null);
         return Promise.reject(
           new AuthError("Sesión expirada", {
             redirectTo: "/auth/iniciar-sesion",
@@ -133,7 +97,6 @@ axiosInstance.interceptors.response.use(
         } catch  {
           isRefreshing = false;
           refreshSubscribers = [];
-          setAccessToken(null);
           return Promise.reject(
             new AuthError("Sesión expirada", {
               redirectTo: "/auth/iniciar-sesion",
@@ -206,19 +169,8 @@ publicAxiosInstance.interceptors.response.use(
 );
 
 // Función para verificar si el token está próximo a expirar
-const isTokenExpiringSoon = (token: string | null): boolean => {
-  if (!token) return true;
-  
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const expirationTime = payload.exp * 1000; // Convertir a milisegundos
-    const currentTime = Date.now();
-    const timeUntilExpiration = expirationTime - currentTime;
-    
-    // Retorna true si faltan menos de 5 minutos para que expire
-    return timeUntilExpiration < 5 * 60 * 1000;
-  } catch (error) {
-    console.error('[Auth] Error al decodificar token:', error);
-    return true;
-  }
+const isTokenExpiringSoon = (): boolean => {
+  // Como el token está en las cookies, no podemos verificar su expiración directamente
+  // El backend se encargará de manejar la expiración y renovación
+  return false;
 };
