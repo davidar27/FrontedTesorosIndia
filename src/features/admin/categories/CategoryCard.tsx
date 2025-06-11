@@ -2,7 +2,7 @@ import { ReusableCard } from '@/components/admin/Card';
 import { Category } from '@/features/admin/categories/CategoriesTypes';
 
 
-interface CategoryCardProps {
+export interface CategoryCardProps {
     item: Category;
     onUpdate: (item: Category) => void;
     onDelete: (id: number) => void;

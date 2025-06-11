@@ -12,7 +12,6 @@ export const PUBLIC_ROUTES = [
     
     // Rutas informativas
     '/nosotros',
-    '/contacto',
     
     // Rutas de productos
     '/productos',
