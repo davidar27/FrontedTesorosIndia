@@ -4,11 +4,11 @@ import { Category } from '@/features/admin/categories/CategoriesTypes';
 
 interface CategoryCardProps {
     item: Category;
-    onEdit: (item: Category) => void;
+    onUpdate: (item: Category) => void;
     onDelete: (id: number) => void;
 }
 
-export function CategoryCard({ item, onEdit, onDelete }: CategoryCardProps) {
+export function CategoryCard({ item, onUpdate, onDelete }: CategoryCardProps) {
     const stats = [
         {
             value: item.productsCount,
@@ -22,7 +22,7 @@ export function CategoryCard({ item, onEdit, onDelete }: CategoryCardProps) {
         <ReusableCard
             item={item}
             stats={stats}
-            onEdit={onEdit}
+            onUpdate={onUpdate}
             onDelete={onDelete}
         />
     );

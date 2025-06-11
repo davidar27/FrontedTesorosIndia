@@ -3,13 +3,13 @@ import PackageCard from "./PackagesCard";
 
 interface PackageCardWrapperProps {
     item: Package;
-    onEdit?: (item: Package) => void;
+    onUpdate?: (item: Package) => void;
     onDelete?: (id: number) => void;
 }
 
-export function PackageCardWrapper({ item, onEdit, onDelete }: PackageCardWrapperProps) {
+export function PackageCardWrapper({ item, onUpdate, onDelete }: PackageCardWrapperProps) {
     const handleEdit = (item: Package) => {
-        onEdit?.(item);
+        onUpdate?.(item);
     };
 
     const handleDelete = (id: number) => {
@@ -19,7 +19,7 @@ export function PackageCardWrapper({ item, onEdit, onDelete }: PackageCardWrappe
     return (
         <PackageCard
             item={item}
-            onEdit={handleEdit}
+            onUpdate={handleEdit}
             onDelete={handleDelete}
         />
     );

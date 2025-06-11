@@ -1,27 +1,25 @@
 import { BaseEntity } from '@/features/admin/types';
 
-export type Experiencestatus = 'Borrador' | 'Publicada' | 'Inactiva';
+export type Experiencestatus = 'published' | 'draft' | 'inactive';
 
-// Tipo para la respuesta del backend
 export interface ExperienceResponse {
     id: number;
     name_experience: string;
-    description: string;
     location: string | 'Por definir';
     type: string | ' ';
+    logo: string | ' ';
     created_at: string;
     status: Experiencestatus;
-    entrepreneur_id: string | number;
+    name_entrepreneur: string;
 }
 
-// Tipo para el manejo interno en la aplicación
 export interface Experience extends BaseEntity<Experiencestatus> {
     name_experience: string;
-    description: string;
     location: string | 'Por definir';
     type: string | ' ';
+    logo: string | ' ';
     created_at: string;
-    entrepreneur_id: string | number;
+    name_entrepreneur: string;
 }
 
 export interface ExperienceApiResponse {
@@ -31,33 +29,24 @@ export interface ExperienceApiResponse {
 
 export interface ExperienceCardProps {
     Experience: Experience;
-    onEdit: (id: number) => void;
+    onUpdate: (id: number) => void;
     onDelete: (id: number) => void;
 }
 
-export interface CreateExperienceData {
-    name_experience: string;
-    description: string;
-    location: string;
-    type: string | ' ';
-}
-
 export interface UpdateExperienceData {
-    name_experience?: string;
-    description?: string;
-    location?: string;
-    type?: string;
-    status?: Experiencestatus;
+    name_experience: string;
+    location: string;
+    type: string;
 }
 
 export interface RawExperienceResponse {
     id: number;
     name_experience: string;
-    description?: string;
     location: string;
-    type?: string;
+    type: string;
+    logo: string;
     status: Experiencestatus;
-    entrepreneur_id: string | number;
     created_at: string;
+    name_entrepreneur: string;
 }
 

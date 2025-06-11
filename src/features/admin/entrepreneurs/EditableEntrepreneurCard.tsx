@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
 import { ReusableCard } from '@/components/admin/Card';
 import { Phone, Home, X, Check, Mail } from 'lucide-react';
@@ -5,6 +6,7 @@ import { Entrepreneur, UpdateEntrepreneurData } from '@/features/admin/entrepren
 import Button from '@/components/ui/buttons/Button';
 import Avatar from '@/components/ui/display/Avatar';
 import { fileToWebp } from '@/utils/imageToWebp';
+import { getImageUrl } from '@/features/admin/adminHelpers';
 
 interface EditableEntrepreneurCardProps {
     item: Entrepreneur;
@@ -25,10 +27,17 @@ export function EditableEntrepreneurCard({
         phone: item.phone,
         name_experience: item.name_experience,
     });
-    const [imagePreview, setImagePreview] = useState<string | undefined>(item.image as string || ' ');
-    const [imageError, setImageError] = useState(false);
-    const [retryCount, setRetryCount] = useState(0);
-    const [loadingImage, setLoadingImage] = useState(false);
+    const [imagePreview, setImagePreview] = useState<string | undefined>(undefined);
+    const [loadingImage, ] = useState(false);
+    const [, setImageError] = useState(false);
+
+    React.useEffect(() => {
+        return () => {
+            if (imagePreview) {
+                URL.revokeObjectURL(imagePreview);
+            }
+        };
+    }, [imagePreview]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -38,21 +47,60 @@ export function EditableEntrepreneurCard({
     const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
+            if (imagePreview) {
+                URL.revokeObjectURL(imagePreview);
+            }
+            const previewUrl = URL.createObjectURL(file);
+            setImagePreview(previewUrl);
             try {
                 const webpFile = await fileToWebp(file);
-                const previewUrl = URL.createObjectURL(webpFile);
-                setImagePreview(previewUrl);
                 setFormData(prev => ({ ...prev, image: webpFile }));
-                return () => URL.revokeObjectURL(previewUrl);
-            } catch  {
-                alert('No se pudo convertir la imagen a webp');
+            } catch {
+                setFormData(prev => ({ ...prev, image: file }));
             }
         }
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSave(item.id ?? 0, formData);
+
+        const changedFields: Partial<UpdateEntrepreneurData> = {};
+        if (formData.name !== item.name) changedFields.name = formData.name;
+        if (formData.email !== item.email) changedFields.email = formData.email;
+        if (formData.phone !== item.phone) changedFields.phone = formData.phone;
+        if (formData.name_experience !== item.name_experience) changedFields.name_experience = formData.name_experience;
+
+        let hasImage = false;
+        let imageFile: File | undefined;
+        if (formData.image && formData.image instanceof File) {
+            hasImage = true;
+            imageFile = formData.image;
+        }
+
+        console.log('DEBUG - handleSubmit called');
+        console.log('DEBUG - changedFields:', changedFields);
+        console.log('DEBUG - hasImage:', hasImage, 'imageFile:', imageFile);
+
+        if (Object.keys(changedFields).length === 0 && !hasImage) {
+            console.log('DEBUG - No changes detected');
+            return;
+        }
+
+        if (hasImage) {
+            const fd = new FormData();
+            fd.append('id', String(item.id));
+            if (imageFile) fd.append('file', imageFile);
+            Object.entries(changedFields).forEach(([key, value]) => {
+                if (value !== undefined) fd.append(key, value as string);
+            });
+            for (const pair of fd.entries()) {
+                console.log('DEBUG - FormData:', pair[0], pair[1]);
+            }
+            onSave(item.id ?? 0, fd as any);
+        } else {
+            console.log('DEBUG - Sending changedFields:', changedFields);
+            onSave(item.id ?? 0, changedFields as UpdateEntrepreneurData);
+        }
     };
 
     const contactInfo = [
@@ -96,7 +144,7 @@ export function EditableEntrepreneurCard({
                     name="name_experience"
                     value={formData.name_experience || ''}
                     onChange={handleChange}
-                    className="bg-transparent border-b border-gray-300 focus:border-primary outline-none text-center w-auto text-lg font-bold text-green-600"
+                    className="bg-transparent border-b border-gray-300 focus:border-primary outline-none text-center w-auto text-sm font-bold text-green-600"
                     required
                     placeholder="Nombre de la experiencia"
                 />
@@ -110,37 +158,28 @@ export function EditableEntrepreneurCard({
 
     return (
         <form onSubmit={handleSubmit} className="text-center flex flex-col items-center shadow-xl border-1 border-gray-200 rounded-lg p-4 hover:shadow-2xl transition-all duration-300">
-            <div className=" flex flex-col items-center mb-6">
+            <div className="flex flex-col items-center mb-6">
                 <div className="relative">
                     {loadingImage ? (
                         <div className="w-24 h-24 flex items-center justify-center">
                             <span className="loader" />
                         </div>
-                    ) : imageError || !item.image ? (
-                        <Avatar name={item.name} size={96} />
-                    ) : (
+                    ) : imagePreview ? (
                         <img
-                            src={imagePreview || item.image}
+                            src={imagePreview}
                             alt={item.name || 'Avatar'}
                             className="w-24 h-24 rounded-full object-cover"
-                            onError={() => {
-                                if (retryCount < 3) {
-                                    setLoadingImage(true);
-                                    setTimeout(() => {
-                                        setRetryCount(c => c + 1);
-                                        setLoadingImage(false);
-                                    }, 1500);
-                                } else {
-                                    setImageError(true);
-                                }
-                            }}
-                            onLoad={() => {
-                                setLoadingImage(false);
-                                setImageError(false);
-                                setRetryCount(0);
-                            }}
-                            key={retryCount}
+                            onError={() => setImageError(true)}
                         />
+                    ) : item.image ? (
+                        <img
+                            src={getImageUrl(item.image) || ''}
+                            alt={item.name || 'Avatar'}
+                            className="w-24 h-24 rounded-full object-cover"
+                            onError={() => setImageError(true)}
+                        />
+                    ) : (
+                        <Avatar name={item.name} size={96} />
                     )}
                     <input
                         type="file"
@@ -160,6 +199,7 @@ export function EditableEntrepreneurCard({
                     name: '',
                     status: item.status,
                     image: undefined,
+
                 }}
                 contactInfo={contactInfo}
                 stats={stats}

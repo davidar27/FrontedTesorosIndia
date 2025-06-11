@@ -4,70 +4,55 @@ import { Experience, ExperienceApiResponse, RawExperienceResponse } from '@/feat
 const transformExperienceResponse = (Experience: RawExperienceResponse): Experience => ({
     ...Experience,
     name: Experience.name_experience,
-    description: Experience.description || '',
     location: Experience.location,
     type: Experience.type || ' ',
     status: Experience.status,
-    entrepreneur_id: Experience.entrepreneur_id,
+    logo: Experience.logo,
+    name_entrepreneur: Experience.name_entrepreneur,
 });
 
 export const ExperiencesApi = {
     public: {
         getExperienceById: async (id: number): Promise<Experience> => {
-            const response = await publicAxiosInstance.get(`/experiencias/${id}`);
+            const response = await publicAxiosInstance.get(`/dashboard/experiencias/${id}`);
             return response.data;
         },
         
         getExperiences: async (): Promise<Experience[]> => {
-            const response = await publicAxiosInstance.get<{experiences: RawExperienceResponse[]}>('/experiencias/nombre?estado=Publicada');
+            const response = await publicAxiosInstance.get<{experiences: RawExperienceResponse[]}>('/dashboard/experiencias/nombre?estado=Publicada');
             return response.data.experiences.map(transformExperienceResponse);
         }
     },
 
     // Endpoints protegidos que requieren autenticación
     getExperienceById: async (id: number): Promise<Experience> => {
-        const response = await axiosInstance.get(`/experiencias/${id}`);
+        const response = await axiosInstance.get(`/dashboard/experiencias/${id}`);
         return response.data;
     },
 
     getAllExperiences: async (): Promise<Experience[]> => {
-        const response = await axiosInstance.get<ExperienceApiResponse>('/experiencias');
+        const response = await axiosInstance.get<ExperienceApiResponse>('/dashboard/experiencias');
         return response.data.experiences;
     },
 
     // Obtiene la experiencia del emprendedor actual
     getMyExperience: async (): Promise<Experience> => {
-        const response = await axiosInstance.get('/experiencias/mi-experiencia');
+        const response = await axiosInstance.get('/dashboard/experiencias/mi-experiencia');
         return response.data;
     },
 
-    createExperience: async (Experience: Partial<Experience>): Promise<Experience> => {
-        const response = await axiosInstance.post('/experiencias', Experience);
-        return response.data;
-    },
 
     updateExperience: async (id: number, Experience: Partial<Experience>): Promise<Experience> => {
-        const response = await axiosInstance.put(`/experiencias/${id}`, Experience);
-        return response.data;
-    },
-
-    // Cambia el estado de la experiencia a "Publicada"
-    publishExperience: async (id: number): Promise<Experience> => {
-        const response = await axiosInstance.patch(`/experiencias/${id}/publicar`, {
-            estado: 'Publicada'
-        });
-        return response.data;
-    },
-
-    // Cambia el estado de la experiencia a "Borrador"
-    unpublishExperience: async (id: number): Promise<Experience> => {
-        const response = await axiosInstance.patch(`/experiencias/${id}/despublicar`, {
-            estado: 'Borrador'
-        });
+        const response = await axiosInstance.put(`/dashboard/experiencias/${id}`, Experience);
         return response.data;
     },
 
     deleteExperience: async (id: number): Promise<void> => {
         await axiosInstance.delete(`/experiencia/${id}`);
+    },
+
+    changeStatus: async (id: number, data: { status: string; entityType: string }): Promise<Experience> => {
+        const response = await axiosInstance.patch(`/dashboard/estado/${id}`, data);
+        return response.data;
     }
 }; 

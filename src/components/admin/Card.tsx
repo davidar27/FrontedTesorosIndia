@@ -1,13 +1,18 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Edit, LucideIcon, Check, X, Trash } from 'lucide-react';
 import Picture from '@/components/ui/display/Picture';
 import Avatar from '@/components/ui/display/Avatar';
 import { toast } from 'sonner';
+import ConfirmDialog from '@/components/ui/feedback/ConfirmDialog';
+import { normalizeEntrepreneurStatus, normalizeExperienceStatus } from '@/features/admin/adminHelpers';
+import LoadingSpinner from '@/components/layouts/LoadingSpinner';
 
 interface StatusConfig {
     active: { bg: string; text: string; label: string };
     inactive: { bg: string; text: string; label: string };
     draft: { bg: string; text: string; label: string };
+    published: { bg: string; text: string; label: string };
+    pending: { bg: string; text: string; label: string };
     [key: string]: { bg: string; text: string; label: string };
 }
 
@@ -54,9 +59,8 @@ interface ReusableCardProps<T> {
     stats?: StatInfo[];
     actions?: ActionButton[];
     statusConfig?: StatusConfig;
-    onEdit?: (item: T) => void;
-    onDisable?: (id: number) => void;
-    onActivate?: (id: number) => void;  
+    onUpdate?: (item: T) => void;
+    onChangeStatus?: (id: number, status: string) => void;
     onDelete?: (id: number) => void;
     showImage?: boolean;
     showStatus?: boolean;
@@ -66,17 +70,16 @@ interface ReusableCardProps<T> {
     onClick?: (item: T) => void;
     loading?: boolean;
     children?: React.ReactNode;
+    title?: string;
 }
 
 // Configuración por defecto para estados
-const DEFAULT_STATUS_CONFIG: StatusConfig = {
+const DEFAULT_STATUS_CONFIG = {
     active: { bg: 'bg-green-100', text: 'text-green-800', label: 'Activo' },
     inactive: { bg: 'bg-red-100', text: 'text-red-800', label: 'Inactivo' },
-    draft: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'Borrador' },
     pending: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'Pendiente' },
-    completed: { bg: 'bg-purple-100', text: 'text-purple-800', label: 'Completado' },
-    archived: { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Archivado' },
-    processing: { bg: 'bg-indigo-100', text: 'text-indigo-800', label: 'Procesando' },
+    published: { bg: 'bg-green-100', text: 'text-green-800', label: 'Publicada' },
+    draft: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'Borrador' }
 };
 
 // Estilos para variantes de botones
@@ -105,13 +108,6 @@ const copyToClipboard = async (text: string) => {
     }
 };
 
-// Componente de Loading Spinner
-const LoadingSpinner: React.FC<{ size?: number }> = ({ size = 16 }) => (
-    <div
-        className="animate-spin rounded-full border-2 border-current border-t-transparent"
-        style={{ width: size, height: size }}
-    />
-);
 
 export function ReusableCard<T extends BaseItem>({
     item,
@@ -119,9 +115,8 @@ export function ReusableCard<T extends BaseItem>({
     stats = [],
     actions = [],
     statusConfig = DEFAULT_STATUS_CONFIG,
-    onEdit,
-    onDisable,
-    onActivate,
+    onUpdate,
+    onChangeStatus,
     onDelete,
     showImage = true,
     showStatus = true,
@@ -130,8 +125,12 @@ export function ReusableCard<T extends BaseItem>({
     clickable = false,
     onClick,
     loading = false,
-    children
+    children,
+    title
 }: ReusableCardProps<T>) {
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [confirmAction, setConfirmAction] = useState<'delete' | 'activate' | 'disable' | 'publish' | 'draft' | null>(null);
+
     const getStatusStyle = (status: string) => {
         const config = statusConfig[status] || statusConfig.active;
         return `${config.bg} ${config.text}`;
@@ -144,48 +143,83 @@ export function ReusableCard<T extends BaseItem>({
 
     const defaultActions: ActionButton[] = useMemo(() => {
         const actionsArr: ActionButton[] = [];
-        const status = (item.status || '').toLowerCase();
+        const isExperience = title === 'Experiencia';
+        const status = isExperience 
+            ? normalizeExperienceStatus(item.status)
+            : normalizeEntrepreneurStatus(item.status);
         
-        if (onEdit) {
+        if (onUpdate) {
             actionsArr.push({
                 icon: Edit,
                 label: variant !== 'compact' ? 'Editar' : undefined,
-                onClick: () => onEdit(item),
+                onClick: () => onUpdate(item),
                 variant: 'primary',
                 fullWidth: variant === 'compact' ? false : true,
                 tooltip: 'Editar elemento'
             });
         }
-        if (status === 'active' && onDisable) {
-            actionsArr.push({
-                icon: X,
-                label: variant === 'default' ? 'Desactivar' : undefined,
-                onClick: () => onDisable(item.id),
-                variant: 'danger',
-                fullWidth: false,
-                tooltip: 'Desactivar elemento'
-            });
-        } else if (status === 'inactive' && onActivate) {
-            actionsArr.push({
-                icon: Check,
-                label: variant === 'default' ? 'Activar' : undefined,
-                onClick: () => onActivate(item.id),
-                variant: 'success',
-                fullWidth: false,
-                tooltip: 'Activar elemento'
-            });
-        } else if (status === 'pending' && onDelete) {
-            actionsArr.push({
-                icon: Trash,
-                label: variant === 'default' ? 'Eliminar' : undefined,
-                onClick: () => onDelete(item.id),
-                variant: 'danger',
-                fullWidth: false,
-                tooltip: 'Eliminar elemento'
-            });
+
+        if (isExperience) {
+            if (status === 'published' && onChangeStatus) {
+                actionsArr.push({
+                    icon: X,
+                    label: variant === 'default' ? 'Desactivar' : undefined,
+                    onClick: () => handleActionWithConfirm('draft'),
+                    variant: 'danger',
+                    fullWidth: false,
+                    tooltip: `Desactivar ${title}`
+                });
+            } else if (status === 'draft' && onChangeStatus) {
+                actionsArr.push({
+                    icon: Check,
+                    label: variant === 'default' ? 'Publicar' : undefined,
+                    onClick: () => handleActionWithConfirm('publish'),
+                    variant: 'success',
+                    fullWidth: false,
+                    tooltip: `Publicar ${title}`
+                });
+            } else if (status === 'inactive' && onChangeStatus) {
+                actionsArr.push({
+                    icon: Check,
+                    label: variant === 'default' ? 'Activar' : undefined,
+                    onClick: () => handleActionWithConfirm('activate'),
+                    variant: 'success',
+                    fullWidth: false,
+                    tooltip: `Activar ${title}`
+                });
+            }
+        } else {
+            if (status === 'active' && onChangeStatus) {
+                actionsArr.push({
+                    icon: X,
+                    label: variant === 'default' ? 'Desactivar' : undefined,
+                    onClick: () => handleActionWithConfirm('disable'),
+                    variant: 'danger',
+                    fullWidth: false,
+                    tooltip: `Desactivar ${title}`
+                });
+            } else if (status === 'inactive' && onChangeStatus) {
+                actionsArr.push({
+                    icon: Check,
+                    label: variant === 'default' ? 'Activar' : undefined,
+                    onClick: () => handleActionWithConfirm('activate'),
+                    variant: 'success',
+                    fullWidth: false,
+                    tooltip: `Activar ${title}`
+                });
+            } else if (status === 'pending' && onDelete) {
+                actionsArr.push({
+                    icon: Trash,
+                    label: variant === 'default' ? 'Eliminar' : undefined,
+                    onClick: () => handleActionWithConfirm('delete'),
+                    variant: 'danger',
+                    fullWidth: false,
+                    tooltip: `Eliminar ${title}`
+                });
+            }
         }
         return actionsArr;
-    }, [onEdit, onDisable, onActivate, onDelete, item, variant]);
+    }, [onUpdate, onChangeStatus, onDelete, item, variant, title]);
 
     const finalActions = actions.length > 0 ? actions : defaultActions;
 
@@ -206,6 +240,37 @@ export function ReusableCard<T extends BaseItem>({
         }
     };
 
+    const handleActionWithConfirm = (action: 'delete' | 'activate' | 'disable' | 'publish' | 'draft') => {
+        setConfirmAction(action);
+        setConfirmOpen(true);
+    };
+
+    const handleConfirm = () => {
+        if (!confirmAction) return;
+        
+        switch (confirmAction) {
+            case 'delete':
+                if (onDelete) onDelete(item.id);
+                break;
+            case 'activate':
+                if (onChangeStatus) onChangeStatus(item.id, 'active');
+                break;
+            case 'disable':
+                if (onChangeStatus) onChangeStatus(item.id, 'inactive');
+                break;
+            case 'publish':
+                if (onChangeStatus) onChangeStatus(item.id, 'published');
+                break;
+            case 'draft':
+                if (onChangeStatus) onChangeStatus(item.id, 'draft');
+                break;
+        }
+        setConfirmOpen(false);
+        setConfirmAction(null);
+    };
+
+    const isActionDisabled = confirmOpen || loading;
+
     const cardClasses = `
         bg-white rounded-2xl shadow-lg border border-gray-100 
         hover:shadow-xl transition-all duration-300 group animate-fade-in-up 
@@ -215,18 +280,23 @@ export function ReusableCard<T extends BaseItem>({
         ${className}
     `.trim();
 
-    if (loading) {
-        return (
-            <div className={cardClasses}>
-                <div className="flex items-center justify-center h-32">
-                    <LoadingSpinner size={32} />
-                </div>
-            </div>
-        );
-    }
 
     return (
-        <div className={cardClasses} onClick={handleCardClick}>
+        <div className={cardClasses} style={{ position: 'relative' }} onClick={handleCardClick}>
+            {/* Loading Spinner superpuesto */}
+            {loading && (
+                <div style={{
+                    position: 'absolute',
+                    top: 0, left: 0, right: 0, bottom: 0,
+                    background: 'rgba(255,255,255,0.7)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 20
+                }}>
+                    <LoadingSpinner message="Cargando..." />
+                </div>
+                )}
             {/* Header */}
             <div className="relative flex items-start justify-between mb-4">
                 <div className="flex-1 min-w-0">
@@ -327,7 +397,7 @@ export function ReusableCard<T extends BaseItem>({
                         <button
                             key={index}
                             onClick={action.onClick}
-                            disabled={action.disabled || action.loading}
+                            disabled={action.disabled || action.loading || isActionDisabled}
                             title={action.tooltip}
                             className={`
                                 ${action.fullWidth ? 'flex-1' : ''} 
@@ -347,6 +417,51 @@ export function ReusableCard<T extends BaseItem>({
                     ))}
                 </div>
             )}
+
+            <ConfirmDialog
+                open={confirmOpen}
+                onConfirm={handleConfirm}
+                onCancel={() => setConfirmOpen(false)}
+                title={
+                    confirmAction === 'delete'
+                        ? `¿Eliminar ${title}?`
+                        : confirmAction === 'activate'
+                        ? `¿Activar ${title}?`
+                        : confirmAction === 'disable'
+                        ? `¿Desactivar ${title}?`
+                        : confirmAction === 'publish'
+                        ? `¿Publicar ${title}?`
+                        : confirmAction === 'draft'
+                        ? `¿Borrador ${title}?`
+                        : `¿Desactivar ${title}?`
+                }
+                description={
+                    confirmAction === 'delete'
+                        ? 'Esta acción no se puede deshacer. ¿Deseas continuar?'
+                        : confirmAction === 'activate'
+                        ? `¿Deseas activar ${item.name}?`
+                        : confirmAction === 'disable'
+                        ? `¿Deseas desactivar ${item.name}?`
+                        : confirmAction === 'publish'
+                        ? `¿Deseas publicar ${item.name}?`
+                        : confirmAction === 'draft'
+                        ? `¿Deseas poner en borrador ${item.name}?`
+                        : `¿Deseas desactivar ${item.name}?`
+                }
+                confirmText={
+                    confirmAction === 'delete'
+                        ? 'Eliminar'
+                        : confirmAction === 'activate'
+                        ? 'Activar'
+                        : confirmAction === 'disable'
+                        ? 'Desactivar'
+                        : confirmAction === 'publish'
+                        ? 'Publicar'
+                        : confirmAction === 'draft'
+                        ? 'Borrador'
+                        : 'Desactivar'
+                }
+            />
         </div>
     );
 }

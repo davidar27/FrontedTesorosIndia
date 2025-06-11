@@ -7,10 +7,11 @@ interface CategoriesConfigParams {
     isLoading?: boolean;
     error?: string | null;
     actions: {
-        onEdit?: (item: Category) => void;
+        onUpdate?: (item: Category) => void;
         onDelete?: (id: number) => void;
         onCreate?: () => void;
         onRetry?: () => void;
+        onChangeStatus?: (id: number, status: string) => void;
     };
 }
 
@@ -31,10 +32,11 @@ export const createCategoriesConfig = ({
     isLoading,
     error,
     ItemCard: CategoryCard,
-    onEdit: actions.onEdit || (() => {}),
+    onUpdate: actions.onUpdate || (() => {}),
     onDelete: actions.onDelete || (() => {}),
     onCreate: actions.onCreate || (() => {}),
     onRetry: actions.onRetry || (() => {}),
+    onChangeStatus: actions.onChangeStatus || (() => {}),
     searchFunction: (item, searchTerm) => {
         const term = searchTerm.toLowerCase();
         return item.name.toLowerCase().includes(term);

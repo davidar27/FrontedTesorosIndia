@@ -113,7 +113,7 @@ function PackagesManagement() {
     const config = createPackagesConfig({
         data: packages,
         actions: {
-            onEdit: canEdit ? handleEdit : undefined,
+            onUpdate: canEdit ? handleEdit : undefined,
             onDelete: canDelete ? handleDelete : undefined,
             onCreate: handleCreate
         }

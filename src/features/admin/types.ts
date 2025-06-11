@@ -1,8 +1,8 @@
-export interface BaseEntity<TStatus extends string> {
-    id?: number;
+export interface BaseEntity<TStatus extends string, TId = number> {
+    id?: TId;
     name: string;
     status: TStatus;
-    [key: string]: string | number | boolean | Date | null | undefined;
+    [key: string]: string | number | boolean | Date | null | undefined | TId;
 }
 
 export interface EntityConfig<T extends BaseEntity<string>> {
@@ -23,15 +23,19 @@ export interface EntityConfig<T extends BaseEntity<string>> {
     // Componentes
     ItemCard: React.ComponentType<{
         item: T;
-        onEdit: (item: T) => void;
+        onCreate?: () => void;
+        onUpdate: (item: T) => void;
         onDelete: (id: number) => void;
+        onChangeStatus: (id: number, status: string) => void;
+        onRetry?: () => void;
     }>;
 
     // Callbacks
-    onEdit: (item: T) => void;
+    onUpdate: (item: T) => void;
     onDelete: (id: number) => void;
-    onCreate: () => void;
+    onCreate?: () => void;
     onRetry?: () => void;
+    onChangeStatus: (id: number, status: string) => void;
 
     // Filtros personalizados (opcional)
     customFilters?: React.ComponentType<{

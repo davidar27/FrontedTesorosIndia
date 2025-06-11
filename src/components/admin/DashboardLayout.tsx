@@ -2,7 +2,7 @@ import React from 'react';
 import Sidebar from "./SideBar";
 import useSidebarLogic from "@/hooks/useSidebarLogic";
 import { Outlet } from "react-router-dom";
-import { Filter } from "lucide-react";
+import { Menu } from "lucide-react";
 import { usePageContext } from '@/context/PageContext';
 import AnimatedTitle from '@/components/ui/display/AnimatedTitle';
 import UserMenu from '@/components/layouts/menu/UserMenu';
@@ -38,20 +38,16 @@ const DashboardLayout: React.FC = () => {
                             {pageInfo && (
                                 <>
                                     <div className='flex items-center gap-2 justify-between'>
+                                    </div>
+                                    <div className='flex items-center justify-between w-full'>
                                         <button
                                             onClick={handleMobileMenuToggle}
                                             className="lg:hidden p-2"
                                             aria-label="Abrir menú de navegación"
                                         >
-                                            <Filter className="w-8 h-8" />
+                                            <Menu className="w-8 h-8" />
                                         </button>
-                                        <span className='sm:hidden'>
-                                            <UserMenu
-                                                textColor='!black'
-                                            />
-                                        </span>
-                                    </div>
-                                    <div className='flex items-center justify-between w-full'>
+
                                         <div className="animate-fade-in-up text-center md:text-left">
                                             <AnimatedTitle
                                                 title={pageInfo.title}

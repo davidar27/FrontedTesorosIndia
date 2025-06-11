@@ -24,7 +24,7 @@ const ProtectedRoute = ({ roles = [], requireAuth = true, allowAdmin = true }: P
                 try {
                     const experienceId = location.pathname.split('/')[2];
                     const Experience = await ExperiencesApi.public.getExperienceById(Number(experienceId));
-                    setIsPublicExperience(Experience.status === 'Publicada');
+                    setIsPublicExperience(Experience.status === 'published');
                 } catch {
                     setIsPublicExperience(false);
                 }
