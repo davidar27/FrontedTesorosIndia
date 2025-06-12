@@ -3,7 +3,7 @@ import { Coffee, X, Flower, Flower2, Leaf, Shrub, Waves, UtensilsCrossed, Tent, 
 import { Experience } from '@/features/admin/experiences/ExperienceTypes';
 import LoadingSpinner from '@/components/layouts/LoadingSpinner';
 import { useNavigate } from 'react-router-dom';
-import { ExperiencesApi } from '@/services/admin/experiences';
+import { useExperiencesManagement } from '@/services/admin/useExperiencesManagement';
 import clsx from 'clsx';
 import { useScroll, useMotionValueEvent } from 'framer-motion';
 import ButtonIcon from '../ui/buttons/ButtonIcon';
@@ -43,7 +43,7 @@ const SidebarExperiences: React.FC<SidebarExperiencesProps> = ({ isOpen, onClose
             setIsLoading(true);
             setError(null);
             try {
-                const ExperiencesData = await ExperiencesApi.public.getExperiences();
+                const ExperiencesData = await useExperiencesManagement.public.getExperiences();
                 setExperiences(ExperiencesData || []);
             } catch (err) {
                 setError('Error al cargar las experiencias');
@@ -101,7 +101,7 @@ const SidebarExperiences: React.FC<SidebarExperiencesProps> = ({ isOpen, onClose
                                 onClick={() => {
                                     setError(null);
                                     setExperiences([]);
-                                    ExperiencesApi.public.getExperiences().then(data => setExperiences(data || []));
+                                    useExperiencesManagement.public.getExperiences().then(data => setExperiences(data || []));
                                 }}
                                 className="mt-2 text-sm text-primary hover:underline"
                             >

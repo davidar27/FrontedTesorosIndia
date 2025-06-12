@@ -141,8 +141,8 @@ export function EditableEntrepreneurCard({
             value: (
                 <input
                     type="text"
-                    name="name_experience"
-                    value={formData.name_experience || ''}
+                    name="name"
+                    value={formData.name || ''}
                     onChange={handleChange}
                     className="bg-transparent border-b border-gray-300 focus:border-primary outline-none text-center w-auto text-sm font-bold text-green-600"
                     required

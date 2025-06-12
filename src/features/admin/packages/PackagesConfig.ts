@@ -1,18 +1,18 @@
 import { EntityConfig } from "@/features/admin/types";
-import { EntrepreneursFilter } from "./EntrepreneursFilter";
-import { Entrepreneur } from "./EntrepreneursTypes";
+import { Package } from "./PackageTypes";
+import { PackagesFilter } from "./PackagesFilter";
 
-interface EntrepreneursConfigParams {
-    data: Entrepreneur[];
+interface PackagesConfigParams {
+    data: Package[];
     CardComponent: React.ComponentType<{
-        item: Entrepreneur;
-        onUpdate: (item: Entrepreneur) => void;
+        item: Package;
+        onUpdate: (item: Package) => void;
         onDelete: (id: number) => void;
         onChangeStatus: (id: number, status: string) => void;
         onRetry?: () => void;
     }>;
     actions: {
-        onUpdate?: (item: Entrepreneur) => void;
+        onUpdate?: (item: Package) => void;
         onDelete?: (id: number) => void;
         onCreate?: () => void;
         onChangeStatus?: (id: number, status: string) => void;
@@ -26,8 +26,8 @@ const statusPriority = {
     inactive: 3
 };
 
-function sortByStatus(a: Entrepreneur, b: Entrepreneur) {
-    const getStatus = (e: Entrepreneur) => {
+function sortByStatus(a: Package, b: Package) {
+    const getStatus = (e: Package) => {
         const s = (e.status || '').toLowerCase();
         if (s === 'activo' || s === 'active') return 'active';
         if (s === 'pendiente' || s === 'pending') return 'pending';
@@ -37,34 +37,35 @@ function sortByStatus(a: Entrepreneur, b: Entrepreneur) {
     return statusPriority[getStatus(a)] - statusPriority[getStatus(b)];
 }
 
-export const EntrepreneursConfig = ({
+export const PackagesConfig = ({
     data,
     CardComponent,
     actions
-}: EntrepreneursConfigParams): EntityConfig<Entrepreneur> => ({
-    entityName: "Emprendedor",
-    entityNamePlural: "Emprendedores",
-    searchPlaceholder: "Buscar emprendedores...",
-    emptyStateEmoji: "👥",
+}: PackagesConfigParams): EntityConfig<Package> => ({
+    entityName: "Paquete",
+    entityNamePlural: "Paquetes",
+    searchPlaceholder: "Buscar paquetes...",
+    emptyStateEmoji: "📦",
     ItemCard: CardComponent,
-    emptyStateTitle: "No hay emprendedores",
-    emptyStateDescription: "Crea el primer emprendedor para comenzar",
-    description: "Gestiona emprendedores",
+    emptyStateTitle: "No hay paquetes",
+    emptyStateDescription: "Crea el primer paquete para comenzar",
+    description: "Gestiona paquetes",
     items: data.sort(sortByStatus),
     isLoading: false,
     error: null,
     maxResults: 50,
     enableAnimations: true,
     showResultsCount: true,
-    customFilters: EntrepreneursFilter,
+    customFilters: PackagesFilter,
     searchFunction: (item, searchTerm) => {
         const searchLower = searchTerm.toLowerCase();
-        const entrepreneur = item as Entrepreneur;
+        const p = item as Package;
         return (
-            entrepreneur.name?.toLowerCase().includes(searchLower) ||
-            entrepreneur.email?.toLowerCase().includes(searchLower) ||
-            entrepreneur.phone?.toLowerCase().includes(searchLower) ||
-            entrepreneur.name?.toLowerCase().includes(searchLower)
+            p.name?.toLowerCase().includes(searchLower) ||
+            p.price?.toString().includes(searchLower) ||
+            p.duration?.toLowerCase().includes(searchLower) ||
+            p.capacity?.toLowerCase().includes(searchLower) ||
+            p.join_date?.toLowerCase().includes(searchLower)
         );
     },
     onUpdate: actions.onUpdate || (() => {}),

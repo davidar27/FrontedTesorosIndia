@@ -4,21 +4,21 @@ export type Experiencestatus = 'published' | 'draft' | 'inactive';
 
 export interface ExperienceResponse {
     id: number;
-    name_experience: string;
+    name: string;
     location: string | 'Por definir';
     type: string | ' ';
     logo: string | ' ';
-    created_at: string;
+    joinDate: string;
     status: Experiencestatus;
     name_entrepreneur: string;
 }
 
 export interface Experience extends BaseEntity<Experiencestatus> {
-    name_experience: string;
+    name: string;
     location: string | 'Por definir';
     type: string | ' ';
     logo: string | ' ';
-    created_at: string;
+    joinDate: string;
     name_entrepreneur: string;
 }
 
@@ -34,19 +34,19 @@ export interface ExperienceCardProps {
 }
 
 export interface UpdateExperienceData {
-    name_experience: string;
+    name: string;
     location: string;
     type: string;
 }
 
 export interface RawExperienceResponse {
     id: number;
-    name_experience: string;
+    name: string;
     location: string;
     type: string;
     logo: string;
     status: Experiencestatus;
-    created_at: string;
+    joinDate: string;
     name_entrepreneur: string;
 }
 

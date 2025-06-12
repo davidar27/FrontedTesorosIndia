@@ -93,7 +93,7 @@ export const EntrepreneurCard = React.memo(function EntrepreneurCard({
     const stats = [
         
         {
-            value: item.name_experience,
+            value: item.name,
             label: 'Nombre de la experiencia',
             bgColor: 'bg-green-50',
             textColor: 'text-green-600',

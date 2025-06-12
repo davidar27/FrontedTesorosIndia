@@ -1,7 +1,7 @@
 import { useAuthenticatedQuery } from '@/hooks/useAuthenticatedQuery';
 import { useQuery } from '@/hooks/useQuery';
 import useAuth from '@/context/useAuth';
-import { ExperiencesApi } from '@/services/admin/experiences';
+import { useExperiencesManagement } from '@/services/admin/useExperiencesManagement';
 
 interface AuthUser {
     id: number;
@@ -18,13 +18,13 @@ export const useExperienceQuery = (experienceId: string | undefined) => {
 
     const publicResult = useQuery({
         queryKey: ['Experience', experienceId],
-        queryFn: () => ExperiencesApi.public.getExperienceById(Number(experienceId)),
+        queryFn: () => useExperiencesManagement.public.getExperienceById(Number(experienceId)),
         enabled: enabled && !user
     });
 
     const authenticatedResult = useAuthenticatedQuery({
         queryKey: ['Experience', experienceId],
-        queryFn: () => ExperiencesApi.getExperienceById(Number(experienceId)),
+        queryFn: () => useExperiencesManagement.getExperienceById(Number(experienceId)),
         enabled: enabled && !!user
     });
 

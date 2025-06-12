@@ -14,7 +14,7 @@ export function CreateEntrepreneurForm({ onSubmit, onCancel, isLoading }: Create
         email: '',
         password: '',
         phone: '',
-        name_experience: ''
+        name: ''
     });
 
     const [errors, setErrors] = useState<Partial<CreateEntrepreneurData>>({});
@@ -42,8 +42,8 @@ export function CreateEntrepreneurForm({ onSubmit, onCancel, isLoading }: Create
             newErrors.phone = 'El teléfono es requerido';
         }
 
-        if (!formData.name_experience.trim()) {
-            newErrors.name_experience = 'El nombre de la experiencia es requerido';
+        if (!formData.name.trim()) {
+            newErrors.name = 'El nombre de la experiencia es requerido';
         }
 
         setErrors(newErrors);
@@ -161,20 +161,20 @@ export function CreateEntrepreneurForm({ onSubmit, onCancel, isLoading }: Create
 
                 {/* Nombre de la Experiencia */}
                 <div>
-                    <label htmlFor="name_experience" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
                         Nombre de la Experiencia *
                     </label>
                     <input
                         type="text"
-                        id="name_experience"
-                        value={formData.name_experience}
-                        onChange={handleChange('name_experience')}
-                        className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.name_experience ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                        id="name"
+                        value={formData.name}
+                        onChange={handleChange('name')}
+                        className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.name ? 'border-red-300 bg-red-50' : 'border-gray-300'
                             }`}
                         placeholder="Ingresa el nombre de la experiencia"
                     />
-                    {errors.name_experience && (
-                        <p className="mt-1 text-sm text-red-600">{errors.name_experience}</p>
+                    {errors.name && (
+                        <p className="mt-1 text-sm text-red-600">{errors.name}</p>
                     )}
                 </div>
 

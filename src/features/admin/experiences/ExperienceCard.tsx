@@ -37,7 +37,7 @@ export const ExperienceCard = React.memo(function ExperienceCard({
         setIsLoading(true);
 
         const changedFields: Partial<UpdateExperienceData> = {};
-        if (data.name_experience && data.name_experience !== item.name_experience) changedFields.name_experience = data.name_experience;
+        if (data.name && data.name !== item.name) changedFields.name = data.name;
         if (data.location && data.location !== item.location) changedFields.location = data.location;
         if (data.type && data.type !== item.type) changedFields.type = data.type;
 
@@ -79,7 +79,7 @@ export const ExperienceCard = React.memo(function ExperienceCard({
             }
         };
 
-        const newStatus = getNewStatus(normalizedStatus);   
+        const newStatus = getNewStatus(normalizedStatus);
         changeStatus({
             id: item.id ?? 0,
             status: newStatus,
@@ -110,17 +110,18 @@ export const ExperienceCard = React.memo(function ExperienceCard({
             value: item.location || '',
             label: 'Ubicación',
             copyable: true
-        }
-    ];
-
-    const stats = [
+        },
         {
-            value: formatDate(item.created_at),
+            value: formatDate(item.joinDate),
             label: 'Fecha de registro',
             bgColor: 'bg-blue-50',
             textColor: 'text-blue-600',
             icon: Calendar
         },
+    ];
+
+    const stats = [
+
         {
             value: item.type,
             label: 'Tipo de experiencia',
@@ -136,8 +137,8 @@ export const ExperienceCard = React.memo(function ExperienceCard({
                 ...item,
                 status: normalizeExperienceStatus(item.status),
                 id: item.id ?? 0,
-                name: item.name_experience,
-                description: `Experiencia registrada el ${formatDate(item.created_at)}`
+                name: item.name,
+                description: `Experiencia registrada el ${formatDate(item.joinDate)}`
             }}
             contactInfo={contactInfo}
             stats={stats}

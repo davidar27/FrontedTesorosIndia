@@ -8,5 +8,25 @@ export interface Package extends BaseEntity<PackageStatus> {
     category: string;
     duration: string;
     capacity: string;
-    description: string;
+    join_date: string;
 }
+
+
+export interface CreatePackageData {
+    name: string;
+    price: number;
+    category: string;
+    duration: string;
+    capacity: string;
+    join_date: string;
+}
+
+export interface UpdatePackageData {
+    name: string;
+    price: number;
+    category: string;
+    duration: string;
+    capacity: string;
+    join_date: string;
+}
+
