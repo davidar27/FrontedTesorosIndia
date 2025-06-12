@@ -5,28 +5,28 @@ export type PackageStatus = 'active' | 'inactive' | 'draft' | 'pending';
 export interface Package extends BaseEntity<PackageStatus> {
     id: number;
     price: number;
-    category: string;
+    description: string;
     duration: string;
     capacity: string;
-    join_date: string;
+    joinDate: string;
 }
 
 
 export interface CreatePackageData {
     name: string;
     price: number;
-    category: string;
+    description: string;
     duration: string;
     capacity: string;
-    join_date: string;
+    joinDate: string;
 }
 
 export interface UpdatePackageData {
     name: string;
     price: number;
-    category: string;
+    description: string;
     duration: string;
     capacity: string;
-    join_date: string;
+    joinDate: string;
 }
 

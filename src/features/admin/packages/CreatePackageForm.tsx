@@ -12,7 +12,7 @@ export function CreatePackageForm({ onSubmit, onCancel, isLoading }: CreatePacka
     const [formData, setFormData] = useState<CreatePackageData>({
         name: '',
         price: 0,
-        category: '',
+        description: '',
         duration: '',
         capacity: '',
         join_date: '',
@@ -27,7 +27,13 @@ export function CreatePackageForm({ onSubmit, onCancel, isLoading }: CreatePacka
             newErrors.name = 'El nombre es requerido';
         }
 
+        if (!formData.description.trim()) {
+            newErrors.description = 'La descripción es requerida';
+        }
 
+        if (!formData.duration.trim()) {
+            newErrors.duration = 'La duración es requerida';
+        }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
