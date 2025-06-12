@@ -141,8 +141,8 @@ export function EditableEntrepreneurCard({
             value: (
                 <input
                     type="text"
-                    name="name"
-                    value={formData.name || ''}
+                    name="name_experience"
+                    value={formData.name_experience || ''}
                     onChange={handleChange}
                     className="bg-transparent border-b border-gray-300 focus:border-primary outline-none text-center w-auto text-sm font-bold text-green-600"
                     required
@@ -214,7 +214,7 @@ export function EditableEntrepreneurCard({
                         name="name"
                         value={formData.name || ''}
                         onChange={handleChange}
-                        className="w-full text-xl font-bold text-gray-800 bg-transparent border-b border-gray-300 focus:border-primary outline-none px-1"
+                        className="w-full text-lg truncate font-bold text-gray-800 bg-transparent border-b border-gray-300 focus:border-primary outline-none px-1"
                         required
                         placeholder="Nombre del emprendedor"
                     />

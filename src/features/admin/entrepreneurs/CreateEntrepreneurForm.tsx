@@ -1,5 +1,7 @@
-import { useState } from 'react';
-import { CreateEntrepreneurData } from './EntrepreneursTypes';
+import React, { useState } from 'react';
+import { ReusableCard } from '@/components/admin/Card';
+import { Phone, Home, X, Check, Mail } from 'lucide-react';
+import { CreateEntrepreneurData } from '@/features/admin/entrepreneurs/EntrepreneursTypes';
 import Button from '@/components/ui/buttons/Button';
 
 interface CreateEntrepreneurFormProps {
@@ -8,204 +10,143 @@ interface CreateEntrepreneurFormProps {
     isLoading?: boolean;
 }
 
-export function CreateEntrepreneurForm({ onSubmit, onCancel, isLoading }: CreateEntrepreneurFormProps) {
+export function CreateEntrepreneurForm({
+    onSubmit,
+    onCancel,
+    isLoading
+}: CreateEntrepreneurFormProps) {
     const [formData, setFormData] = useState<CreateEntrepreneurData>({
         name: '',
         email: '',
-        password: '',
         phone: '',
-        name_experience: ''
+        name_experience: '',
+        password: '',
     });
 
-    const [errors, setErrors] = useState<Partial<CreateEntrepreneurData>>({});
-
-    const validateForm = (): boolean => {
-        const newErrors: Partial<CreateEntrepreneurData> = {};
-
-        if (!formData.name.trim()) {
-            newErrors.name = 'El nombre es requerido';
-        }
-
-        if (!formData.email.trim()) {
-            newErrors.email = 'El correo es requerido';
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            newErrors.email = 'El correo no es válido';
-        }
-
-        if (!formData.password.trim()) {
-            newErrors.password = 'La contraseña es requerida';
-        } else if (formData.password.length < 6) {
-            newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
-        }
-
-        if (!formData.phone.trim()) {
-            newErrors.phone = 'El teléfono es requerido';
-        }
-
-        if (!formData.name.trim()) {
-            newErrors.name = 'El nombre de la experiencia es requerido';
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (validateForm()) {
-            onSubmit(formData);
-        }
+        onSubmit(formData);
     };
 
-    const handleChange = (field: keyof CreateEntrepreneurData) => (
-        e: React.ChangeEvent<HTMLInputElement>
-    ) => {
-        setFormData(prev => ({
-            ...prev,
-            [field]: e.target.value
-        }));
-
-        if (errors[field]) {
-            setErrors(prev => ({
-                ...prev,
-                [field]: undefined
-            }));
+    const contactInfo = [
+        {
+            icon: Mail,
+            value: (
+                <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
+                    required
+                    placeholder="Correo electrónico"
+                />
+            ),
+            label: 'Correo electrónico'
+        },
+        {
+            icon: Phone,
+            value: (
+                <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
+                    required
+                    placeholder="Número de teléfono"
+                />
+            ),
+            label: 'Teléfono'
         }
-    };
+    ];
+
+    const stats = [
+        {
+            value: (
+                <input
+                    type="text"
+                    name="name_experience"
+                    value={formData.name_experience}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200 text-center"
+                    required
+                    placeholder="Nombre de la experiencia"
+                />
+            ),
+            label: 'Nombre de la experiencia',
+            bgColor: 'bg-green-50',
+            textColor: 'text-green-600',
+            icon: Home
+        }
+    ];
 
     return (
-        <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6">
-            <div className="mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Crear Nuevo Emprendedor</h2>
-                <p className="text-gray-600">Completa la información para registrar un nuevo emprendedor</p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Nombre */}
-                    <div>
-                        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                            Nombre Completo *
+        <form onSubmit={handleSubmit} className="w-full">
+            <ReusableCard
+                item={{
+                    id: 0,
+                    name: formData.name,
+                    status: 'active',
+                    image: undefined,
+                }}
+                contactInfo={contactInfo}
+                stats={stats}
+                showImage={false}
+                showStatus={false}
+                variant="compact"
+                className="w-full"
+            >
+                <div className="space-y-4 w-full">
+                    <div className="w-full">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Nombre del emprendedor
                         </label>
                         <input
                             type="text"
-                            id="name"
+                            name="name"
                             value={formData.name}
-                            onChange={handleChange('name')}
-                            className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.name ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                                }`}
-                            placeholder="Ingresa el nombre completo"
+                            onChange={handleChange}
+                            className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
+                            required
+                            placeholder="Nombre del emprendedor"
                         />
-                        {errors.name && (
-                            <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-                        )}
-                    </div>
-
-                    {/* Email */}
-                    <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                            Correo Electrónico *
-                        </label>
-                        <input
-                            type="email"
-                            id="email"
-                            value={formData.email}
-                            onChange={handleChange('email')}
-                            className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.email ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                                }`}
-                            placeholder="ejemplo@correo.com"
-                        />
-                        {errors.email && (
-                            <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-                        )}
-                    </div>
-
-                    {/* Contraseña */}
-                    <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                            Contraseña *
-                        </label>
-                        <input
-                            type="password"
-                            id="password"
-                            value={formData.password}
-                            onChange={handleChange('password')}
-                            className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.password ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                                }`}
-                            placeholder="Mínimo 8 caracteres"
-                        />
-                        {errors.password && (
-                            <p className="mt-1 text-sm text-red-600">{errors.password}</p>
-                        )}
-                    </div>
-
-                    {/* Teléfono */}
-                    <div>
-                        <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                            Teléfono *
-                        </label>
-                        <input
-                            type="tel"
-                            id="phone"
-                            value={formData.phone}
-                            onChange={handleChange('phone')}
-                            className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.phone ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                                }`}
-                            placeholder="+57 300 123 4567"
-                        />
-                        {errors.phone && (
-                            <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
-                        )}
                     </div>
                 </div>
 
-                {/* Nombre de la Experiencia */}
-                <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                        Nombre de la Experiencia *
-                    </label>
-                    <input
-                        type="text"
-                        id="name"
-                        value={formData.name}
-                        onChange={handleChange('name')}
-                        className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.name ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                            }`}
-                        placeholder="Ingresa el nombre de la experiencia"
-                    />
-                    {errors.name && (
-                        <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-                    )}
-                </div>
-
-                {/* Botones */}
-                <div className="flex gap-4 pt-6 border-t">
+                <div className="flex gap-2 w-full mt-6">
                     <Button
                         type="button"
                         onClick={onCancel}
-                        disabled={isLoading}
-                        className='flex-1  rounded-md hover:!text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center border border-red-500'
-                        bgColor='bg-red-500'
-                        textColor='text-white'
+                        bgColor='bg-red-100'
+                        textColor='text-red-700'
+                        hoverBg='hover:bg-red-200'
+                        hoverTextColor='hover:text-red-800'
+                        borderColor='border-red-200'
+                        hoverBorderColor='hover:border-red-300'
+                        className="flex-1 flex items-center justify-center gap-2"
                     >
+                        <X className="w-4 h-4" />
                         Cancelar
                     </Button>
                     <Button
                         type="submit"
+                        bgColor='bg-primary'
+                        textColor='text-white'
+                        hoverBg='hover:bg-primary/80'
+                        className="flex-1 flex items-center justify-center gap-2"
                         disabled={isLoading}
-                        className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
                     >
-                        {isLoading ? (
-                            <>
-                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                Creando...
-                            </>
-                        ) : (
-                            'Crear Emprendedor'
-                        )}
+                        <Check className="w-4 h-4" />
+                        Guardar
                     </Button>
                 </div>
-            </form>
-        </div>
+            </ReusableCard>
+        </form>
     );
 }

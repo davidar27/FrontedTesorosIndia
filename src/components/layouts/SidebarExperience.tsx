@@ -133,7 +133,7 @@ const SidebarExperiences: React.FC<SidebarExperiencesProps> = ({ isOpen, onClose
                                             )}
                                         >
                                             <IconComponent className="w-5 h-5" />
-                                            <span className="font-medium truncate">{Experience.name}</span>
+                                            <span className="font-medium truncate">{Experience.name_experience}</span>
                                         </ButtonIcon>
                                     </li>
                                 );

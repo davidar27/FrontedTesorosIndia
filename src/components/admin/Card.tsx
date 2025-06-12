@@ -377,7 +377,7 @@ export function ReusableCard<T extends BaseItem>({
                             {stat.icon && (
                                 <stat.icon className={`w-5 h-5 mx-auto mb-1 ${stat.textColor || 'text-primary'}`} />
                             )}
-                            <div className={`text-lg font-bold ${stat.textColor || 'text-primary'}`}
+                            <div className={`text-lg font-bold truncate ${stat.textColor || 'text-primary'}`}
                             title={stat.value?.toString() || ''}>
                                 {stat.value}
                             </div>

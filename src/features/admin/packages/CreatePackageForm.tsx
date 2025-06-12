@@ -30,9 +30,6 @@ export function CreatePackageForm({ onSubmit, onCancel, isLoading }: CreatePacka
             newErrors.description = 'La descripción es requerida';
         }
 
-
-       
-
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };

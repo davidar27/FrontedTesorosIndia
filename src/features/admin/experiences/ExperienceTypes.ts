@@ -4,7 +4,7 @@ export type Experiencestatus = 'published' | 'draft' | 'inactive';
 
 export interface ExperienceResponse {
     id: number;
-    name: string;
+    name_experience: string;
     location: string | 'Por definir';
     type: string | ' ';
     logo: string | ' ';
@@ -14,7 +14,7 @@ export interface ExperienceResponse {
 }
 
 export interface Experience extends BaseEntity<Experiencestatus> {
-    name: string;
+    name_experience: string;
     location: string | 'Por definir';
     type: string | ' ';
     logo: string | ' ';
@@ -41,7 +41,7 @@ export interface UpdateExperienceData {
 
 export interface RawExperienceResponse {
     id: number;
-    name: string;
+    name_experience: string;
     location: string;
     type: string;
     logo: string;
