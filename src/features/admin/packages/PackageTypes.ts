@@ -16,17 +16,15 @@ export interface CreatePackageData {
     name: string;
     price: number;
     description: string;
-    duration: string;
-    capacity: string;
-    joinDate: string;
+    duration: number;
+    capacity: number;
 }
 
 export interface UpdatePackageData {
     name: string;
     price: number;
     description: string;
-    duration: string;
-    capacity: string;
-    joinDate: string;
+    duration: number;
+    capacity: number;
 }
 
