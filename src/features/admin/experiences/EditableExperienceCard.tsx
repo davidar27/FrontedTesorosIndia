@@ -19,7 +19,7 @@ export function EditableExperienceCard({
     isLoading
 }: EditableExperienceCardProps) {
     const [formData, setFormData] = useState<UpdateExperienceData>({
-        name_experience: item.name_experience,
+        name: item.name,
         location: item.location,
         type: item.type,
     });
@@ -93,7 +93,7 @@ export function EditableExperienceCard({
                     <input
                         type="text"
                         name="name"
-                        value={formData.name_experience || ''}
+                        value={formData.name || ''}
                         onChange={handleChange}
                         className="w-full text-xl font-bold text-gray-800 bg-transparent border-b border-gray-300 focus:border-primary outline-none px-1"
                         required

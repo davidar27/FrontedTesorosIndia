@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ReusableCard } from '@/components/admin/Card';
-import { Home, ShoppingCart } from 'lucide-react';
+import { Calendar, ShoppingCart } from 'lucide-react';
 import { Category, UpdateCategoryData } from '@/features/admin/categories/CategoriesTypes';
 import { useEntrepreneursManagement } from '@/services/admin/useEntrepreneursManagement';
 import {  normalizeEntrepreneurStatus } from '../adminHelpers';
@@ -67,14 +67,13 @@ export const CategoryCard = React.memo(function CategoryCard({
             />
         );
     }
+
+    const contactInfo = [
+        { icon: Calendar, value: item.joinDate, label: 'Fecha de creación' },
+    ];
+
     const stats = [
-        {
-            value: item.joinDate,
-            label: 'Fecha de creación',
-            bgColor: 'bg-green-50',
-            textColor: 'text-green-600',
-            icon: Home
-        },
+        
         {
             value: item.productsCount,
             label: 'Productos',
@@ -93,7 +92,7 @@ export const CategoryCard = React.memo(function CategoryCard({
                 id: item.id ?? 0,
                 name: item.name,
             }}
-            contactInfo={[]}
+            contactInfo={contactInfo}
             stats={stats}
             onUpdate={handleEditClick}
             onChangeStatus={handleChangeStatus}

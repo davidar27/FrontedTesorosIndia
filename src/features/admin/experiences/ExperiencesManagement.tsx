@@ -41,7 +41,7 @@ export default function ExperiencesManagement() {
         showResultsCount: true,
         customFilters: () => null,
         searchFunction: (item, searchTerm) => {
-            return item.name_experience.toLowerCase().includes(searchTerm.toLowerCase());
+            return item.name.toLowerCase().includes(searchTerm.toLowerCase());
         },
         ItemCard: ExperienceCard,
         onUpdate: canEdit
