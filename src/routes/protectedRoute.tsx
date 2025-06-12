@@ -2,8 +2,8 @@ import useAuth from '@/context/useAuth';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import LoadingSpinner from '@/components/layouts/LoadingSpinner';
 import { UserRole } from '@/interfaces/role';
-import { useExperiencesManagement } from '@/services/admin/useExperiencesManagement';
 import { useEffect, useState } from 'react';
+import { ExperiencesApi } from '@/services/home/experiences';
 
 interface ProtectedRouteProps {
     roles?: UserRole[];
@@ -23,7 +23,7 @@ const ProtectedRoute = ({ roles = [], requireAuth = true, allowAdmin = true }: P
                 setCheckingExperiencestatus(true);
                 try {
                     const experienceId = location.pathname.split('/')[2];
-                    const Experience = await useExperiencesManagement.public.getExperienceById(Number(experienceId));
+                    const Experience = await ExperiencesApi.getExperienceById(Number(experienceId));
                     setIsPublicExperience(Experience.status === 'published');
                 } catch {
                     setIsPublicExperience(false);

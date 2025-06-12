@@ -14,7 +14,7 @@ export function CreateEntrepreneurForm({ onSubmit, onCancel, isLoading }: Create
         email: '',
         password: '',
         phone: '',
-        name: ''
+        name_experience: ''
     });
 
     const [errors, setErrors] = useState<Partial<CreateEntrepreneurData>>({});
