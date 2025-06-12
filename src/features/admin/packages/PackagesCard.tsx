@@ -1,6 +1,6 @@
 import { ReusableCard } from "@/components/admin/Card";
 import { Package } from "@/features/admin/packages/PackageTypes";
-import { Calendar } from "lucide-react";
+import { Calendar, Info } from "lucide-react";
 
 interface PackageCardProps {
     item: Package;
@@ -10,15 +10,15 @@ interface PackageCardProps {
 
 function PackageCard({ item, onUpdate, onDelete }: PackageCardProps) {
     const stats = [
-        { value: `$${item.price}`, label: 'Precio', bgColor: 'bg-green-50', textColor: 'text-green-600' },
-        { value: item.duration, label: 'Duración', bgColor: 'bg-blue-50', textColor: 'text-blue-600' },
-        { value: item.capacity, label: 'Capacidad', bgColor: 'bg-purple-50', textColor: 'text-purple-600' },
-        // { value: item.category, label: 'Categoría', bgColor: 'bg-yellow-50', textColor: 'text-yellow-600' },
+        { value: item.price, label: 'Precio', bgColor: 'bg-green-50', textColor: 'text-green-600' },
+        { value: `${item.duration}H`, label: 'Duración', bgColor: 'bg-blue-50', textColor: 'text-blue-600' },
+        { value: item.capacity, label: 'Capacidad (personas)', bgColor: 'bg-purple-50', textColor: 'text-purple-600' },
 
     ];
 
     const contactInfo = [
-        { icon: Calendar, value: item.join_date, label: 'Fecha de creación' },
+        { icon: Info, value: item.description, label: 'Descripción', bgColor: 'bg-gray-50', textColor: 'text-gray-600' },
+        { icon: Calendar, value: item.joinDate, label: 'Fecha de creación' },
     ];
 
     return (
@@ -28,6 +28,10 @@ function PackageCard({ item, onUpdate, onDelete }: PackageCardProps) {
             stats={stats}
             onUpdate={onUpdate}
             onDelete={onDelete}
+            showStatus={true}
+            title='Paquete'
+            loading={false}
+            variant="default"
         />
     );
 }

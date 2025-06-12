@@ -301,7 +301,7 @@ export function ReusableCard<T extends BaseItem>({
             <div className="relative flex items-start justify-between mb-4">
                 <div className="flex-1 min-w-0">
                     <h3
-                        className={`font-bold text-gray-800 group-hover:text-primary transition-colors duration-200 truncate ${variant === 'compact' ? 'text-lg' : 'text-xl'}`}
+                        className={`font-bold text-gray-800 group-hover:text-primary transition-colors duration-200 truncate whitespace-normal ${variant === 'compact' ? 'text-lg' : 'text-xl'}`}
                         title={item.name}
                     >
                         {item.name}
@@ -347,7 +347,7 @@ export function ReusableCard<T extends BaseItem>({
 
             {/* Contact Info */}
             {contactInfo.length > 0 && (
-                <div className={`space-y-2 mb-4 flex gap-2 flex-wrap flex-col w-full  ${variant === 'compact' ? 'items-center ' : ''}`}>
+                <div className={`space-y-2 mb-4 flex gap-2 flex-wrap flex-col w-full ${variant === 'compact' ? 'items-center ' : ''}`}>
                     {contactInfo.map((contact, index) => (
                         <div
                             key={index}
@@ -356,9 +356,9 @@ export function ReusableCard<T extends BaseItem>({
                             title={contact.copyable ? 'Click para copiar' : contact.label}
                         >
                             <contact.icon className="w-4 h-4 flex-shrink-0" />
-                            <span className="text-sm truncate">{contact.value}</span>
+                            <span className="text-sm truncate whitespace-normal ">{contact.value}</span>
                             {contact.label && variant === 'detailed' && (
-                                <span className="text-xs text-gray-400">({contact.label})</span>
+                                <span className="text-xs text-gray-400 flex-wrap">({contact.label})</span>
                             )}
                         </div>
                     ))}
@@ -367,7 +367,7 @@ export function ReusableCard<T extends BaseItem>({
 
             {/* Stats */}
             {stats.length > 0 && (
-                <div className={`grid gap-3 mb-6`}>
+                <div className={`grid gap-3 mb-6 ${stats.length === 1 ? 'grid-cols-1' : stats.length === 2 ? 'grid-cols-2' : stats.length === 3 ? 'grid-cols-3' : stats.length === 4 ? 'grid-cols-2' : 'grid-cols-2'}`}>
                     {stats.map((stat, index) => (
                         <div
                             key={index}
@@ -377,7 +377,7 @@ export function ReusableCard<T extends BaseItem>({
                             {stat.icon && (
                                 <stat.icon className={`w-5 h-5 mx-auto mb-1 ${stat.textColor || 'text-primary'}`} />
                             )}
-                            <div className={`text-lg font-bold truncate ${stat.textColor || 'text-primary'}`}
+                            <div className={`text-lg font-bold ${stat.textColor || 'text-primary'}`}
                             title={stat.value?.toString() || ''}>
                                 {stat.value}
                             </div>

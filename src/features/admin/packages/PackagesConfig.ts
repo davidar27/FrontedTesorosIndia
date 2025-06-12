@@ -65,7 +65,7 @@ export const PackagesConfig = ({
             p.price?.toString().includes(searchLower) ||
             p.duration?.toLowerCase().includes(searchLower) ||
             p.capacity?.toLowerCase().includes(searchLower) ||
-            p.join_date?.toLowerCase().includes(searchLower)
+            p.joinDate?.toLowerCase().includes(searchLower)
         );
     },
     onUpdate: actions.onUpdate || (() => {}),
