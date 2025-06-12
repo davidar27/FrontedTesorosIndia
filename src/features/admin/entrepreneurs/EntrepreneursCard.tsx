@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { ReusableCard } from '@/components/admin/Card';
 import { Phone, Mail, Calendar, Home } from 'lucide-react';
-import { Entrepreneur,UpdateEntrepreneurData } from '@/features/admin/entrepreneurs/EntrepreneursTypes';
-import { EditableEntrepreneurCard } from './EditableEntrepreneurCard';
+import { Entrepreneur, UpdateEntrepreneurData } from '@/features/admin/entrepreneurs/EntrepreneursTypes';
 import { useEntrepreneursManagement } from '@/services/admin/useEntrepreneursManagement';
 import { formatDate, normalizeEntrepreneurStatus, getImageUrl } from '../adminHelpers';
 import React from 'react';
+import { EditableEntrepreneurCard } from './EditableEntrepreneurCard';
 
 interface EntrepreneurCardProps {
     item: Entrepreneur;
@@ -60,11 +60,11 @@ export const EntrepreneurCard = React.memo(function EntrepreneurCard({
     if (isEditing) {
         return (
             <EditableEntrepreneurCard
-                item={item}
-                onSave={handleSave}
-                onCancel={handleCancelEdit}
-                isLoading={isLoading}
-            />
+            item={item}
+            onSave={handleSave}
+            onCancel={handleCancelEdit}
+            isLoading={isLoading}
+        />
         );
     }
 
@@ -80,10 +80,7 @@ export const EntrepreneurCard = React.memo(function EntrepreneurCard({
             value: item.phone || '',
             label: 'Teléfono',
             copyable: true
-        }
-    ];
-
-    const stats = [
+        },
         {
             value: formatDate(item.joinDate),
             label: 'Fecha de registro',
@@ -91,6 +88,10 @@ export const EntrepreneurCard = React.memo(function EntrepreneurCard({
             textColor: 'text-blue-600',
             icon: Calendar
         },
+    ];
+
+    const stats = [
+        
         {
             value: item.name_experience,
             label: 'Nombre de la experiencia',
@@ -121,7 +122,7 @@ export const EntrepreneurCard = React.memo(function EntrepreneurCard({
             variant="default"
             title='Emprendedor'
             loading={isLoading}
-            >
+        >
         </ReusableCard>
     );
 });

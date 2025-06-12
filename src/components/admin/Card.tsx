@@ -367,7 +367,7 @@ export function ReusableCard<T extends BaseItem>({
 
             {/* Stats */}
             {stats.length > 0 && (
-                <div className={`grid gap-3 mb-6 ${stats.length === 1 ? 'grid-cols-1' : stats.length === 2 ? 'grid-cols-2' : stats.length === 3 ? 'grid-cols-3' : stats.length === 4 ? 'grid-cols-2' : 'grid-cols-2'}`}>
+                <div className={`grid gap-3 mb-6`}>
                     {stats.map((stat, index) => (
                         <div
                             key={index}

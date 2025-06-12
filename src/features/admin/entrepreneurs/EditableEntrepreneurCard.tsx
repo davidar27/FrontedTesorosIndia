@@ -28,7 +28,7 @@ export function EditableEntrepreneurCard({
         name_experience: item.name_experience,
     });
     const [imagePreview, setImagePreview] = useState<string | undefined>(undefined);
-    const [loadingImage, ] = useState(false);
+    const [loadingImage,] = useState(false);
     const [, setImageError] = useState(false);
 
     React.useEffect(() => {
@@ -223,12 +223,12 @@ export function EditableEntrepreneurCard({
                     <Button
                         type="button"
                         onClick={onCancel}
-                        bgColor='bg-red-600'
-                        textColor='text-white'
-                        hoverBg='hover:bg-transparent'
-                        hoverTextColor='hover:text-red-600'
+                        bgColor='bg-transparent'
+                        textColor='text-red-600'
+                        hoverBg='hover:bg-red-600'
+                        hoverTextColor='hover:text-white'
                         borderColor='border-red-600'
-                        hoverBorderColor='hover:border-red-600'
+                        hoverBorderColor='hover:border-red-700'
                         className="w-full flex items-center justify-center gap-2"
                     >
                         <X className="w-4 h-4" />
@@ -236,7 +236,13 @@ export function EditableEntrepreneurCard({
                     </Button>
                     <Button
                         type="submit"
-                        className="bg-primary hover:bg-primary/80 text-white p-2 w-full flex items-center justify-center gap-2"
+                        bgColor='bg-transparent'
+                        textColor='text-primary'
+                        hoverBg='hover:bg-primary'
+                        hoverTextColor='hover:text-white'
+                        borderColor='border-primary'
+                        hoverBorderColor='hover:border-primary'
+                        className="w-full flex items-center justify-center gap-2"
                         disabled={isLoading}
                     >
                         <Check className="w-4 h-4" />
@@ -247,4 +253,3 @@ export function EditableEntrepreneurCard({
         </form>
     );
 }
-

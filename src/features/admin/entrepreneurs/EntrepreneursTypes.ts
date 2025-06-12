@@ -11,7 +11,6 @@ export interface Entrepreneur extends BaseEntity<EntrepreneurStatus, number> {
     joinDate: string;
     status: EntrepreneurStatus;
     name_experience: string;
-    createdAt?: string;
     updatedAt?: string;
     [key: string]: string | number | boolean | Date | null | undefined;
 }
