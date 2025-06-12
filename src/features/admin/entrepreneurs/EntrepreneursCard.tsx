@@ -2,11 +2,10 @@ import { useState } from 'react';
 import { ReusableCard } from '@/components/admin/Card';
 import { Phone, Mail, Calendar, Home } from 'lucide-react';
 import { Entrepreneur, UpdateEntrepreneurData } from '@/features/admin/entrepreneurs/EntrepreneursTypes';
-import { EditableCardForm } from '@/components/admin/EditableCardForm';
 import { useEntrepreneursManagement } from '@/services/admin/useEntrepreneursManagement';
 import { formatDate, normalizeEntrepreneurStatus, getImageUrl } from '../adminHelpers';
 import React from 'react';
-import Avatar from '@/components/ui/display/Avatar';
+import { EditableEntrepreneurCard } from './EditableEntrepreneurCard';
 
 interface EntrepreneurCardProps {
     item: Entrepreneur;
@@ -60,16 +59,8 @@ export const EntrepreneurCard = React.memo(function EntrepreneurCard({
 
     if (isEditing) {
         return (
-            <EditableCardForm
+            <EditableEntrepreneurCard
             item={item}
-            fields={[
-                { name: 'name', label: 'Nombre', type: 'text', required: true },
-                { name: 'email', label: 'Correo electrónico', type: 'email', required: true },
-                { name: 'phone', label: 'Teléfono', type: 'tel', required: true },
-                { name: 'name_experience', label: 'Nombre de la experiencia', type: 'text', required: true },
-            ]}
-            imageField="image"
-            avatarFallback={<Avatar name={item.name} size={96} />}
             onSave={handleSave}
             onCancel={handleCancelEdit}
             isLoading={isLoading}
@@ -89,10 +80,7 @@ export const EntrepreneurCard = React.memo(function EntrepreneurCard({
             value: item.phone || '',
             label: 'Teléfono',
             copyable: true
-        }
-    ];
-
-    const stats = [
+        },
         {
             value: formatDate(item.joinDate),
             label: 'Fecha de registro',
@@ -100,6 +88,10 @@ export const EntrepreneurCard = React.memo(function EntrepreneurCard({
             textColor: 'text-blue-600',
             icon: Calendar
         },
+    ];
+
+    const stats = [
+        
         {
             value: item.name_experience,
             label: 'Nombre de la experiencia',

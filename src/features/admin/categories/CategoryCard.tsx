@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { ReusableCard } from '@/components/admin/Card';
-import {  Home, ShoppingCart } from 'lucide-react';
-import { Category,UpdateCategoryData } from '@/features/admin/categories/CategoriesTypes';
+import { Home, ShoppingCart } from 'lucide-react';
+import { Category, UpdateCategoryData } from '@/features/admin/categories/CategoriesTypes';
 import { useEntrepreneursManagement } from '@/services/admin/useEntrepreneursManagement';
-import { formatDate, normalizeEntrepreneurStatus } from '../adminHelpers';
+import {  normalizeEntrepreneurStatus } from '../adminHelpers';
 import React from 'react';
+import { EditableCategoryCard } from './EditableCategoryCard';
 
 interface CategoryCardProps {
     item: Category;
@@ -56,10 +57,16 @@ export const CategoryCard = React.memo(function CategoryCard({
         onChangeStatus?.(item.id ?? 0, newStatus);
     };
 
-    const handleFieldChange = (field: string, value: string) => {
-        console.log(field, value);
-    };
-
+    if (isEditing) {
+        return (
+            <EditableCategoryCard
+                item={item}
+                onSave={handleSave}
+                onCancel={handleCancelEdit}
+                isLoading={isLoading}
+            />
+        );
+    }
     const stats = [
         {
             value: item.joinDate,
@@ -87,7 +94,6 @@ export const CategoryCard = React.memo(function CategoryCard({
                 name: item.name,
             }}
             contactInfo={[]}
-            showContactInfo={false}
             stats={stats}
             onUpdate={handleEditClick}
             onChangeStatus={handleChangeStatus}
@@ -97,9 +103,7 @@ export const CategoryCard = React.memo(function CategoryCard({
             variant="default"
             title='Categoría'
             loading={isLoading}
-            editable={isEditing}
-            onFieldChange={handleFieldChange}
-            >
+        >
         </ReusableCard>
     );
 });

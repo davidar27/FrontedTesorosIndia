@@ -62,7 +62,7 @@ export function EditableCategoryCard({
                     name="name"
                     value={formData.name || ''}
                     onChange={handleChange}
-                    className="bg-transparent border-b border-gray-300 focus:border-primary outline-none  w-auto text-sm text-gray-600"
+                    className="bg-transparent border-b border-gray-300 focus:border-primary outline-none  w-auto text-lg  text-gray-600"
                     required
                     placeholder="Nombre de la categoría"
                 />
@@ -87,8 +87,6 @@ export function EditableCategoryCard({
 
                 }}
                 contactInfo={contactInfo}
-                editable={true}
-                onFieldChange={(field, value) => setFormData(prev => ({ ...prev, [field]: value }))}
                 stats={[]}
                 showImage={false}
                 showStatus={false}
@@ -100,10 +98,10 @@ export function EditableCategoryCard({
                     <Button
                         type="button"
                         onClick={onCancel}
-                        bgColor='bg-red-600'
-                        textColor='text-white'
-                        hoverBg='hover:bg-transparent'
-                        hoverTextColor='hover:text-red-600'
+                        bgColor='bg-transparent'
+                        textColor='text-red-600'
+                        hoverBg='hover:bg-red-600'
+                        hoverTextColor='hover:text-white'
                         borderColor='border-red-600'
                         hoverBorderColor='hover:border-red-600'
                         className="w-full flex items-center justify-center gap-2"
@@ -113,7 +111,13 @@ export function EditableCategoryCard({
                     </Button>
                     <Button
                         type="submit"
-                        className="bg-primary hover:bg-primary/80 text-white p-2 w-full flex items-center justify-center gap-2"
+                        bgColor='bg-transparent'
+                        textColor='text-primary'
+                        hoverBg='hover:bg-primary'
+                        hoverTextColor='hover:text-white'
+                        borderColor='border-primary'
+                        hoverBorderColor='hover:border-primary'
+                        className="w-full flex items-center justify-center gap-2"
                         disabled={isLoading}
                     >
                         <Check className="w-4 h-4" />
