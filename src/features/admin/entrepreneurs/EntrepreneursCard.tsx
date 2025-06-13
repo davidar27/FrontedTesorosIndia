@@ -1,23 +1,22 @@
 import { useState } from 'react';
-import { ReusableCard } from '@/components/admin/Card';
-import { Phone, Mail, Calendar, Home } from 'lucide-react';
-import { Entrepreneur, UpdateEntrepreneurData } from '@/features/admin/entrepreneurs/EntrepreneursTypes';
+import { ViewCard } from '@/components/admin/ReusableCard/ViewCard';
+import { EditCard } from '@/components/admin/ReusableCard/EditCard';
+import { Phone, Mail, Calendar, Home, Edit, Check, X } from 'lucide-react';
+import { Entrepreneur } from '@/features/admin/entrepreneurs/EntrepreneursTypes';
 import { useEntrepreneursManagement } from '@/services/admin/useEntrepreneursManagement';
-import { formatDate, normalizeEntrepreneurStatus, getImageUrl } from '../adminHelpers';
+import { formatDate, normalizeEntrepreneurStatus } from '../adminHelpers';
 import React from 'react';
-import { EditableEntrepreneurCard } from './EditableEntrepreneurCard';
+import type { ActionButton } from '@/components/admin/ReusableCard/types';
 
 interface EntrepreneurCardProps {
     item: Entrepreneur;
     onUpdate: (item: Entrepreneur) => void;
-    onDelete?: (id: number) => void;
     onChangeStatus?: (id: number, status: string) => void;
 }
 
 export const EntrepreneurCard = React.memo(function EntrepreneurCard({
     item,
     onUpdate,
-    onDelete,
     onChangeStatus,
 }: EntrepreneurCardProps) {
     const [isEditing, setIsEditing] = useState(false);
@@ -28,33 +27,21 @@ export const EntrepreneurCard = React.memo(function EntrepreneurCard({
         setIsEditing(true);
     };
 
-    const handleCancelEdit = () => {
+    const handleCancel = () => {
         setIsEditing(false);
     };
 
-    const handleSave = async (id: number, data: UpdateEntrepreneurData | FormData) => {
-        setIsEditing(false);
+    const handleSave = async (updatedItem: Partial<Entrepreneur>) => {
+        if (!updatedItem.id) return;
+        
         setIsLoading(true);
-
         try {
-            let result;
-            if (data instanceof FormData) {
-                data.append('id', id.toString());
-                result = await updateAsync(data);
-                const formDataObj: Partial<Entrepreneur> = {};
-                data.forEach((value, key) => {
-                    if (key !== 'file' && key !== 'id') {
-                        formDataObj[key as keyof Entrepreneur] = value as string;
-                    }
-                });
-                onUpdate({ ...item, ...formDataObj, image: result.image } as Entrepreneur);
-            } else {
-                result = await updateAsync({ id, ...data });
-                onUpdate({ ...item, ...data, image: result.image } as Entrepreneur);
-            }
-            setIsLoading(false);
+            const result = await updateAsync(updatedItem as Entrepreneur);
+            onUpdate({ ...updatedItem, image: result.image } as Entrepreneur);
+            setIsEditing(false);
         } catch (error) {
             console.error('Error updating entrepreneur:', error);
+        } finally {
             setIsLoading(false);
         }
     };
@@ -64,17 +51,6 @@ export const EntrepreneurCard = React.memo(function EntrepreneurCard({
         const newStatus = normalizedStatus === 'inactive' ? 'active' : 'inactive';
         onChangeStatus?.(item.id ?? 0, newStatus);
     };
-
-    if (isEditing) {
-        return (
-            <EditableEntrepreneurCard
-            item={item}
-            onSave={handleSave}
-            onCancel={handleCancelEdit}
-            isLoading={isLoading}
-        />
-        );
-    }
 
     const contactInfo = [
         {
@@ -99,7 +75,6 @@ export const EntrepreneurCard = React.memo(function EntrepreneurCard({
     ];
 
     const stats = [
-        
         {
             value: item.name_experience,
             label: 'Nombre de la experiencia',
@@ -109,28 +84,67 @@ export const EntrepreneurCard = React.memo(function EntrepreneurCard({
         }
     ];
 
+    const normalizedStatus = normalizeEntrepreneurStatus(item.status);
+    const actions: ActionButton[] = [
+        {
+            icon: Edit,
+            label: 'Editar',
+            onClick: handleEditClick,
+            variant: 'primary'
+        }
+    ];
+
+    if (onChangeStatus) {
+        if (normalizedStatus === 'active') {
+            actions.push({
+                icon: X,
+                label: 'Desactivar',
+                onClick: handleChangeStatus,
+                variant: 'danger'
+            });
+        } else {
+            actions.push({
+                icon: Check,
+                label: 'Activar',
+                onClick: handleChangeStatus,
+                variant: 'success'
+            });
+        }
+    }
+
+    if (isEditing) {
+        return (
+            <EditCard
+                item={item}
+                onSave={handleSave}
+                onCancel={handleCancel}
+                editFields={{
+                    name: true,
+                    email: true,
+                    phone: true,
+                    name_experience: true,
+                    image: true
+                }}
+                contactInfo={contactInfo}
+                stats={stats}
+                loading={isLoading}
+                title="Emprendedor"
+            />
+        );
+    }
 
     return (
-        <ReusableCard
-            item={{
-                ...item,
-                status: normalizeEntrepreneurStatus(item.status),
-                id: item.id ?? 0,
-                name: item.name,
-                image: getImageUrl(item.image) || '',
-                description: `Emprendedor registrado el ${formatDate(item.joinDate)}`
-            }}
+        <ViewCard
+
+            item={item}
             contactInfo={contactInfo}
-            stats={stats}
-            onUpdate={handleEditClick}
-            onChangeStatus={handleChangeStatus}
-            onDelete={() => onDelete?.(item.id ?? 0)}
-            showImage={true}
             showStatus={true}
-            variant="default"
-            title='Emprendedor'
+            stats={stats}
+            actions={actions}
+            onChangeStatus={onChangeStatus}
             loading={isLoading}
-        >
-        </ReusableCard>
+            title="Emprendedor"
+            variant="default"
+        />
     );
 });

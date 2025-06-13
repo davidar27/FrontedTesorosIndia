@@ -30,7 +30,6 @@ export interface ExperienceApiResponse {
 export interface ExperienceCardProps {
     Experience: Experience;
     onUpdate: (id: number) => void;
-    onDelete: (id: number) => void;
 }
 
 export interface UpdateExperienceData {

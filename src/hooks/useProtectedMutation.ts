@@ -1,6 +1,5 @@
 import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 import useAuth from '@/context/useAuth';
-import { usePermissions } from '@/hooks/usePermissions';
 
 interface ProtectedMutationOptions<TData, TError, TVariables> extends UseMutationOptions<TData, TError, TVariables> {
     requiredPermission?: string;
@@ -11,7 +10,6 @@ export const useProtectedMutation = <TData = unknown, TError = unknown, TVariabl
     options: ProtectedMutationOptions<TData, TError, TVariables>
 ) => {
     const { isAuthenticated } = useAuth();
-    const { hasPermission } = usePermissions();
     const { requiredPermission, onUnauthorized, ...mutationOptions } = options;
 
     return useMutation<TData, TError, TVariables>({
@@ -21,7 +19,7 @@ export const useProtectedMutation = <TData = unknown, TError = unknown, TVariabl
                 throw new Error('Usuario no autenticado');
             }
 
-            if (requiredPermission && !hasPermission(requiredPermission)) {
+            if (requiredPermission) {
                 if (onUnauthorized) {
                     onUnauthorized();
                 } else {

@@ -13,7 +13,7 @@ export function useExperiencesManagement() {
                 create: '/dashboard/experiencias/crear',
                 update: (id) => `/dashboard/actualizar/experiencias/${id}`,
                 delete: (id) => `/dashboard/experiencias/${id}`,
-                changeStatus: (id) => `/dashboard/estado/${id}`,
+                changeStatus: (id) => `/dashboard/estado/experiencias/${id}`,
                 search: '/usuario/experiencias/search',
             },
 

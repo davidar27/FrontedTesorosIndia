@@ -5,11 +5,9 @@ interface ItemsGridProps<T extends BaseEntity<string>> {
     ItemCard: React.ComponentType<{
         item: T;
         onUpdate: (item: T) => void;
-        onDelete: (id: number) => void;
         onChangeStatus: (id: number, status: string) => void;
     }>;
     onUpdate: (item: T) => void;
-    onDelete: (id: number) => void;
     onChangeStatus: (id: number, status: string) => void;
     enableAnimations?: boolean;
 }   
@@ -18,7 +16,6 @@ export function ItemsGrid<T extends BaseEntity<string>>({
     items,
     ItemCard,
     onUpdate,
-    onDelete,
     onChangeStatus, 
     enableAnimations = true
 }: ItemsGridProps<T>) {
@@ -36,7 +33,6 @@ export function ItemsGrid<T extends BaseEntity<string>>({
                         key={`${item.id}-${item.name}-${item.email}-${item.phone}-${item.name}`}
                         item={item}
                         onUpdate={onUpdate}
-                        onDelete={onDelete}
                         onChangeStatus={onChangeStatus}
                     />
                 </div>

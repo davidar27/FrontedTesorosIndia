@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { ReusableCard } from '@/components/admin/Card';
-import { Phone, Home, X, Check, Mail } from 'lucide-react';
+import { ReusableCard } from '@/components/admin/ReusableCard';
+import { Phone, Home, X, Check, Mail, UserIcon } from 'lucide-react';
 import { CreateEntrepreneurData } from '@/features/admin/entrepreneurs/EntrepreneursTypes';
 import Button from '@/components/ui/buttons/Button';
 
@@ -87,26 +87,10 @@ export function CreateEntrepreneurForm({
     ];
 
     return (
-        <form onSubmit={handleSubmit} className="w-full">
-            <ReusableCard
-                item={{
-                    id: 0,
-                    name: formData.name,
-                    status: 'active',
-                    image: undefined,
-                }}
-                contactInfo={contactInfo}
-                stats={stats}
-                showImage={false}
-                showStatus={false}
-                variant="compact"
-                className="w-full"
-            >
-                <div className="space-y-4 w-full">
-                    <div className="w-full">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Nombre del emprendedor
-                        </label>
+        <form onSubmit={handleSubmit} className="w-full flex flex-col bg-white p-4 rounded-lg shadow-md">
+            <div className="space-y-4 w-full">
+                    <div className="w-full flex items-center gap-2">
+                        <UserIcon className="w-6 h-6" />
                         <input
                             type="text"
                             name="name"
@@ -119,26 +103,35 @@ export function CreateEntrepreneurForm({
                     </div>
                 </div>
 
+            <ReusableCard
+                item={{
+                    id: 0,
+                    name: formData.name,
+                    status: 'active',
+                    image: undefined,
+                }}
+                contactInfo={contactInfo}
+                stats={stats}
+                showImage={false}
+                showStatus={false}
+                variant="compact"
+                className="w-full bg-transparent shadow-none border-none !mt-0 !p-0 hover:!shadow-none"
+            >
+                
+
                 <div className="flex gap-2 w-full mt-6">
                     <Button
                         type="button"
                         onClick={onCancel}
-                        bgColor='bg-red-100'
-                        textColor='text-red-700'
-                        hoverBg='hover:bg-red-200'
-                        hoverTextColor='hover:text-red-800'
-                        borderColor='border-red-200'
-                        hoverBorderColor='hover:border-red-300'
-                        className="flex-1 flex items-center justify-center gap-2"
+                        variant='danger'
+                        className="w-full flex items-center justify-center gap-2"
                     >
                         <X className="w-4 h-4" />
                         Cancelar
                     </Button>
                     <Button
                         type="submit"
-                        bgColor='bg-primary'
-                        textColor='text-white'
-                        hoverBg='hover:bg-primary/80'
+                            variant='success'
                         className="flex-1 flex items-center justify-center gap-2"
                         disabled={isLoading}
                     >

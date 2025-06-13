@@ -1,17 +1,17 @@
 import { EntityConfig } from "@/features/admin/types";
-import { EntrepreneursFilter } from "./EntrepreneursFilter";
-import { Entrepreneur } from "./EntrepreneursTypes";
+import { ExperiencesFilter } from "@/features/admin/experiences/ExperiencesFilter";
+import { Experience } from "@/features/admin/experiences/ExperienceTypes";
 
-interface EntrepreneursConfigParams {
-    data: Entrepreneur[];
+interface ExperiencesConfigParams {
+    data: Experience[];
     CardComponent: React.ComponentType<{
-        item: Entrepreneur;
-        onUpdate: (item: Entrepreneur) => void;
+        item: Experience;
+        onUpdate: (item: Experience) => void;
         onChangeStatus: (id: number, status: string) => void;
         onRetry?: () => void;
     }>;
     actions: {
-        onUpdate?: (item: Entrepreneur) => void;
+        onUpdate?: (item: Experience) => void;
         onCreate?: () => void;
         onChangeStatus?: (id: number, status: string) => void;
         onRetry?: () => void;
@@ -24,8 +24,8 @@ const statusPriority = {
     inactive: 3
 };
 
-function sortByStatus(a: Entrepreneur, b: Entrepreneur) {
-    const getStatus = (e: Entrepreneur) => {
+function sortByStatus(a: Experience, b: Experience) {
+    const getStatus = (e: Experience) => {
         const s = (e.status || '').toLowerCase();
         if (s === 'activo' || s === 'active') return 'active';
         if (s === 'pendiente' || s === 'pending') return 'pending';
@@ -35,34 +35,31 @@ function sortByStatus(a: Entrepreneur, b: Entrepreneur) {
     return statusPriority[getStatus(a)] - statusPriority[getStatus(b)];
 }
 
-export const EntrepreneursConfig = ({
+export const ExperiencesConfig = ({
     data,
     CardComponent,
     actions
-}: EntrepreneursConfigParams): EntityConfig<Entrepreneur> => ({
-    entityName: "Emprendedor",
-    entityNamePlural: "Emprendedores",
-    searchPlaceholder: "Buscar emprendedores...",
-    emptyStateEmoji: "👥",
+}: ExperiencesConfigParams): EntityConfig<Experience> => ({
+    entityName: "Experiencia",
+    entityNamePlural: "Experiencias",
+    searchPlaceholder: "Buscar experiencias...",
+    emptyStateEmoji: "�‍💻",
     ItemCard: CardComponent,
-    emptyStateTitle: "No hay emprendedores",
-    emptyStateDescription: "Crea el primer emprendedor para comenzar",
-    description: "Gestiona emprendedores",
+    emptyStateTitle: "No hay experiencias",
+    emptyStateDescription: "Crea la primera experiencia para comenzar",
+    description: "Gestiona experiencias",
     items: data.sort(sortByStatus),
     isLoading: false,
     error: null,
     maxResults: 50,
     enableAnimations: true,
     showResultsCount: true,
-    customFilters: EntrepreneursFilter,
+    customFilters: ExperiencesFilter,
     searchFunction: (item, searchTerm) => {
         const searchLower = searchTerm.toLowerCase();
-        const entrepreneur = item as Entrepreneur;
+        const experience = item as Experience;
         return (
-            entrepreneur.name?.toLowerCase().includes(searchLower) ||
-            entrepreneur.email?.toLowerCase().includes(searchLower) ||
-            entrepreneur.phone?.toLowerCase().includes(searchLower) ||
-            entrepreneur.name?.toLowerCase().includes(searchLower)
+            experience.name?.toLowerCase().includes(searchLower) 
         );
     },
     onUpdate: actions.onUpdate || (() => {}),

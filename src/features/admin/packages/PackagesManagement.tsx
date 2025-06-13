@@ -76,7 +76,6 @@ export default function PackagesManagement() {
             actions: {
                 onCreate: () => setShowCreateForm(true),
                 onUpdate: (item) => handleUpdate(item.id ?? 0, item as unknown as UpdatePackageData),
-                onDelete: () => { },
                 onChangeStatus: handleChangeStatus
             }
         });

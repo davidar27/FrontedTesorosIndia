@@ -18,5 +18,5 @@ export const usePageSetup = ({ title, description, }: UsePageSetupProps) => {
 
         // Cleanup cuando el componente se desmonta
         return () => clearPageInfo();
-    }, [title, description]);
+    }, [title, description, setPageInfo, clearPageInfo]);
 };

@@ -2,10 +2,10 @@ import { useState, useMemo, useCallback } from 'react';
 import { toast } from 'sonner';
 import GenericManagement from '@/components/admin/GenericManagent';
 import { EntrepreneurCard } from '@/features/admin/entrepreneurs/EntrepreneursCard';
-import { CreateEntrepreneurForm } from '@/features/admin/entrepreneurs/CreateEntrepreneurForm';
 import { EntrepreneursConfig } from '@/features/admin/entrepreneurs/EntrepreneursConfig';
 import { Entrepreneur, CreateEntrepreneurData, UpdateEntrepreneurData, EntrepreneurStatus } from '@/features/admin/entrepreneurs/EntrepreneursTypes';
 import { useEntrepreneursManagement } from '@/services/admin/useEntrepreneursManagement';
+import { CreateCard } from '@/components/admin/ReusableCard/CreateCard';
 
 type EntrepreneurWithForm = Entrepreneur | {
     id: -1;
@@ -30,24 +30,28 @@ export default function EntrepreneursManagement() {
     } = useEntrepreneursManagement();
 
     const handleCreateSubmit = useCallback(
-        (data: CreateEntrepreneurData) => {
-        toast.promise(
-            new Promise((resolve, reject) => {
-                create(data as unknown as Entrepreneur, {
-                    onSuccess: () => {
-                        resolve(true);
-                        setShowCreateForm(false);
-                    },
-                    onError: reject
-                });
-            }),
-            {
-                loading: 'Creando emprendedor...',
-                success: 'Emprendedor creado exitosamente',
-                error: (err) => err.message
-            }
-        );
-    }, [create, setShowCreateForm]);
+        (data: Partial<Entrepreneur>) => {
+            const createData: CreateEntrepreneurData = {
+                ...data as unknown as CreateEntrepreneurData,
+            };
+            
+            toast.promise(
+                new Promise((resolve, reject) => {
+                    create(createData as unknown as Entrepreneur, {
+                        onSuccess: () => {
+                            resolve(true);
+                            setShowCreateForm(false);
+                        },
+                        onError: reject
+                    });
+                }),
+                {
+                    loading: 'Creando emprendedor...',
+                    success: 'Emprendedor creado exitosamente',
+                    error: (err) => err.message
+                }
+            );
+        }, [create, setShowCreateForm]);
 
     const handleUpdate = useCallback(
         async (id: number, data: UpdateEntrepreneurData) => {
@@ -101,10 +105,18 @@ export default function EntrepreneursManagement() {
                 if ('isForm' in props.item) {
                     return (
                         <div className="animate-fade-in-up">
-                            <CreateEntrepreneurForm
-                                onSubmit={handleCreateSubmit}
+                            <CreateCard
+                                item={props.item}
+                                onCreate={handleCreateSubmit}
                                 onCancel={() => setShowCreateForm(false)}
-                                isLoading={isCreating}
+                                loading={isCreating}
+                                editFields={{
+                                    name: true,
+                                    email: true,
+                                    phone: true,
+                                    name_experience: true,
+                                    image: true
+                                }}
                             />
                         </div>
                     );
@@ -118,7 +130,6 @@ export default function EntrepreneursManagement() {
                         handleUpdate(item.id ?? 0, item as unknown as UpdateEntrepreneurData);
                     }
                 },
-                onDelete: () => { },
                 onChangeStatus: (id, status) => {
                     if (id !== -1) {
                         handleChangeStatus(id, status);

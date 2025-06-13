@@ -76,7 +76,6 @@ export default function CategoriesManagement() {
             actions: {
                 onCreate: () => setShowCreateForm(true),
                 onUpdate: (item) => handleUpdate(item.id ?? 0, item as unknown as UpdateCategoryData),
-                onDelete: () => { },
                 onChangeStatus: handleChangeStatus
             }
         });
