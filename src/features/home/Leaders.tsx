@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Grupo from "@/assets/images/Grupo.webp"
 import AnimatedTitle from "@/components/ui/display/AnimatedTitle";
 import Picture from "@/components/ui/display/Picture";
+import { EntrepreneursApi } from "@/services/home/entrepreneurs";
 
 
 interface Leader {
@@ -14,19 +15,19 @@ interface Leader {
 }
 
 const Leaders = () => {
-
-  const leaders: Leader[] = useMemo(() => [
-    { id: 1, name: "José Ovidio Cárdenas León", age: "64 años", role: "Agricultor" },
-    { id: 2, name: "Luis Abel Cárdenas León", age: "66 años", role: "Cuidador" },
-    { id: 3, name: "Segundo Israel Rivera", age: "64 años", role: "Agricultor" },
-    { id: 4, name: "Bertha Acosta Chazaier", age: "60 años", role: "Agricultora" },
-    { id: 5, name: "Marta Isabel Rodriguez", age: "30 años", role: "Cafetera" },
-    { id: 6, name: "Carlos Andrés Mejía", age: "45 años", role: "Ganadero" },
-    { id: 7, name: "Rosa Elvira Ramírez", age: "53 años", role: "Comerciante" },
-    { id: 8, name: "Juan Pablo Castaño", age: "39 años", role: "Apicultor" },
-    { id: 9, name: "Lucía Fernanda Ortiz", age: "28 años", role: "Artesana" },
-    { id: 10, name: "Pedro Alfonso Herrera", age: "50 años", role: "Panadero" }
-  ], []);
+  const [leaders, setLeaders] = useState<Leader[]>([])
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const dataEntrepreneurs: any = await EntrepreneursApi.getEntrepreneurs() || [];
+        setLeaders(dataEntrepreneurs)
+      }
+      catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    }
+    fetchData();
+  }, [])
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const itemsPerPage = 4;
