@@ -77,12 +77,7 @@ export function EditableEntrepreneurCard({
             imageFile = formData.image;
         }
 
-        console.log('DEBUG - handleSubmit called');
-        console.log('DEBUG - changedFields:', changedFields);
-        console.log('DEBUG - hasImage:', hasImage, 'imageFile:', imageFile);
-
         if (Object.keys(changedFields).length === 0 && !hasImage) {
-            console.log('DEBUG - No changes detected');
             return;
         }
 
@@ -93,12 +88,8 @@ export function EditableEntrepreneurCard({
             Object.entries(changedFields).forEach(([key, value]) => {
                 if (value !== undefined) fd.append(key, value as string);
             });
-            for (const pair of fd.entries()) {
-                console.log('DEBUG - FormData:', pair[0], pair[1]);
-            }
             onSave(item.id ?? 0, fd as any);
         } else {
-            console.log('DEBUG - Sending changedFields:', changedFields);
             onSave(item.id ?? 0, changedFields as UpdateEntrepreneurData);
         }
     };
@@ -130,6 +121,7 @@ export function EditableEntrepreneurCard({
                     className="bg-transparent border-b border-gray-300 focus:border-primary outline-nonen w-auto text-sm text-gray-600"
                     required
                     placeholder="Número de teléfono"
+                    maxLength={10}
                 />
             ),
             label: 'Teléfono'

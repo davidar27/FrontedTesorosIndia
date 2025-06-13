@@ -11,7 +11,7 @@ export function useEntrepreneursManagement() {
                 getAll: '/dashboard/emprendedores',
                 getById: (id) => `/dashboard/emprendedor/${id}`,
                 create: '/dashboard/emprendedores/crear',
-                update: (id) => `/dashboard/emprendedores/actualizar/${id}`,
+                update: (id) => `/dashboard/actualizar/emprendedores/${id}`,
                 delete: (id) => `/dashboard/emprendedores/${id}`,
                 changeStatus: (id) => `/dashboard/estado/${id}`,
                 search: '/usuario/emprendedores/search',

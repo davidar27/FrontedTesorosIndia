@@ -39,11 +39,19 @@ export const EntrepreneurCard = React.memo(function EntrepreneurCard({
         try {
             let result;
             if (data instanceof FormData) {
+                data.append('id', id.toString());
                 result = await updateAsync(data);
+                const formDataObj: Partial<Entrepreneur> = {};
+                data.forEach((value, key) => {
+                    if (key !== 'file' && key !== 'id') {
+                        formDataObj[key as keyof Entrepreneur] = value as string;
+                    }
+                });
+                onUpdate({ ...item, ...formDataObj, image: result.image } as Entrepreneur);
             } else {
                 result = await updateAsync({ id, ...data });
+                onUpdate({ ...item, ...data, image: result.image } as Entrepreneur);
             }
-            onUpdate({ ...item, ...data, image: result.image } as unknown as Entrepreneur);
             setIsLoading(false);
         } catch (error) {
             console.error('Error updating entrepreneur:', error);

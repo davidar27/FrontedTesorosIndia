@@ -56,6 +56,7 @@ export const ExperienceCard = React.memo(function ExperienceCard({
                         ...item,
                         ...changedFields,
                     });
+                    setIsLoading(false);
                 },
                 onError: () => {
                     setIsLoading(false);
