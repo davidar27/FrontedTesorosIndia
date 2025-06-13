@@ -1,52 +1,53 @@
 import ProductCard from "@/components/products/ProductCard";
-import imgCafe from "@/assets/images/cafetalero-bolsa-sola-tag.webp";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AnimatedTitle from "@/components/ui/display/AnimatedTitle";
-
-const categories = ["Café", "Miel", "Artesanías", "Productos Orgánicos"];
-
-const products = [
-    {
-        id: 1,
-        name: "Café Especial Cafetalero",
-        price: "$6.500",
-        image: imgCafe,
-        rating: 4.5,
-        category: "Café"
-    },
-    {
-        id: 2,
-        name: "Café Premium Reserva",
-        price: "$16.500",
-        image: imgCafe,
-        rating: 5,
-        category: "Café"
-    },
-    {
-        id: 3,
-        name: "Miel de Abejas Nativas",
-        price: "$8.200",
-        image: imgCafe,
-        rating: 4,
-        category: "Miel"
-    },
-    {
-        id: 4,
-        name: "Chocolate Artesanal",
-        price: "$12.000",
-        image: imgCafe,
-        rating: 4.5,
-        category: "Productos Orgánicos"
-    },
-];
+import { ProductsApi } from "@/services/home/products";
+import { CategoriesApi } from "@/services/home/categories";
+import { usePageContext } from "@/context/PageContext";
 
 export default function ProductList() {
-    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+    const [products, setProducts] = useState<any[]>([]);
+    const [categories, setCategories] = useState<any[]>([]);
+    const { searchValue } = usePageContext();
+    const [filteredProducts, setFilteredProducts] = useState<any[]>([])
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(searchValue || null);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const dataProducts: any = await ProductsApi.getProducts() || [];
+                const dataCategories: any = await CategoriesApi.getCategories() || [];
+                setProducts(dataProducts);
+                setCategories(dataCategories);
+            }
+            catch (error) {
+                console.error("Error fetching products:", error);
+            }
+        }
+        fetchData();
+    }, []);
 
-    const filteredProducts = selectedCategory
-        ? products.filter(product => product.category === selectedCategory)
-        : products;
+    useEffect(() => {
+        const normalizeText = (text: string) => {
+            return text.toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "");
+        };
+        let filtered = [...products];
+        if (selectedCategory) {
+            filtered = filtered.filter(product =>
+                product.category === selectedCategory
+            );
+        }
+        if (searchValue) {
+            const normalizedSearch = normalizeText(searchValue);
+            filtered = filtered.filter(product =>
+                normalizeText(product.name).includes(normalizedSearch)
+            );
+        }
+        setFilteredProducts(filtered);
+    }, [searchValue, selectedCategory, products]);
+
 
     return (
         <div className="responsive-padding-x pt-30 bg-gradient-to-b from-white to-green-50 min-h-screen py-16">
@@ -79,13 +80,13 @@ export default function ProductList() {
                             >
                                 Todos los productos
                             </li>
-                            {categories.map((cat, i) => (
+                            {categories.map((cat) => (
                                 <li
-                                    key={i}
-                                    className={`text-gray-700 px-3 py-2 rounded-lg cursor-pointer transition-all ${selectedCategory === cat ? 'bg-green-100 text-green-800 font-medium' : 'hover:bg-green-50'}`}
-                                    onClick={() => setSelectedCategory(cat)}
+                                    key={cat.id}
+                                    className={`text-gray-700 px-3 py-2 rounded-lg cursor-pointer transition-all ${selectedCategory === cat.name ? 'bg-green-100 text-green-800 font-medium' : 'hover:bg-green-50'}`}
+                                    onClick={() => setSelectedCategory(cat.name)}
                                 >
-                                    {cat}
+                                    {cat.name}
                                 </li>
                             ))}
                         </ul>

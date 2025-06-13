@@ -1,6 +1,7 @@
 import { Search, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
+import { usePageContext } from "@/context/PageContext";
 
 interface SearchBarProps {
     onToggle?: (expanded: boolean) => void;
@@ -18,6 +19,7 @@ const mockSuggestions = [
 const SearchBar = ({ onToggle, expanded = false }: SearchBarProps) => {
     const [isExpanded, setIsExpanded] = useState(expanded);
     const [searchValue, setSearchValue] = useState("");
+    const { setSearchPageValue } = usePageContext();
     const [suggestions, setSuggestions] = useState<string[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const searchRef = useRef<HTMLDivElement>(null);
@@ -56,6 +58,10 @@ const SearchBar = ({ onToggle, expanded = false }: SearchBarProps) => {
         setSearchValue("");
         setShowSuggestions(false);
     };
+
+    useEffect(() => {
+        setSearchPageValue(searchValue)
+    }, [searchValue])
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;

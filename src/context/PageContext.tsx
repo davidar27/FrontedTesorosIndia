@@ -9,12 +9,19 @@ interface PageContextType {
     pageInfo: PageInfo | null;
     setPageInfo: (info: PageInfo) => void;
     clearPageInfo: () => void;
+    searchValue: string | null;
+    setSearchPageValue: (search: string) => void;
 }
 
 const PageContext = createContext<PageContextType | undefined>(undefined);
 
 export const PageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [pageInfo, setPageInfoState] = useState<PageInfo | null>(null);
+    const [searchValue, setterSearchValue] = useState<string | null>(null);
+
+    const setSearchPageValue = useCallback((search: string) => {
+        setterSearchValue(search);
+    }, []);
 
     const setPageInfo = useCallback((info: PageInfo) => {
         setPageInfoState(info);
@@ -27,7 +34,9 @@ export const PageProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const value = {
         pageInfo,
         setPageInfo,
-        clearPageInfo
+        clearPageInfo,
+        searchValue,
+        setSearchPageValue
     };
 
     return (
