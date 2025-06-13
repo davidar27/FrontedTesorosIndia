@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ReusableCard } from '@/components/admin/Card';
+import { ReusableCard } from '@/components/admin/ReusableCard';
 import { Calendar, User, MapPin, Bird } from 'lucide-react';
 import { useExperiencesManagement } from '@/features/admin/experiences/useExperiencesManagement';
 import { formatDate } from '@/features/admin/adminHelpers';
@@ -12,13 +12,11 @@ import { normalizeExperienceStatus } from '@/features/admin/adminHelpers';
 interface ExperienceCardProps {
     item: Experience;
     onUpdate: (item: Experience) => void;
-    onDelete?: (id: number) => void;
 }
 
 export const ExperienceCard = React.memo(function ExperienceCard({
     item,
     onUpdate,
-    onDelete,
 }: ExperienceCardProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -145,7 +143,6 @@ export const ExperienceCard = React.memo(function ExperienceCard({
             stats={stats}
             onUpdate={handleEditClick}
             onChangeStatus={handleChangeStatus}
-            onDelete={() => onDelete?.(item.id ?? 0)}
             showImage={false}
             showStatus={true}
             variant="default"

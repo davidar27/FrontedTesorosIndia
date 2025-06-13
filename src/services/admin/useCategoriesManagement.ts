@@ -13,7 +13,7 @@ export function useCategoriesManagement() {
                 create: '/dashboard/categoria/crear',
                 update: (id) => `/dashboard/categoria/actualizar/${id}`,
                 delete: (id) => `/dashboard/categorias/${id}`,
-                changeStatus: (id) => `/dashboard/estado/${id}`,
+                changeStatus: (id) => `/dashboard/estado/categorias/${id}`,
                 search: '/usuario/emprendedores/search',
             },
             

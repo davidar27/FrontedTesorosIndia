@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ReusableCard } from '@/components/admin/Card';
+import { ReusableCard } from '@/components/admin/ReusableCard';
 import { X, Check, MapPin, Bird } from 'lucide-react';
 import Button from '@/components/ui/buttons/Button';
 import { Experience } from './ExperienceTypes';
@@ -104,12 +104,7 @@ export function EditableExperienceCard({
                     <Button
                         type="button"
                         onClick={onCancel}
-                        bgColor='bg-red-600'
-                        textColor='text-white'
-                        hoverBg='hover:bg-transparent'
-                        hoverTextColor='hover:text-red-600'
-                        borderColor='border-red-600'
-                        hoverBorderColor='hover:border-red-600'
+                        variant='danger'
                         className="w-full flex items-center justify-center gap-2"
                     >
                         <X className="w-4 h-4" />
@@ -117,7 +112,8 @@ export function EditableExperienceCard({
                     </Button>
                     <Button
                         type="submit"
-                        className="bg-primary hover:bg-primary/80 text-white p-2 w-full flex items-center justify-center gap-2"
+                        variant='success'
+                        className="w-full flex items-center justify-center gap-2"
                         disabled={isLoading}
                     >
                         <Check className="w-4 h-4" />

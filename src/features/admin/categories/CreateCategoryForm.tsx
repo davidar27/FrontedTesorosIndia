@@ -88,15 +88,14 @@ export function CreateCategoryForm({ onSubmit, onCancel, isLoading }: CreateCate
                         onClick={onCancel}
                         disabled={isLoading}
                         className='flex-1  rounded-md hover:!text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center border border-red-500'
-                        bgColor='bg-red-500'
-                        textColor='text-white'
+                        variant='danger'
                     >
                         Cancelar
                     </Button>
                     <Button
                         type="submit"
                         disabled={isLoading}
-                        className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+                        variant='success'
                     >
                         {isLoading ? (
                             <>

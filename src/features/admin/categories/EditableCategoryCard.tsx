@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
-import { ReusableCard } from '@/components/admin/Card';
+import { ReusableCard } from '@/components/admin/ReusableCard';
 import { X, Check, Edit } from 'lucide-react';
 import Button from '@/components/ui/buttons/Button';
 import { Category, UpdateCategoryData } from './CategoriesTypes';
@@ -98,12 +98,7 @@ export function EditableCategoryCard({
                     <Button
                         type="button"
                         onClick={onCancel}
-                        bgColor='bg-transparent'
-                        textColor='text-red-600'
-                        hoverBg='hover:bg-red-600'
-                        hoverTextColor='hover:text-white'
-                        borderColor='border-red-600'
-                        hoverBorderColor='hover:border-red-600'
+                        variant='danger'
                         className="w-full flex items-center justify-center gap-2"
                     >
                         <X className="w-4 h-4" />
@@ -111,12 +106,7 @@ export function EditableCategoryCard({
                     </Button>
                     <Button
                         type="submit"
-                        bgColor='bg-transparent'
-                        textColor='text-primary'
-                        hoverBg='hover:bg-primary'
-                        hoverTextColor='hover:text-white'
-                        borderColor='border-primary'
-                        hoverBorderColor='hover:border-primary'
+                        variant='success'
                         className="w-full flex items-center justify-center gap-2"
                         disabled={isLoading}
                     >

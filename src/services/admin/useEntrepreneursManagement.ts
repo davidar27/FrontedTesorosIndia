@@ -13,7 +13,7 @@ export function useEntrepreneursManagement() {
                 create: '/dashboard/emprendedores/crear',
                 update: (id) => `/dashboard/actualizar/emprendedores/${id}`,
                 delete: (id) => `/dashboard/emprendedores/${id}`,
-                changeStatus: (id) => `/dashboard/estado/${id}`,
+                changeStatus: (id) => `/dashboard/estado/emprendedores/${id}`,
                 search: '/usuario/emprendedores/search',
             },
             

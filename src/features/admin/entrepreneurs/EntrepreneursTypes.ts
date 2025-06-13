@@ -41,7 +41,6 @@ export interface EntrepreneurApiResponse {
 export interface EntrepreneurCardProps {
     entrepreneur: Entrepreneur;
     onUpdate: (entrepreneur: Entrepreneur) => void;
-    onDelete: (id: number) => void;
     onChangeStatus: (id: number, status: string) => void;
 }
 
