@@ -3,7 +3,7 @@ import { Experience, RawExperienceResponse } from '@/features/admin/experiences/
 
 const transformExperienceResponse = (Experience: RawExperienceResponse): Experience => ({
     ...Experience,
-    name: Experience.name,
+    name: Experience.name_experience,
     location: Experience.location,
     type: Experience.type || ' ',
     status: Experience.status

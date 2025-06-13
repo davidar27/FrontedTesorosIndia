@@ -1,8 +1,9 @@
 import ProductCard from "@/components/products/ProductCard";
 import imgCafe from "@/assets/images/cafetalero-bolsa-sola-tag.webp";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AnimatedTitle from "@/components/ui/display/AnimatedTitle";
+import { ProductsApi } from "@/services/home/products";
 
 const categories = ["Café", "Miel", "Artesanías", "Productos Orgánicos"];
 
@@ -42,6 +43,22 @@ const products = [
 ];
 
 export default function ProductList() {
+    const [products, setProducts] = useState<any[]>([]);
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const dataProducts: any = await ProductsApi.getProducts() || [];
+
+                console.log(dataProducts);
+
+                setProducts(dataProducts);
+            }
+            catch (error) {
+                console.error("Error fetching products:", error);
+            }
+        }
+        fetchProducts();
+    }, []);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
     const filteredProducts = selectedCategory
