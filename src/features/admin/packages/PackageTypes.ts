@@ -1,6 +1,6 @@
 import { BaseEntity } from '@/features/admin/types';
 
-export type PackageStatus = 'active' | 'inactive' | 'draft' | 'pending';
+export type PackageStatus = 'active' | 'inactive' | 'draft';
 
 export interface Package extends BaseEntity<PackageStatus> {
     id: number;

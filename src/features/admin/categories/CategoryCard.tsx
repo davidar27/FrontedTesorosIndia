@@ -31,16 +31,24 @@ export const CategoryCard = React.memo(function CategoryCard({
         setIsEditing(false);
     };
 
-    const handleSave = async (updatedItem: Partial<Category>) => {
-        if (!updatedItem.id) return;
+    const handleSave = async (data: Partial<Category> | FormData) => {
+        if (!item.id) return;
         
         setIsLoading(true);
         try {
-            const result = await updateAsync(updatedItem as Category);
-            onUpdate({ ...updatedItem, image: result.image } as Category);
+            let result;
+            if (data instanceof FormData) {
+                // Si es FormData, agregar el ID
+                data.append('id', String(item.id));
+                result = await updateAsync(data);
+            } else {
+                // Si es objeto normal, agregar el ID
+                result = await updateAsync({ ...data, id: item.id } as Category);
+            }
+            onUpdate({ ...item, ...result } as Category);
             setIsEditing(false);
         } catch (error) {
-            console.error('Error updating entrepreneur:', error);
+            console.error('Error updating category:', error);
         } finally {
             setIsLoading(false);
         }

@@ -1,6 +1,6 @@
 import { BaseEntity } from "@/features/admin/types";
 
-export type EntrepreneurStatus = 'active' | 'inactive' | 'pending';
+export type EntrepreneurStatus = 'active' | 'inactive';
 
 export interface Entrepreneur extends BaseEntity<EntrepreneurStatus, number> {
     id: number;

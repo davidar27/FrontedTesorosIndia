@@ -62,7 +62,7 @@ export interface ViewCardProps<T> extends BaseCardProps<T> {
 }
 
 export interface EditCardProps<T> extends BaseCardProps<T> {
-    onSave: (data: T) => void;
+    onSave: (data: T | FormData) => void;
     onCancel: () => void;
     editFields: {
         [key: string]: boolean;

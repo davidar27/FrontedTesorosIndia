@@ -1,6 +1,6 @@
 import { DefaultCustomFilters } from '@/components/admin/Filter';
-import { Experience } from '@/features/admin/experiences/ExperienceTypes';
-import { normalizeExperienceStatus } from '@/features/admin/adminHelpers';
+import { Experience, Experiencestatus } from '@/features/admin/experiences/ExperienceTypes';
+import { normalizeStatus } from '../adminHelpers';
 
 interface ExperiencesFilterProps {
     items: Experience[];
@@ -8,13 +8,20 @@ interface ExperiencesFilterProps {
 }
 
 export function ExperiencesFilter({ items, onFilterChange }: ExperiencesFilterProps) {
+    const isExperienceStatus = (status: string): status is Experiencestatus =>
+        ['published', 'draft'].includes(status);
     return (
         <DefaultCustomFilters<Experience>
-            items={items.map(item => ({
-                ...item,
-                status: normalizeExperienceStatus(item.status)
-            }))}
+
+            items={items.map(item => {
+                const normalized = normalizeStatus(item.status);
+                return {
+                    ...item,
+                    status: isExperienceStatus(normalized) ? normalized : 'draft'
+                };
+            })}
             onFilterChange={onFilterChange}
+            type="experience"
         />
     );
 } 

@@ -2,11 +2,17 @@ import React, { useMemo, useState } from 'react';
 import { Edit, LucideIcon, Check, X } from 'lucide-react';
 import Picture from '@/components/ui/display/Picture';
 import Avatar from '@/components/ui/display/Avatar';
-import ConfirmDialog from '@/components/ui/feedback/ConfirmDialog';
-import { getImageUrl, getStatusLabel, normalizeEntrepreneurStatus, normalizeExperienceStatus } from '@/features/admin/adminHelpers';
+import { getImageUrl, normalizeStatus } from '@/features/admin/adminHelpers';
 import LoadingSpinner from '@/components/layouts/LoadingSpinner';
 import { BaseItem } from './types';
 
+interface StatusConfig {
+    active: { bg: string; text: string; label: string };
+    inactive: { bg: string; text: string; label: string };
+    draft: { bg: string; text: string; label: string };
+    published: { bg: string; text: string; label: string };
+    [key: string]: { bg: string; text: string; label: string };
+}
 interface ContactInfo {
     icon: LucideIcon;
     value: string | React.ReactNode;
@@ -42,6 +48,7 @@ interface ViewCardProps<T> {
     actions?: ActionButton[];
     onUpdate?: (item: T) => void;
     onChangeStatus?: (id: number, status: string) => void;
+    statusConfig?: StatusConfig;
     showImage?: boolean;
     showStatus?: boolean;
     className?: string;
@@ -66,6 +73,12 @@ const CARD_VARIANTS = {
     compact: 'p-4',
     detailed: 'p-8',
 };
+const DEFAULT_STATUS_CONFIG = {
+    active: { bg: 'bg-green-100', text: 'text-green-800', label: 'Activo' },
+    inactive: { bg: 'bg-red-100', text: 'text-red-800', label: 'Inactivo' },
+    published: { bg: 'bg-green-100', text: 'text-green-800', label: 'Publicada' },
+    draft: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'Borrador' }
+};
 
 export function ViewCard<T extends BaseItem>({
     item,
@@ -78,21 +91,39 @@ export function ViewCard<T extends BaseItem>({
     className = "",
     variant = 'default',
     clickable = false,
+    statusConfig = DEFAULT_STATUS_CONFIG,
+    showStatus = true,
     onClick,
     loading = false,
     children,
     title
 }: ViewCardProps<T>) {
-    const [confirmOpen, setConfirmOpen] = useState(false);
-    const [confirmAction, setConfirmAction] = useState<'activate' | 'disable' | 'publish' | 'draft' | null>(null);
+    const [, setConfirmOpen] = useState(false);
+    const [, setConfirmAction] = useState<'activate' | 'disable' | 'publish' | 'draft' | null>(null);
+
+    const getStatusStyle = (status: string) => {
+        const normalizedStatus = normalizeStatus(status);
+        const config = statusConfig[normalizedStatus] || statusConfig.active;
+        return `${config.bg} ${config.text}`;
+    };
+
+    const getStatusLabel = (status: string) => {
+        if (!status) return 'Desconocido';
+        const normalizedStatus = normalizeStatus(status);
+        return statusConfig[normalizedStatus]?.label || status.charAt(0).toUpperCase() + status.slice(1);
+    };
 
     const defaultActions: ActionButton[] = useMemo(() => {
+        const handleActionWithConfirm = (action: 'activate' | 'disable') => {
+            return () => {
+                setConfirmAction(action);
+                setConfirmOpen(true);
+            };
+        };
+
         const actionsArr: ActionButton[] = [];
-        const isExperience = title === 'Experiencia';
-        const status = isExperience 
-            ? normalizeExperienceStatus(item.status)
-            : normalizeEntrepreneurStatus(item.status);
-        
+        const status = normalizeStatus(item.status);
+
         if (onUpdate) {
             actionsArr.push({
                 icon: Edit,
@@ -104,77 +135,31 @@ export function ViewCard<T extends BaseItem>({
             });
         }
 
-        if (isExperience) {
-            if (status === 'published' && onChangeStatus) {
-                actionsArr.push({
-                    icon: X,
-                    label: variant === 'default' ? 'Desactivar' : undefined,
-                    onClick: () => handleActionWithConfirm('draft'),
-                    variant: 'danger',
-                    fullWidth: false,
-                    tooltip: `Desactivar ${title}`
-                });
-            } else if (status === 'draft' && onChangeStatus) {
-                actionsArr.push({
-                    icon: Check,
-                    label: variant === 'default' ? 'Publicar' : undefined,
-                    onClick: () => handleActionWithConfirm('publish'),
-                    variant: 'success',
-                    fullWidth: false,
-                    tooltip: `Publicar ${title}`
-                });
-            }
-        } else {
-            if (status === 'active' && onChangeStatus) {
-                actionsArr.push({
-                    icon: X,
-                    label: variant === 'default' ? 'Desactivar' : undefined,
-                    onClick: () => handleActionWithConfirm('disable'),
-                    variant: 'danger',
-                    fullWidth: false,
-                    tooltip: `Desactivar ${title}`
-                });
-            } else if (status === 'inactive' && onChangeStatus) {
-                actionsArr.push({
-                    icon: Check,
-                    label: variant === 'default' ? 'Activar' : undefined,
-                    onClick: () => handleActionWithConfirm('activate'),
-                    variant: 'success',
-                    fullWidth: false,
-                    tooltip: `Activar ${title}`
-                });
-            }
+        if (status === 'active' && onChangeStatus) {
+            actionsArr.push({
+                icon: X,
+                label: variant === 'default' ? 'Desactivar' : undefined,
+                onClick: handleActionWithConfirm('disable'),
+                variant: 'danger',
+                fullWidth: false,
+                tooltip: `Desactivar ${title}`
+            });
+        } else if (status === 'inactive' && onChangeStatus) {
+            actionsArr.push({
+                icon: Check,
+                label: variant === 'default' ? 'Activar' : undefined,
+                onClick: handleActionWithConfirm('activate'),
+                variant: 'success',
+                fullWidth: false,
+                tooltip: `Activar ${title}`
+            });
         }
+
         return actionsArr;
-    }, [onUpdate, onChangeStatus, item, variant, title]);
+    }, [onUpdate, onChangeStatus, item, variant, title, setConfirmAction, setConfirmOpen]);
 
     const finalActions = actions.length > 0 ? actions : defaultActions;
 
-    const handleActionWithConfirm = (action: 'activate' | 'disable' | 'publish' | 'draft') => {
-        setConfirmAction(action);
-        setConfirmOpen(true);
-    };
-
-    const handleConfirm = () => {
-        if (!confirmAction) return;
-        
-        switch (confirmAction) {
-            case 'activate':
-                if (onChangeStatus) onChangeStatus(item.id, 'active');
-                break;
-            case 'disable':
-                if (onChangeStatus) onChangeStatus(item.id, 'inactive');
-                break;
-            case 'publish':
-                if (onChangeStatus) onChangeStatus(item.id, 'published');
-                break;
-            case 'draft':
-                if (onChangeStatus) onChangeStatus(item.id, 'draft');
-                break;
-        }
-        setConfirmOpen(false);
-        setConfirmAction(null);
-    };
 
     const handleCardClick = (e: React.MouseEvent) => {
         if (clickable && onClick && !loading) {
@@ -211,18 +196,19 @@ export function ViewCard<T extends BaseItem>({
             )}
 
             <div className="relative flex items-start justify-between mb-4">
-                <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-gray-800 group-hover:text-primary transition-colors duration-200 truncate whitespace-normal text-xl">
-                        {item.name}
-                    </h3>
-                </div>
-                
-                {showStatus && (
+                <div>
+                    <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-gray-800 group-hover:text-primary transition-colors duration-200 truncate whitespace-normal text-xl">
+                            {item.name}
+                        </h3>
+                    </div>
+
+                    {showStatus && (
                         <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium mt-2 ${getStatusStyle(item.status)}`}>
                             {getStatusLabel(item.status)}
                         </span>
                     )}
-
+                </div>
                 {showImage && (
                     <div className="ml-4 flex-shrink-0">
                         {item.image && item.image !== null ? (
@@ -292,8 +278,10 @@ export function ViewCard<T extends BaseItem>({
                                 ${action.disabled ? 'cursor-not-allowed' : 'hover:!scale-105'}
                             `}
                         >
+
                             {action.loading ? (
-                                <LoadingSpinner />
+                                <LoadingSpinner message="Cambiando estado..." />
+
                             ) : (
                                 <action.icon className="w-4 h-4" />
                             )}
@@ -303,44 +291,7 @@ export function ViewCard<T extends BaseItem>({
                 </div>
             )}
 
-            <ConfirmDialog
-                open={confirmOpen}
-                onConfirm={handleConfirm}
-                onCancel={() => setConfirmOpen(false)}
-                title={
-                    confirmAction === 'activate'
-                        ? `¿Activar ${title}?`
-                        : confirmAction === 'disable'
-                        ? `¿Desactivar ${title}?`
-                        : confirmAction === 'publish'
-                        ? `¿Publicar ${title}?`
-                        : confirmAction === 'draft'
-                        ? `¿Borrador ${title}?`
-                        : `¿Desactivar ${title}?`
-                }
-                description={
-                    confirmAction === 'activate'
-                        ? `¿Deseas activar ${item.name}?`
-                        : confirmAction === 'disable'
-                        ? `¿Deseas desactivar ${item.name}?`
-                        : confirmAction === 'publish'
-                        ? `¿Deseas publicar ${item.name}?`
-                        : confirmAction === 'draft'
-                        ? `¿Deseas poner en borrador ${item.name}?`
-                        : `¿Deseas desactivar ${item.name}?`
-                }
-                confirmText={
-                    confirmAction === 'activate'
-                        ? 'Activar'
-                        : confirmAction === 'disable'
-                        ? 'Desactivar'
-                        : confirmAction === 'publish'
-                        ? 'Publicar'
-                        : confirmAction === 'draft'
-                        ? 'Borrador'
-                        : 'Desactivar'
-                }
-            />
+
         </div>
     );
 } 

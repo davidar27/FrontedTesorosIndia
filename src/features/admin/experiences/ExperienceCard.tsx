@@ -1,101 +1,76 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
-import { ReusableCard } from '@/components/admin/ReusableCard';
-import { Calendar, User, MapPin, Bird } from 'lucide-react';
-import { useExperiencesManagement } from '@/features/admin/experiences/useExperiencesManagement';
-import { formatDate } from '@/features/admin/adminHelpers';
-import { toast } from 'react-hot-toast';
+import { ViewCard } from '@/components/admin/ReusableCard/ViewCard';
+import { EditCard } from '@/components/admin/ReusableCard/EditCard';
+import { Calendar, Home, Edit, User, MapPin } from 'lucide-react';
+import { Experience } from '@/features/admin/experiences/ExperienceTypes';
+import { useExperiencesManagement } from '@/services/admin/useExperiencesManagement';
+import { formatDate, normalizeStatus } from '../adminHelpers';
 import React from 'react';
-import { Experience, UpdateExperienceData } from './ExperienceTypes';
-import { EditableExperienceCard } from '@/features/admin/experiences/EditableExperienceCard';
-import { normalizeExperienceStatus } from '@/features/admin/adminHelpers';
+import type { ActionButton } from '@/components/admin/ReusableCard/types';
 
 interface ExperienceCardProps {
     item: Experience;
     onUpdate: (item: Experience) => void;
+    onChangeStatus?: (id: number, status: string) => void;
 }
 
 export const ExperienceCard = React.memo(function ExperienceCard({
     item,
     onUpdate,
+    onChangeStatus,
 }: ExperienceCardProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const { update, changeStatus } = useExperiencesManagement();
+    const { updateAsync } = useExperiencesManagement();
+
+
+    const normalized = normalizeStatus(item.status);
+
+    React.useEffect(() => {
+        const event = new CustomEvent('cardEditingStateChange', {
+            detail: { isEditing, itemId: item.id }
+        });
+        window.dispatchEvent(event);
+    }, [isEditing, item.id]);
 
     const handleEditClick = () => {
         setIsEditing(true);
     };
 
-    const handleCancelEdit = () => {
+    const handleCancel = () => {
         setIsEditing(false);
     };
 
-    const handleSave = (id: number, data: UpdateExperienceData) => {
-        setIsEditing(false);
+    const handleSave = async (data: Partial<Experience> | FormData) => {
+        if (!item.id) return;
+
         setIsLoading(true);
+        try {
+            let result;
+            if (data instanceof FormData) {
+                data.append('id', String(item.id));
+                result = await updateAsync(data);
+            } else {
+                result = await updateAsync({ ...data, id: item.id });
+            }
 
-        const changedFields: Partial<UpdateExperienceData> = {};
-        if (data.name && data.name !== item.name) changedFields.name = data.name;
-        if (data.location && data.location !== item.location) changedFields.location = data.location;
-        if (data.type && data.type !== item.type) changedFields.type = data.type;
-
-        if (Object.keys(changedFields).length === 0) {
-            toast.error('No realizaste ningún cambio.');
+            if (result && typeof result === 'object' && 'updatedFields' in result) {
+                const updatedFields = result.updatedFields as Record<string, any>;
+                onUpdate({ ...item, ...updatedFields });
+            } else if (result && typeof result === 'object') {
+                const responseData = result as Record<string, any>;
+                onUpdate({ ...item, ...responseData });
+            }
+            setIsEditing(false);
+        } catch (error) {
+            console.error('Error updating entrepreneur:', error);
+        } finally {
             setIsLoading(false);
-            return;
         }
-
-        update(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            { id, ...changedFields } as any,
-            {
-                onSuccess: () => {
-                    onUpdate({
-                        ...item,
-                        ...changedFields,
-                    });
-                    setIsLoading(false);
-                },
-                onError: () => {
-                    setIsLoading(false);
-                }
-            }
-        );
     };
 
-    const handleChangeStatus = () => {
-        const normalizedStatus = normalizeExperienceStatus(item.status);
-        const getNewStatus = (currentStatus: string) => {
-            switch (currentStatus) {
-                case 'published':
-                    return 'draft';
-                case 'draft':
-                    return 'published';
-                case 'inactive':
-                    return 'published';
-                default:
-                    return 'published';
-            }
-        };
 
-        const newStatus = getNewStatus(normalizedStatus);
-        changeStatus({
-            id: item.id ?? 0,
-            status: newStatus,
-            entityType: 'experience'
-        });
-    };
-
-    if (isEditing) {
-        return (
-            <EditableExperienceCard
-                item={item}
-                onSave={handleSave}
-                onCancel={handleCancelEdit}
-                isLoading={isLoading}
-            />
-        );
-    }
 
     const contactInfo = [
         {
@@ -112,7 +87,7 @@ export const ExperienceCard = React.memo(function ExperienceCard({
         },
         {
             value: formatDate(item.joinDate),
-            label: 'Fecha de registro',
+            label: 'Fecha de la experiencia',
             bgColor: 'bg-blue-50',
             textColor: 'text-blue-600',
             icon: Calendar
@@ -120,34 +95,60 @@ export const ExperienceCard = React.memo(function ExperienceCard({
     ];
 
     const stats = [
-
         {
             value: item.type,
             label: 'Tipo de experiencia',
             bgColor: 'bg-green-50',
             textColor: 'text-green-600',
-            icon: Bird
+            icon: Home
         }
     ];
 
+    console.log(normalized);
+    const actions: ActionButton[] = [
+        {
+            icon: Edit,
+            label: 'Editar',
+            onClick: handleEditClick,
+            variant: 'primary'
+        }
+    ];
+
+
+    if (isEditing) {
+        if (!item.id) return null;
+        return (
+            <EditCard
+                item={{ ...item, id: item.id }}
+                onSave={handleSave}
+                onCancel={handleCancel}
+                editFields={{
+                    name: true,
+                    location: true,
+                    type: true,
+                }}
+                contactInfo={contactInfo}
+                stats={stats}
+                loading={isLoading}
+                title="Experiencia"
+            />
+        );
+    }
+
     return (
-        <ReusableCard
-            item={{
-                ...item,
-                status: normalizeExperienceStatus(item.status),
-                id: item.id ?? 0,
-                name: item.name,
-                description: `Experiencia registrada el ${formatDate(item.joinDate)}`
-            }}
-            contactInfo={contactInfo}
-            stats={stats}
-            onUpdate={handleEditClick}
-            onChangeStatus={handleChangeStatus}
-            showImage={false}
-            showStatus={true}
-            variant="default"
-            title='Experiencia'
-            loading={isLoading}
-        />
+        <>
+            <ViewCard
+                item={{ ...item, id: item.id ?? 0 }}
+                contactInfo={contactInfo}
+                showStatus={true}
+                stats={stats}
+                actions={actions}
+                onChangeStatus={onChangeStatus}
+                loading={isLoading}
+                title="Experiencia"
+                variant="default"
+            />
+            
+        </>
     );
 });

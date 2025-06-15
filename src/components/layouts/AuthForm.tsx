@@ -165,10 +165,8 @@ const AuthForm = ({
             {!hideSubmitButton && submitText && (
               <Button
                 type="submit"
-                className={`w-full transition-all duration-200 ${buttonIsDisabled
-                  ? 'opacity-60 cursor-not-allowed bg-gray-400'
-                  : 'hover:opacity-90'
-                  }`}
+                className="w-full"
+                variant={buttonIsDisabled ? "disabled" : "primary"}
                 disabled={buttonIsDisabled}
               >
                 <div className="flex items-center justify-center gap-2">

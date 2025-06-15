@@ -20,7 +20,6 @@ interface PackagesConfigParams {
 
 const statusPriority = {
     active: 1,
-    pending: 2,
     inactive: 3
 };
 
@@ -28,7 +27,6 @@ function sortByStatus(a: Package, b: Package) {
     const getStatus = (e: Package) => {
         const s = (e.status || '').toLowerCase();
         if (s === 'activo' || s === 'active') return 'active';
-        if (s === 'pendiente' || s === 'pending') return 'pending';
         if (s === 'inactivo' || s === 'inactive') return 'inactive';
         return 'inactive';
     };

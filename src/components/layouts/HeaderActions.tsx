@@ -4,7 +4,7 @@ import Button from "@/components/ui/buttons/Button";
 import { ShoppingCart } from "lucide-react";
 import UserMenu from "@/components/layouts/menu/UserMenu";
 import { motion } from "framer-motion";
-import SidebarExperiences from "@/components/layouts/SidebarExperience";
+import SidebarExperiences from "@/features/home/SidebarExperience";
 
 const HeaderActions = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);

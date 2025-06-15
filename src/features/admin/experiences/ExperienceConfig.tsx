@@ -20,15 +20,13 @@ interface ExperiencesConfigParams {
 
 const statusPriority = {
     active: 1,
-    pending: 2,
-    inactive: 3
+    inactive: 2
 };
 
 function sortByStatus(a: Experience, b: Experience) {
     const getStatus = (e: Experience) => {
         const s = (e.status || '').toLowerCase();
         if (s === 'activo' || s === 'active') return 'active';
-        if (s === 'pendiente' || s === 'pending') return 'pending';
         if (s === 'inactivo' || s === 'inactive') return 'inactive';
         return 'inactive';
     };

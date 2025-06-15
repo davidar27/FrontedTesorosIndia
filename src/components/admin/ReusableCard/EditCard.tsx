@@ -5,6 +5,7 @@ import Avatar from '@/components/ui/display/Avatar';
 import { BaseItem, EditCardProps } from './types';
 import { getImageUrl } from '@/features/admin/adminHelpers';
 import Button from '@/components/ui/buttons/Button';
+import LoadingSpinner from '@/components/layouts/LoadingSpinner';
 
 const CARD_VARIANTS = {
     default: 'p-6',
@@ -26,6 +27,8 @@ export function EditCard<T extends BaseItem>({
     children
 }: EditCardProps<T>) {
     const [formData, setFormData] = useState<Partial<T>>(item);
+    const [previewImage, setPreviewImage] = useState<string | null>(null);
+    const [imageFile, setImageFile] = useState<File | null>(null);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -35,15 +38,49 @@ export function EditCard<T extends BaseItem>({
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            const formData = new FormData();
-            formData.append('image', file);
-            setFormData(prev => ({ ...prev, image: formData }));
+            const imageUrl = URL.createObjectURL(file);
+            setPreviewImage(imageUrl);
+            setImageFile(file);
         }
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSave(formData as unknown as T);
+        
+        const hasChanges = Object.keys(formData).some(key => {
+            if (key === 'image') return false;
+            return formData[key as keyof T] !== item[key as keyof T];
+        });
+
+        if (!hasChanges && !imageFile) {
+            onCancel();
+            return;
+        }
+
+        const modifiedFields: Partial<T> = {};
+        Object.keys(formData).forEach(key => {
+            if (key === 'image') return;
+            const typedKey = key as keyof T;
+            if (formData[typedKey] !== item[typedKey]) {
+                modifiedFields[typedKey] = formData[typedKey];
+            }
+        });
+        
+        if (imageFile) {
+            const submitData = new FormData();
+            
+            Object.entries(modifiedFields).forEach(([key, value]) => {
+                if (value !== undefined) {
+                    submitData.append(key, String(value));
+                }
+            });
+
+            submitData.append('file', imageFile);
+            
+            onSave(submitData);
+        } else if (Object.keys(modifiedFields).length > 0) {
+            onSave(modifiedFields as T);
+        }
     };
 
     const cardClasses = `
@@ -54,8 +91,21 @@ export function EditCard<T extends BaseItem>({
         ${className}
     `.trim();
 
+    React.useEffect(() => {
+        return () => {
+            if (previewImage) {
+                URL.revokeObjectURL(previewImage);
+            }
+        };
+    }, [previewImage]);
+
     return (
         <form onSubmit={handleSubmit} className={cardClasses}>
+            {loading && (
+                <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50 rounded-2xl">
+                    <LoadingSpinner message="Guardando..." />
+                </div>
+            )}
             <div className="relative flex items-start justify-between mb-4">
                 <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-gray-800 group-hover:text-primary transition-colors duration-200 truncate whitespace-normal text-xl">
@@ -85,7 +135,7 @@ export function EditCard<T extends BaseItem>({
                                     className="cursor-pointer"
                                 >
                                     <Picture
-                                        src={item.image || ''}
+                                        src={previewImage || getImageUrl(item.image) || ''}
                                         alt={formData.name as string}
                                         className="rounded-full object-cover w-12 h-12 hover:opacity-80 transition-opacity"
                                     />
@@ -169,7 +219,8 @@ export function EditCard<T extends BaseItem>({
                 </Button>
                 <Button
                     type="submit"
-                    className="flex-1 px-4 py-2 text-white bg-primary rounded-lg hover:bg-primary/80"
+                    className='w-full'
+                    variant='success'
                     disabled={loading}
                 >
                     Guardar
