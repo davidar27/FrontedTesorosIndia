@@ -8,7 +8,7 @@ type PackageCardProps = {
     description: string;
     price?: string;
     features?: string[];
-    onClick: () => void;
+    onClick?: () => void;
     isCreateCard?: boolean;
     category?: string;
 };

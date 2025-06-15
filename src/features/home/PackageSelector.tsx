@@ -1,44 +1,22 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import PackageCard from '@/components/ui/cards/PackageCard';
-import paquete1 from "@/assets/images/paquete1.webp";
-import paquete2 from "@/assets/images/paquete2.webp";
 import AnimatedTitle from '@/components/ui/display/AnimatedTitle';
 import { Package } from '@/types';
+import { PackagesApi } from '@/services/home/packages';
 
-const packages: Package[] = [
-  {
-    image: paquete1,
-    title: "Recorrido Experiencia",
-    price: "$45.000",
-    category: "Educativo",
-    description: "Los visitantes podrán disfrutar de una experiencia inmersiva y enriquecedora, diseñada para despertar su curiosidad y conectar con la naturaleza.",
-    features: [
-      "Guía especializado",
-      "3 horas de recorrido",
-      "Degustación de productos",
-      "Souvenir de regalo"
-    ],
-    onClick: () => console.log("Recorrido Experiencia")
-  },
-  {
-    image: paquete2,
-    title: "Paquete Ruta Turistica",
-    price: "$65.000",
-    category: "Premium",
-    description: "Una experiencia única donde cada detalle ha sido cuidadosamente diseñado para ofrecer momentos memorables en entornos naturales de ensueño.",
-    features: [
-      "Actividades personalizadas",
-      "5 horas de experiencia",
-      "Almuerzo incluido",
-      "Transporte incluido"
-    ],
-    onClick: () => console.log("Paquete Personalizado")
-  },
-];
 
 const PackageSelector = () => {
+  const [packages, setPackages] = useState<Package[]>([])
   const [activeFilter, setActiveFilter] = useState('Todos');
   const filters = ['Todos', 'Educativo', 'Premium'];
+
+  useEffect(() => {
+    const fetchPackages = async () => {
+      const dataPackages: any = await PackagesApi.getPackages();
+      setPackages(dataPackages);
+    }
+    fetchPackages()
+  }, [])
 
   return (
     <div className="responsive-padding-x py-16">
@@ -72,19 +50,21 @@ const PackageSelector = () => {
       {/* Grid de paquetes */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
         {packages
-          .filter(pkg => activeFilter === 'Todos' || pkg.category === activeFilter)
-          .map((pkg, index) => (
-            <PackageCard
+          // .filter(pkg => activeFilter === 'Todos' || pkg.category === activeFilter)
+          .map((pkg, index): any => {
+            const features: string[] = [];
+            if (pkg.has_food) features.push("Incluye Comida");
+            return (< PackageCard
               key={index}
               image={pkg.image}
               title={pkg.title}
               description={pkg.description}
               price={pkg.price}
-              features={pkg.features}
+              features={features}
               category={pkg.category}
               onClick={pkg.onClick}
-            />
-          ))}
+            />)
+          })}
 
         <PackageCard
           title=""
