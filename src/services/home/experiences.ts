@@ -18,6 +18,11 @@ export const ExperiencesApi = {
     getExperiences: async (): Promise<Experience[]> => {
         const response = await publicAxiosInstance.get<{ experiences: RawExperienceResponse[] }>('/experiencias/nombre?estado=Publicada');
         return response.data.experiences.map(transformExperienceResponse);
+    },
+
+    getExperiencesHome: async () => {
+        const response = await publicAxiosInstance.get('/experiencias/mapa');
+        return response.data;
     }
 
 }
