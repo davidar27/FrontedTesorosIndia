@@ -2,8 +2,10 @@ import Button from '@/components/ui/buttons/Button';
 import { TreePalm, MapPin, Coffee, Mountain } from 'lucide-react';
 import ReusableMap from '@/components/shared/ReusableMap';
 import AnimatedTitle from '@/components/ui/display/AnimatedTitle';
+import { useEffect, useState } from 'react';
+import { ExperiencesApi } from '@/services/home/experiences';
 
-const locations = [
+const locationsData = [
   {
     id: 1,
     name: 'Experiencia Puerto Arturo',
@@ -35,6 +37,15 @@ const locations = [
 ];
 
 const TouristRoute = () => {
+  const [locations, setLocations] = useState<any[]>(locationsData)
+  useEffect(() => {
+    const fetchExperiences = async () => {
+      const dataExperiences: any[] = await ExperiencesApi.getExperiencesHome() || []
+      console.log(dataExperiences);
+      setLocations(dataExperiences)
+    }
+    fetchExperiences()
+  }, [])
 
   return (
     <div className="responsive-padding-x pt-10">
@@ -112,14 +123,18 @@ const TouristRoute = () => {
             </p>
 
             <div className="grid md:grid-cols-2 gap-6 mt-6">
-              <div className="bg-green-50 p-4 rounded-lg">
-                <h3 className="font-semibold text-green-700 mb-2 flex items-center">
-                  <Mountain className="mr-2" /> Naturaleza
-                </h3>
-                <p className="text-gray-600">
-                  Bosques nativos, cañones y ríos cristalinos te esperan en este paraíso natural.
-                </p>
-              </div>
+              {locations.map((location, index) => {
+                return (
+                  <div className="bg-green-50 p-4 rounded-lg">
+                    <h3 className="font-semibold text-green-700 mb-2 flex items-center">
+                      <Mountain className="mr-2" /> {location.name}
+                    </h3>
+                    <p className="text-gray-600">
+                      {location.location}
+                    </p>
+                  </div>
+                )
+              })}
               <div className="bg-green-50 p-4 rounded-lg">
                 <h3 className="font-semibold text-green-700 mb-2 flex items-center">
                   <Coffee className="mr-2" /> Cultura Cafetera
