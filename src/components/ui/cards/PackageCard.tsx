@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
+import Button from "@/components/ui/buttons/Button";
 
 
 type PackageCardProps = {
@@ -10,7 +11,6 @@ type PackageCardProps = {
     features?: string[];
     onClick?: () => void;
     isCreateCard?: boolean;
-    category?: string;
 };
 
 export const PackageCard = ({
@@ -21,7 +21,6 @@ export const PackageCard = ({
     features = [],
     onClick,
     isCreateCard = false,
-    category = "Popular",
 }: PackageCardProps) => {
     const [isHovered, setIsHovered] = useState(false);
 
@@ -43,13 +42,6 @@ export const PackageCard = ({
             onHoverEnd={() => setIsHovered(false)}
             onClick={onClick}
         >
-            {!isCreateCard && !isHovered && (
-                <div className="absolute top-4 right-4 z-10">
-                    <span className="bg-green-600 text-white text-xs font-bold px-2 py-1 rounded-full uppercase tracking-wide">
-                        {category}
-                    </span>
-                </div>
-            )}
 
             {isCreateCard ? (
                 <div className="flex flex-col items-center justify-center h-64 p-6 text-center">
@@ -115,13 +107,9 @@ export const PackageCard = ({
             )}
 
             <div className="p-5 pt-0 flex justify-center">
-                <motion.button
-                    className={`py-2 px-6 rounded-full font-medium flex items-center justify-center gap-2 ${isCreateCard
-                        ? 'bg-white text-green-600 border-2 border-green-600 hover:bg-green-600 hover:text-white'
-                        : 'bg-green-600 text-white hover:bg-green-700'
-                        } transition-all duration-300`}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                <Button
+                    variant="primary"
+                    onClick={onClick}
                 >
                     {isCreateCard ? (
                         <>
@@ -143,7 +131,7 @@ export const PackageCard = ({
                             </svg>
                         </>
                     )}
-                </motion.button>
+                </Button>
             </div>
         </motion.div>
     );

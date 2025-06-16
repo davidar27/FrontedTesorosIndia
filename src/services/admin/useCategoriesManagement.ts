@@ -1,10 +1,10 @@
-import { Entrepreneur } from '@/features/admin/entrepreneurs/EntrepreneursTypes';
+import { Category } from '@/features/admin/categories/CategoriesTypes';
 import { useGenericApi } from '@/hooks/useGenericApi';
 
 
 export function useCategoriesManagement() {
 
-    return useGenericApi<Entrepreneur, number>(
+    return useGenericApi<Category, number>(
         {
             entityKey: 'category',
             endpoints: {

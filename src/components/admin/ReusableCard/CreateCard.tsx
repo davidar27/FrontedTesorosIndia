@@ -13,11 +13,10 @@ export function CreateCard<T extends BaseItem>({
     onCreate,
     onCancel,
     editFields,
-    contactInfo = [],
-    stats = [],
     className = "",
     variant = 'default',
     loading = false,
+    entityName,
     children
 }: CreateCardProps<T>) {
     const [formData, setFormData] = useState<Partial<T>>(item);
@@ -26,7 +25,6 @@ export function CreateCard<T extends BaseItem>({
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
-
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -45,69 +43,59 @@ export function CreateCard<T extends BaseItem>({
         <form onSubmit={handleSubmit} className={cardClasses}>
             <div className="relative flex items-start justify-between mb-4">
                 <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-gray-800 group-hover:text-primary transition-colors duration-200 truncate whitespace-normal text-xl">
+                    <h3 className="font-bold text-gray-800 group-hover:text-primary transition-colors duration-200 truncate whitespace-normal text-md">
                         <input
                             type="text"
                             name="name"
                             value={formData.name || ''}
                             onChange={handleInputChange}
                             className="w-full bg-transparent border-b border-gray-300 focus:border-primary outline-none"
-                            placeholder="Ingrese nombre"
+                            placeholder={`Ingrese el nombre del ${entityName}`}
                         />
                     </h3>
                 </div>
-               
             </div>
 
-            {contactInfo.length > 0 && (
-                <div className="space-y-2 mb-4 flex gap-2 flex-wrap flex-col w-full">
-                    {editFields.email && (
-                        <div className="flex items-center gap-2 text-gray-600">
-                            <Mail className="w-4 h-4 flex-shrink-0" />
-                            <input
-                                type="email"
-                                name="email"
-                                value={formData.email || ''}
-                                onChange={handleInputChange}
-                                className="w-full bg-transparent border-b border-gray-300 focus:border-primary outline-none"
-                                placeholder="Ingrese email"
-                            />
-                        </div>
-                    )}
-                    {editFields.phone && (
-                        <div className="flex items-center gap-2 text-gray-600">
-                            <Phone className="w-4 h-4 flex-shrink-0" />
-                            <input
-                                type="tel"
-                                name="phone"
-                                value={formData.phone || ''}
-                                onChange={handleInputChange}
-                                className="w-full bg-transparent border-b border-gray-300 focus:border-primary outline-none"
-                                placeholder="Ingrese teléfono"
-                            />
-                        </div>
-                    )}
-                </div>
-            )}
+            <div className="space-y-2 mb-4 flex gap-2 flex-wrap flex-col w-full">
+                {editFields.email && (
+                    <div className="flex items-center gap-2 text-gray-600">
+                        <Mail className="w-4 h-4 flex-shrink-0" />
+                        <input
+                            type="email"
+                            name="email"
+                            value={formData.email || ''}
+                            onChange={handleInputChange}
+                            className="w-full bg-transparent border-b border-gray-300 focus:border-primary outline-none"
+                            placeholder="Ingrese el correo electrónico"
+                        />
+                    </div>
+                )}
+                {editFields.phone && (
+                    <div className="flex items-center gap-2 text-gray-600">
+                        <Phone className="w-4 h-4 flex-shrink-0" />
+                        <input
+                            type="tel"
+                            name="phone"
+                            value={formData.phone || ''}
+                            onChange={handleInputChange}
+                            className="w-full  bg-transparent border-b border-gray-300 focus:border-primary outline-none"
+                            placeholder="Ingrese el teléfono"
+                        />
+                    </div>
+                )}
 
-            {stats.length > 0 && (
-                <div className={`grid gap-3 mb-6 ${stats.length === 1 ? 'grid-cols-1' : stats.length === 2 ? 'grid-cols-2' : stats.length === 3 ? 'grid-cols-3' : stats.length === 4 ? 'grid-cols-2' : 'grid-cols-2'}`}>
-                    {editFields.name_experience && (
-                        <div className="text-center p-3 rounded-lg bg-green-50">
-                            <Home className="w-5 h-5 mx-auto mb-1 text-green-600" />
-                            <input
-                                type="text"
-                                name="name_experience"
-                                value={formData.name_experience || ''}
-                                onChange={handleInputChange}
-                                className="w-full bg-transparent border-b border-gray-300 focus:border-primary outline-none text-center"
-                                placeholder="Ingrese nombre de experiencia"
-                            />
-                            <p className="text-xs text-gray-600">Nombre de la experiencia</p>
-                        </div>
-                    )}
-                </div>
-            )}
+            </div>
+            <div className="flex items-center flex-col gap-2 text-primary bg-green-50 p-2">
+                <Home className="w-4 h-4 flex-shrink-0" />
+                <input
+                    type="text"
+                    name="name_experience"
+                    value={formData.name_experience || ''}
+                    onChange={handleInputChange}
+                    className="w-full  text-center bg-transparent border-b border-gray-300 focus:border-primary outline-none"
+                    placeholder="Ingrese nombre de experiencia"
+                />
+            </div>
 
             {children}
 

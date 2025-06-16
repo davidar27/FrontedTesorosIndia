@@ -1,12 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import { ViewCard } from '@/components/admin/ReusableCard/ViewCard';
 import { EditCard } from '@/components/admin/ReusableCard/EditCard';
-import { Calendar, Edit, Check, X, Package } from 'lucide-react';
+import { Edit, Check, X, Tags } from 'lucide-react';
 import { Category } from '@/features/admin/categories/CategoriesTypes';
 import { useCategoriesManagement } from '@/services/admin/useCategoriesManagement';
-import { formatDate, normalizeEntrepreneurStatus } from '../adminHelpers';
+import { normalizeStatus } from '../adminHelpers';
 import React from 'react';
 import type { ActionButton } from '@/components/admin/ReusableCard/types';
+import ConfirmDialog from '@/components/ui/feedback/ConfirmDialog';
 
 interface CategoryCardProps {
     item: Category;
@@ -21,7 +23,20 @@ export const CategoryCard = React.memo(function CategoryCard({
 }: CategoryCardProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [confirmAction, setConfirmAction] = useState<'activate' | 'disable' | null>(null);
     const { updateAsync } = useCategoriesManagement();
+
+
+    const normalizedStatus = normalizeStatus(item.status);
+
+
+    React.useEffect(() => {
+        const event = new CustomEvent('cardEditingStateChange', {
+            detail: { isEditing, itemId: item.id }
+        });
+        window.dispatchEvent(event);
+    }, [isEditing, item.id]);
 
     const handleEditClick = () => {
         setIsEditing(true);
@@ -38,14 +53,19 @@ export const CategoryCard = React.memo(function CategoryCard({
         try {
             let result;
             if (data instanceof FormData) {
-                // Si es FormData, agregar el ID
                 data.append('id', String(item.id));
                 result = await updateAsync(data);
             } else {
-                // Si es objeto normal, agregar el ID
-                result = await updateAsync({ ...data, id: item.id } as Category);
+                result = await updateAsync({ ...data, id: item.id });
             }
-            onUpdate({ ...item, ...result } as Category);
+            
+            if (result && typeof result === 'object' && 'updatedFields' in result) {
+                const updatedFields = result.updatedFields as Record<string, any>;
+                onUpdate({ ...item, ...updatedFields });
+            } else if (result && typeof result === 'object') {
+                const responseData = result as Record<string, any>;
+                onUpdate({ ...item, ...responseData });
+            }
             setIsEditing(false);
         } catch (error) {
             console.error('Error updating category:', error);
@@ -53,22 +73,23 @@ export const CategoryCard = React.memo(function CategoryCard({
             setIsLoading(false);
         }
     };
-
     const handleChangeStatus = () => {
-        const normalizedStatus = normalizeEntrepreneurStatus(item.status);
-        const newStatus = normalizedStatus === 'inactive' ? 'active' : 'inactive';
-        onChangeStatus?.(item.id ?? 0, newStatus);
+        
+        const action = normalizedStatus === 'inactive' ? 'activate' : 'disable';
+        setConfirmAction(action);
+        setConfirmOpen(true);
     };
 
-    const contactInfo = [
-        {
-            value: formatDate(item.joinDate),
-            label: 'Fecha de registro',
-            bgColor: 'bg-blue-50',
-            textColor: 'text-blue-600',
-            icon: Calendar
-        }
-    ];
+    const handleConfirm = () => {
+        if (!confirmAction) return;
+
+        const newStatus = normalizedStatus === 'inactive' ? 'active' : 'inactive';
+        onChangeStatus?.(item.id ?? 0, newStatus);
+        setConfirmOpen(false);
+        setConfirmAction(null);
+    };
+
+ 
 
     const stats = [
         {
@@ -76,11 +97,10 @@ export const CategoryCard = React.memo(function CategoryCard({
             label: 'Productos',
             bgColor: 'bg-green-50',
             textColor: 'text-green-600',
-            icon: Package
+            icon: Tags
         }
     ];
 
-    const normalizedStatus = normalizeEntrepreneurStatus(item.status);
     const actions: ActionButton[] = [
         {
             icon: Edit,
@@ -121,7 +141,7 @@ export const CategoryCard = React.memo(function CategoryCard({
                     name_experience: true,
                     image: true
                 }}
-                contactInfo={contactInfo}
+                showImage={false}
                 stats={stats}
                 loading={isLoading}
                 title="Categoría"
@@ -130,15 +150,38 @@ export const CategoryCard = React.memo(function CategoryCard({
     }
 
     return (
-        <ViewCard
-            item={item}
-            contactInfo={contactInfo}
-            stats={stats}
-            actions={actions}
-            onChangeStatus={onChangeStatus}
-            loading={isLoading}
-            title="Categoría"
-            variant="default"
-        />
+        <>
+            <ViewCard
+                item={item}
+                showImage={false}
+                showStatus={true}
+                stats={stats}
+                actions={actions}
+                onChangeStatus={onChangeStatus}
+                loading={isLoading}
+                title="Categoría"
+                variant="default"
+            />
+            <ConfirmDialog
+                open={confirmOpen}
+                onConfirm={handleConfirm}
+                onCancel={() => setConfirmOpen(false)}
+                title={
+                    confirmAction === 'activate'
+                        ? '¿Activar Categoría?'
+                        : '¿Desactivar Categoría?'
+                }
+                description={
+                    confirmAction === 'activate'
+                        ? `¿Deseas activar ${item.name}?`
+                        : `¿Deseas desactivar ${item.name}?`
+                }
+                confirmText={
+                    confirmAction === 'activate'
+                        ? 'Activar'
+                        : 'Desactivar'
+                }
+            />
+        </>
     );
 });

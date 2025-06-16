@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import GenericManagement from '@/components/admin/GenericManagent';
 import { EntrepreneurCard } from '@/features/admin/entrepreneurs/EntrepreneursCard';
 import { EntrepreneursConfig } from '@/features/admin/entrepreneurs/EntrepreneursConfig';
-import { Entrepreneur, CreateEntrepreneurData, UpdateEntrepreneurData, EntrepreneurStatus } from '@/features/admin/entrepreneurs/EntrepreneursTypes';
+import { Entrepreneur, UpdateEntrepreneurData, EntrepreneurStatus } from '@/features/admin/entrepreneurs/EntrepreneursTypes';
 import { useEntrepreneursManagement } from '@/services/admin/useEntrepreneursManagement';
 import { CreateCard } from '@/components/admin/ReusableCard/CreateCard';
 
@@ -21,37 +21,30 @@ type EntrepreneurWithForm = Entrepreneur | {
 
 export default function EntrepreneursManagement() {
     const [showCreateForm, setShowCreateForm] = useState(false);
+    const [isCreating, setIsCreating] = useState(false);
     const {
         items,
-        create,
-        isCreating,
         changeStatus,
-        updateAsync
+        updateAsync,
+        createAsync
     } = useEntrepreneursManagement();
 
-    const handleCreateSubmit = useCallback(
-        (data: Partial<Entrepreneur>) => {
-            const createData: CreateEntrepreneurData = {
-                ...data as unknown as CreateEntrepreneurData,
-            };
-            
-            toast.promise(
-                new Promise((resolve, reject) => {
-                    create(createData as unknown as Entrepreneur, {
-                        onSuccess: () => {
-                            resolve(true);
-                            setShowCreateForm(false);
-                        },
-                        onError: reject
-                    });
-                }),
-                {
-                    loading: 'Creando emprendedor...',
-                    success: 'Emprendedor creado exitosamente',
-                    error: (err) => err.message
+    const handleCreateSubmit = useCallback(async (data: Partial<Entrepreneur>) => {
+        setIsCreating(true);
+        try {
+            await createAsync(data, {
+                onSuccess: () => {
+                    toast.success('Emprendedor creado exitosamente');
+                    setShowCreateForm(false);
+                },
+                onError: (err) => {
+                    toast.error(err.message);
                 }
-            );
-        }, [create, setShowCreateForm]);
+            });
+        } finally {
+            setIsCreating(false);
+        }
+    }, [createAsync]);
 
     const handleUpdate = useCallback(
         async (id: number, data: UpdateEntrepreneurData) => {
@@ -83,22 +76,25 @@ export default function EntrepreneursManagement() {
             });
         }, [changeStatus]);
 
-    const config = useMemo(() => {
+    const itemsWithForm = useMemo(() => {
         const entrepreneurs = Array.isArray(items) ? items : [];
-        const itemsWithForm: EntrepreneurWithForm[] = showCreateForm 
-            ? [{
+        if (showCreateForm) {
+            return [{
                 id: -1,
                 isForm: true,
                 name: '',
                 status: 'active' as EntrepreneurStatus,
                 email: '',
                 phone: '',
+                image: null,
                 name_experience: '',
-                joinDate: new Date().toISOString(),
-                image: null
-            }, ...entrepreneurs]
-            : entrepreneurs;
+                joinDate: new Date().toISOString()
+            }, ...entrepreneurs];
+        }
+        return entrepreneurs;
+    }, [items, showCreateForm]);
 
+    const config = useMemo(() => {
         return EntrepreneursConfig({
             data: itemsWithForm,
             CardComponent: (props) => {
@@ -117,6 +113,7 @@ export default function EntrepreneursManagement() {
                                     name_experience: true,
                                     image: true
                                 }}
+                                entityName="Emprendedor"
                             />
                         </div>
                     );
@@ -137,7 +134,7 @@ export default function EntrepreneursManagement() {
                 }
             }
         });
-    }, [items, showCreateForm, isCreating, handleUpdate, handleChangeStatus, handleCreateSubmit]);
+    }, [itemsWithForm, isCreating, handleUpdate, handleChangeStatus, handleCreateSubmit]);
 
     return (
         <GenericManagement<EntrepreneurWithForm> config={config} />

@@ -7,20 +7,18 @@ import { PackagesApi } from '@/services/home/packages';
 
 const PackageSelector = () => {
   const [packages, setPackages] = useState<Package[]>([])
-  const [activeFilter, setActiveFilter] = useState('Todos');
-  const filters = ['Todos', 'Educativo', 'Premium'];
 
   useEffect(() => {
     const fetchPackages = async () => {
-      const dataPackages: any = await PackagesApi.getPackages();
+      const dataPackages: Package[] = await PackagesApi.getPackages();
       setPackages(dataPackages);
     }
     fetchPackages()
   }, [])
 
   return (
-    <div className="responsive-padding-x py-16">
-      <div className="text-center pb-2">
+    <div className="responsive-padding-x pt-20 ">
+      <div className="text-center pb-6">
         <AnimatedTitle
           title='NUESTROS PAQUETES'
           align="center"
@@ -31,27 +29,19 @@ const PackageSelector = () => {
         </p>
       </div>
 
-      {/* Filtros */}
-      <div className="flex justify-center gap-4 mb-8">
-        {filters.map((filter) => (
-          <button
-            key={filter}
-            onClick={() => setActiveFilter(filter)}
-            className={`px-4 py-2 rounded-full transition-all duration-300 ${activeFilter === filter
-              ? 'bg-green-600 text-white'
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-          >
-            {filter}
-          </button>
-        ))}
-      </div>
 
       {/* Grid de paquetes */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
+      <div className={`grid gap-6 justify-items-center ${packages.length === 1
+          ? 'grid-cols-1'
+          : packages.length === 2
+            ? 'grid-cols-1 md:grid-cols-2'
+            : packages.length === 3
+              ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+              : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
+        }`}
+      >
         {packages
-          // .filter(pkg => activeFilter === 'Todos' || pkg.category === activeFilter)
-          .map((pkg, index): any => {
+          .map((pkg, index) => {
             const features: string[] = [];
             if (pkg.has_food) features.push("Incluye Comida");
             return (< PackageCard
@@ -61,17 +51,9 @@ const PackageSelector = () => {
               description={pkg.description}
               price={pkg.price}
               features={features}
-              category={pkg.category}
               onClick={pkg.onClick}
             />)
           })}
-
-        <PackageCard
-          title=""
-          description=""
-          onClick={() => console.log("Crear nuevo paquete")}
-          isCreateCard
-        />
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import { DefaultCustomFilters } from '@/components/admin/Filter';
-import { Package } from './PackageTypes';
-import { normalizeEntrepreneurStatus } from '../adminHelpers';
+import { Package, PackageStatus } from './PackageTypes';
+import { normalizeStatus } from '../adminHelpers';
 
 interface PackagesFilterProps {
     items: Package[];
@@ -8,13 +8,20 @@ interface PackagesFilterProps {
 }
 
 export function PackagesFilter({ items, onFilterChange }: PackagesFilterProps) {
+    const isPackageStatus = (status: string): status is PackageStatus =>
+        ['active', 'inactive'].includes(status);
     return (
         <DefaultCustomFilters<Package>
-            items={items.map(item => ({
-                ...item,
-                status: normalizeEntrepreneurStatus(item.status)
-            }))}
+
+            items={items.map(item => {
+                const normalized = normalizeStatus(item.status);
+                return {
+                    ...item,
+                    status: isPackageStatus(normalized) ? normalized : 'inactive'
+                };
+            })}
             onFilterChange={onFilterChange}
+            type="package"
         />
     );
 } 

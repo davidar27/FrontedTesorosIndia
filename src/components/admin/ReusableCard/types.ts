@@ -73,7 +73,7 @@ export interface EditCardProps<T> extends BaseCardProps<T> {
     showStatus?: boolean;
     children?: React.ReactNode;
     title?: string;
-}
+    }
 
 export interface CreateCardProps<T> extends BaseCardProps<T> {
     onCreate: (data: Partial<T>) => void;
@@ -87,6 +87,7 @@ export interface CreateCardProps<T> extends BaseCardProps<T> {
     showStatus?: boolean;
     children?: React.ReactNode;
     title?: string;
+    entityName?: string;
 }
 
 export interface ReusableCardProps<T> {
@@ -101,6 +102,7 @@ export interface ReusableCardProps<T> {
     showStatus?: boolean;
     className?: string;
     variant?: 'default' | 'compact' | 'detailed';
+    entityName?: string;
     clickable?: boolean;
     onClick?: (item: T) => void;
     loading?: boolean;

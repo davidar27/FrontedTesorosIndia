@@ -127,6 +127,7 @@ export default function GenericManagement<T extends BaseEntity<string>>({
             <CustomFilters
                 items={items}
                 onFilterChange={setFilteredByCustomFilters}
+                type={entityName.toLowerCase() as 'category' | 'entrepreneur' | 'experience' | 'package'}
             />
 
             {/* Results count */}

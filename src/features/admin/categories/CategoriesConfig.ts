@@ -1,6 +1,7 @@
 import { EntityConfig } from "@/features/admin/types";
-import { Category } from "./CategoriesTypes";
 import { CategoriesFilter } from "./CategoriesFilter";
+import { Category } from "./CategoriesTypes";
+
 
 interface CategoriesConfigParams {
     data: Category[];
@@ -41,7 +42,7 @@ export const CategoriesConfig = ({
     entityName: "Categoría",
     entityNamePlural: "Categorías",
     searchPlaceholder: "Buscar categorías...",
-    emptyStateEmoji: "💡",
+    emptyStateEmoji: "👥",
     ItemCard: CardComponent,
     emptyStateTitle: "No hay categorías",
     emptyStateDescription: "Crea la primera categoría para comenzar",
@@ -57,8 +58,7 @@ export const CategoriesConfig = ({
         const searchLower = searchTerm.toLowerCase();
         const category = item as Category;
         return (
-            category.name?.toLowerCase().includes(searchLower) ||
-            category.productsCount.toString().includes(searchLower)
+            category.name?.toLowerCase().includes(searchLower)
         );
     },
     onUpdate: actions.onUpdate || (() => {}),

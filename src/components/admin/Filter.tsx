@@ -12,7 +12,7 @@ export interface StatusFilter {
     textColorSelected: string;
     borderColor: string;
     hoverTextColor: string;
-    showFor?: ('entrepreneur' | 'experience' | 'category')[];
+    showFor?: ('entrepreneur' | 'experience' | 'category' | 'package')[];
 }
 
 export const DefaultCustomFilters = <T extends BaseEntity<string>>({
@@ -22,7 +22,7 @@ export const DefaultCustomFilters = <T extends BaseEntity<string>>({
 }: {
     items: T[];
     onFilterChange: (filteredItems: T[]) => void;
-    type: 'entrepreneur' | 'experience' | 'category';
+    type: 'entrepreneur' | 'experience' | 'category' | 'package';
 }) => {
     const [selectedStatus, setSelectedStatus] = useState('all');
     
@@ -38,7 +38,7 @@ export const DefaultCustomFilters = <T extends BaseEntity<string>>({
             textColorSelected: 'text-white',
             borderColor: 'border-secondary',
             hoverTextColor: 'hover:text-secondary',
-            showFor: ['entrepreneur', 'experience', 'category']
+            showFor: ['entrepreneur', 'experience', 'category', 'package']
         },
         { 
             id: 'active', 
@@ -51,7 +51,7 @@ export const DefaultCustomFilters = <T extends BaseEntity<string>>({
             textColorSelected: 'text-white',
             borderColor: 'border-primary',
             hoverTextColor: 'hover:text-primary',
-            showFor: ['entrepreneur', 'category']
+            showFor: ['entrepreneur', 'category', 'package']
         },
         {
             id: 'published',
@@ -90,7 +90,7 @@ export const DefaultCustomFilters = <T extends BaseEntity<string>>({
             textColorSelected: 'text-white',
             borderColor: 'border-red-600',
             hoverTextColor: 'hover:text-red-600',
-            showFor: ['entrepreneur', 'category']
+            showFor: ['entrepreneur', 'category', 'package']
         }
     ];
 

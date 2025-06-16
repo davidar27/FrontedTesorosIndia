@@ -246,12 +246,12 @@ export function ViewCard<T extends BaseItem>({
                     {stats.map((stat, index) => (
                         <div
                             key={index}
-                            className="text-center p-3 rounded-lg bg-green-50"
+                            className={`text-center p-3 rounded-lg ${stat.bgColor || 'bg-green-50'}`}
                         >
                             {stat.icon && (
-                                <stat.icon className="w-5 h-5 mx-auto mb-1 text-green-600" />
+                                <stat.icon className={`w-5 h-5 mx-auto mb-1 ${stat.textColor || 'text-green-600'}`} />
                             )}
-                            <div className="text-lg font-bold truncate text-green-600">
+                            <div className={`text-lg font-bold truncate ${stat.textColor || 'text-green-600'}`}>
                                 {stat.value}
                             </div>
                             <p className="text-xs text-gray-600">{stat.label}</p>

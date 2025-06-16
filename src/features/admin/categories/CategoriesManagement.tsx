@@ -1,46 +1,53 @@
 import { useState, useMemo, useCallback } from 'react';
 import { toast } from 'sonner';
 import GenericManagement from '@/components/admin/GenericManagent';
-import { CreateCategoryForm } from './CreateCategoryForm';
 import { useCategoriesManagement } from '@/services/admin/useCategoriesManagement';
-import { CategoryCard } from './CategoryCard';
-import { CategoriesConfig } from './CategoriesConfig';
-import { Category, CreateCategoryData, UpdateCategoryData } from './CategoriesTypes';
+import { CategoryCard } from '@/features/admin/categories/CategoryCard';
+import { CategoriesConfig } from '@/features/admin/categories/CategoriesConfig';
+import { Category, UpdateCategoryData, CategoryStatus } from '@/features/admin/categories/CategoriesTypes';
+import { CreateCard } from '@/components/admin/ReusableCard/CreateCard';
+
+type CategoryWithForm = Category | {
+    id: -1;
+    isForm: true;
+    name: string;
+    status: CategoryStatus;
+    productsCount: number;
+    joinDate: string;
+};
 
 export default function CategoriesManagement() {
     const [showCreateForm, setShowCreateForm] = useState(false);
+    const [isCreating, setIsCreating] = useState(false);
     const {
         items,
-        create,
-        isCreating,
         changeStatus,
-        updateAsync
+        updateAsync,
+        createAsync
     } = useCategoriesManagement();
 
-    const handleCreateSubmit = (data: CreateCategoryData) => {
-        toast.promise(
-            new Promise((resolve, reject) => {
-                create(data as unknown as Category, {
-                    onSuccess: () => {
-                        resolve(true);
-                        setShowCreateForm(false);
-                    },
-                    onError: reject
-                });
-            }),
-            {
-                loading: 'Creando categoria...',
-                success: 'Categoria creada exitosamente',
-                error: (err) => err.message
-            }
-        );
-    };
+    const handleCreateSubmit = useCallback(async (data: Partial<Category>) => {
+        setIsCreating(true);
+        try {
+            await createAsync(data, {
+                onSuccess: () => {
+                    toast.success('Categoría creada exitosamente');
+                    setShowCreateForm(false);
+                },
+                onError: (err) => {
+                    toast.error(err.message);
+                }
+            });
+        } finally {
+            setIsCreating(false);
+        }
+    }, [createAsync]);
 
     const handleUpdate = useCallback(
         async (id: number, data: UpdateCategoryData) => {
             updateAsync({ id, ...data }, {
                 onSuccess: () => {
-                    toast.success('Categoria actualizada exitosamente');
+                    toast.success('Categoría actualizada exitosamente');
                 },
                 onError: (err) => {
                     toast.error(err.message);
@@ -66,32 +73,60 @@ export default function CategoriesManagement() {
             });
         }, [changeStatus]);
 
-    const config = useMemo(() => {
+    const itemsWithForm = useMemo(() => {
         const categories = Array.isArray(items) ? items : [];
+        if (showCreateForm) {
+            return [{
+                id: -1,
+                isForm: true,
+                name: '',
+                status: 'active' as CategoryStatus,
+                productsCount: 0,
+                joinDate: new Date().toISOString()
+            }, ...categories];
+        }
+        return categories;
+    }, [items, showCreateForm]);
+
+    const config = useMemo(() => {
         return CategoriesConfig({
-            data: categories as unknown as Category[],
-            CardComponent: (props) => (
-                <CategoryCard {...props} />
-            ),
+            data: itemsWithForm,
+            CardComponent: (props) => {
+                if ('isForm' in props.item) {
+                    return (
+                        <div className="animate-fade-in-up">
+                            <CreateCard
+                                item={props.item}
+                                onCreate={handleCreateSubmit}
+                                onCancel={() => setShowCreateForm(false)}
+                                loading={isCreating}
+                                editFields={{
+                                    name: true
+                                }}
+                                entityName="Categoría"
+                            />
+                        </div>
+                    );
+                }
+                return <CategoryCard {...props} />;
+            },
             actions: {
                 onCreate: () => setShowCreateForm(true),
-                onUpdate: (item) => handleUpdate(item.id ?? 0, item as unknown as UpdateCategoryData),
-                onChangeStatus: handleChangeStatus
+                onUpdate: (item) => {
+                    if (!('isForm' in item)) {
+                        handleUpdate(item.id ?? 0, item as unknown as UpdateCategoryData);
+                    }
+                },
+                onChangeStatus: (id, status) => {
+                    if (id !== -1) {
+                        handleChangeStatus(id, status);
+                    }
+                }
             }
         });
-    }, [items, handleUpdate, handleChangeStatus]);
+    }, [itemsWithForm, isCreating, handleUpdate, handleChangeStatus, handleCreateSubmit]);
 
     return (
-        <>
-            {showCreateForm ? (
-                <CreateCategoryForm
-                    onSubmit={handleCreateSubmit}
-                    onCancel={() => setShowCreateForm(false)}
-                    isLoading={isCreating}
-                />
-            ) : (
-                <GenericManagement<Category> config={config} />
-            )}
-        </>
+        <GenericManagement<CategoryWithForm> config={config} />
     );
 }
