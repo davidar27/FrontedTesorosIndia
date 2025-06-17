@@ -1,4 +1,4 @@
-import { Star, StarHalf } from "lucide-react";
+import { Star } from "lucide-react";
 import { motion } from "framer-motion";
 import Button from "../ui/buttons/Button";
 interface Product {
@@ -18,15 +18,22 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   const renderStars = () => {
     const stars = [];
-    const fullStars = Math.floor(product.rating);
-    const hasHalfStar = product.rating % 1 >= 0.5;
+    const fullStars = Math.floor(product.rating / 2);
+    const hasHalfStar = product.rating % 2 >= 0.5;
 
     for (let i = 0; i < fullStars; i++) {
       stars.push(<Star key={`full-${i}`} fill="currentColor" stroke="none" size={18} />);
     }
 
     if (hasHalfStar) {
-      stars.push(<StarHalf key="half" fill="currentColor" stroke="none" size={18} />);
+      stars.push(<div key="half-star" className="relative inline-block" style={{ width: 18, height: 18 }}>
+        <div className="absolute left-0 top-0 overflow-hidden" style={{ width: 9, height: 18 }}>
+          <Star fill="currentColor" stroke="currentColor" size={18} className="absolute left-0" />
+        </div>
+        <div className="absolute right-0 top-0 overflow-hidden" style={{ width: 9, height: 18 }}>
+          <Star fill="none" stroke="currentColor" size={18} className="absolute right-0" />
+        </div>
+      </div>);
     }
 
     const emptyStars = 5 - stars.length;
@@ -48,16 +55,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           alt={product.name}
           className="w-full h-48 object-contain mx-auto pt-4"
         />
-
-
-
       </div>
 
       <div className="p-5 flex flex-col items-center gap-2">
         <h3 className="font-semibold text-gray-800 text-lg line-clamp-2 ">
           {product.name}
         </h3>
-        {/* Badge de categoría */}
         {product.category && (
           <span className=" bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">
             {product.category}
@@ -65,16 +68,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         )}
         <div className="flex justify-center items-center text-yellow-400">
           {renderStars()}
-          <span className="text-xs text-gray-500 ml-1">({product.rating})</span>
-
         </div>
-        <p className="text-gray-800 font-bold text-lg">{product.price}</p>
-
-
+        <p className="text-gray-800 font-bold text-lg">${product.price} COP</p>
         <div className="flex items-center justify-between">
-          <Button
-            type="button"
-            >
+          <Button type="button">
             Añadir al carrito
           </Button>
         </div>
