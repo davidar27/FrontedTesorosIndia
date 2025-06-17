@@ -10,6 +10,7 @@ export interface BaseItem {
     email?: string;
     phone?: string;
     name_experience?: string;
+    password?: string;
 }
 
 export interface ContactInfo {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Phone, Home } from 'lucide-react';
+import { Mail, Phone, Home, Lock } from 'lucide-react';
 import { BaseItem, CreateCardProps } from './types';
 
 const CARD_VARIANTS = {
@@ -51,6 +51,7 @@ export function CreateCard<T extends BaseItem>({
                             onChange={handleInputChange}
                             className="w-full bg-transparent border-b border-gray-300 focus:border-primary outline-none"
                             placeholder={`Ingrese el nombre del ${entityName}`}
+                            required
                         />
                     </h3>
                 </div>
@@ -67,6 +68,7 @@ export function CreateCard<T extends BaseItem>({
                             onChange={handleInputChange}
                             className="w-full bg-transparent border-b border-gray-300 focus:border-primary outline-none"
                             placeholder="Ingrese el correo electrónico"
+                            required
                         />
                     </div>
                 )}
@@ -80,11 +82,27 @@ export function CreateCard<T extends BaseItem>({
                             onChange={handleInputChange}
                             className="w-full  bg-transparent border-b border-gray-300 focus:border-primary outline-none"
                             placeholder="Ingrese el teléfono"
+                            required
+                        />
+                    </div>
+                )}
+                {editFields.password && (
+                    <div className="flex items-center gap-2 text-gray-600">
+                        <Lock className="w-4 h-4 flex-shrink-0" />
+                        <input
+                            type="password"
+                            name="password"
+                            value={formData.password || ''}
+                            onChange={handleInputChange}
+                            className="w-full bg-transparent border-b border-gray-300 focus:border-primary outline-none"
+                            placeholder="Ingrese la contraseña"
+                            required
                         />
                     </div>
                 )}
 
             </div>
+            {editFields.name_experience && (
             <div className="flex items-center flex-col gap-2 text-primary bg-green-50 p-2">
                 <Home className="w-4 h-4 flex-shrink-0" />
                 <input
@@ -94,8 +112,10 @@ export function CreateCard<T extends BaseItem>({
                     onChange={handleInputChange}
                     className="w-full  text-center bg-transparent border-b border-gray-300 focus:border-primary outline-none"
                     placeholder="Ingrese nombre de experiencia"
-                />
-            </div>
+                    required
+                    />
+                </div>
+            )}
 
             {children}
 

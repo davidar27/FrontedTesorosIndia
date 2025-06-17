@@ -111,7 +111,7 @@ export default function EntrepreneursManagement() {
                                     email: true,
                                     phone: true,
                                     name_experience: true,
-                                    image: true
+                                    password: true
                                 }}
                                 entityName="Emprendedor"
                             />

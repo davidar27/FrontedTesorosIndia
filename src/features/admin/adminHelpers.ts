@@ -1,7 +1,8 @@
 import { EntrepreneurStatus } from './entrepreneurs/EntrepreneursTypes';
 import { Experiencestatus } from './experiences/ExperienceTypes';
 
-export function formatDate(dateStr: string) {
+export function formatDate(dateStr: string | undefined | null) {
+    if (!dateStr) return 'No disponible';
     const [day, month, year] = dateStr.split('/');
     return new Date(`${year}-${month}-${day}`).toLocaleDateString('es-ES', {
         year: 'numeric',

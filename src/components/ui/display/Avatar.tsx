@@ -1,5 +1,5 @@
 type AvatarProps = {
-    name: string;
+    name?: string | null;
     size?: number;
     className?: string;
 };
@@ -14,9 +14,9 @@ const getColorFromName = (name: string) => {
     return `hsl(${hue}, 70%, 75%)`;
 };
 
-const Avatar = ({ name, size = 40, className = '' }: AvatarProps) => {
-    const initial = name.trim().charAt(0).toUpperCase();
-    const backgroundColor = getColorFromName(name);
+const Avatar = ({ name = 'Usuario', size = 40, className = '' }: AvatarProps) => {
+    const initial = name?.trim().charAt(0).toUpperCase() || 'U';
+    const backgroundColor = getColorFromName(name || 'U');
 
     return (
         <div
@@ -30,7 +30,7 @@ const Avatar = ({ name, size = 40, className = '' }: AvatarProps) => {
                 boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
             }}
             aria-label={`Avatar de ${name}`}
-            title={name}
+            title={name || 'U'}
         >
             {initial}
         </div>

@@ -159,7 +159,7 @@ export const EntrepreneurCard = React.memo(function EntrepreneurCard({
                     email: true,
                     phone: true,
                     name_experience: true,
-                    image: true
+                    image: true,
                 }}
                 contactInfo={contactInfo}
                 stats={stats}
