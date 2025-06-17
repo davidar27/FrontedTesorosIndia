@@ -20,7 +20,7 @@ const Home: React.FC = () => {
 
       <PackageSelector />
 
-      {/* <TouristRoute /> */}
+      <TouristRoute />
 
       <UniqueExperiences />
 

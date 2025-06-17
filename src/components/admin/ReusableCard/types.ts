@@ -97,6 +97,7 @@ export interface CreateCardProps<T> extends BaseCardProps<T> {
     showStatus?: boolean;
     children?: React.ReactNode;
     title?: string;
+    entityName?: string;
     entity?: string;
 }
 
