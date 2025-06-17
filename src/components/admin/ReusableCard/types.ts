@@ -1,7 +1,7 @@
 import { LucideIcon } from 'lucide-react';
 
 export interface BaseItem {
-    id: number;
+    id?: number;
     name: string;
     status: string;
     image?: string | null;
@@ -9,8 +9,16 @@ export interface BaseItem {
     subtitle?: string;
     email?: string;
     phone?: string;
+    name_entrepreneur?: string;
+    location?: string;
+    type?: string;
+    duration?: string;
+    price?: number;
+    capacity?: string;
     name_experience?: string;
     password?: string;
+    joinDate?: string;
+    [key: string]: string | number | boolean | Date | null | undefined;
 }
 
 export interface ContactInfo {
@@ -74,7 +82,8 @@ export interface EditCardProps<T> extends BaseCardProps<T> {
     showStatus?: boolean;
     children?: React.ReactNode;
     title?: string;
-    }
+    entity?: string;
+}
 
 export interface CreateCardProps<T> extends BaseCardProps<T> {
     onCreate: (data: Partial<T>) => void;
@@ -88,7 +97,7 @@ export interface CreateCardProps<T> extends BaseCardProps<T> {
     showStatus?: boolean;
     children?: React.ReactNode;
     title?: string;
-    entityName?: string;
+    entity?: string;
 }
 
 export interface ReusableCardProps<T> {

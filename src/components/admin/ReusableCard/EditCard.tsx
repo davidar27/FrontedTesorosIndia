@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Phone, Home } from 'lucide-react';
+import { Mail, Phone, Home, MapPin } from 'lucide-react';
 import Picture from '@/components/ui/display/Picture';
 import Avatar from '@/components/ui/display/Avatar';
 import { BaseItem, EditCardProps } from './types';
@@ -134,19 +134,25 @@ export function EditCard<T extends BaseItem>({
                                     htmlFor="image-input" 
                                     className="cursor-pointer"
                                 >
-                                    <Picture
-                                        src={previewImage || getImageUrl(item.image) || ''}
-                                        alt={formData.name as string}
-                                        className="rounded-full object-cover w-12 h-12 hover:opacity-80 transition-opacity"
-                                    />
+                                    <div className="relative w-12 h-12 rounded-full overflow-hidden bg-gray-100">
+                                        {previewImage || getImageUrl(item.image) ? (
+                                            <Picture
+                                                src={previewImage || getImageUrl(item.image) || ''}
+                                                alt={formData.name as string}
+                                                className="w-full h-full object-cover hover:opacity-80 transition-opacity"
+                                            />
+                                        ) : (
+                                            <Avatar
+                                                name={formData.name as string}
+                                                size={48}
+                                            />
+                                        )}
+                                        <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                                            <span className="text-white text-xs">Cambiar</span>
+                                        </div>
+                                    </div>
                                 </label>
                             </div>
-                        ) : item.image && item.image !== null ? (
-                            <Picture
-                                src={getImageUrl(item.image)}
-                                alt={formData.name as string}
-                                className="rounded-full object-cover w-12 h-12"
-                            />
                         ) : (
                             <Avatar
                                 name={formData.name as string}
@@ -182,6 +188,19 @@ export function EditCard<T extends BaseItem>({
                                 onChange={handleInputChange}
                                 className="w-full bg-transparent border-b border-gray-300 focus:border-primary outline-none"
                                 placeholder="Ingrese teléfono"
+                            />
+                        </div>
+                    )}
+                    {editFields.location && (
+                        <div className="flex items-center gap-2 text-gray-600">
+                            <MapPin className="w-4 h-4 flex-shrink-0" />
+                            <input
+                                type="text"
+                                name="location"
+                                value={formData.location || ''}
+                                onChange={handleInputChange}
+                                className="w-full bg-transparent border-b border-gray-300 focus:border-primary outline-none"
+                                placeholder="Ingrese ubicación"
                             />
                         </div>
                     )}

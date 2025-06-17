@@ -14,7 +14,7 @@ interface CreateConfigParams<T extends BaseEntity<Experiencestatus>> {
     };
 }
 
-const CreateExperiencesConfig = <T extends BaseEntity<Experiencestatus>>({
+const ExperiencesConfig = <T extends BaseEntity<Experiencestatus>>({
     data,
     CardComponent,
     actions
@@ -40,4 +40,4 @@ const CreateExperiencesConfig = <T extends BaseEntity<Experiencestatus>>({
     onRetry: () => { },
 });
 
-export default CreateExperiencesConfig;
+export default ExperiencesConfig;

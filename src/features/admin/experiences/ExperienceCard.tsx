@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
-import { ViewCard } from '@/components/admin/ReusableCard/ViewCard';
-import { EditCard } from '@/components/admin/ReusableCard/EditCard';
-import { Calendar, Home, Edit, User, MapPin } from 'lucide-react';
 import { Experience } from '@/features/admin/experiences/ExperienceTypes';
 import { useExperiencesManagement } from '@/services/admin/useExperiencesManagement';
-import { formatDate, normalizeStatus } from '../adminHelpers';
 import React from 'react';
 import type { ActionButton } from '@/components/admin/ReusableCard/types';
+import { ExperiencePackageEditCard } from '@/components/admin/ReusableCard/ExperiencePackageEditCard';
+import { ExperiencePackageViewCard } from '@/components/admin/ReusableCard/ExperiencePackageViewCard';
+import { Edit, Bird } from 'lucide-react';
 
 interface ExperienceCardProps {
     item: Experience;
@@ -25,7 +24,7 @@ export const ExperienceCard = React.memo(function ExperienceCard({
     const { updateAsync } = useExperiencesManagement();
 
 
-    const normalized = normalizeStatus(item.status);
+
 
     React.useEffect(() => {
         const event = new CustomEvent('cardEditingStateChange', {
@@ -71,40 +70,16 @@ export const ExperienceCard = React.memo(function ExperienceCard({
     };
 
 
-
-    const contactInfo = [
-        {
-            icon: User,
-            value: item.name_entrepreneur || '',
-            label: 'Nombre del emprendedor',
-            copyable: true
-        },
-        {
-            icon: MapPin,
-            value: item.location || '',
-            label: 'Ubicación',
-            copyable: true
-        },
-        {
-            value: formatDate(item.joinDate),
-            label: 'Fecha de la experiencia',
-            bgColor: 'bg-blue-50',
-            textColor: 'text-blue-600',
-            icon: Calendar
-        },
-    ];
-
     const stats = [
         {
             value: item.type,
             label: 'Tipo de experiencia',
             bgColor: 'bg-green-50',
             textColor: 'text-green-600',
-            icon: Home
+            icon: Bird  
         }
     ];
 
-    console.log(normalized);
     const actions: ActionButton[] = [
         {
             icon: Edit,
@@ -118,37 +93,35 @@ export const ExperienceCard = React.memo(function ExperienceCard({
     if (isEditing) {
         if (!item.id) return null;
         return (
-            <EditCard
+            <ExperiencePackageEditCard
                 item={{ ...item, id: item.id }}
                 onSave={handleSave}
                 onCancel={handleCancel}
                 editFields={{
                     name: true,
-                    location: true,
+                    image: true,
                     type: true,
+
                 }}
-                contactInfo={contactInfo}
                 stats={stats}
+                entity="experiences"
                 loading={isLoading}
-                title="Experiencia"
             />
         );
     }
 
     return (
         <>
-            <ViewCard
+            <ExperiencePackageViewCard
                 item={{ ...item, id: item.id ?? 0 }}
-                contactInfo={contactInfo}
-                showStatus={true}
-                stats={stats}
-                actions={actions}
+                onUpdate={onUpdate}
                 onChangeStatus={onChangeStatus}
+                entity="experiences"
                 loading={isLoading}
                 title="Experiencia"
-                variant="default"
+                stats={stats}
+                actions={actions}
             />
-            
         </>
     );
 });

@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
-import { ViewCard } from '@/components/admin/ReusableCard/ViewCard';
-import { EditCard } from '@/components/admin/ReusableCard/EditCard';
-import { Calendar, Edit, Info, DollarSign, X, Check } from 'lucide-react';
+import { Edit, X, Check, Calendar, Users } from 'lucide-react';
 import { Package } from '@/features/admin/packages/PackageTypes';
 import { usePackagesManagement } from '@/services/admin/usePackagesManagement';
 import { normalizeStatus } from '../adminHelpers';
 import React from 'react';
 import type { ActionButton } from '@/components/admin/ReusableCard/types';
 import ConfirmDialog from '@/components/ui/feedback/ConfirmDialog';
+import { ExperiencePackageEditCard } from '@/components/admin/ReusableCard/ExperiencePackageEditCard';
+import { ExperiencePackageViewCard } from '@/components/admin/ReusableCard/ExperiencePackageViewCard';
 
 interface PackagesCardProps {
     item: Package;
@@ -90,17 +90,12 @@ export const PackagesCard = React.memo(function PackagesCard({
 
 
     const stats = [
-        { value: `${item.duration}H`, label: 'Duración', bgColor: 'bg-blue-50', textColor: 'text-blue-600' },
-        { value: item.capacity, label: 'Capacidad (personas)', bgColor: 'bg-purple-50', textColor: 'text-purple-600' },
+        { value: `${item.duration}H`, label: 'Duración', bgColor: 'bg-blue-50', textColor: 'text-blue-600', icon: Calendar },
+        { value: item.capacity, label: 'Capacidad (personas)', bgColor: 'bg-purple-50', textColor: 'text-purple-600', icon: Users },
 
     ];
 
-    const contactInfo = [
-        { icon: Info, value: item.description, label: 'Descripción', bgColor: 'bg-gray-50', textColor: 'text-gray-600' },
-        { icon: Calendar, value: item.joinDate, label: 'Fecha de creación' },
-        { icon: DollarSign, value: item.price, label: 'Precio', bgColor: 'bg-green-50', textColor: 'text-green-600' },
-
-    ];
+   
     console.log(normalized);
     const actions: ActionButton[] = [
         {
@@ -132,7 +127,7 @@ export const PackagesCard = React.memo(function PackagesCard({
     if (isEditing) {
         if (!item.id) return null;
         return (
-            <EditCard
+            <ExperiencePackageEditCard
                 item={{ ...item, id: item.id }}
                 onSave={handleSave}
                 onCancel={handleCancel}
@@ -140,27 +135,26 @@ export const PackagesCard = React.memo(function PackagesCard({
                     name: true,
                     description: true,
                     price: true,
+                    duration: true,
+                    capacity: true,
                 }}
-                contactInfo={contactInfo}
-                stats={stats}
+                entity="packages"
                 loading={isLoading}
-                title="Paquete"
             />
         );
     }
 
     return (
         <>
-            <ViewCard
+            <ExperiencePackageViewCard
                 item={{ ...item, id: item.id ?? 0 }}
-                contactInfo={contactInfo}
-                showStatus={true}
-                stats={stats}
-                actions={actions}
+                onUpdate={onUpdate}
                 onChangeStatus={onChangeStatus}
+                entity="packages"
                 loading={isLoading}
                 title="Paquete"
-                variant="default"
+                stats={stats}
+                actions={actions}
             />
             <ConfirmDialog
                 open={confirmOpen}
