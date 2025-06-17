@@ -1,5 +1,5 @@
 import Button from '@/components/ui/buttons/Button';
-import { TreePalm, MapPin, Coffee, Mountain } from 'lucide-react';
+// import { TreePalm, MapPin, Coffee, Mountain } from 'lucide-react';
 import ReusableMap from '@/components/shared/ReusableMap';
 import AnimatedTitle from '@/components/ui/display/AnimatedTitle';
 import { useEffect, useState } from 'react';
