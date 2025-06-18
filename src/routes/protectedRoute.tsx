@@ -19,7 +19,7 @@ const ProtectedRoute = ({ roles = [], requireAuth = true, allowAdmin = true }: P
 
     useEffect(() => {
         const checkExperienceAccess = async () => {
-            if (location.pathname.startsWith('/experiencias/')) {
+            if (location.pathname.startsWith('/experiencia/')) {
                 setCheckingExperiencestatus(true);
                 try {
                     const experienceId = location.pathname.split('/')[2];

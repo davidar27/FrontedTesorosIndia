@@ -104,7 +104,7 @@ export const protectedRoutes: RouteConfig[] = [
     {
         path: '/experiencia',
         element: ExperiencePage,
-        protected: true,
+        protected: false,
         title: 'Mi Experiencia'
     }
 ];
