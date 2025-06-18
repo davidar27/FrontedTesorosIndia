@@ -10,7 +10,7 @@ interface Leader {
   id: number;
   name: string;
   age: string;
-  role: string;
+  profession: string;
   image: string;
 }
 
@@ -195,9 +195,9 @@ const Leaders = () => {
                       scale: 1.05
                     }}
                     role="text"
-                    aria-label={`Rol: ${leader.role || "Sin profesión"}`}
+                    aria-label={`Rol: ${leader.profession || "Sin profesión"}`}
                   >
-                    {leader.role || "Sin profesión"}
+                    {leader.profession || "Sin profesión"}
                   </motion.span>
                 </motion.article>
               ))}
