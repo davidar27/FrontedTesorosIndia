@@ -37,6 +37,7 @@ import LoadingSpinner from "./components/layouts/LoadingSpinner";
 import ResetPassword from "./pages/Auth/ResetPassword";
 import ForgotPasswordForm from "./pages/Auth/ForgotPasswordForm";
 import ExperiencePage from "./pages/Experience/ExperiencePage";
+import ExperiencePageTest from "./pages/Experience/ExperiencePageTest";
 
 function App() {
   return (
@@ -61,11 +62,14 @@ function App() {
               <Route path="/contacto" element={<ContactPage />} />
               
               {/* Rutas de experiencias */}
-              <Route path="/experiencias">
-                <Route index element={<ExperiencePage />} />
-                <Route path=":id" element={<ExperiencePage />} />
-                <Route path="categorias/:categoryId" element={<ExperiencePage />} />
-              </Route>
+              {/* 
+                <Route path="/experiencias">
+                  <Route index element={<ExperiencePage />} />
+                  <Route path=":id" element={<ExperiencePage />} />
+                  <Route path="categorias/:categoryId" element={<ExperiencePage />} />
+                </Route> 
+              */}
+              <Route path="experiencia/:experience_id" element={<ExperiencePageTest />}></Route>
               
               {/* Rutas específicas para emprendedores */}
               <Route element={<ProtectedRoute roles={['emprendedor']} />}>
