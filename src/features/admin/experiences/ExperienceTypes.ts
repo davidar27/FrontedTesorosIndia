@@ -7,7 +7,7 @@ export interface ExperienceResponse {
     name_experience: string;
     location: string | 'Por definir';
     type: string | ' ';
-    logo: string | ' ';
+    image: string | ' ';
     joinDate: string;
     status: Experiencestatus;
     name_entrepreneur: string;
@@ -17,7 +17,7 @@ export interface Experience extends BaseEntity<Experiencestatus> {
     name_experience: string;
     location: string | 'Por definir';
     type: string | 'Por definir';
-    logo: string | ' ';
+    image: string | ' ';
     joinDate: string;
     name_entrepreneur: string;
 }
@@ -43,7 +43,7 @@ export interface RawExperienceResponse {
     name_experience: string;
     location: string;
     type: string;
-    logo: string;
+    image: string;
     status: Experiencestatus;
     joinDate: string;
     name_entrepreneur: string;

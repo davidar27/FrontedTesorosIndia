@@ -43,7 +43,7 @@ export function ExperiencePackageEditCard<T extends BaseItem>({
     const [previewImage, setPreviewImage] = useState<string | null>(null);
     const [imageFile, setImageFile] = useState<File | null>(null);
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
@@ -215,14 +215,19 @@ export function ExperiencePackageEditCard<T extends BaseItem>({
                     {editFields.type && (
                         <div className="text-center p-3 rounded-lg bg-green-50">
                             <Bird className="w-5 h-5 mx-auto mb-1 text-green-600" />
-                            <input
-                                type="text"
+                            <select
                                 name="type"
                                 value={formData.type || ''}
                                 onChange={handleInputChange}
                                 className="w-full bg-transparent border-b border-gray-300 focus:border-primary outline-none text-center"
-                                placeholder="Ingrese tipo de experiencia"
-                            />
+                            >
+                                <option value="">Seleccione un tipo</option>
+                                <option value="Café">Café</option>
+                                <option value="Hostal">Hostal</option>
+                                <option value="Gastronomia">Gastronomia</option>
+                                <option value="Masajes">Masajes</option>
+                                <option value="Agroecológico">Agroecológico</option>
+                            </select>
                             <p className="text-xs text-gray-600">Tipo de experiencia</p>
                         </div>
                     )}
