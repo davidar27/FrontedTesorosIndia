@@ -10,10 +10,10 @@ export function useEntrepreneursManagement() {
             endpoints: {
                 getAll: '/dashboard/emprendedores',
                 getById: (id) => `/dashboard/emprendedor/${id}`,
-                create: '/dashboard/emprendedores/crear',
-                update: (id) => `/dashboard/emprendedores/actualizar/${id}`,
+                create: '/dashboard/emprendedores',
+                update: (id) => `/dashboard/actualizar/emprendedores/${id}`,
                 delete: (id) => `/dashboard/emprendedores/${id}`,
-                changeStatus: (id) => `/dashboard/estado/${id}`,
+                changeStatus: (id) => `/dashboard/estado/emprendedores/${id}`,
                 search: '/usuario/emprendedores/search',
             },
             

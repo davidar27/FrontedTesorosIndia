@@ -13,7 +13,7 @@ export function usePackagesManagement() {
                 create: '/dashboard/paquetes/crear',
                 update: (id) => `/dashboard/paquetes/actualizar/${id}`,
                 delete: (id) => `/dashboard/paquetes/${id}`,
-                changeStatus: (id) => `/dashboard/estado/${id}`,
+                changeStatus: (id) => `/dashboard/estado/paquetes/${id}`,
                 search: '/usuario/paquetes/search',
             },
 

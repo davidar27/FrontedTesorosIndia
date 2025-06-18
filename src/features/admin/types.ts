@@ -25,14 +25,12 @@ export interface EntityConfig<T extends BaseEntity<string>> {
         item: T;
         onCreate?: () => void;
         onUpdate: (item: T) => void;
-        onDelete: (id: number) => void;
         onChangeStatus: (id: number, status: string) => void;
         onRetry?: () => void;
     }>;
 
     // Callbacks
     onUpdate: (item: T) => void;
-    onDelete: (id: number) => void;
     onCreate?: () => void;
     onRetry?: () => void;
     onChangeStatus: (id: number, status: string) => void;

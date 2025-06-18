@@ -6,17 +6,15 @@ interface CreateConfigParams<T extends BaseEntity<Experiencestatus>> {
     CardComponent: React.ComponentType<{
         item: T;
         onUpdate: (item: T) => void;
-        onDelete: (id: number) => void;
         onChangeStatus: (id: number, status: string) => void;
     }>;
     actions: {
         onUpdate?: (item: T) => void;
-        onDelete?: (id: number) => void;
         onChangeStatus?: (id: number, status: string) => void;
     };
 }
 
-const CreateExperiencesConfig = <T extends BaseEntity<Experiencestatus>>({
+const ExperiencesConfig = <T extends BaseEntity<Experiencestatus>>({
     data,
     CardComponent,
     actions
@@ -38,9 +36,8 @@ const CreateExperiencesConfig = <T extends BaseEntity<Experiencestatus>>({
     customFilters: () => null,
     searchFunction: () => true,
     onUpdate: actions.onUpdate || (() => { }),
-    onDelete: actions.onDelete || (() => { }),
     onChangeStatus: actions.onChangeStatus || (() => { }),
     onRetry: () => { },
 });
 
-export default CreateExperiencesConfig;
+export default ExperiencesConfig;

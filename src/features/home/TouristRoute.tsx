@@ -1,40 +1,27 @@
 import Button from '@/components/ui/buttons/Button';
-import { TreePalm, MapPin, Coffee, Mountain } from 'lucide-react';
+// import { TreePalm, MapPin, Coffee, Mountain } from 'lucide-react';
 import ReusableMap from '@/components/shared/ReusableMap';
 import AnimatedTitle from '@/components/ui/display/AnimatedTitle';
-
-const locations = [
-  {
-    id: 1,
-    name: 'Experiencia Puerto Arturo',
-    position: { lat: 4.6969524975159604, lng: -75.6779047288352 },
-    description: 'Correg. La India-Filandia, Filandia, Quindío, Colombia',
-    type: 'cafe'
-  },
-  {
-    id: 2,
-    name: 'Cañón del Río Barbas',
-    position: { lat: 4.681, lng: -75.645 },
-    description: 'Reserva natural con diversidad de flora y fauna',
-    type: 'naturaleza'
-  },
-  {
-    id: 3,
-    name: 'Mirador La India',
-    position: { lat: 4.684, lng: -75.668 },
-    description: 'Vista panorámica de la región cafetera',
-    type: 'mirador'
-  },
-  {
-    id: 4,
-    name: 'Sendero Ecológico',
-    position: { lat: 4.678, lng: -75.662 },
-    description: 'Ruta para caminatas entre bosques nativos',
-    type: 'cafe'
-  }
-];
+import { useEffect, useState } from 'react';
+import { ExperiencesApi } from '@/services/home/experiences';
 
 const TouristRoute = () => {
+  const [locations, setLocations] = useState<any[]>([])
+  useEffect(() => {
+    const fetchExperiences = async () => {
+      let dataExperiences: any[] = await ExperiencesApi.getExperiencesHome() || []
+      dataExperiences = dataExperiences.map((location) => {
+        const newLocation = { ...location }
+        // default position
+        newLocation.position = { lat: location.lat || 4.678, lng: location.lng || -75.668 }
+        delete newLocation.lat
+        delete newLocation.lng
+        return newLocation
+      })
+      setLocations(dataExperiences)
+    }
+    fetchExperiences()
+  }, [])
 
   return (
     <div className="responsive-padding-x pt-10">
@@ -56,18 +43,18 @@ const TouristRoute = () => {
             <h2 className="text-2xl font-bold text-green-800 mb-4">Puntos de Interés</h2>
 
             <div className="space-y-4">
-              {locations.map((location) => (
+              {locations.map((location, index) => (
                 <div
-                  key={location.id}
+                  key={index}
                   className="p-3 rounded-lg hover:bg-green-50 transition cursor-pointer border border-gray-100"
                 >
                   <div className="flex items-start">
-                    <div className="mr-3 mt-1">
+                    {/* <div className="mr-3 mt-1">
                       {location.type === 'cafe' && <Coffee className="text-green-600" />}
                       {location.type === 'naturaleza' && <TreePalm className="text-green-600" />}
                       {location.type === 'mirador' && <MapPin className="text-green-600" />}
                       {location.type === 'caminata' && <Coffee className="text-green-600" />}
-                    </div>
+                    </div> */}
                     <div>
                       <h3 className="font-semibold text-green-700">{location.name}</h3>
                       <p className="text-sm text-gray-600">{location.description}</p>
@@ -112,22 +99,18 @@ const TouristRoute = () => {
             </p>
 
             <div className="grid md:grid-cols-2 gap-6 mt-6">
-              <div className="bg-green-50 p-4 rounded-lg">
-                <h3 className="font-semibold text-green-700 mb-2 flex items-center">
-                  <Mountain className="mr-2" /> Naturaleza
-                </h3>
-                <p className="text-gray-600">
-                  Bosques nativos, cañones y ríos cristalinos te esperan en este paraíso natural.
-                </p>
-              </div>
-              <div className="bg-green-50 p-4 rounded-lg">
-                <h3 className="font-semibold text-green-700 mb-2 flex items-center">
-                  <Coffee className="mr-2" /> Cultura Cafetera
-                </h3>
-                <p className="text-gray-600">
-                  Conoce el proceso tradicional del café de montaña y degusta uno de los mejores cafés del mundo.
-                </p>
-              </div>
+              {locations.map((location, index) => {
+                return (
+                  <div className="bg-green-50 p-4 rounded-lg" key={index}>
+                    <h3 className="font-semibold text-green-700 mb-2 flex items-center">
+                      {location.name}
+                    </h3>
+                    <p className="text-gray-600">
+                      {location.location}
+                    </p>
+                  </div>
+                )
+              })}
             </div>
 
             <div className="mt-8">

@@ -11,9 +11,9 @@ export function useExperiencesManagement() {
                 getAll: '/dashboard/experiencias',
                 getById: (id) => `/dashboard/experiencia/${id}`,
                 create: '/dashboard/experiencias/crear',
-                update: (id) => `/dashboard/experiencias/actualizar/${id}`,
+                update: (id) => `/dashboard/actualizar/experiencias/${id}`,
                 delete: (id) => `/dashboard/experiencias/${id}`,
-                changeStatus: (id) => `/dashboard/estado/${id}`,
+                changeStatus: (id) => `/dashboard/estado/experiencias/${id}`,
                 search: '/usuario/experiencias/search',
             },
 

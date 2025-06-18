@@ -68,22 +68,22 @@ const LoginPage = () => {
             name: "email",
             type: "email",
             label: "Correo electrónico",
-            placeholder: "correo@ejemplo.com",
+            placeholder: "Ingresa tu correo electrónico",
             rules: emailRules,
         },
         {
             name: "password",
             type: "password",
             label: "Contraseña",
-            placeholder: "••••••••",
+            placeholder: "Ingresa tu contraseña",
             rules: passwordRules,
         }
     ];
 
     return (
         <AuthForm
-            title="Iniciar Sesión"
-            subtitle="¡Bienvenido de nuevo!"
+            title="Inicio de sesión"
+            subtitle="Inicia  sesión con tu cuenta de Tesoros India"
             fields={fields}
             submitText="Iniciar Sesión"
             loadingText="Iniciando sesión..."

@@ -1,7 +1,8 @@
 import { EntrepreneurStatus } from './entrepreneurs/EntrepreneursTypes';
 import { Experiencestatus } from './experiences/ExperienceTypes';
 
-export function formatDate(dateStr: string) {
+export function formatDate(dateStr: string | undefined | null) {
+    if (!dateStr) return 'No disponible';
     const [day, month, year] = dateStr.split('/');
     return new Date(`${year}-${month}-${day}`).toLocaleDateString('es-ES', {
         year: 'numeric',
@@ -21,7 +22,7 @@ export const getImageUrl = (imagePath: string | null | undefined): string | null
     }
 };
 
-export function normalizeEntrepreneurStatus(status: string): EntrepreneurStatus {
+export function normalizeStatus(status: string): EntrepreneurStatus | Experiencestatus {
     const normalizedStatus = status?.toLowerCase();
     switch (normalizedStatus) {
         case 'activo':
@@ -30,30 +31,18 @@ export function normalizeEntrepreneurStatus(status: string): EntrepreneurStatus 
         case 'inactivo':
         case 'inactive':
             return 'inactive';
-        case 'pendiente':
-        case 'pending':
-            return 'pending';
-        default:
-            return 'inactive';
-    }
-}
-
-export function normalizeExperienceStatus(status: string): Experiencestatus {
-    const normalizedStatus = status?.toLowerCase();
-    switch (normalizedStatus) {
         case 'publicada':
         case 'published':
             return 'published';
         case 'borrador':
         case 'draft':
             return 'draft';
-        case 'inactivo':
-        case 'inactive':
-            return 'inactive';
         default:
             return 'inactive';
     }
 }
+
+
 
 export function getStatusLabel(status: string, entityType: 'entrepreneur' | 'experience'): string {
     if (entityType === 'entrepreneur') {
@@ -62,8 +51,6 @@ export function getStatusLabel(status: string, entityType: 'entrepreneur' | 'exp
                 return 'Activo';
             case 'inactive':
                 return 'Inactivo';
-            case 'pending':
-                return 'Pendiente';
             default:
                 return 'Desconocido';
         }

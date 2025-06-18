@@ -1,6 +1,6 @@
 import { BaseEntity } from "@/features/admin/types";
 
-export type CategoryStatus = 'active' | 'inactive' | 'draft' | 'pending';
+export type CategoryStatus = 'active' | 'inactive' | 'draft';
 
 export interface Category extends BaseEntity<CategoryStatus> {
     id: number;

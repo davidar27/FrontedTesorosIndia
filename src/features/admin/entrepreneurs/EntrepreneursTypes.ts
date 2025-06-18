@@ -1,6 +1,6 @@
 import { BaseEntity } from "@/features/admin/types";
 
-export type EntrepreneurStatus = 'active' | 'inactive' | 'pending';
+export type EntrepreneurStatus = 'active' | 'inactive';
 
 export interface Entrepreneur extends BaseEntity<EntrepreneurStatus, number> {
     id: number;
@@ -41,7 +41,6 @@ export interface EntrepreneurApiResponse {
 export interface EntrepreneurCardProps {
     entrepreneur: Entrepreneur;
     onUpdate: (entrepreneur: Entrepreneur) => void;
-    onDelete: (id: number) => void;
     onChangeStatus: (id: number, status: string) => void;
 }
 

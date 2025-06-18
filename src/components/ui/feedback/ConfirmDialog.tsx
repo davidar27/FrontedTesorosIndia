@@ -36,23 +36,12 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                         className="bg-gray-200 text-gray-700 hover:bg-gray-300"
                         onClick={onCancel}
                         disabled={loading}
-                        textColor={isDangerAction ? 'text-red-600' : 'text-primary'}
-                        hoverTextColor='hover:text-white'
-                        borderColor={isDangerAction ? 'border-red-600' : 'border-primary'}
-                        bgColor='bg-transparent'
-                        hoverBg={isDangerAction ? 'hover:bg-red-600' : 'hover:bg-primary'}
-                        hoverBorderColor={isDangerAction ? 'hover:border-red-600' : 'hover:border-primary'}
-
+                        variant={isDangerAction ? 'danger' : 'primary'}
                     >
                         {cancelText}
                     </Button>
                     <Button
-                        bgColor='bg-transparent'
-                        hoverBg={confirmText === 'Activar' ? 'hover:bg-primary' : 'hover:bg-red-600'}
-                        textColor={confirmText === 'Activar' ? 'text-primary' : 'text-red-600'}
-                        hoverTextColor={confirmText === 'Activar' ? 'hover:text-white' : 'hover:text-white'}
-                        borderColor={confirmText === 'Activar' ? 'border-primary' : 'border-red-600'}
-                        hoverBorderColor={confirmText === 'Activar' ? 'hover:border-primary' : 'hover:border-red-600'}
+                        variant={confirmText === 'Activar' ? 'primary' : 'danger'}
                         onClick={onConfirm}
                         disabled={loading}
                     >

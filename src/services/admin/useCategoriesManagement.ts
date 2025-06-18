@@ -1,10 +1,10 @@
-import { Entrepreneur } from '@/features/admin/entrepreneurs/EntrepreneursTypes';
+import { Category } from '@/features/admin/categories/CategoriesTypes';
 import { useGenericApi } from '@/hooks/useGenericApi';
 
 
 export function useCategoriesManagement() {
 
-    return useGenericApi<Entrepreneur, number>(
+    return useGenericApi<Category, number>(
         {
             entityKey: 'category',
             endpoints: {
@@ -13,7 +13,7 @@ export function useCategoriesManagement() {
                 create: '/dashboard/categoria/crear',
                 update: (id) => `/dashboard/categoria/actualizar/${id}`,
                 delete: (id) => `/dashboard/categorias/${id}`,
-                changeStatus: (id) => `/dashboard/estado/${id}`,
+                changeStatus: (id) => `/dashboard/estado/categorias/${id}`,
                 search: '/usuario/emprendedores/search',
             },
             

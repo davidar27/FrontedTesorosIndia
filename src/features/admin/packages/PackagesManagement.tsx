@@ -2,39 +2,59 @@ import { useState, useMemo, useCallback } from 'react';
 import { toast } from 'sonner';
 import GenericManagement from '@/components/admin/GenericManagent';
 import { usePackagesManagement } from '@/services/admin/usePackagesManagement';
-import { PackagesConfig } from './PackagesConfig';
-import { Package, CreatePackageData, UpdatePackageData } from './PackageTypes';
-import { CreatePackageForm } from './CreatePackageForm';
-import PackageCard from './PackagesCard';
-    
+import { PackagesCard } from './PackagesCard';
+import { PackagesConfig } from '@/features/admin/packages/PackagesConfig';
+import { Package, CreatePackageData, PackageStatus } from './PackageTypes';
+import { UpdatePackageData } from './PackageTypes';
+import CreatePackageForm from './createPackageForm';
+
+type PackageWithForm = Package | {
+    id: -1;
+    isForm: true;
+    name: string;
+    status: PackageStatus;
+    price: number;
+    description: string;
+    duration: string;
+    capacity: string;
+    image: string | null;
+    joinDate: string;
+};
+
 export default function PackagesManagement() {
     const [showCreateForm, setShowCreateForm] = useState(false);
-    const { 
+    const [isCreating, setIsCreating] = useState(false);
+    const {
         items,
-        create,
-        isCreating,
         changeStatus,
-        updateAsync
+        updateAsync,
+        createAsync
     } = usePackagesManagement();
 
-    const handleCreateSubmit = (data: CreatePackageData) => {
-        toast.promise(
-            new Promise((resolve, reject) => {
-                create(data as unknown as Package, {
-                    onSuccess: () => {
-                        resolve(true);
-                        setShowCreateForm(false);
-                    },
-                    onError: reject
-                });
-            }),
-            {
-                loading: 'Creando paquete...',
-                success: 'Paquete creado exitosamente',
-                error: (err) => err.message
-            }
-        );
-    };
+    const handleCreateSubmit = useCallback(async (data: CreatePackageData) => {
+        setIsCreating(true);
+        try {
+            const packageData = {
+                name: data.title,
+                price: Number(data.pricePerPerson),
+                description: data.description,
+                duration: data.duration,
+                capacity: data.selectedExperiences.length.toString(),
+            };
+            
+            await createAsync(packageData, {
+                onSuccess: () => {
+                    toast.success('Paquete creado exitosamente');
+                    setShowCreateForm(false);
+                },
+                onError: (err) => {
+                    toast.error(err.message);
+                }
+            });
+        } finally {
+            setIsCreating(false);
+        }
+    }, [createAsync]);
 
     const handleUpdate = useCallback(
         async (id: number, data: UpdatePackageData) => {
@@ -66,33 +86,67 @@ export default function PackagesManagement() {
             });
         }, [changeStatus]);
 
+    const itemsWithForm = useMemo(() => {
+        const packages = Array.isArray(items) ? items : [];
+        if (showCreateForm) {
+            return [{
+                id: -1,
+                isForm: true,
+                name: '',
+                status: 'active' as PackageStatus,
+                price: 0,
+                description: '',
+                duration: '',
+                capacity: '',
+                image: null,
+                joinDate: new Date().toISOString()
+            }, ...packages];
+        }
+        return packages;
+    }, [items, showCreateForm]);
+
     const config = useMemo(() => {
-        const categories = Array.isArray(items) ? items : [];
         return PackagesConfig({
-            data: categories as unknown as Package[],
-            CardComponent: (props) => (
-                <PackageCard {...props} />
-            ),
+            data: itemsWithForm,
+            CardComponent: (props) => {
+                if ('isForm' in props.item) {
+                    return (
+                        <div className="animate-fade-in-up">
+                            <CreatePackageForm
+                                onSubmit={handleCreateSubmit}
+                                onCancel={() => setShowCreateForm(false)}
+                                isLoading={isCreating}
+                            />
+                        </div>
+                    );
+                }
+                return <PackagesCard {...props} />;
+            },
             actions: {
                 onCreate: () => setShowCreateForm(true),
-                onUpdate: (item) => handleUpdate(item.id ?? 0, item as unknown as UpdatePackageData),
-                onDelete: () => { },
-                onChangeStatus: handleChangeStatus
+                onUpdate: (item) => {
+                    if (!('isForm' in item)) {
+                        handleUpdate(item.id ?? 0, item as unknown as UpdatePackageData);
+                    }
+                },
+                onChangeStatus: (id, status) => {
+                    if (id !== -1) {
+                        handleChangeStatus(id, status);
+                    }
+                }
             }
         });
-    }, [items, handleUpdate, handleChangeStatus]);
+    }, [itemsWithForm, isCreating, handleUpdate, handleChangeStatus, handleCreateSubmit]);
 
-    return (
-        <>
-            {showCreateForm ? (
-                <CreatePackageForm
-                    onSubmit={handleCreateSubmit}
-                    onCancel={() => setShowCreateForm(false)}
-                    isLoading={isCreating}
-                />
-            ) : (
-                <GenericManagement<Package> config={config} />
-            )}
-        </>
+    return showCreateForm ? (
+        <div className="w-full">
+            <CreatePackageForm
+                onSubmit={handleCreateSubmit}
+                onCancel={() => setShowCreateForm(false)}
+                isLoading={isCreating}
+            />
+        </div>
+    ) : (
+        <GenericManagement<PackageWithForm> config={config} />
     );
 }

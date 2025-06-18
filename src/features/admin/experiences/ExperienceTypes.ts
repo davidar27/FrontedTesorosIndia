@@ -1,23 +1,23 @@
 import { BaseEntity } from '@/features/admin/types';
 
-export type Experiencestatus = 'published' | 'draft' | 'inactive';
+export type Experiencestatus = 'published' | 'draft';
 
 export interface ExperienceResponse {
     id: number;
-    name: string;
+    name_experience: string;
     location: string | 'Por definir';
     type: string | ' ';
-    logo: string | ' ';
+    image: string | ' ';
     joinDate: string;
     status: Experiencestatus;
     name_entrepreneur: string;
 }
 
 export interface Experience extends BaseEntity<Experiencestatus> {
-    name: string;
+    name_experience: string;
     location: string | 'Por definir';
-    type: string | ' ';
-    logo: string | ' ';
+    type: string | 'Por definir';
+    image: string | ' ';
     joinDate: string;
     name_entrepreneur: string;
 }
@@ -30,7 +30,6 @@ export interface ExperienceApiResponse {
 export interface ExperienceCardProps {
     Experience: Experience;
     onUpdate: (id: number) => void;
-    onDelete: (id: number) => void;
 }
 
 export interface UpdateExperienceData {
@@ -41,10 +40,10 @@ export interface UpdateExperienceData {
 
 export interface RawExperienceResponse {
     id: number;
-    name: string;
+    name_experience: string;
     location: string;
     type: string;
-    logo: string;
+    image: string;
     status: Experiencestatus;
     joinDate: string;
     name_entrepreneur: string;

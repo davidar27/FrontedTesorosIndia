@@ -44,7 +44,7 @@ const ButtonIcon: React.FC<ButtonIconProps> = ({
     onClick,
     whileHover: { scale: 1.03 },
     whileTap: { scale: 0.97 },
-    transition: {duration: 0.15, ease: "easeInOut" },
+    transition: { duration: 0.15, ease: "easeInOut" },
     disabled,
     title,
   };

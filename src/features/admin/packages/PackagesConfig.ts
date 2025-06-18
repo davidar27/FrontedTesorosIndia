@@ -7,13 +7,11 @@ interface PackagesConfigParams {
     CardComponent: React.ComponentType<{
         item: Package;
         onUpdate: (item: Package) => void;
-        onDelete: (id: number) => void;
         onChangeStatus: (id: number, status: string) => void;
         onRetry?: () => void;
     }>;
     actions: {
         onUpdate?: (item: Package) => void;
-        onDelete?: (id: number) => void;
         onCreate?: () => void;
         onChangeStatus?: (id: number, status: string) => void;
         onRetry?: () => void;
@@ -22,7 +20,6 @@ interface PackagesConfigParams {
 
 const statusPriority = {
     active: 1,
-    pending: 2,
     inactive: 3
 };
 
@@ -30,7 +27,6 @@ function sortByStatus(a: Package, b: Package) {
     const getStatus = (e: Package) => {
         const s = (e.status || '').toLowerCase();
         if (s === 'activo' || s === 'active') return 'active';
-        if (s === 'pendiente' || s === 'pending') return 'pending';
         if (s === 'inactivo' || s === 'inactive') return 'inactive';
         return 'inactive';
     };
@@ -69,7 +65,6 @@ export const PackagesConfig = ({
         );
     },
     onUpdate: actions.onUpdate || (() => {}),
-    onDelete: actions.onDelete || (() => {}),
     onCreate: actions.onCreate || (() => {}),
     onRetry: actions.onRetry || (() => {}),
     onChangeStatus: actions.onChangeStatus || (() => {}),

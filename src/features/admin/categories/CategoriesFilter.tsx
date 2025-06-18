@@ -1,6 +1,6 @@
 import { DefaultCustomFilters } from '@/components/admin/Filter';
-import { Category } from './CategoriesTypes';
-import { normalizeEntrepreneurStatus } from '../adminHelpers';
+import { Category, CategoryStatus } from './CategoriesTypes';
+import { normalizeStatus } from '../adminHelpers';
 
 interface CategoriesFilterProps {
     items: Category[];
@@ -8,13 +8,19 @@ interface CategoriesFilterProps {
 }
 
 export function CategoriesFilter({ items, onFilterChange }: CategoriesFilterProps) {
+    const isCategoryStatus = (status: string): status is CategoryStatus =>
+        ['active', 'inactive'].includes(status);
     return (
         <DefaultCustomFilters<Category>
-            items={items.map(item => ({
-                ...item,
-                status: normalizeEntrepreneurStatus(item.status)
-            }))}
+            items={items.map(item => {
+                const normalized = normalizeStatus(item.status);
+                return {
+                    ...item,
+                    status: isCategoryStatus(normalized) ? normalized : 'inactive'
+                };
+            })}
             onFilterChange={onFilterChange}
+            type="category"
         />
     );
 } 

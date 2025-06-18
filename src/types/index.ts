@@ -33,9 +33,10 @@ export interface Package {
     image: string;
     title: string;
     price: string;
-    category: string;
+    category?: string;
+    has_food: boolean | number;
     description: string;
-    features: string[];
+    features?: string[];
     onClick: () => void;
 }
 
@@ -43,7 +44,7 @@ export interface SidebarItem {
     id: string;
     label: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    icon: any ;
+    icon: any;
     path: string;
     active: boolean;
 } 

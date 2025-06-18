@@ -1,151 +1,211 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
-import Grupo from "@/assets/images/Grupo.webp"
+import Grupo from "@/assets/images/Grupo.webp";
 import AnimatedTitle from "@/components/ui/display/AnimatedTitle";
 import Picture from "@/components/ui/display/Picture";
-
+import { EntrepreneursApi } from "@/services/home/entrepreneurs";
+import { getImageUrl } from "../admin/adminHelpers";
 
 interface Leader {
   id: number;
   name: string;
   age: string;
-  role: string;
+  profession: string;
+  image: string;
 }
 
+const SLIDE_INTERVAL = 4000;
+const MIN_LEADERS_TO_SHOW = 1;
+const MAX_LEADERS_TO_SHOW = 4;
+
 const Leaders = () => {
-
-  const leaders: Leader[] = useMemo(() => [
-    { id: 1, name: "José Ovidio Cárdenas León", age: "64 años", role: "Agricultor" },
-    { id: 2, name: "Luis Abel Cárdenas León", age: "66 años", role: "Cuidador" },
-    { id: 3, name: "Segundo Israel Rivera", age: "64 años", role: "Agricultor" },
-    { id: 4, name: "Bertha Acosta Chazaier", age: "60 años", role: "Agricultora" },
-    { id: 5, name: "Marta Isabel Rodriguez", age: "30 años", role: "Cafetera" },
-    { id: 6, name: "Carlos Andrés Mejía", age: "45 años", role: "Ganadero" },
-    { id: 7, name: "Rosa Elvira Ramírez", age: "53 años", role: "Comerciante" },
-    { id: 8, name: "Juan Pablo Castaño", age: "39 años", role: "Apicultor" },
-    { id: 9, name: "Lucía Fernanda Ortiz", age: "28 años", role: "Artesana" },
-    { id: 10, name: "Pedro Alfonso Herrera", age: "50 años", role: "Panadero" }
-  ], []);
-
+  const [leaders, setLeaders] = useState<Leader[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const itemsPerPage = 4;
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const getCurrentLeaders = useCallback((index: number): Leader[] => {
-    const result: Leader[] = [];
-    for (let i = 0; i < itemsPerPage; i++) {
+    if (!leaders.length) return [];
+    
+    const leadersToShow = Math.min(Math.max(leaders.length, MIN_LEADERS_TO_SHOW), MAX_LEADERS_TO_SHOW);
+    
+    return Array.from({ length: leadersToShow }, (_, i) => {
       const leaderIndex = (index + i) % leaders.length;
-      result.push(leaders[leaderIndex]);
-    }
-    return result;
-  }, [itemsPerPage, leaders]);
+      return leaders[leaderIndex];
+    });
+  }, [leaders]);
 
-  const [currentLeaders, setCurrentLeaders] = useState<Leader[]>(getCurrentLeaders(0));
-
-  const [direction, setDirection] = useState(0);
-
-
-  const nextSlide = useCallback(() => {
-    setDirection(1);
-    const newIndex = (currentIndex + 1) % leaders.length;
-    setCurrentIndex(newIndex);
-    setCurrentLeaders(getCurrentLeaders(newIndex));
-  }, [currentIndex, leaders.length, getCurrentLeaders]);
+  const currentLeaders = useMemo(() =>
+    getCurrentLeaders(currentIndex),
+    [getCurrentLeaders, currentIndex]
+  );
 
   useEffect(() => {
+    const fetchLeaders = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const dataEntrepreneurs = await EntrepreneursApi.getEntrepreneurs() || [];
+        const formattedLeaders = dataEntrepreneurs.map((leader: Leader) => ({
+          ...leader,
+          image: getImageUrl(leader.image) || Grupo
+        }));
+        setLeaders(formattedLeaders);
+      } catch (error) {
+        setError("Error al cargar los líderes");
+        console.error("Error fetching leaders:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    const interval = setInterval(() => {
-      nextSlide();
-    }, 4000);
+    fetchLeaders();
+  }, []);
 
+  const handleNextSlide = useCallback(() => {
+    if (!leaders.length || isAnimating) return;
+    setIsAnimating(true);
+    setCurrentIndex((prev) => (prev + 1) % leaders.length);
+    setTimeout(() => setIsAnimating(false), 800);
+  }, [leaders.length, isAnimating]);
+
+  useEffect(() => {
+    const interval = setInterval(handleNextSlide, SLIDE_INTERVAL);
     return () => clearInterval(interval);
-  }, [currentIndex, nextSlide]);
+  }, [handleNextSlide]);
 
+  if (isLoading) {
+    return (
+      <div className="responsive-padding-x flex flex-col items-center gap-4 py-8 ">
+        <div className="animate-pulse w-full max-w-6xl grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 ">
+          {Array.from({ length: leaders.length }).map((_, index) => (
+            <div key={index} className="flex flex-col items-center">
+              <div className="w-48 h-48 rounded-full bg-gray-200 mb-4" />
+              <div className="h-6 w-32 bg-gray-200 rounded mb-2" />
+              <div className="h-4 w-24 bg-gray-200 rounded mb-2" />
+              <div className="h-4 w-28 bg-gray-200 rounded" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
-
-  const containerVariants = {
-    animate: {
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const cardVariants = {
-    initial: (direction: number) => ({
-      x: direction > 0 ? 300 : -300,
-      opacity: 0
-    }),
-    animate: {
-      x: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.7,
-        ease: "easeOut"
-      }
-    },
-    exit: (direction: number) => ({
-      x: direction > 0 ? -300 : 300,
-      opacity: 0,
-      transition: {
-        duration: 0.2,
-        ease: "easeIn"
-      }
-    })
-  };
+  if (error) {
+    return (
+      <div className="responsive-padding-x flex flex-col items-center gap-4 py-8">
+        <p className="text-red-500">{error}</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="responsive-padding-x flex flex-col items-center gap-2 md:gap-4 py-8">
+    <section
+      className="responsive-padding-x flex flex-col items-center gap-2 md:gap-4 py-8"
+      aria-label="Líderes de la organización"
+    >
       <AnimatedTitle
         title="LÍDERES"
         mdAlign="center"
         underlineWidth="lg"
       />
 
-      <div
-        className="relative w-full max-w-6xl"
-      >
-        <div className="overflow-hidden">
+      <div className="relative w-full max-w-6xl overflow-hidden">
+        <div className="relative">
           <motion.div
-            variants={containerVariants}
-            animate="animate"
-            className="grid grid-cols-2  md:grid-cols-2 lg:grid-cols-4 gap-6 py-8"
+            className="flex gap-6 py-8 justify-center"
+            initial={false}
+            animate={{ opacity: isAnimating ? 0.5 : 1 }}
+            transition={{ duration: 0.3 }}
           >
-            <AnimatePresence mode="popLayout" custom={direction}>
-              {currentLeaders.map((leader) => (
-                <motion.div
-                  key={`${leader.id}-${currentIndex}`}
-                  custom={direction}
-                  variants={cardVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  layout
-                  className="flex flex-col items-center"
+            <AnimatePresence mode="popLayout">
+              {currentLeaders.map((leader, index) => (
+                <motion.article
+                  key={`${leader.id}-${index}`}
+                  className={`
+                    flex-shrink-0 
+                    ${currentLeaders.length === 1 ? 'w-[calc(100%-1rem)]' : 
+                      currentLeaders.length === 3 ? 'w-[calc(33.333%-1rem)]' : 
+                      currentLeaders.length === 4 ? 'w-[calc(25%-1.125rem)]' : 
+                      'w-[calc(20%-1rem)]'}
+                    flex flex-col items-center
+                  `}
+                  initial={{ 
+                    x: 100,
+                    opacity: 0,
+                    scale: 0.8
+                  }}
+                  animate={{ 
+                    x: 0,
+                    opacity: 1,
+                    scale: 1
+                  }}
+                  exit={{ 
+                    x: -100,
+                    opacity: 0,
+                    scale: 0.8
+                  }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 100,
+                    damping: 15,
+                    delay: index * 0.1
+                  }}
+                  role="article"
+                  aria-label={`Líder: ${leader.name}`}
                 >
-                  <Picture
-                    src={Grupo}
-                    className="w-48 h-48 rounded-full mb-4 object-cover border-4 border-green-200"
-                  />
+                  <motion.div 
+                    className="relative group"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                  >
+                    <Picture
+                      src={leader.image}
+                      alt={`Foto de ${leader.name}`}
+                      className="w-48 h-48 rounded-full mb-4 object-cover border-4 border-green-200"
+                    />
+                  </motion.div>
 
-                  <h2 className="text-lg font-bold text-green-700 mb-2 text-center leading-tight">
+                  <motion.h2 
+                    className="text-lg font-bold text-green-700 mb-2 text-center leading-tight"
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 + index * 0.1 }}
+                  >
                     {leader.name}
-                  </h2>
+                  </motion.h2>
 
-                  <p className="text-md text-green-600 mb-2 font-medium">
-                    {leader.age}
-                  </p>
+                  <motion.p 
+                    className="text-md text-green-600 mb-2 font-medium"
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.3 + index * 0.1 }}
+                  >
+                    {leader.age || "Edad no definida"}
+                  </motion.p>
 
-                  <span className="text-sm text-green-500 bg-green-100 px-3 py-1 rounded-full font-medium">
-                    {leader.role}
-                  </span>
-                </motion.div>
+                  <motion.span
+                    className="text-sm text-green-500 bg-green-100 px-3 py-1 rounded-full font-medium"
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.4 + index * 0.1 }}
+                    whileHover={{ 
+                      backgroundColor: "#dcfce7",
+                      scale: 1.05
+                    }}
+                    role="text"
+                    aria-label={`Rol: ${leader.profession || "Sin profesión"}`}
+                  >
+                    {leader.profession || "Sin profesión"}
+                  </motion.span>
+                </motion.article>
               ))}
             </AnimatePresence>
           </motion.div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

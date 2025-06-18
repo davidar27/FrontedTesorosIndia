@@ -33,7 +33,6 @@ export default function GenericManagement<T extends BaseEntity<string>>({
         items,
         ItemCard,
         onUpdate,
-        onDelete,
         onCreate,
         onRetry,
         onChangeStatus
@@ -128,6 +127,7 @@ export default function GenericManagement<T extends BaseEntity<string>>({
             <CustomFilters
                 items={items}
                 onFilterChange={setFilteredByCustomFilters}
+                type={entityName.toLowerCase() as 'category' | 'entrepreneur' | 'experience' | 'package'}
             />
 
             {/* Results count */}
@@ -168,9 +168,6 @@ export default function GenericManagement<T extends BaseEntity<string>>({
                     items={finalFilteredItems}
                     ItemCard={ItemCard}
                     onUpdate={handleUpdate}
-                    onDelete={(id: number) => {
-                        onDelete(id);
-                    }}
                     onChangeStatus={(id: number, status: string) => {
                         onChangeStatus(id, status);
                     }}

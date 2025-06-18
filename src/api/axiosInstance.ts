@@ -42,6 +42,11 @@ const onRefreshed = () => {
 
 axiosInstance.interceptors.request.use(
   async (config) => {
+    // Si los datos son FormData, eliminar el Content-Type para que axios lo establezca automáticamente
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
+    }
+
     // Verificar si el token está próximo a expirar
     if (isTokenExpiringSoon() && !config.url?.includes('/auth/token/refrescar')) {
       try {
