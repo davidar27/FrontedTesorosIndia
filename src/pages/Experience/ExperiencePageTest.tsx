@@ -33,7 +33,7 @@ const ExperiencePageTest = () => {
             }
         }
         fetchData()
-    }, [])
+    }, [experience_id])
 
     if (isLoading) {
         return (

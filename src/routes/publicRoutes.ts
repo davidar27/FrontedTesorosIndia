@@ -20,6 +20,6 @@ export const PUBLIC_ROUTES = [
     
     // Rutas de experiencias
     '/experiencia',
-    '/experiencia/:id',
+    '/experiencia/:experience_id',
     '/experiencia/categorias/:categoryId'
 ];

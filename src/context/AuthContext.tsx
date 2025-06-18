@@ -32,7 +32,21 @@ function AuthProvider({ children }: { children: ReactNode }) {
     const queryClient = useQueryClient();
 
     const isPublicRoute = useCallback((path: string): boolean => {
-        return PUBLIC_ROUTES.includes(path);
+        // Verificar coincidencia exacta primero
+        if (PUBLIC_ROUTES.includes(path)) {
+            return true;
+        }
+        
+        // Verificar patrones con parámetros dinámicos
+        return PUBLIC_ROUTES.some(route => {
+            // Convertir el patrón de ruta a una expresión regular
+            const pattern = route
+                .replace(/:[^/]+/g, '[^/]+') // Reemplazar :param con [^/]+
+                .replace(/\//g, '\\/'); // Escapar las barras
+            
+            const regex = new RegExp(`^${pattern}$`);
+            return regex.test(path);
+        });
     }, []);
 
     const {
