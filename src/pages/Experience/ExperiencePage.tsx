@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Star, ShoppingCart, MessageCircle, MapPin, Users, Award, Heart, Share2, ArrowRight } from 'lucide-react';
+import { Star, ShoppingCart, MessageCircle, MapPin, Users, Award, Heart, ArrowRight } from 'lucide-react';
 import { ExperienceApi } from '@/services/experience/experience';
 import { useParams } from 'react-router-dom';
 import { getImageUrl } from '@/features/admin/adminHelpers';
@@ -50,7 +50,6 @@ const ExperiencePage: React.FC = () => {
     const [reviewsInfo, setReviewsInfo] = useState<Review[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState(false)
-    const [isFavorite, setIsFavorite] = useState(false)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -180,21 +179,6 @@ const ExperiencePage: React.FC = () => {
                                         </span>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div className="flex gap-3">
-                                <button
-                                    onClick={() => setIsFavorite(!isFavorite)}
-                                    className={`p-3 rounded-full backdrop-blur-md transition-all ${isFavorite
-                                            ? 'bg-red-500 text-white'
-                                            : 'bg-white/20 text-white hover:bg-white/30'
-                                        }`}
-                                >
-                                    <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
-                                </button>
-                                <button className="p-3 rounded-full bg-white/20 text-white hover:bg-white/30 backdrop-blur-md transition-all">
-                                    <Share2 className="w-5 h-5" />
-                                </button>
                             </div>
                         </div>
                     </div>

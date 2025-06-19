@@ -182,7 +182,7 @@ const Leaders = () => {
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.3 + index * 0.1 }}
                   >
-                    {leader.age || "Edad no definida"}
+                    {leader.age + " años" || "Edad no definida"}
                   </motion.p>
 
                   <motion.span
