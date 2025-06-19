@@ -9,6 +9,7 @@ export interface Product {
   image: string;
   rating: number;
   category?: string;
+  experience_id?: number;
 }
 
 interface ProductCardProps {

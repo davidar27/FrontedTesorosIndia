@@ -81,18 +81,39 @@ const ExperiencePage: React.FC = () => {
         }).format(price);
     };
 
+    const convertRatingToFiveScale = (rating: number): number => {
+        return (rating / 2);
+    };
+
     const renderStars = (rating: number) => {
-        return Array.from({ length: 5 }, (_, index) => (
-            <Star
-                key={index}
-                className={`w-4 h-4 ${index < rating ? 'fill-amber-400 text-amber-400' : 'text-gray-300'}`}
-            />
-        ));
+        const fiveScaleRating = rating > 5 ? convertRatingToFiveScale(rating) : rating;
+
+        return Array.from({ length: 5 }, (_, index) => {
+            const starValue = index + 1;
+            const isFullStar = fiveScaleRating >= starValue;
+            const isHalfStar = fiveScaleRating >= starValue - 0.5 && fiveScaleRating < starValue;
+
+            return (
+                <div key={index} className="relative inline-block">
+                    <Star className="w-4 h-4 text-gray-300" />
+
+                    <div
+                        className={`absolute inset-0 overflow-hidden ${isFullStar ? 'w-full' : isHalfStar ? 'w-1/2' : 'w-0'
+                            }`}
+                    >
+                        <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                    </div>
+                </div>
+            );
+        });
     };
 
     const averageRating = reviewsInfo.length > 0
-        ? reviewsInfo.reduce((sum, review) => sum + review.rating, 0) / reviewsInfo.length
+        ? convertRatingToFiveScale(
+            reviewsInfo.reduce((sum, review) => sum + review.rating, 0) / reviewsInfo.length
+        )
         : 0;
+
 
     if (isLoading) {
         return (
@@ -169,10 +190,10 @@ const ExperiencePage: React.FC = () => {
                                 <div className="flex items-center gap-4 text-white">
                                     <div className="flex items-center gap-1">
                                         <div className="flex">
-                                            {renderStars(Math.round(averageRating))}
+                                            {renderStars(Math.round(averageRating))} 
                                         </div>
-                                        <span className="font-medium ml-1">
-                                            {averageRating.toFixed(1)}
+                                        <span className="font-medium ml-1"> 
+                                            {averageRating.toFixed(1) || 'No hay calificaciones disponibles'}
                                         </span>
                                         <span className="text-white/80">
                                             ({reviewsInfo.length} opiniones)
@@ -194,7 +215,7 @@ const ExperiencePage: React.FC = () => {
                                 <Users className="w-6 h-6 text-emerald-600" />
                             </div>
                             <div>
-                                <p className="text-2xl font-bold text-gray-800">{members.length}</p>
+                                <p className="text-2xl font-bold text-gray-800">{members.length || 'No hay integrantes disponibles'} </p>
                                 <p className="text-gray-600 text-sm">Integrantes</p>
                             </div>
                         </div>
@@ -206,7 +227,7 @@ const ExperiencePage: React.FC = () => {
                                 <ShoppingCart className="w-6 h-6 text-orange-600" />
                             </div>
                             <div>
-                                <p className="text-2xl font-bold text-gray-800">{products.length}</p>
+                                <p className="text-2xl font-bold text-gray-800">{products.length || 'No hay productos disponibles'}</p>
                                 <p className="text-gray-600 text-sm">Productos</p>
                             </div>
                         </div>
@@ -218,7 +239,7 @@ const ExperiencePage: React.FC = () => {
                                 <Award className="w-6 h-6 text-amber-600" />
                             </div>
                             <div>
-                                <p className="text-2xl font-bold text-gray-800">{averageRating.toFixed(1)}</p>
+                                <p className="text-2xl font-bold text-gray-800">{averageRating.toFixed(1) || 'No hay calificaciones disponibles'}</p>
                                 <p className="text-gray-600 text-sm">Calificación</p>
                             </div>
                         </div>
@@ -236,7 +257,7 @@ const ExperiencePage: React.FC = () => {
                                 <h2 className="text-3xl font-bold text-gray-800">Nuestra Historia</h2>
                             </div>
                             <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed">
-                                <p>{currentExperience?.history}</p>
+                                <p>{currentExperience?.history || 'No se ha proporcionado una historia para esta experiencia.'}</p>
                             </div>
                         </div>
                     </div>
@@ -253,7 +274,7 @@ const ExperiencePage: React.FC = () => {
                                 <h2 className="text-3xl font-bold text-gray-800">¿Qué hacemos?</h2>
                             </div>
                             <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed">
-                                <p>{currentExperience?.description}</p>
+                                <p>{currentExperience?.description || 'No se ha proporcionado una descripción para esta experiencia.'}</p>
                             </div>
                         </div>
 
@@ -270,12 +291,18 @@ const ExperiencePage: React.FC = () => {
                                 <ReusableMap
                                     locations={[{
                                         id: currentExperience?.id || 0,
-                                        position: { lat: currentExperience?.lat || 4.678, lng: currentExperience?.lng || -75.668 },
+                                        position: { lat: currentExperience?.lat || 4, lng: currentExperience?.lng || -75 },
                                         name: currentExperience?.name || '',
                                         description: currentExperience?.description || '',
-                                        type: currentExperience?.type || ''
+                                        type: currentExperience?.type || '',
                                     }]}
+
                                 />
+                                {currentExperience?.lat && currentExperience?.lng && (
+                                    <div className="absolute top-4 right-4">
+                                        <MapPin className="w-6 h-6 text-red-500" />
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -291,7 +318,7 @@ const ExperiencePage: React.FC = () => {
                             <h2 className="text-3xl font-bold text-gray-800">Nuestro Equipo</h2>
                         </div>
 
-                        <div className="grid md:grid-cols-2 gap-6">
+                        <div className="relative w-full max-w-6xl overflow-hidden">
                             {members.map((member) => (
                                 <div key={member.id} className="group bg-gradient-to-br from-gray-50 to-white p-6 rounded-2xl border border-gray-100 hover:shadow-lg transition-all duration-300">
                                     <div className="flex gap-4">
@@ -320,6 +347,11 @@ const ExperiencePage: React.FC = () => {
                                     </div>
                                 </div>
                             ))}
+                            {members.length === 0 && (
+                                <div className="text-center text-gray-600">
+                                    No hay integrantes disponibles para esta experiencia
+                                </div>
+                            )}
                         </div>
                     </div>
                 </section>
@@ -340,7 +372,7 @@ const ExperiencePage: React.FC = () => {
                             </button>
                         </div>
 
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="relative w-full max-w-6xl overflow-hidden">
                             {products.map((product) => (
                                 <div key={product.id} className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                                     <div className="relative overflow-hidden">
@@ -372,6 +404,11 @@ const ExperiencePage: React.FC = () => {
                                     </div>
                                 </div>
                             ))}
+                            {products.length === 0 && (
+                                <div className="text-center text-gray-600">
+                                    No hay productos disponibles para esta experiencia
+                                </div>
+                            )}
                         </div>
                     </div>
                 </section>
@@ -407,7 +444,10 @@ const ExperiencePage: React.FC = () => {
 
                                 <div className="space-y-2">
                                     {[5, 4, 3, 2, 1].map((rating) => {
-                                        const count = reviewsInfo.filter(r => r.rating === rating).length;
+                                        const count = reviewsInfo.filter(r => {
+                                            const convertedRating = convertRatingToFiveScale(r.rating);
+                                            return Math.round(convertedRating) === rating;
+                                        }).length;
                                         const percentage = reviewsInfo.length > 0 ? (count / reviewsInfo.length) * 100 : 0;
 
                                         return (
