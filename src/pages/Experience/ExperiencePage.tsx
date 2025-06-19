@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Star, ShoppingCart, MessageCircle } from 'lucide-react';
+import { Star, ShoppingCart, MessageCircle, MapPin, Users, Award, Heart, Share2, ArrowRight, Camera } from 'lucide-react';
 import { ExperienceApi } from '@/services/experience/experience';
 import { useParams } from 'react-router-dom';
 import { getImageUrl } from '@/features/admin/adminHelpers';
 import ReusableMap from '@/components/shared/ReusableMap';
-
 
 interface Experience {
     id: number;
@@ -51,6 +50,7 @@ const ExperiencePage: React.FC = () => {
     const [reviewsInfo, setReviewsInfo] = useState<Review[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState(false)
+    const [isFavorite, setIsFavorite] = useState(false)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -63,10 +63,6 @@ const ExperiencePage: React.FC = () => {
                 setProducts(productsData);
                 const membersData = await ExperienceApi.getMembers(Number(experience_id));
                 setMembers(membersData);
-                console.log("info: ", infoData);
-                console.log("members: ", membersData);
-                console.log("products: ", productsData);
-                console.log("reviews: ", reviewsData);
                 setIsLoading(false)
             }
             catch {
@@ -76,8 +72,6 @@ const ExperiencePage: React.FC = () => {
         }
         fetchData()
     }, [experience_id])
-
-
 
     const formatPrice = (price: number): string => {
         return new Intl.NumberFormat('es-CO', {
@@ -92,19 +86,28 @@ const ExperiencePage: React.FC = () => {
         return Array.from({ length: 5 }, (_, index) => (
             <Star
                 key={index}
-                className={`w-4 h-4 ${index < rating ? 'fill-green-500 text-green-500' : 'text-gray-300'
-                    }`}
+                className={`w-4 h-4 ${index < rating ? 'fill-amber-400 text-amber-400' : 'text-gray-300'}`}
             />
         ));
     };
 
+    const averageRating = reviewsInfo.length > 0
+        ? reviewsInfo.reduce((sum, review) => sum + review.rating, 0) / reviewsInfo.length
+        : 0;
+
     if (isLoading) {
         return (
-            <div className="max-w-4xl mx-auto bg-white p-6">
-                <div className="flex items-center justify-center h-64">
+            <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-orange-50">
+                <div className="flex items-center justify-center h-screen">
                     <div className="text-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-                        <p className="text-gray-600">Cargando experiencia...</p>
+                        <div className="relative">
+                            <div className="animate-spin rounded-full h-16 w-16 border-4 border-emerald-200 border-t-emerald-600 mx-auto mb-4"></div>
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <span className="text-2xl">🌿</span>
+                            </div>
+                        </div>
+                        <p className="text-gray-600 font-medium">Cargando experiencia...</p>
+                        <p className="text-gray-400 text-sm mt-2">Preparando los tesoros para ti</p>
                     </div>
                 </div>
             </div>
@@ -113,200 +116,401 @@ const ExperiencePage: React.FC = () => {
 
     if (error) {
         return (
-            <div className="max-w-4xl mx-auto bg-white p-6">
-                <div className="flex items-center justify-center h-64">
-                    <div className="text-center">
-                        <div className="text-red-500 text-6xl mb-4">⚠️</div>
-                        <h2 className="text-xl font-bold text-gray-800 mb-2">Error al cargar</h2>
-                        <p className="text-gray-600">No se pudo cargar la información de la experiencia.</p>
+            <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-orange-50">
+                <div className="max-w-md mx-auto pt-32 px-4">
+                    <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
+                        <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span className="text-red-500 text-3xl">⚠️</span>
+                        </div>
+                        <h2 className="text-xl font-bold text-gray-800 mb-2">¡Ups! Algo salió mal</h2>
+                        <p className="text-gray-600 mb-6">No pudimos cargar esta experiencia. Por favor, intenta de nuevo.</p>
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-medium transition-colors"
+                        >
+                            Intentar de nuevo
+                        </button>
                     </div>
                 </div>
             </div>
         );
     }
 
+    const currentExperience = info[0];
+
     return (
-        <section className="responsive-padding-y">
-            {/* Header */}
-            <div className="flex items-center gap-3 mb-4 justify-center py-10  ">
-                <div className="w-16 h-16 rounded-full flex items-center justify-center">
-                    <span className="text-green-600 text-3xl">🌿</span>
+        <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-orange-50">
+            {/* Hero Section */}
+            <section className="relative h-96 overflow-hidden">
+                <div className="absolute inset-0">
+                    <img
+                        src={getImageUrl(currentExperience?.image) || ''}
+                        alt={currentExperience?.name}
+                        className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
                 </div>
-                <h1 className="text-4xl font-bold text-green-700">{info[0]?.name}</h1>
-            </div>
 
-            {/* Historia Section */}
-            <section className="p-6 bg-gradient-to-r from-green-50 to-blue-50">
-                <div className="grid md:grid-cols-2 gap-6 items-center">
-                    <div>
-                        <h2 className="text-xl font-bold text-green-700 mb-4">Nuestra Historia</h2>
-                        <div className="text-sm text-gray-700 space-y-3">
-                            <p>{info[0]?.history}</p>
-                        </div>
-                    </div>
-                    <div className="relative">
-                        <img
-                            src={getImageUrl(info[0]?.image) || ''}
-                            alt="Vista aérea de la finca"
-                            className="w-full h-64 object-cover rounded-lg shadow-md"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg"></div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Actividades Section */}
-            <section className="p-6 bg-white">
-                <div className="grid md:grid-cols-2 gap-6 items-center">
-                    <div>
-                        <h2 className="text-xl font-bold text-green-700 mb-4">¿Qué hacemos?</h2>
-                        <div className="text-sm text-gray-700 space-y-3">
-                            <p>{info[0]?.description}</p>
-                        </div>
-                    </div>
-                    <div className="relative">
-                        <ReusableMap
-                            locations={[{
-                                id: info[0]?.id || 0,
-                                position: { lat: info[0]?.lat || 4.678, lng: info[0]?.lng || -75.668 },
-                                name: info[0]?.name || '',
-                                description: info[0]?.description || '',
-                                type: info[0]?.type || ''
-                            }]}
-                        />
-                    </div>
-                </div>
-            </section>
-
-            {/* Integrantes Section */}
-            <section className="p-6 bg-gradient-to-r from-green-50 to-blue-50">
-                <h2 className="text-xl font-bold text-green-700 mb-6">Integrantes</h2>
-                <div className="space-y-6">
-                    {members.map((member) => (
-                        <div key={member.id} className="flex gap-4 bg-white p-4 rounded-lg shadow-sm">
-                            <img
-                                src={member.image}
-                                alt={member.name}
-                                className="w-16 h-16 rounded-full object-cover flex-shrink-0"
-                            />
-                            <div className="flex-grow">
-                                <h3 className="font-semibold text-gray-800 mb-1">{member.name}</h3>
-                                <p className="text-sm text-gray-600 mb-1">
-                                    Edad: {member.age} años | Ocupación: {member.occupation}
-                                </p>
-                                <p className="text-sm text-gray-700 leading-relaxed">
-                                    {member.description}
-                                </p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* Productos Section */}
-            <section className="p-6 bg-white">
-                <h2 className="text-xl font-bold text-green-700 mb-6">Nuestros Productos</h2>
-                <div className="grid md:grid-cols-2 gap-6">
-                    {products.map((product) => (
-                        <div key={product.id} className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-                            <div className="aspect-square bg-gray-100">
-                                <img
-                                    src={product.image}
-                                    alt={product.name}
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-                            <div className="p-4">
-                                <h3 className="font-semibold text-gray-800 mb-2">{product.name}</h3>
-                                <p className="text-sm text-gray-600 mb-3">{product.description}</p>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-lg font-bold text-green-600">
-                                        {formatPrice(product.price)}
+                <div className="relative z-10 h-full flex items-end">
+                    <div className="container mx-auto px-4 pb-8">
+                        <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <span className="bg-emerald-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                                        {currentExperience?.type}
                                     </span>
-                                    <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
-                                        <ShoppingCart className="w-4 h-4" />
-                                        Agregar al carrito
-                                    </button>
+                                    <div className="flex items-center gap-1 text-white">
+                                        <MapPin className="w-4 h-4" />
+                                        <span className="text-sm">Colombia</span>
+                                    </div>
+                                </div>
+                                <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">
+                                    {currentExperience?.name}
+                                </h1>
+                                <div className="flex items-center gap-4 text-white">
+                                    <div className="flex items-center gap-1">
+                                        <div className="flex">
+                                            {renderStars(Math.round(averageRating))}
+                                        </div>
+                                        <span className="font-medium ml-1">
+                                            {averageRating.toFixed(1)}
+                                        </span>
+                                        <span className="text-white/80">
+                                            ({reviewsInfo.length} opiniones)
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
+
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => setIsFavorite(!isFavorite)}
+                                    className={`p-3 rounded-full backdrop-blur-md transition-all ${isFavorite
+                                            ? 'bg-red-500 text-white'
+                                            : 'bg-white/20 text-white hover:bg-white/30'
+                                        }`}
+                                >
+                                    <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
+                                </button>
+                                <button className="p-3 rounded-full bg-white/20 text-white hover:bg-white/30 backdrop-blur-md transition-all">
+                                    <Share2 className="w-5 h-5" />
+                                </button>
+                            </div>
                         </div>
-                    ))}
+                    </div>
                 </div>
             </section>
 
-            {/* Valoraciones Section */}
-            <section className="p-6 bg-gradient-to-r from-green-50 to-blue-50">
-                <h2 className="text-xl font-bold text-green-700 mb-6">Valoraciones</h2>
-
-                {/* Rating Summary */}
-                <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
-                    <div className="flex items-center gap-4 mb-4">
-                        <div className="text-center">
-                            <div className="text-3xl font-bold text-gray-800">4.5</div>
-                            <div className="flex justify-center mb-1">
-                                {renderStars(5)}
+            <div className="container mx-auto px-4 py-8">
+                {/* Quick Stats */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 -mt-16 relative z-10">
+                    <div className="bg-white rounded-2xl p-6 shadow-lg border border-white/50 backdrop-blur-sm">
+                        <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
+                                <Users className="w-6 h-6 text-emerald-600" />
                             </div>
-                            <div className="text-sm text-gray-600">1.060</div>
+                            <div>
+                                <p className="text-2xl font-bold text-gray-800">{members.length}</p>
+                                <p className="text-gray-600 text-sm">Integrantes</p>
+                            </div>
                         </div>
-                        <div className="flex-grow">
-                            {[5, 4, 3, 2, 1].map((rating) => (
-                                <div key={rating} className="flex items-center gap-2 mb-1">
-                                    <span className="text-sm text-gray-600 w-4">{rating}</span>
-                                    <div className="flex-grow bg-gray-200 rounded-full h-2">
-                                        <div
-                                            className="bg-green-500 h-2 rounded-full"
-                                            style={{ width: rating === 5 ? '60%' : rating === 4 ? '30%' : '10%' }}
-                                        ></div>
+                    </div>
+
+                    <div className="bg-white rounded-2xl p-6 shadow-lg border border-white/50 backdrop-blur-sm">
+                        <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                                <ShoppingCart className="w-6 h-6 text-orange-600" />
+                            </div>
+                            <div>
+                                <p className="text-2xl font-bold text-gray-800">{products.length}</p>
+                                <p className="text-gray-600 text-sm">Productos</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-2xl p-6 shadow-lg border border-white/50 backdrop-blur-sm">
+                        <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
+                                <Award className="w-6 h-6 text-amber-600" />
+                            </div>
+                            <div>
+                                <p className="text-2xl font-bold text-gray-800">{averageRating.toFixed(1)}</p>
+                                <p className="text-gray-600 text-sm">Calificación</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Historia Section */}
+                <section className="mb-12">
+                    <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
+                        <div className="p-8 md:p-12">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
+                                    <span className="text-emerald-600 text-xl">📜</span>
+                                </div>
+                                <h2 className="text-3xl font-bold text-gray-800">Nuestra Historia</h2>
+                            </div>
+                            <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed">
+                                <p>{currentExperience?.history}</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Actividades y Mapa */}
+                <section className="mb-12">
+                    <div className="grid lg:grid-cols-2 gap-8">
+                        <div className="bg-white rounded-3xl shadow-xl p-8">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                                    <span className="text-orange-600 text-xl">🌱</span>
+                                </div>
+                                <h2 className="text-3xl font-bold text-gray-800">¿Qué hacemos?</h2>
+                            </div>
+                            <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed">
+                                <p>{currentExperience?.description}</p>
+                            </div>
+                        </div>
+
+                        <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
+                            <div className="p-6">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <MapPin className="w-4 h-4 text-blue-600" />
                                     </div>
-                                    <span className="text-sm text-gray-600 w-8">
-                                        {rating === 5 ? '60%' : rating === 4 ? '30%' : '10%'}
-                                    </span>
+                                    <h3 className="text-xl font-bold text-gray-800">Nuestra Ubicación</h3>
+                                </div>
+                            </div>
+                            <div className="h-64">
+                                <ReusableMap
+                                    locations={[{
+                                        id: currentExperience?.id || 0,
+                                        position: { lat: currentExperience?.lat || 4.678, lng: currentExperience?.lng || -75.668 },
+                                        name: currentExperience?.name || '',
+                                        description: currentExperience?.description || '',
+                                        type: currentExperience?.type || ''
+                                    }]}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Integrantes Section */}
+                <section className="mb-12">
+                    <div className="bg-white rounded-3xl shadow-xl p-8">
+                        <div className="flex items-center gap-3 mb-8">
+                            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                                <Users className="w-6 h-6 text-purple-600" />
+                            </div>
+                            <h2 className="text-3xl font-bold text-gray-800">Nuestro Equipo</h2>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-6">
+                            {members.map((member) => (
+                                <div key={member.id} className="group bg-gradient-to-br from-gray-50 to-white p-6 rounded-2xl border border-gray-100 hover:shadow-lg transition-all duration-300">
+                                    <div className="flex gap-4">
+                                        <div className="relative">
+                                            <img
+                                                src={member.image}
+                                                alt={member.name}
+                                                className="w-16 h-16 rounded-2xl object-cover ring-2 ring-white shadow-md"
+                                            />
+                                            <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center">
+                                                <span className="text-white text-xs">✓</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex-1">
+                                            <h3 className="font-bold text-gray-800 text-lg mb-1">{member.name}</h3>
+                                            <div className="flex items-center gap-3 text-sm text-gray-600 mb-2">
+                                                <span className="bg-gray-100 px-2 py-1 rounded-lg">{member.age} años</span>
+                                                <span className="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-lg">
+                                                    {member.occupation}
+                                                </span>
+                                            </div>
+                                            <p className="text-gray-700 text-sm leading-relaxed">
+                                                {member.description}
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             ))}
                         </div>
                     </div>
-                </div>
+                </section>
 
-                {/* Reviews */}
-                <div className="space-y-4">
-                    <h3 className="font-semibold text-gray-800">Opiniones</h3>
-                    {reviewsInfo.map((review) => (
-                        <div key={review.id} className="bg-white p-4 rounded-lg shadow-sm">
-                            <div className="flex items-start gap-3">
-                                <img
-                                    src={review.avatar}
-                                    alt={review.userName}
-                                    className="w-10 h-10 rounded-full object-cover"
-                                />
-                                <div className="flex-grow">
-                                    <div className="flex items-center gap-2 mb-1">
-                                        <span className="font-medium text-gray-800">{review.userName}</span>
-                                        <div className="flex">
-                                            {renderStars(review.rating)}
+                {/* Productos Section */}
+                <section className="mb-12">
+                    <div className="bg-white rounded-3xl shadow-xl p-8">
+                        <div className="flex items-center justify-between mb-8">
+                            <div className="flex items-center gap-3">
+                                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                                    <ShoppingCart className="w-6 h-6 text-green-600" />
+                                </div>
+                                <h2 className="text-3xl font-bold text-gray-800">Nuestros Productos</h2>
+                            </div>
+                            <button className="text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-2 group">
+                                Ver todos
+                                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            </button>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {products.map((product) => (
+                                <div key={product.id} className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                                    <div className="relative overflow-hidden">
+                                        <img
+                                            src={product.image}
+                                            alt={product.name}
+                                            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                                        />
+                                        <div className="absolute top-3 right-3">
+                                            <button className="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:bg-white transition-colors">
+                                                <Heart className="w-4 h-4 text-gray-600" />
+                                            </button>
                                         </div>
                                     </div>
-                                    <p className="text-sm text-gray-700 mb-2">{review.comment}</p>
-                                    <div className="flex items-center gap-4 text-xs text-gray-500">
-                                        <span>{review.date}</span>
-                                        <button className="hover:text-gray-700">Responder</button>
+
+                                    <div className="p-6">
+                                        <h3 className="font-bold text-gray-800 text-lg mb-2">{product.name}</h3>
+                                        <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
+
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-2xl font-bold text-emerald-600">
+                                                {formatPrice(product.price)}
+                                            </span>
+                                            <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl font-medium transition-colors flex items-center gap-2 group">
+                                                <ShoppingCart className="w-4 h-4" />
+                                                <span className="hidden sm:inline">Agregar</span>
+                                            </button>
+                                        </div>
                                     </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+
+                {/* Valoraciones Section */}
+                <section className="mb-12">
+                    <div className="bg-white rounded-3xl shadow-xl p-8">
+                        <div className="flex items-center gap-3 mb-8">
+                            <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
+                                <Star className="w-6 h-6 text-amber-600" />
+                            </div>
+                            <h2 className="text-3xl font-bold text-gray-800">Valoraciones</h2>
+                        </div>
+
+                        {/* Rating Summary */}
+                        <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-6 mb-8">
+                            <div className="grid md:grid-cols-2 gap-8 items-center">
+                                <div className="text-center md:text-left">
+                                    <div className="flex items-center justify-center md:justify-start gap-4 mb-4">
+                                        <div className="text-5xl font-bold text-gray-800">
+                                            {averageRating.toFixed(1)}
+                                        </div>
+                                        <div>
+                                            <div className="flex mb-2">
+                                                {renderStars(Math.round(averageRating))}
+                                            </div>
+                                            <div className="text-gray-600">
+                                                {reviewsInfo.length} valoraciones
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    {[5, 4, 3, 2, 1].map((rating) => {
+                                        const count = reviewsInfo.filter(r => r.rating === rating).length;
+                                        const percentage = reviewsInfo.length > 0 ? (count / reviewsInfo.length) * 100 : 0;
+
+                                        return (
+                                            <div key={rating} className="flex items-center gap-3">
+                                                <span className="text-sm text-gray-600 w-4">{rating}</span>
+                                                <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                                                <div className="flex-1 bg-gray-200 rounded-full h-2">
+                                                    <div
+                                                        className="bg-amber-400 h-2 rounded-full transition-all duration-300"
+                                                        style={{ width: `${percentage}%` }}
+                                                    ></div>
+                                                </div>
+                                                <span className="text-sm text-gray-600 w-12">
+                                                    {percentage.toFixed(0)}%
+                                                </span>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         </div>
-                    ))}
-                </div>
-            </section>
 
-            {/* CTA Section */}
-            <section className="p-6 bg-green-600 text-white">
-                <div className="text-center">
-                    <button className="bg-white text-green-600 px-6 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors flex items-center gap-2 mx-auto">
-                        <MessageCircle className="w-5 h-5" />
-                        Escribir un opinion
-                    </button>
-                </div>
-            </section>
-        </section>
+                        {/* Reviews */}
+                        <div className="space-y-6">
+                            <h3 className="text-xl font-bold text-gray-800">Opiniones recientes</h3>
+                            {reviewsInfo.slice(0, 3).map((review) => (
+                                <div key={review.id} className="bg-gray-50 rounded-2xl p-6 hover:bg-gray-100 transition-colors">
+                                    <div className="flex gap-4">
+                                        <img
+                                            src={review.avatar}
+                                            alt={review.userName}
+                                            className="w-12 h-12 rounded-full object-cover ring-2 ring-white shadow-md"
+                                        />
+                                        <div className="flex-1">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <div className="flex items-center gap-3">
+                                                    <span className="font-semibold text-gray-800">{review.userName}</span>
+                                                    <div className="flex">
+                                                        {renderStars(review.rating)}
+                                                    </div>
+                                                </div>
+                                                <span className="text-sm text-gray-500">{review.date}</span>
+                                            </div>
+                                            <p className="text-gray-700 mb-3 leading-relaxed">{review.comment}</p>
+                                            <button className="text-emerald-600 hover:text-emerald-700 text-sm font-medium">
+                                                Responder
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+
+                            {reviewsInfo.length > 3 && (
+                                <div className="text-center">
+                                    <button className="text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-2 mx-auto group">
+                                        Ver todas las opiniones
+                                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </section>
+
+                {/* CTA Section */}
+                <section className="mb-8">
+                    <div className="bg-gradient-to-r from-emerald-600 to-green-600 rounded-3xl p-8 text-white text-center">
+                        <div className="max-w-2xl mx-auto">
+                            <h2 className="text-3xl font-bold mb-4">¿Te gustó nuestra experiencia?</h2>
+                            <p className="text-emerald-100 mb-6 text-lg">
+                                Comparte tu experiencia con otros viajeros y ayúdanos a seguir mejorando
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                <button className="bg-white text-emerald-600 px-8 py-4 rounded-2xl font-semibold hover:bg-emerald-50 transition-colors flex items-center justify-center gap-3 group">
+                                    <MessageCircle className="w-5 h-5" />
+                                    Escribir una opinión
+                                </button>
+                                <button className="bg-emerald-700 hover:bg-emerald-800 text-white px-8 py-4 rounded-2xl font-semibold transition-colors flex items-center justify-center gap-3">
+                                    <Camera className="w-5 h-5" />
+                                    Subir fotos
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
     );
 };
 
