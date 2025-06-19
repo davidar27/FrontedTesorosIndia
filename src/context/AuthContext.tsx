@@ -32,7 +32,18 @@ function AuthProvider({ children }: { children: ReactNode }) {
     const queryClient = useQueryClient();
 
     const isPublicRoute = useCallback((path: string): boolean => {
-        return PUBLIC_ROUTES.includes(path);
+        if (PUBLIC_ROUTES.includes(path)) {
+            return true;
+        }
+        
+        return PUBLIC_ROUTES.some(route => {
+            const pattern = route
+                .replace(/:[^/]+/g, '[^/]+')
+                .replace(/\//g, '\\/');
+            
+            const regex = new RegExp(`^${pattern}$`);
+            return regex.test(path);
+        });
     }, []);
 
     const {

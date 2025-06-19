@@ -1,7 +1,8 @@
 import { Star } from "lucide-react";
 import { motion } from "framer-motion";
 import Button from "../ui/buttons/Button";
-interface Product {
+import { getImageUrl } from '@/features/admin/adminHelpers';
+export interface Product {
   id: number;
   name: string;
   price: string;
@@ -49,11 +50,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       className="bg-white rounded-2xl shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md"
       whileHover={{ y: -5 }}
     >
-      <div className="relative">
+      <div className="relative flex items-center justify-center h-48 w-full rounded-t-2xl overflow-hidden bg-gray-100">
         <img
-          src={product.image}
+          src={getImageUrl(product.image) || ''}
           alt={product.name}
-          className="w-full h-48 object-contain mx-auto pt-4"
+          className="w-fit h-fit object-contain mx-auto pt-4 rounded-t-2xl "
         />
       </div>
 

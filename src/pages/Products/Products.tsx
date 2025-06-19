@@ -5,18 +5,25 @@ import AnimatedTitle from "@/components/ui/display/AnimatedTitle";
 import { ProductsApi } from "@/services/home/products";
 import { CategoriesApi } from "@/services/home/categories";
 import { usePageContext } from "@/context/PageContext";
+import { Product } from "@/components/products/ProductCard";
+
+
+interface Category {
+    id: number;
+    name: string;
+}
 
 export default function ProductList() {
-    const [products, setProducts] = useState<any[]>([]);
-    const [categories, setCategories] = useState<any[]>([]);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
     const { searchValue } = usePageContext();
-    const [filteredProducts, setFilteredProducts] = useState<any[]>([])
+    const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
     const [selectedCategory, setSelectedCategory] = useState<string | null>(searchValue || null);
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const dataProducts: any = await ProductsApi.getProducts() || [];
-                const dataCategories: any = await CategoriesApi.getCategories() || [];
+                const dataProducts: Product[] = await ProductsApi.getProducts() || [];
+                const dataCategories: Category[] = await CategoriesApi.getCategories() || [];
                 setProducts(dataProducts);
                 setCategories(dataCategories);
             }
