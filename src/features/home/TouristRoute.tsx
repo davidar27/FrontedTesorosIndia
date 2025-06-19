@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Button from '@/components/ui/buttons/Button';
 // import { TreePalm, MapPin, Coffee, Mountain } from 'lucide-react';
 import ReusableMap from '@/components/shared/ReusableMap';
@@ -6,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { ExperiencesApi } from '@/services/home/experiences';
 
 const TouristRoute = () => {
-  const [locations, setLocations] = useState<any[]>([])
+    const [locations, setLocations] = useState<any[]>([])
   useEffect(() => {
     const fetchExperiences = async () => {
       let dataExperiences: any[] = await ExperiencesApi.getExperiencesHome() || []

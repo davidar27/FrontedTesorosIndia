@@ -37,7 +37,6 @@ import LoadingSpinner from "./components/layouts/LoadingSpinner";
 import ResetPassword from "./pages/Auth/ResetPassword";
 import ForgotPasswordForm from "./pages/Auth/ForgotPasswordForm";
 import ExperiencePage from "./pages/Experience/ExperiencePage";
-import ExperiencePageTest from "./pages/Experience/ExperiencePageTest";
 
 function App() {
   return (
@@ -49,7 +48,7 @@ function App() {
             {/* Rutas públicas con MainLayout */}
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />} />
-              
+
               {/* Rutas de productos */}
               <Route path="/productos">
                 <Route index element={<ProductsPage />} />
@@ -60,17 +59,17 @@ function App() {
               {/* Rutas informativas */}
               <Route path="/nosotros" element={<AboutUs />} />
               <Route path="/contacto" element={<ContactPage />} />
-              
+
               {/* Rutas de experiencias */}
-              {/* 
+              <Route path="experiencia/:experience_id" element={<ExperiencePage />}></Route>
+
+              {
                 <Route path="/experiencias">
                   <Route index element={<ExperiencePage />} />
-                  <Route path=":id" element={<ExperiencePage />} />
                   <Route path="categorias/:categoryId" element={<ExperiencePage />} />
-                </Route> 
-              */}
-              <Route path="experiencia/:experience_id" element={<ExperiencePageTest />}></Route>
-              
+                </Route>
+              }
+
               {/* Rutas específicas para emprendedores */}
               <Route element={<ProtectedRoute roles={['emprendedor']} />}>
                 <Route path="/mi-experiencia" element={<ExperiencePage />} />
@@ -106,7 +105,7 @@ function App() {
               <Route path="acceso-denegado" element={<AccessDenied />} />
               <Route path="no-encontrado" element={<NotFoundPage />} />
             </Route>
-            
+
             <Route path="*" element={<Navigate to="/error/no-encontrado" replace />} />
           </Routes>
         </Suspense>
