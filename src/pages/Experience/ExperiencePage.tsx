@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Star, ShoppingCart, MessageCircle, MapPin, Users, Award, Heart, Share2, ArrowRight, Camera } from 'lucide-react';
+import { Star, ShoppingCart, MessageCircle, MapPin, Users, Award, Heart, Share2, ArrowRight } from 'lucide-react';
 import { ExperienceApi } from '@/services/experience/experience';
 import { useParams } from 'react-router-dom';
 import { getImageUrl } from '@/features/admin/adminHelpers';
@@ -500,10 +500,6 @@ const ExperiencePage: React.FC = () => {
                                 <button className="bg-white text-emerald-600 px-8 py-4 rounded-2xl font-semibold hover:bg-emerald-50 transition-colors flex items-center justify-center gap-3 group">
                                     <MessageCircle className="w-5 h-5" />
                                     Escribir una opinión
-                                </button>
-                                <button className="bg-emerald-700 hover:bg-emerald-800 text-white px-8 py-4 rounded-2xl font-semibold transition-colors flex items-center justify-center gap-3">
-                                    <Camera className="w-5 h-5" />
-                                    Subir fotos
                                 </button>
                             </div>
                         </div>
