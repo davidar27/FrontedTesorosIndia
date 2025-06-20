@@ -52,7 +52,7 @@ const SidebarExperiences: React.FC<SidebarExperiencesProps> = ({ isOpen, onClose
 
     const navigateToEstate = useCallback((id: number) => {
         setActiveEstateId(id);
-        navigate(`/experiencia/${id}`);
+        navigate(`/experiencias/${id}`);
         onClose();
     }, [navigate, onClose]);
 

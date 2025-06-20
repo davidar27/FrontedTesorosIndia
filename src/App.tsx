@@ -19,7 +19,6 @@ const EmailVerificationPage = lazy(() => import('@/pages/Auth/VerificationPage')
 const NotFoundPage = lazy(() => import('@/pages/Errors/NotFoundPage'));
 const AboutUs = lazy(() => import('@/pages/AboutUs/AboutUs'));
 const AccessDenied = lazy(() => import('@/pages/Errors/AccessDenied'));
-const ContactPage = lazy(() => import('@/pages/Contact/ContactPage'));
 
 // Admin Pages
 const ExperiencesPage = lazy(() => import('@/pages/Admin/ExperiencesPage'));
@@ -58,22 +57,16 @@ function App() {
 
               {/* Rutas informativas */}
               <Route path="/nosotros" element={<AboutUs />} />
-              <Route path="/contacto" element={<ContactPage />} />
 
               {/* Rutas de experiencias */}
-              <Route path="experiencia/:experience_id" element={<ExperiencePage />}></Route>
-
-              {
-                <Route path="/experiencias">
-                  <Route index element={<ExperiencePage />} />
-                  <Route path="categorias/:categoryId" element={<ExperiencePage />} />
-                </Route>
-              }
-
-              {/* Rutas específicas para emprendedores */}
-              <Route element={<ProtectedRoute roles={['emprendedor']} />}>
-                <Route path="/mi-experiencia" element={<ExperiencePage />} />
+              <Route path="/experiencias">
+                <Route index element={<ExperiencePage />} />
+                <Route path="categorias/:categoryId" element={<ExperiencePage />} />
+                <Route path=":experience_id" element={<ExperiencePage />} />
               </Route>
+
+              {/* Rutas de edición de experiencias - accesible públicamente, protección interna */}
+              <Route path="/experiencia/:experience_id/editar" element={<ExperiencePage />} />
             </Route>
 
             {/* Rutas de autenticación */}

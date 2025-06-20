@@ -12,16 +12,19 @@ import { UserRole } from '@/interfaces/role';
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-const getRedirectPath = (role: UserRole | undefined, from: string | undefined): string => {
+const getRedirectPath = (role: UserRole | undefined, from: string | undefined, experience_id: number | undefined): string => {
     if (from && from !== '/auth/iniciar-sesion') {
         return from;
     }
-
+    
     switch (role) {
         case 'administrador':
             return '/dashboard';
         case 'emprendedor':
-            return '/mi-experiencia';
+            if (experience_id) {
+                return `/experiencias/${experience_id}`;
+            }
+            return '/';
         default:
             return '/';
     }
@@ -30,7 +33,7 @@ const getRedirectPath = (role: UserRole | undefined, from: string | undefined): 
 const LoginPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { login } = useAuth();
+    const { login } = useAuth();    
     const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
     const [errorType, setErrorType] = useState<"email" | "password" | "general" | null>(null);
 
@@ -45,8 +48,9 @@ const LoginPage = () => {
     const onSubmit = async (data: LoginFormData) => {
         try {
             const user = await login(data);
+            console.log(user);
             const from = location.state?.from;
-            const redirectPath = getRedirectPath(user.role, from);
+            const redirectPath = getRedirectPath(user.role, from,user.experience_id);
             navigate(redirectPath, { replace: true });
         } catch (error) {
             if (error instanceof AuthError) {

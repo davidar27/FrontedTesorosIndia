@@ -1,7 +1,10 @@
+import { getImageUrl } from '@/features/admin/adminHelpers';
+
 type AvatarProps = {
     name?: string | null;
     size?: number;
     className?: string;
+    src?: string | null;
 };
 
 const getColorFromName = (name: string) => {
@@ -14,25 +17,48 @@ const getColorFromName = (name: string) => {
     return `hsl(${hue}, 70%, 75%)`;
 };
 
-const Avatar = ({ name = 'Usuario', size = 40, className = '' }: AvatarProps) => {
+const Avatar = ({ name = 'Usuario', size = 40, className = '', src = null }: AvatarProps) => {
     const initial = name?.trim().charAt(0).toUpperCase() || 'U';
     const backgroundColor = getColorFromName(name || 'U');
+    const hasImage = src && src.trim() !== '';
 
     return (
         <div
-            className={`flex items-center justify-center rounded-full text-white font-bold ${className}`}
+            className={`flex items-center justify-center rounded-full text-white font-bold overflow-hidden ${className}`}
             style={{
                 width: size,
                 height: size,
                 fontSize: size / 2,
-                backgroundColor,
-                color: 'hsl(0, 0%, 20%)',
+                backgroundColor: hasImage ? 'transparent' : backgroundColor,
+                color: hasImage ? 'transparent' : 'hsl(0, 0%, 20%)',
                 boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
             }}
-            aria-label={`Avatar de ${name}`}
-            title={name || 'U'}
-        >
-            {initial}
+        >   
+            {hasImage ? (
+                <img 
+                    src={getImageUrl(src)!} 
+                    alt={name || 'Avatar del usuario'} 
+                    className="w-full h-full object-cover rounded-full"
+                    onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        const parent = target.parentElement;
+                        if (parent) {
+                            parent.style.backgroundColor = backgroundColor;
+                            parent.style.color = 'hsl(0, 0%, 20%)';
+                        }
+                    }}
+                />
+            ) : (
+                <span>{initial}</span>
+            )}
+            <span 
+                className="absolute opacity-0 pointer-events-none"
+                aria-label={`Avatar de ${name}`}
+                title={name || 'Usuario'}
+            >
+                {initial}
+            </span>
         </div>
     );
 };

@@ -7,11 +7,12 @@ import useAuth from "@/context/useAuth";
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useAuth();
+  const experience_id = user?.experience_id;
   
   const toggleMenu = () => setIsOpen(!isOpen);
   const closeMenu = () => setIsOpen(false);
   
-  const links = getNavLinks(user);
+  const links = getNavLinks(user, Number(experience_id));
 
   return (
     <nav className='container mx-auto flex justify-between items-center'>

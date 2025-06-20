@@ -11,7 +11,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const BUTTON_VARIANTS = {
     primary: 'bg-green-500 border-2 border-green-500 hover:bg-white  hover:text-green-500 hover:border-green-500 hover:border-2 text-white disabled:bg-green-50 disabled:text-green-400 disabled:border-green-500',
-    secondary: 'bg-blue-200 border-2 border-blue-100 hover:bg-white  hover:text-blue-400 hover:border-blue-500 hover:border-2 text-blue-500 disabled:bg-blue-50 disabled:text-blue-400 disabled:border-blue-500',
+    secondary: 'bg-blue-200 border-2 border-blue-200 hover:bg-white  hover:text-blue-400 hover:border-blue-500 hover:border-2 text-blue-500 disabled:bg-blue-50 disabled:text-blue-400 disabled:border-blue-500',
     danger: 'bg-red-100 border-2 border-red-100 hover:bg-red-200 text-red-700 disabled:bg-red-50 disabled:text-red-400',
     success: 'bg-green-100 hover:bg-green-200 border-green-100 text-green-700 disabled:bg-green-50 disabled:text-green-400',
     warning: 'bg-yellow-100 hover:bg-yellow-200 text-yellow-700 disabled:bg-yellow-50 disabled:text-yellow-400',
