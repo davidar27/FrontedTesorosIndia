@@ -1,57 +1,129 @@
-import { Coffee, Flower, Flower2, Leaf, Shrub, Waves, UtensilsCrossed, Tent, TreePalm } from 'lucide-react';
+import {
+    Coffee,
+    Flower,
+    Flower2,
+    Leaf,
+    Shrub,
+    Waves,
+    UtensilsCrossed,
+    Tent,
+    TreePalm,
+} from 'lucide-react';
 import React, { useMemo } from 'react';
 import { Experience } from '../admin/experiences/ExperienceTypes';
-import ButtonIcon from '../../components/ui/buttons/ButtonIcon';
-import clsx from 'clsx';
-
-
-
+import { motion } from 'framer-motion';
 
 const EXPERIENCE_ICONS = [
-    { icon: Coffee, id: 'Coffee' },
-    { icon: Flower, id: 'Flower' },
-    { icon: Flower2, id: 'Flower2' },
-    { icon: Leaf, id: 'Leaf' },
-    { icon: Shrub, id: 'Shrub' },
-    { icon: Waves, id: 'Waves' },
-    { icon: UtensilsCrossed, id: 'UtensilsCrossed' },
-    { icon: Tent, id: 'Tent' },
-    { icon: TreePalm, id: 'TreePalm' }
+    { icon: Coffee, id: 'Coffee', color: 'from-amber-500 to-orange-600' },
+    { icon: Flower, id: 'Flower', color: 'from-pink-500 to-rose-600' },
+    { icon: Flower2, id: 'Flower2', color: 'from-purple-500 to-violet-600' },
+    { icon: Leaf, id: 'Leaf', color: 'from-green-500 to-emerald-600' },
+    { icon: Shrub, id: 'Shrub', color: 'from-green-600 to-teal-700' },
+    { icon: Waves, id: 'Waves', color: 'from-blue-500 to-cyan-600' },
+    { icon: UtensilsCrossed, id: 'UtensilsCrossed', color: 'from-red-500 to-pink-600' },
+    { icon: Tent, id: 'Tent', color: 'from-indigo-500 to-purple-600' },
+    { icon: TreePalm, id: 'TreePalm', color: 'from-green-400 to-lime-600' },
 ] as const;
 
-export const ExperienceItem = React.memo(({
-    experience,
-    activeEstateId,
-    onNavigate
-}: {
+interface ExperienceItemProps {
     experience: Experience;
     activeEstateId: number | null;
     onNavigate: (id: number) => void;
-}) => {
-    const { icon: IconComponent } = useMemo(() => {
-        const safeId = Math.abs(Number(experience.id) || 0);
-        const index = safeId % EXPERIENCE_ICONS.length;
-        return EXPERIENCE_ICONS[index] || EXPERIENCE_ICONS[0];
-    }, [experience.id]);
+}
 
-    return (
-        <li
-            className="animate-fade-in-up"
-        >
-            <ButtonIcon
-                onClick={() => onNavigate(Number(experience.id))}
-                className={clsx(
-                    '!text-primary w-full flex items-center gap-3 !px-4 !py-3 !text-lg  transition-all duration-200 hover:!bg-gray-100 hover:text-primary',
-                    activeEstateId === Number(experience.id)
-                        ? 'bg-primary text-white shadow-lg'
-                        : 'text-gray-600 hover:bg-gray-100 hover:text-primary'
-                )}
+export const ExperienceItem = React.memo<ExperienceItemProps>(
+    ({ experience, activeEstateId, onNavigate }) => {
+        const { icon: IconComponent, color } = useMemo(() => {
+            const safeId = Math.abs(Number(experience.id) || 0);
+            const index = safeId % EXPERIENCE_ICONS.length;
+            return EXPERIENCE_ICONS[index] || EXPERIENCE_ICONS[0];
+        }, [experience.id]);
+
+        const isActive = activeEstateId === Number(experience.id);
+
+        const itemVariants = {
+            hidden: { opacity: 0, y: 20 },
+            visible: {
+                opacity: 1,
+                y: 0,
+                transition: { duration: 0.3, ease: "easeOut" }
+            },
+            hover: {
+                y: -2,
+                transition: { duration: 0.2, ease: "easeOut" }
+            }
+        };
+
+        return (
+            <motion.li
+                variants={itemVariants}
+                initial="hidden"
+                animate="visible"
+                whileHover="hover"
+                className="group"
             >
-                <IconComponent className="w-5 h-5 text-gray-500 " />
-                <span className="font-medium truncate">{experience.name_experience}</span>
-            </ButtonIcon>
-        </li>
-    );
-});
+                <motion.button
+                    onClick={() => onNavigate(Number(experience.id))}
+                    type="button"
+                    title={experience.name_experience}
+                    className={`
+                        relative w-full text-left rounded-2xl border overflow-hidden
+                        transition-all duration-300 cursor-pointer
+                        focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2
+                        transform-gpu
+                        ${isActive
+                            ? 'bg-gradient-to-br from-green-500 to-emerald-600 text-white border-transparent shadow-xl shadow-green-500/25'
+                            : 'bg-white border-gray-200 hover:border-green-300 shadow-sm hover:shadow-md'
+                        }
+                    `}
+                    whileTap={{ scale: 0.98 }}
+                >
+                    {/* Background pattern for active state */}
+                    {isActive && (
+                        <div className="absolute inset-0 opacity-10">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full transform translate-x-16 -translate-y-16" />
+                            <div className="absolute bottom-0 left-0 w-20 h-20 bg-white rounded-full transform -translate-x-10 translate-y-10" />
+                        </div>
+                    )}
+
+                    <div className="relative p-4">
+                        {/* Header with icon and title */}
+                        <div className="flex items-center gap-4">
+                            <div className={`
+                                flex items-center justify-center w-12 h-12 rounded-xl shadow-lg
+                                transition-all duration-300 flex-shrink-0
+                                ${isActive
+                                    ? 'bg-white/20 backdrop-blur-sm'
+                                    : `bg-gradient-to-br ${color} shadow-lg`
+                                }
+                            `}>
+                                <IconComponent className={`w-6 h-6 ${isActive ? 'text-white' : 'text-white'}`} />
+                            </div>
+
+                            <div className="flex-1 min-w-0">
+                                <h3 className={`
+                                    font-bold text-lg leading-tight
+                                    ${isActive ? 'text-white' : 'text-gray-800 group-hover:text-green-700'}
+                                `}>
+                                    {experience.name_experience}
+                                </h3>
+                            </div>
+                        </div>
+                        {/* Hover indicator */}
+                        <div className={`
+                            absolute right-3 top-1/2 transform -translate-y-1/2 opacity-0 transition-all duration-300
+                            ${isActive ? 'opacity-100' : 'group-hover:opacity-100'}
+                        `}>
+                            <div className={`
+                                w-2 h-8 rounded-full
+                                ${isActive ? 'bg-white/30' : 'bg-green-500'}
+                            `} />
+                        </div>
+                    </div>
+                </motion.button>
+            </motion.li>
+        );
+    }
+);
 
 ExperienceItem.displayName = 'ExperienceItem';

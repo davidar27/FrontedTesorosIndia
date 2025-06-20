@@ -65,9 +65,7 @@ const ExperiencePage: React.FC = () => {
     const [editMembers, setEditMembers] = useState<TeamMember[]>([]);
     const [editProducts, setEditProducts] = useState<Product[]>([]);
 
-    // El modo edición ahora se activa manualmente con el botón
     useEffect(() => {
-        // El modo edición se activará manualmente con el botón de editar
     }, [user, experience_id]);
 
     useEffect(() => {

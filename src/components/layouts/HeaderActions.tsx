@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 import SidebarExperiences from "@/features/home/SidebarExperience";
 import { Link, useLocation, useParams } from "react-router-dom";
 import useExperiencePermissions from "@/hooks/useExperiencePermissions";
-
+import { useAuth } from "@/context/AuthContext";
 interface HeaderActionsProps {
     isEditMode?: boolean;
     onToggleEditMode?: () => void;
@@ -20,9 +20,10 @@ const HeaderActions = ({ isEditMode = false, onToggleEditMode }: HeaderActionsPr
     const location = useLocation();
     const permissions = useExperiencePermissions();
     const { experience_id } = useParams();
-    // Verificar si estamos en una página de experiencia
     const isExperiencePage = location.pathname.includes('/experiencias/') || location.pathname.includes('/experiencia/');
     const canEditExperience = permissions.canEdit && isExperiencePage;
+    const { user } = useAuth();
+    const isOwner = user?.role === "emprendedor";
 
     return (
         <>
@@ -118,7 +119,7 @@ const HeaderActions = ({ isEditMode = false, onToggleEditMode }: HeaderActionsPr
                 )}
 
                 {/* Acciones normales del header */}
-                {!isExperiencePage && (
+                {!isOwner && (
                     <>
                         <ButtonIcon>
                             <ShoppingCart />
@@ -137,7 +138,7 @@ const HeaderActions = ({ isEditMode = false, onToggleEditMode }: HeaderActionsPr
             </motion.div>
 
             {/* Integramos la barra lateral que se abrirá al hacer clic en el botón */}
-            {!isExperiencePage && (
+            {!isOwner && (
                 <SidebarExperiences
                     isOpen={sidebarOpen}
                     onClose={() => setSidebarOpen(false)}
