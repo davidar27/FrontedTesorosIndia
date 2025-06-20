@@ -51,7 +51,7 @@ const SidebarExperiences: React.FC<SidebarExperiencesProps> = ({ isOpen, onClose
         queryKey: ['experiences'],
         queryFn: ExperiencesApi.getExperiences,
         staleTime: 5 * 60 * 1000,
-        enabled: isRendered, // Cargar datos solo cuando el sidebar es visible o está apareciendo
+        enabled: isRendered,
     });
 
     const handleAnimationEnd = () => {
