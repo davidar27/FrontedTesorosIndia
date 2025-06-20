@@ -97,7 +97,7 @@ export default function ProductList() {
 
         // Filtrar por calificación
         if (filters.rating) {
-            filtered = filtered.filter(product => 
+            filtered = filtered.filter(product =>
                 product.rating >= filters.rating!
             );
         }

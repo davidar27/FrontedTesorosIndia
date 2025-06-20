@@ -1,6 +1,6 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import LoadingSpinner from '@/components/layouts/LoadingSpinner';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import clsx from 'clsx';
 import { useScroll, useMotionValueEvent } from 'framer-motion';
 import ButtonIcon from '../../components/ui/buttons/ButtonIcon';
@@ -8,6 +8,7 @@ import { ExperiencesApi } from '@/services/home/experiences';
 import { ExperienceItem } from './ExperienceItem';
 import { X, RefreshCw, Sparkles } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { Experience } from '@/features/admin/experiences/ExperienceTypes';
 
 interface SidebarExperiencesProps {
     isOpen: boolean;
@@ -16,13 +17,17 @@ interface SidebarExperiencesProps {
 
 const SidebarExperiences: React.FC<SidebarExperiencesProps> = ({ isOpen, onClose }) => {
     const navigate = useNavigate();
-    const [activeEstateId, setActiveEstateId] = useState<number | null>(null);
+    const location = useLocation();
     const [scrolled, setScrolled] = useState(false);
     const { scrollY } = useScroll();
     
-    // Estado para manejar las animaciones de entrada/salida
     const [isRendered, setIsRendered] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
+
+    const activeExperienceId = useMemo(() => {
+        const match = location.pathname.match(/\/experiencias\/(\d+)/);
+        return match ? Number(match[1]) : null;
+    }, [location.pathname]);
 
     useMotionValueEvent(scrollY, "change", (latest) => {
         setScrolled(latest > 50);
@@ -42,7 +47,7 @@ const SidebarExperiences: React.FC<SidebarExperiencesProps> = ({ isOpen, onClose
         isLoading, 
         error,
         refetch
-    } = useQuery({
+    } = useQuery<Experience[]>({
         queryKey: ['experiences'],
         queryFn: ExperiencesApi.getExperiences,
         staleTime: 5 * 60 * 1000,
@@ -57,12 +62,10 @@ const SidebarExperiences: React.FC<SidebarExperiencesProps> = ({ isOpen, onClose
     
     const handleClose = useCallback(() => {
         setIsClosing(true);
-        // El onClose real se llama después de que la animación de salida termine
-        setTimeout(onClose, 300); // Coincide con la duración de la animación CSS
+        setTimeout(onClose, 300);
     }, [onClose]);
 
     const navigateToEstate = useCallback((experience_id: number) => {
-        setActiveEstateId(experience_id);
         navigate(`/experiencias/${experience_id}`);
         handleClose();
     }, [navigate, handleClose]);
@@ -174,7 +177,7 @@ const SidebarExperiences: React.FC<SidebarExperiencesProps> = ({ isOpen, onClose
                                                 key={`experience-${experience.id}`}
                                                 index={index}
                                                 experience={experience}
-                                                activeEstateId={activeEstateId}
+                                                activeEstateId={activeExperienceId}
                                                 onNavigate={navigateToEstate}
                                             />
                                         ))}
