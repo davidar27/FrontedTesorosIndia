@@ -19,7 +19,7 @@ export interface CreatePackageData {
     unavailableDates: number[];
     duration: string;
     pricePerPerson: string;
-    services: string;
+    selectedDetails: string;
 }
 
 export interface UpdatePackageData {

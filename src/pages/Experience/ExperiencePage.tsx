@@ -8,6 +8,7 @@ import useAuth from '@/context/useAuth';
 import useExperiencePermissions from '@/hooks/useExperiencePermissions';
 import EditModeNotification from '@/components/experience/EditModeNotification';
 import { usePageContext } from '@/context/PageContext';
+import { formatPrice } from '@/utils/formatPrice';
 
 interface Experience {
     id: number;
@@ -98,15 +99,7 @@ const ExperiencePage: React.FC = () => {
     const currentExperience = info[0];
     const permissions = useExperiencePermissions();
 
-    const formatPrice = (price: number): string => {
-        return new Intl.NumberFormat('es-CO', {
-            style: 'currency',
-            currency: 'COP',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        }).format(price);
-    };
-
+   
     const convertRatingToFiveScale = (rating: number): number => {
         return (rating / 2);
     };

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { DollarSign, Users, Bird } from 'lucide-react';
+import { DollarSign, Users } from 'lucide-react';
 import Picture from '@/components/ui/display/Picture';
 import { BaseItem, StatInfo } from './types';
 import { getImageUrl } from '@/features/admin/adminHelpers';
 import Button from '@/components/ui/buttons/Button';
 import LoadingSpinner from '@/components/layouts/LoadingSpinner';
-
+import { getExperienceTypeDetails } from '@/features/admin/experiences/experienceUtils';
 interface ExperiencePackageEditCardProps<T extends BaseItem> {
     item: T;
     onSave: (data: Partial<T> | FormData) => void;
@@ -42,6 +42,8 @@ export function ExperiencePackageEditCard<T extends BaseItem>({
     const [formData, setFormData] = useState<Partial<T>>(item);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
     const [imageFile, setImageFile] = useState<File | null>(null);
+    const { Icon: TypeIcon } = getExperienceTypeDetails(item.type || '');
+
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -214,20 +216,39 @@ export function ExperiencePackageEditCard<T extends BaseItem>({
                 <div className={`grid gap-3 mb-6 ${stats.length === 1 ? 'grid-cols-1' : stats.length === 2 ? 'grid-cols-2' : stats.length === 3 ? 'grid-cols-3' : stats.length === 4 ? 'grid-cols-2' : 'grid-cols-2'}`}>
                     {editFields.type && (
                         <div className="text-center p-3 rounded-lg bg-green-50">
-                            <Bird className="w-5 h-5 mx-auto mb-1 text-green-600" />
-                            <select
-                                name="type"
-                                value={formData.type || ''}
-                                onChange={handleInputChange}
-                                className="w-full bg-transparent border-b border-gray-300 focus:border-primary outline-none text-center"
-                            >
-                                <option value="">Seleccione un tipo</option>
-                                <option value="Café">Café</option>
-                                <option value="Hostal">Hostal</option>
-                                <option value="Gastronomia">Gastronomia</option>
-                                <option value="Masajes">Masajes</option>
-                                <option value="Agroecológico">Agroecológico</option>
-                            </select>
+                            <TypeIcon className="w-5 h-5 mx-auto mb-1 text-green-600" />
+
+                            <div className="relative w-full">
+                                <select
+                                    name="type"
+                                    value={formData.type || ''}
+                                    onChange={handleInputChange}
+                                    className={`
+                                        w-full appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2
+                                        text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary
+                                        text-sm shadow-sm transition-all
+                                    `}
+                                >
+                                    <option value="">Seleccione un tipo</option>
+                                    <option value="Café">Café</option>
+                                    <option value="Hostal">Hostal</option>
+                                    <option value="Gastronomia">Gastronomía</option>
+                                    <option value="Masajes">Masajes</option>
+                                    <option value="Agroecológico">Agroecológico</option>
+                                </select>
+
+                                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
+                                    <svg
+                                        className="h-4 w-4"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                            </div>
                             <p className="text-xs text-gray-600">Tipo de experiencia</p>
                         </div>
                     )}

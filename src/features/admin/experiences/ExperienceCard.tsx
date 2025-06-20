@@ -6,7 +6,8 @@ import React from 'react';
 import type { ActionButton } from '@/components/admin/ReusableCard/types';
 import { ExperiencePackageEditCard } from '@/components/admin/ReusableCard/ExperiencePackageEditCard';
 import { ExperiencePackageViewCard } from '@/components/admin/ReusableCard/ExperiencePackageViewCard';
-import { Edit, Bird } from 'lucide-react';
+import { Edit } from 'lucide-react';
+import { getExperienceTypeDetails } from './experienceUtils';
 
 interface ExperienceCardProps {
     item: Experience;
@@ -23,8 +24,7 @@ export const ExperienceCard = React.memo(function ExperienceCard({
     const [isLoading, setIsLoading] = useState(false);
     const { updateAsync } = useExperiencesManagement();
 
-
-
+    const { Icon: TypeIcon } = getExperienceTypeDetails(item.type);
 
     React.useEffect(() => {
         const event = new CustomEvent('cardEditingStateChange', {
@@ -69,14 +69,13 @@ export const ExperienceCard = React.memo(function ExperienceCard({
         }
     };
 
-
     const stats = [
         {
             value: item.type,
             label: 'Tipo de experiencia',
             bgColor: 'bg-green-50',
             textColor: 'text-green-600',
-            icon: Bird  
+            icon: TypeIcon  
         }
     ];
 
@@ -89,7 +88,6 @@ export const ExperienceCard = React.memo(function ExperienceCard({
         }
     ];
 
-
     if (isEditing) {
         if (!item.id) return null;
         return (
@@ -101,7 +99,6 @@ export const ExperienceCard = React.memo(function ExperienceCard({
                     name: true,
                     image: true,
                     type: true,
-
                 }}
                 stats={stats}
                 entity="experiences"

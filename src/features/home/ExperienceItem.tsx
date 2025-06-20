@@ -1,28 +1,6 @@
-import {
-    Coffee,
-    Flower,
-    Flower2,
-    Leaf,
-    Shrub,
-    Waves,
-    UtensilsCrossed,
-    Tent,
-    TreePalm,
-} from 'lucide-react';
 import React, { useMemo } from 'react';
 import { Experience } from '../admin/experiences/ExperienceTypes';
-
-const EXPERIENCE_ICONS = [
-    { icon: Coffee, id: 'Coffee', color: 'from-amber-500 to-orange-600' },
-    { icon: Flower, id: 'Flower', color: 'from-pink-500 to-rose-600' },
-    { icon: Flower2, id: 'Flower2', color: 'from-purple-500 to-violet-600' },
-    { icon: Leaf, id: 'Leaf', color: 'from-green-500 to-emerald-600' },
-    { icon: Shrub, id: 'Shrub', color: 'from-green-600 to-teal-700' },
-    { icon: Waves, id: 'Waves', color: 'from-blue-500 to-cyan-600' },
-    { icon: UtensilsCrossed, id: 'UtensilsCrossed', color: 'from-red-500 to-pink-600' },
-    { icon: Tent, id: 'Tent', color: 'from-indigo-500 to-purple-600' },
-    { icon: TreePalm, id: 'TreePalm', color: 'from-green-400 to-lime-600' },
-] as const;
+import { getExperienceTypeDetails } from '../admin/experiences/experienceUtils';
 
 interface ExperienceItemProps {
     experience: Experience;
@@ -33,14 +11,11 @@ interface ExperienceItemProps {
 
 export const ExperienceItem = React.memo<ExperienceItemProps>(
     ({ experience, activeEstateId, onNavigate, index }) => {
-        const { icon: IconComponent, color } = useMemo(() => {
-            const safeId = Math.abs(Number(experience.id) || 0);
-            const idx = safeId % EXPERIENCE_ICONS.length;
-            return EXPERIENCE_ICONS[idx] || EXPERIENCE_ICONS[0];
-        }, [experience.id]);
+        const { Icon: IconComponent, color } = useMemo(() => {
+            return getExperienceTypeDetails(experience.type);
+        }, [experience.type]);
 
         const isActive = activeEstateId === Number(experience.id);
-
         return (
             <li
                 className="experience-item-list-item"
