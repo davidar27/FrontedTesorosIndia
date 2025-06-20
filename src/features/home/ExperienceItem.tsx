@@ -11,7 +11,6 @@ import {
 } from 'lucide-react';
 import React, { useMemo } from 'react';
 import { Experience } from '../admin/experiences/ExperienceTypes';
-import { motion } from 'framer-motion';
 
 const EXPERIENCE_ICONS = [
     { icon: Coffee, id: 'Coffee', color: 'from-amber-500 to-orange-600' },
@@ -29,54 +28,39 @@ interface ExperienceItemProps {
     experience: Experience;
     activeEstateId: number | null;
     onNavigate: (id: number) => void;
+    index: number;
 }
 
 export const ExperienceItem = React.memo<ExperienceItemProps>(
-    ({ experience, activeEstateId, onNavigate }) => {
+    ({ experience, activeEstateId, onNavigate, index }) => {
         const { icon: IconComponent, color } = useMemo(() => {
             const safeId = Math.abs(Number(experience.id) || 0);
-            const index = safeId % EXPERIENCE_ICONS.length;
-            return EXPERIENCE_ICONS[index] || EXPERIENCE_ICONS[0];
+            const idx = safeId % EXPERIENCE_ICONS.length;
+            return EXPERIENCE_ICONS[idx] || EXPERIENCE_ICONS[0];
         }, [experience.id]);
 
         const isActive = activeEstateId === Number(experience.id);
 
-        const itemVariants = {
-            hidden: { opacity: 0, y: 20 },
-            visible: {
-                opacity: 1,
-                y: 0,
-                transition: { duration: 0.3, ease: "easeOut" }
-            },
-            hover: {
-                y: -2,
-                transition: { duration: 0.2, ease: "easeOut" }
-            }
-        };
-
         return (
-            <motion.li
-                variants={itemVariants}
-                initial="hidden"
-                animate="visible"
-                whileHover="hover"
-                className="group"
+            <li
+                className="experience-item-list-item"
+                style={{ animationDelay: `${index * 50}ms` }}
             >
-                <motion.button
+                <button
                     onClick={() => onNavigate(Number(experience.id))}
                     type="button"
                     title={experience.name_experience}
                     className={`
+                        experience-item-button
                         relative w-full text-left rounded-2xl border overflow-hidden
-                        transition-all duration-300 cursor-pointer
+                        cursor-pointer
                         focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2
                         transform-gpu
                         ${isActive
                             ? 'bg-gradient-to-br from-green-500 to-emerald-600 text-white border-transparent shadow-xl shadow-green-500/25'
-                            : 'bg-white border-gray-200 hover:border-green-300 shadow-sm hover:shadow-md'
+                            : 'bg-white border-gray-200 hover:border-green-300 shadow-sm'
                         }
                     `}
-                    whileTap={{ scale: 0.98 }}
                 >
                     {/* Background pattern for active state */}
                     {isActive && (
@@ -103,7 +87,7 @@ export const ExperienceItem = React.memo<ExperienceItemProps>(
                             <div className="flex-1 min-w-0">
                                 <h3 className={`
                                     font-bold text-lg leading-tight
-                                    ${isActive ? 'text-white' : 'text-gray-800 group-hover:text-green-700'}
+                                    ${isActive ? 'text-white' : 'text-gray-800'}
                                 `}>
                                     {experience.name_experience}
                                 </h3>
@@ -120,8 +104,8 @@ export const ExperienceItem = React.memo<ExperienceItemProps>(
                             `} />
                         </div>
                     </div>
-                </motion.button>
-            </motion.li>
+                </button>
+            </li>
         );
     }
 );

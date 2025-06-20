@@ -241,6 +241,31 @@
   animation: float 3s ease-in-out infinite;
 }
 
+/* Nuevas animaciones para reemplazo de Framer Motion */
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.animate-slide-out-right {
+  animation: slideOutRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.animate-fade-out {
+  animation: fadeOut 0.3s ease-in-out forwards;
+}
+
 /* Delays de animación más variados */
 .delay-75 {
   animation-delay: 75ms;
@@ -308,6 +333,27 @@ kbd {
 
 .text-pretty {
   text-wrap: pretty;
+}
+
+/* Estilos para ExperienceItem */
+.experience-item-list-item {
+  /* Aplica la animación de entrada */
+  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  /* La opacidad inicial es 0 para que la animación funcione */
+  opacity: 0;
+}
+
+.experience-item-button {
+  transition: transform 0.2s ease-out, box-shadow var(--transition-normal), border-color var(--transition-normal);
+}
+
+.experience-item-button:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-elevation-medium);
+}
+
+.experience-item-button:active {
+  transform: scale(0.98) translateY(-1px);
 }
 
 /* Scroll suave para toda la aplicación */
