@@ -9,6 +9,11 @@ import background from "/images/FondoMobile.webp";
 import SearchBar from "../ui/display/SearchBar";
 import HeaderActions from "./HeaderActions";
 
+interface HeaderProps {
+    isEditMode?: boolean;
+    onToggleEditMode?: () => void;
+}
+
 const excludedPaths = ["/auth/iniciar-sesion", "/auth/registro"];
 
 const headerAnimations = {
@@ -33,14 +38,14 @@ const backgroundAnimations = {
   visible: { opacity: 0.5, transition: { duration: 0.5 } }
 };
 
-const Header: React.FC = () => {
+const Header: React.FC<HeaderProps> = ({ isEditMode = false, onToggleEditMode }) => {
   const { pathname } = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const isHome = pathname === "/";
   const isAboutUs = pathname === "/nosotros";
   const shouldRender = !excludedPaths.includes(pathname);
-
+  const isExperiencePage = pathname.includes('/experiencias/') || pathname.includes('/experiencia/');
   const { scrollY } = useScroll();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
@@ -121,6 +126,8 @@ const Header: React.FC = () => {
         </AnimatePresence>
 
         {/* Search bar */}
+        {!isExperiencePage && (
+
         <motion.div
           layout
           transition={{ duration: 0.3 }}
@@ -131,7 +138,7 @@ const Header: React.FC = () => {
             expanded={isSearchExpanded}
           />
         </motion.div>
-
+        )}
         {/* Navbar mobile */}
         <AnimatePresence>
           {!isSearchExpanded && (
@@ -158,7 +165,10 @@ const Header: React.FC = () => {
               exit={{ opacity: 0, x: 20 }}
               transition={{ duration: 0.2 }}
             >
-              <HeaderActions />
+              <HeaderActions 
+                isEditMode={isEditMode}
+                onToggleEditMode={onToggleEditMode}
+              />
             </motion.div>
           )}
         </AnimatePresence>

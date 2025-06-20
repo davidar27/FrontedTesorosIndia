@@ -2,8 +2,6 @@ import useAuth from '@/context/useAuth';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import LoadingSpinner from '@/components/layouts/LoadingSpinner';
 import { UserRole } from '@/interfaces/role';
-import { useEffect, useState } from 'react';
-import { ExperiencesApi } from '@/services/home/experiences';
 
 interface ProtectedRouteProps {
     roles?: UserRole[];
@@ -14,37 +12,13 @@ interface ProtectedRouteProps {
 const ProtectedRoute = ({ roles = [], requireAuth = true, allowAdmin = true }: ProtectedRouteProps) => {
     const { isAuthenticated, user, isLoading } = useAuth();
     const location = useLocation();
-    const [isPublicExperience, setIsPublicExperience] = useState(false);
-    const [checkingExperiencestatus, setCheckingExperiencestatus] = useState(false);
 
-    useEffect(() => {
-        const checkExperienceAccess = async () => {
-            if (location.pathname.startsWith('/experiencia/')) {
-                setCheckingExperiencestatus(true);
-                try {
-                    const experienceId = location.pathname.split('/')[2];
-                    const Experience = await ExperiencesApi.getExperienceById(Number(experienceId));
-                    setIsPublicExperience(Experience.status === 'published');
-                } catch {
-                    setIsPublicExperience(false);
-                }
-                setCheckingExperiencestatus(false);
-            }
-        };
-
-        checkExperienceAccess();
-    }, [location.pathname]);
-
-    if (isLoading || checkingExperiencestatus) {
+    if (isLoading) {
         return <LoadingSpinner message="Verificando acceso..." />;
     }
 
     if (user?.role === 'administrador' && !allowAdmin && !location.pathname.startsWith('/dashboard')) {
         return <Navigate to="/dashboard" replace />;
-    }
-
-    if (isPublicExperience) {
-        return <Outlet />;
     }
 
     if (requireAuth && !isAuthenticated) {
