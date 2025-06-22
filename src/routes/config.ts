@@ -1,3 +1,4 @@
+import Profile from '@/features/user/Profile';
 import { lazy } from 'react';
 
 // Layouts
@@ -157,6 +158,14 @@ export const adminRoutes: RouteConfig[] = [
         protected: true,
         roles: ['administrador'],
         title: 'Gestión de Categorías'
+    },
+    {
+        path: '/perfil/:id',
+        element: Profile,
+        layout:MainLayout,
+        protected:true,
+        roles:['administrador', 'emprendedor', 'cliente'],
+        title:'Perfil'
     }
 ];
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Star, ShoppingCart, MessageCircle, MapPin, Users, Award, Heart, ArrowRight, Plus, Trash2 } from 'lucide-react';
 import { ExperienceApi } from '@/services/experience/experience';
 import { useParams } from 'react-router-dom';
-import { getImageUrl } from '@/features/admin/adminHelpers';
+import { getImageUrl } from '@/utils/getImageUrl';
 import ReusableMap from '@/components/shared/ReusableMap';
 import useAuth from '@/context/useAuth';
 import useExperiencePermissions from '@/hooks/useExperiencePermissions';

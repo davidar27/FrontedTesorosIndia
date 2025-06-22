@@ -1,7 +1,8 @@
 import React from 'react';
 import { Edit, LucideIcon, Check, X, MapPin, Calendar, DollarSign, User } from 'lucide-react';
 import Picture from '@/components/ui/display/Picture';
-import { formatDate, getImageUrl, normalizeStatus } from '@/features/admin/adminHelpers';
+import { getImageUrl } from '@/utils/getImageUrl';
+import { normalizeStatus, formatDate } from '@/features/admin/adminHelpers';
 import LoadingSpinner from '@/components/layouts/LoadingSpinner';
 import { BaseItem } from './types';
 

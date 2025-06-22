@@ -2,7 +2,8 @@ import React, { useMemo, useState } from 'react';
 import { Edit, LucideIcon, Check, X } from 'lucide-react';
 import Picture from '@/components/ui/display/Picture';
 import Avatar from '@/components/ui/display/Avatar';
-import { getImageUrl, normalizeStatus } from '@/features/admin/adminHelpers';
+import { getImageUrl } from '@/utils/getImageUrl';
+import { normalizeStatus } from '@/features/admin/adminHelpers';
 import LoadingSpinner from '@/components/layouts/LoadingSpinner';
 import { BaseItem } from './types';
 

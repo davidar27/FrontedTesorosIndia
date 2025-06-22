@@ -36,6 +36,7 @@ import LoadingSpinner from "./components/layouts/LoadingSpinner";
 import ResetPassword from "./pages/Auth/ResetPassword";
 import ForgotPasswordForm from "./pages/Auth/ForgotPasswordForm";
 import ExperiencePage from "./pages/Experience/ExperiencePage";
+import Profile from "./features/user/Profile";
 
 function App() {
   return (
@@ -67,6 +68,11 @@ function App() {
 
               {/* Rutas de edición de experiencias - accesible públicamente, protección interna */}
               <Route path="/experiencia/:experience_id/editar" element={<ExperiencePage />} />
+
+              {/* Rutas de perfil de usuario */}
+              <Route element={<ProtectedRoute roles={['administrador', 'emprendedor', 'cliente']} />}>
+                <Route path="/perfil/:id" element={<Profile />} />
+              </Route>
             </Route>
 
             {/* Rutas de autenticación */}
@@ -91,7 +97,7 @@ function App() {
                 <Route path="paquetes" element={<PackagesPage />} />
                 <Route path="categorias" element={<CategoriesPage />} />
               </Route>
-            </Route>
+            </Route>            
 
             {/* Páginas de error */}
             <Route path="/error">

@@ -4,7 +4,7 @@ import Grupo from "@/assets/images/Grupo.webp";
 import AnimatedTitle from "@/components/ui/display/AnimatedTitle";
 import Picture from "@/components/ui/display/Picture";
 import { EntrepreneursApi } from "@/services/home/entrepreneurs";
-import { getImageUrl } from "../admin/adminHelpers";
+import { getImageUrl } from "@/utils/getImageUrl";
 
 interface Leader {
   id: number;

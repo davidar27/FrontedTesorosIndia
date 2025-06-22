@@ -1,7 +1,7 @@
 import { Star } from "lucide-react";
 import { motion } from "framer-motion";
 import Button from "../ui/buttons/Button";
-import { getImageUrl } from '@/features/admin/adminHelpers';
+import { getImageUrl } from '@/utils/getImageUrl';
 export interface Product {
   id: number;
   name: string;

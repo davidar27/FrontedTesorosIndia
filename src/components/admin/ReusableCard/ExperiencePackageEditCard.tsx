@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { DollarSign, Users } from 'lucide-react';
 import Picture from '@/components/ui/display/Picture';
 import { BaseItem, StatInfo } from './types';
-import { getImageUrl } from '@/features/admin/adminHelpers';
+import { getImageUrl } from '@/utils/getImageUrl';
 import Button from '@/components/ui/buttons/Button';
 import LoadingSpinner from '@/components/layouts/LoadingSpinner';
 import { getExperienceTypeDetails } from '@/features/admin/experiences/experienceUtils';
