@@ -44,7 +44,7 @@ export default function CategoriesManagement() {
     }, [createAsync]);
 
     const handleUpdate = useCallback(
-        async (id: string, data: UpdateCategoryData) => {
+        async (id: number, data: UpdateCategoryData) => {
             updateAsync({ id, ...data }, {
                 onSuccess: () => {
                     toast.success('Categoría actualizada exitosamente');
@@ -58,7 +58,7 @@ export default function CategoriesManagement() {
     );
 
     const handleChangeStatus = useCallback(
-        (id: string, status: string) => {
+        (id: number, status: string) => {
             changeStatus({
                 id,
                 status,

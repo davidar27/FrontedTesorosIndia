@@ -65,7 +65,7 @@ const useSidebarLogic = () => {
     ], [activeSection]);
 
     // Handlers
-    const handleSidebarItemClick = useCallback((sectionid: string) => {
+    const handleSidebarItemClick = useCallback((sectionId: string) => {
         navigate(`/dashboard/${sectionId}`);
         setShowMobileMenu(false); // Cerrar menú móvil
     }, [navigate]);

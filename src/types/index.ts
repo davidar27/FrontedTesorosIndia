@@ -1,6 +1,6 @@
 // Interfaces base
 export interface BaseEntity<T> {
-    id: string;
+    id: number;
     name: string;
     description: string;
     status: T;
@@ -12,14 +12,14 @@ export interface BaseEntity<T> {
 
 // Interfaces específicas
 export interface Leader {
-    id: string;
+    id: number;
     name: string;
     age: string;
     role: string;
 }
 
 export interface Location {
-    id: string;
+    id: number;
     name: string;
     position: {
         lat: number;

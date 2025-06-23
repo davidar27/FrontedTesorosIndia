@@ -20,6 +20,7 @@ const SidebarExperiences: React.FC<SidebarExperiencesProps> = ({ isOpen, onClose
     const location = useLocation();
     const [scrolled, setScrolled] = useState(false);
     const { scrollY } = useScroll();
+    
     const [isRendered, setIsRendered] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
 
@@ -41,9 +42,9 @@ const SidebarExperiences: React.FC<SidebarExperiencesProps> = ({ isOpen, onClose
         }
     }, [isOpen]);
 
-    const {
+    const { 
         data: experiences = [],
-        isLoading,
+        isLoading, 
         error,
         refetch
     } = useQuery<Experience[]>({
@@ -58,7 +59,7 @@ const SidebarExperiences: React.FC<SidebarExperiencesProps> = ({ isOpen, onClose
             setIsRendered(false);
         }
     };
-
+    
     const handleClose = useCallback(() => {
         setIsClosing(true);
         setTimeout(onClose, 300);

@@ -12,7 +12,7 @@ import { UserRole } from '@/interfaces/role';
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-const getRedirectPath = (role: UserRole | undefined, from: string | undefined, experience_id: string | undefined): string => {
+const getRedirectPath = (role: UserRole | undefined, from: string | undefined, experience_id: number | undefined): string => {
     if (from && from !== '/auth/iniciar-sesion') {
         return from;
     }

@@ -8,13 +8,13 @@ interface CategoriesConfigParams {
     CardComponent: React.ComponentType<{
         item: Category;
         onUpdate: (item: Category) => void;
-        onChangeStatus: (id: string, status: string) => void;
+        onChangeStatus: (id: number, status: string) => void;
         onRetry?: () => void;
     }>;
     actions: {
         onUpdate?: (item: Category) => void;
         onCreate?: () => void;
-        onChangeStatus?: (id: string, status: string) => void;
+        onChangeStatus?: (id: number, status: string) => void;
         onRetry?: () => void;
     };
 }

@@ -61,7 +61,7 @@ export interface ViewCardProps<T> extends BaseCardProps<T> {
     stats?: StatInfo[];
     actions?: ActionButton[];
     onUpdate?: (item: T) => void;
-    onChangeStatus?: (id: string, status: string) => void;
+    onChangeStatus?: (id: number, status: string) => void;
     showImage?: boolean;
     showStatus?: boolean;
     clickable?: boolean;
@@ -108,7 +108,7 @@ export interface ReusableCardProps<T> {
     stats?: StatInfo[];
     actions?: ActionButton[];
     onUpdate?: (data: T) => void;
-    onChangeStatus?: (id: string, status: string) => void;
+    onChangeStatus?: (id: number, status: string) => void;
     showImage?: boolean;
     showStatus?: boolean;
     className?: string;

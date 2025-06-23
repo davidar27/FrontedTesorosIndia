@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Plus, Edit, Trash2, Save, X, Upload } from 'lucide-react';
 
 interface TeamMember {
-    id: string;
+    id: number;
     name: string;
     age: number;
     occupation: string;
@@ -53,7 +53,7 @@ const TeamMembersManager: React.FC<TeamMembersManagerProps> = ({
         }
     };
 
-    const handleEditMember = (memberid: string) => {
+    const handleEditMember = (memberId: number) => {
         const member = members.find(m => m.id === memberId);
         if (member) {
             setNewMember(member);
@@ -80,7 +80,7 @@ const TeamMembersManager: React.FC<TeamMembersManagerProps> = ({
         }
     };
 
-    const handleDeleteMember = (memberid: string) => {
+    const handleDeleteMember = (memberId: number) => {
         const updatedMembers = members.filter(member => member.id !== memberId);
         onMembersChange(updatedMembers);
     };

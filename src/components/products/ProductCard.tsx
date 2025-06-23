@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import ConfirmDialog from '@/components/ui/feedback/ConfirmDialog';
 
 export interface Product {
-  id: string;
+  id: number;
   name: string;
   price: string;
   image: string;

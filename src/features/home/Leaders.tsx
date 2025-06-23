@@ -7,7 +7,7 @@ import { EntrepreneursApi } from "@/services/home/entrepreneurs";
 import { getImageUrl } from "@/utils/getImageUrl";
 
 interface Leader {
-  id: string;
+  id: number;
   name: string;
   age: string;
   profession: string;

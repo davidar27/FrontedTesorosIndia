@@ -25,7 +25,7 @@ export interface EntityConfig<T extends BaseEntity<string>> {
         item: T;
         onCreate?: () => void;
         onUpdate: (item: T) => void;
-        onChangeStatus: (id: string, status: string) => void;
+        onChangeStatus: (id: number, status: string) => void;
         onRetry?: () => void;
     }>;
 
@@ -33,7 +33,7 @@ export interface EntityConfig<T extends BaseEntity<string>> {
     onUpdate: (item: T) => void;
     onCreate?: () => void;
     onRetry?: () => void;
-    onChangeStatus: (id: string, status: string) => void;
+    onChangeStatus: (id: number, status: string) => void;
 
     // Filtros personalizados (opcional)
     customFilters?: React.ComponentType<{

@@ -6,10 +6,10 @@ interface ItemsGridProps<T extends BaseEntity<string>> {
     ItemCard: React.ComponentType<{
         item: T;
         onUpdate: (item: T) => void;
-        onChangeStatus: (id: string, status: string) => void;
+        onChangeStatus: (id: number, status: string) => void;
     }>;
     onUpdate: (item: T) => void;
-    onChangeStatus: (id: string, status: string) => void;
+    onChangeStatus: (id: number, status: string) => void;
     enableAnimations?: boolean;
 }   
 
@@ -23,7 +23,7 @@ export function ItemsGrid<T extends BaseEntity<string>>({
     const [editingCardId, setEditingCardId] = useState<number | null>(null);
 
     useEffect(() => {
-        const handleEditingStateChange = (event: CustomEvent<{ isEditing: boolean; itemid: string }>) => {
+        const handleEditingStateChange = (event: CustomEvent<{ isEditing: boolean; itemId: number }>) => {
             setEditingCardId(event.detail.isEditing ? event.detail.itemId : null);
         };
 

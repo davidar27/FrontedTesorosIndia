@@ -11,7 +11,7 @@ import { usePageContext } from '@/context/PageContext';
 import { formatPrice } from '@/utils/formatPrice';
 
 interface Experience {
-    id: string;
+    id: number;
     name: string;
     history: string;
     description: string;
@@ -23,7 +23,7 @@ interface Experience {
 }
 
 interface Product {
-    id: string;
+    id: number;
     name: string;
     price: number;
     image: string;
@@ -31,7 +31,7 @@ interface Product {
 }
 
 interface TeamMember {
-    id: string;
+    id: number;
     name: string;
     age: number;
     occupation: string;
@@ -40,7 +40,7 @@ interface TeamMember {
 }
 
 interface Review {
-    id: string;
+    id: number;
     userName: string;
     rating: number;
     comment: string;

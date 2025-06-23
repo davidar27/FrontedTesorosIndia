@@ -10,7 +10,7 @@ import { Experience } from "@/features/admin/experiences/ExperienceTypes";
 import { ExperiencesApi } from "@/services/home/experiences";
 
 interface Category {
-    id: string;
+    id: number;
     name: string;
 }
 

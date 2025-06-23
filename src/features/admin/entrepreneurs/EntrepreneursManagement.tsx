@@ -47,7 +47,7 @@ export default function EntrepreneursManagement() {
     }, [createAsync]);
 
     const handleUpdate = useCallback(
-        async (id: string, data: UpdateEntrepreneurData) => {
+        async (id: number, data: UpdateEntrepreneurData) => {
             updateAsync({ id, ...data }, {
                 onSuccess: () => {
                     toast.success('Emprendedor actualizado exitosamente');
@@ -61,7 +61,7 @@ export default function EntrepreneursManagement() {
     );
 
     const handleChangeStatus = useCallback(
-        (id: string, status: string) => {
+        (id: number, status: string) => {
             changeStatus({
                 id,
                 status,

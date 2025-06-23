@@ -6,8 +6,8 @@ import { UserRole } from "@/interfaces/role";
 
 // Tipo para los datos de usuario que pueden venir en diferentes formatos
 type UserDataInput = 
-  | { userid: string; name: string; role: string; experience_id?: number; image?: string }
-  | { data: { userid: string; name: string; role: string; experience_id?: number; image?: string } }
+  | { userId: number; name: string; role: string; experience_id?: number; image?: string }
+  | { data: { userId: number; name: string; role: string; experience_id?: number; image?: string } }
   | User;
 
 // Función helper para normalizar los datos del usuario desde diferentes formatos de respuesta

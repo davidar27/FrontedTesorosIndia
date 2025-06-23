@@ -48,7 +48,7 @@ interface ViewCardProps<T> {
     stats?: StatInfo[];
     actions?: ActionButton[];
     onUpdate?: (item: T) => void;
-    onChangeStatus?: (id: string, status: string) => void;
+    onChangeStatus?: (id: number, status: string) => void;
     statusConfig?: StatusConfig;
     showImage?: boolean;
     showStatus?: boolean;

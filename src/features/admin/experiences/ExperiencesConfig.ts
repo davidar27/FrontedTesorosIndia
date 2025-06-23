@@ -6,11 +6,11 @@ interface CreateConfigParams<T extends BaseEntity<Experiencestatus>> {
     CardComponent: React.ComponentType<{
         item: T;
         onUpdate: (item: T) => void;
-        onChangeStatus: (id: string, status: string) => void;
+        onChangeStatus: (id: number, status: string) => void;
     }>;
     actions: {
         onUpdate?: (item: T) => void;
-        onChangeStatus?: (id: string, status: string) => void;
+        onChangeStatus?: (id: number, status: string) => void;
     };
 }
 

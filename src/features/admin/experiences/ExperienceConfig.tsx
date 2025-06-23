@@ -7,13 +7,13 @@ interface ExperiencesConfigParams {
     CardComponent: React.ComponentType<{
         item: Experience;
         onUpdate: (item: Experience) => void;
-        onChangeStatus: (id: string, status: string) => void;
+        onChangeStatus: (id: number, status: string) => void;
         onRetry?: () => void;
     }>;
     actions: {
         onUpdate?: (item: Experience) => void;
         onCreate?: () => void;
-        onChangeStatus?: (id: string, status: string) => void;
+        onChangeStatus?: (id: number, status: string) => void;
         onRetry?: () => void;
     };
 }

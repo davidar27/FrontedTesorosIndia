@@ -3,7 +3,7 @@ import { BaseEntity } from "@/features/admin/types";
 export type EntrepreneurStatus = 'active' | 'inactive';
 
 export interface Entrepreneur extends BaseEntity<EntrepreneurStatus, number> {
-    id: string;
+    id: number;
     name: string;
     email: string;
     phone: string;
@@ -41,12 +41,12 @@ export interface EntrepreneurApiResponse {
 export interface EntrepreneurCardProps {
     entrepreneur: Entrepreneur;
     onUpdate: (entrepreneur: Entrepreneur) => void;
-    onChangeStatus: (id: string, status: string) => void;
+    onChangeStatus: (id: number, status: string) => void;
 }
 
 // Tipos para autenticación
 export interface User {
-    id: string;
+    id: number;
     name: string;
     email: string;
     role: string;

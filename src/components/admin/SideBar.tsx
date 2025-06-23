@@ -17,7 +17,7 @@ export interface SidebarItem {
 const Sidebar: React.FC<{
     items: SidebarItem[];
     showMobileMenu: boolean;
-    onItemClick: (itemid: string) => void;
+    onItemClick: (itemId: string) => void;
     onMobileMenuClose: () => void;
 
 }> = React.memo(({ items, showMobileMenu, onItemClick, onMobileMenuClose }) => {

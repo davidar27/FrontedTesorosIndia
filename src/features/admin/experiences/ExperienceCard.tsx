@@ -12,7 +12,7 @@ import { getExperienceTypeDetails } from './experienceUtils';
 interface ExperienceCardProps {
     item: Experience;
     onUpdate: (item: Experience) => void;
-    onChangeStatus?: (id: string, status: string) => void;
+    onChangeStatus?: (id: number, status: string) => void;
 }
 
 export const ExperienceCard = React.memo(function ExperienceCard({

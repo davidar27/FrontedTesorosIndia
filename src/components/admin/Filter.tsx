@@ -94,7 +94,7 @@ export const DefaultCustomFilters = <T extends BaseEntity<string>>({
         }
     ];
 
-    const handleStatusChange = (statusid: string) => {
+    const handleStatusChange = (statusId: string) => {
         setSelectedStatus(statusId);
         const filtered = statusId === 'all'
             ? items

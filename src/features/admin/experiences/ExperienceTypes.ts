@@ -29,7 +29,7 @@ export interface ExperienceApiResponse {
 
 export interface ExperienceCardProps {
     Experience: Experience;
-    onUpdate: (id: string) => void;
+    onUpdate: (id: number) => void;
 }
 
 export interface UpdateExperienceData {

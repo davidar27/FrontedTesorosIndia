@@ -3,7 +3,7 @@ import { BaseEntity } from '@/features/admin/types';
 export type PackageStatus = 'active' | 'inactive' | 'draft';
 
 export interface Package extends BaseEntity<PackageStatus> {
-    id: string;
+    id: number;
     price: number;
     description: string;
     duration: string;

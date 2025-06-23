@@ -168,7 +168,7 @@ export default function GenericManagement<T extends BaseEntity<string>>({
                     items={finalFilteredItems}
                     ItemCard={ItemCard}
                     onUpdate={handleUpdate}
-                    onChangeStatus={(id: string, status: string) => {
+                    onChangeStatus={(id: number, status: string) => {
                         onChangeStatus(id, status);
                     }}
                     enableAnimations={enableAnimations}

@@ -7,13 +7,13 @@ interface EntrepreneursConfigParams {
     CardComponent: React.ComponentType<{
         item: Entrepreneur;
         onUpdate: (item: Entrepreneur) => void;
-        onChangeStatus: (id: string, status: string) => void;
+        onChangeStatus: (id: number, status: string) => void;
         onRetry?: () => void;
     }>;
     actions: {
         onUpdate?: (item: Entrepreneur) => void;
         onCreate?: () => void;
-        onChangeStatus?: (id: string, status: string) => void;
+        onChangeStatus?: (id: number, status: string) => void;
         onRetry?: () => void;
     };
 }

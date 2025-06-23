@@ -14,7 +14,7 @@ interface PackageFormProps {
 }
 
 interface DashboardDetails {
-    detail_id: string;
+    detail_id: number;
     description: string;
 }
 
