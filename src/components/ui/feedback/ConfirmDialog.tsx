@@ -36,12 +36,12 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                         className="bg-gray-200 text-gray-700 hover:bg-gray-300"
                         onClick={onCancel}
                         disabled={loading}
-                        variant={isDangerAction ? 'danger' : 'primary'}
+                        variant={isDangerAction ? 'danger' : 'warning'}
                     >
                         {cancelText}
                     </Button>
                     <Button
-                        variant={confirmText === 'Activar' ? 'primary' : 'danger'}
+                        variant={confirmText === 'Activar' ? 'primary' : 'primary'}
                         onClick={onConfirm}
                         disabled={loading}
                     >
