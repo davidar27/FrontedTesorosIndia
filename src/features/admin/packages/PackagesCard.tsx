@@ -13,7 +13,7 @@ import { ExperiencePackageViewCard } from '@/components/admin/ReusableCard/Exper
 interface PackagesCardProps {
     item: Package;
     onUpdate: (item: Package) => void;
-    onChangeStatus?: (id: number, status: string) => void;
+    onChangeStatus?: (id: string, status: string) => void;
 }
 
 export const PackagesCard = React.memo(function PackagesCard({

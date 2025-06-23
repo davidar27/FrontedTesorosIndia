@@ -4,7 +4,7 @@ import useAuth from '@/context/useAuth';
 import { ExperiencesApi } from '@/services/home/experiences';
 
 interface AuthUser {
-    id: number;
+    id: string;
     role: string;
 }
 
@@ -12,7 +12,7 @@ interface AuthContextType {
     user: AuthUser | null;
 }
 
-export const useExperienceQuery = (experienceId: string | undefined) => {
+export const useExperienceQuery = (experienceid: string | undefined) => {
     const { user } = useAuth() as AuthContextType;
     const enabled = Boolean(experienceId);
 

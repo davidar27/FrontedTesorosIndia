@@ -57,7 +57,7 @@ export default function PackagesManagement() {
     }, [createAsync]);
 
     const handleUpdate = useCallback(
-        async (id: number, data: UpdatePackageData) => {
+        async (id: string, data: UpdatePackageData) => {
             updateAsync({ id, ...data }, {
                 onSuccess: () => {
                     toast.success('Paquete actualizado exitosamente');
@@ -71,7 +71,7 @@ export default function PackagesManagement() {
     );
 
     const handleChangeStatus = useCallback(
-        (id: number, status: string) => {
+        (id: string, status: string) => {
             changeStatus({
                 id,
                 status,

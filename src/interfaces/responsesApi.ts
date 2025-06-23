@@ -17,7 +17,7 @@ export interface TokenVerificationResponse {
   success: boolean;
   user: {
     data: {
-      userId: number;
+      userid: string;
       name: string;
       role: string;
       experience_id?: number;
@@ -37,7 +37,7 @@ export interface LoginResponse {
   user: {
     logged: boolean;
     status: string;
-    userId: number;
+    userid: string;
     role: string;
     name: string;
     token_version: number;

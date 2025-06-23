@@ -10,7 +10,7 @@ const transformExperienceResponse = (Experience: RawExperienceResponse): Experie
 });
 
 export const ExperiencesApi = {
-    getExperienceById: async (id: number): Promise<Experience> => {
+    getExperienceById: async (id: string): Promise<Experience> => {
         const response = await publicAxiosInstance.get(`/dashboard/experiencias/${id}`);
         return response.data;
     },

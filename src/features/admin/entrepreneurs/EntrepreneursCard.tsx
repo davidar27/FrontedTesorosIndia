@@ -13,7 +13,7 @@ import ConfirmDialog from '@/components/ui/feedback/ConfirmDialog';
 interface EntrepreneurCardProps {
     item: Entrepreneur;
     onUpdate: (item: Entrepreneur) => void;
-    onChangeStatus?: (id: number, status: string) => void;
+    onChangeStatus?: (id: string, status: string) => void;
 }
 
 export const EntrepreneurCard = React.memo(function EntrepreneurCard({

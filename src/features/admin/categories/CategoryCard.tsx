@@ -13,7 +13,7 @@ import ConfirmDialog from '@/components/ui/feedback/ConfirmDialog';
 interface CategoryCardProps {
     item: Category;
     onUpdate: (item: Category) => void;
-    onChangeStatus?: (id: number, status: string) => void;
+    onChangeStatus?: (id: string, status: string) => void;
 }
 
 export const CategoryCard = React.memo(function CategoryCard({

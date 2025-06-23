@@ -3,7 +3,7 @@ import { axiosInstance } from "@/api/axiosInstance";
 import { useAuth } from "./AuthContext";
 
 export type CartItem = {
-    id: number;
+    id: string;
     name: string;
     price: number;
     quantity: number;
@@ -14,8 +14,8 @@ interface CartContextType {
     items: CartItem[];
     total: number;
     handleAddToCart: (item: CartItem) => Promise<void>;
-    handleRemoveFromCart: (id: number) => Promise<void>;
-    handleUpdateQuantity: (id: number, quantity: number) => Promise<void>;
+    handleRemoveFromCart: (id: string) => Promise<void>;
+    handleUpdateQuantity: (id: string, quantity: number) => Promise<void>;
     handleClearCart: () => Promise<void>;
     handleFetchCart: () => Promise<void>;
     loading: boolean;
@@ -61,14 +61,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const handleAddToCart = async (item: CartItem) => {
         setLoading(true);
         try {
-            await axiosInstance.post("/carrito/agregar", { productId: item.id, quantity: item.quantity, userId: user?.id });
+            await axiosInstance.post("/carrito/agregar", { productId: item.id, userId: user?.id });
             await handleFetchCart();
         } finally {
             setLoading(false);
         }
     };
 
-    const handleRemoveFromCart = async (id: number) => {
+    const handleRemoveFromCart = async (id: string) => {
         setLoading(true);
         try {
             await axiosInstance.delete("/carrito/eliminar", { data: { productId: id } });
@@ -78,7 +78,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    const handleUpdateQuantity = async (id: number, quantity: number) => {
+    const handleUpdateQuantity = async (id: string, quantity: number) => {
         setLoading(true);
         try {
             await axiosInstance.put("/carrito/actualizar", { productId: id, quantity });

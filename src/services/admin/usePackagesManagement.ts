@@ -6,12 +6,12 @@ const packageApiOptions = {
     entityKey: 'packages',
     endpoints: {
         getAll: '/dashboard/paquetes',
-        getById: (id: number | string) => `/dashboard/paquete/${id}`,
+        getById: (id: string | string) => `/dashboard/paquete/${id}`,
         getDetails: '/dashboard/detalles',
         create: '/dashboard/paquetes/crear',
-        update: (id: number | string) => `/dashboard/paquetes/actualizar/${id}`,
-        delete: (id: number | string) => `/dashboard/paquetes/${id}`,
-        changeStatus: (id: number | string) => `/dashboard/estado/paquetes/${id}`,
+        update: (id: string | string) => `/dashboard/paquetes/actualizar/${id}`,
+        delete: (id: string | string) => `/dashboard/paquetes/${id}`,
+        changeStatus: (id: string | string) => `/dashboard/estado/paquetes/${id}`,
         search: '/usuario/paquetes/search',
     },
 };

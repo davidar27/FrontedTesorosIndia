@@ -5,7 +5,7 @@ interface NavLink {
     label: string;
 }
 
-export const getNavLinks = (user: User | null, experience_id: number): NavLink[] => {
+export const getNavLinks = (user: User | null, experience_id: string): NavLink[] => {
     const publicLinks: NavLink[] = [
         { path: "/", label: "Inicio" },
         { path: "/nosotros", label: "Nosotros" },

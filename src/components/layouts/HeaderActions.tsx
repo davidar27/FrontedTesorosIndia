@@ -160,7 +160,7 @@ const HeaderActions = ({ isEditMode = false, onToggleEditMode }: HeaderActionsPr
                     onClose={() => setSidebarOpen(false)}
                 />
             )}
-            <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />
+            <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} isClosing={false} scrolled={false} />
         </>
     );
 };

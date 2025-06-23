@@ -7,13 +7,13 @@ interface PackagesConfigParams {
     CardComponent: React.ComponentType<{
         item: Package;
         onUpdate: (item: Package) => void;
-        onChangeStatus: (id: number, status: string) => void;
+        onChangeStatus: (id: string, status: string) => void;
         onRetry?: () => void;
     }>;
     actions: {
         onUpdate?: (item: Package) => void;
         onCreate?: () => void;
-        onChangeStatus?: (id: number, status: string) => void;
+        onChangeStatus?: (id: string, status: string) => void;
         onRetry?: () => void;
     };
 }

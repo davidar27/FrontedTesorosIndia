@@ -15,7 +15,7 @@ export default function ExperiencesManagement() {
     } = useExperiencesManagement();
 
     const handleUpdate = useCallback(
-        async (id: number, data: UpdateExperienceData) => {
+        async (id: string, data: UpdateExperienceData) => {
             updateAsync({ id, ...data }, {
                 onSuccess: () => {
                     toast.success('Experiencia actualizada exitosamente');
@@ -29,7 +29,7 @@ export default function ExperiencesManagement() {
     );
 
     const handleChangeStatus = useCallback(
-        (id: number, status: string) => {
+        (id: string, status: string) => {
             changeStatus({
                 id,
                 status,
