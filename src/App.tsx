@@ -20,6 +20,9 @@ const NotFoundPage = lazy(() => import('@/pages/Errors/NotFoundPage'));
 const AboutUs = lazy(() => import('@/pages/AboutUs/AboutUs'));
 const AccessDenied = lazy(() => import('@/pages/Errors/AccessDenied'));
 const CartPage = lazy(() => import('@/pages/Cart/CartPage'));
+const PaymentSuccess = lazy(() => import('@/pages/Cart/PaymentSuccess'));
+const PaymentFailure = lazy(() => import('@/pages/Cart/PaymentFailure'));
+const PaymentPending = lazy(() => import('@/pages/Cart/PaymentPending'));
 
 // Admin Pages
 const ExperiencesPage = lazy(() => import('@/pages/Admin/ExperiencesPage'));
@@ -62,6 +65,11 @@ function App() {
 
               {/* Rutas de carrito */}
               <Route path="/carrito" element={<CartPage />} />
+
+              {/* Rutas de resultado de pago */}
+              <Route path="/pago-exitoso" element={<PaymentSuccess />} />
+              <Route path="/pago-fallido" element={<PaymentFailure />} />
+              <Route path="/pago-pendiente" element={<PaymentPending />} />
 
               {/* Rutas de experiencias */}
               <Route path="/experiencias">

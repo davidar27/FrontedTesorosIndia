@@ -4,7 +4,9 @@ import { useCart } from "@/context/CartContext";
 import { formatPrice } from "@/utils/formatPrice";
 import { getImageUrl } from "@/utils/getImageUrl";
 import { Minus, Plus, Trash2, ShoppingCart, MapPin, Sparkles, CreditCard, ArrowRight } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
+import { axiosInstance } from "@/api/axiosInstance";
+import { MercadoPagoCheckoutBrick } from "@/components/payments/MercadoPagoCheckoutBrick";
 
 const CartPage: React.FC = () => {
     const {
@@ -16,8 +18,54 @@ const CartPage: React.FC = () => {
         loading,
     } = useCart();
 
+    const [paying, setPaying] = useState(false);
+    const [payError, setPayError] = useState<string | null>(null);
+    const [preferenceId, setPreferenceId] = useState<string | null>(null);
+    const [showBrick, setShowBrick] = useState(false);
+
     const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
     const finalTotal = total + total * 0.19;
+
+    const handlePay = async () => {
+        setPaying(true);
+        setPayError(null);
+        try {
+            const payload = {
+                items: items.map(item => ({
+                    id: item.id,
+                    name: item.name,
+                    quantity: item.quantity,
+                    price: item.priceWithTax,
+                })),
+                total: finalTotal,
+            };
+            const { data } = await axiosInstance.post("/pagos/preferencia", payload);
+            if (data && data.preferenceId) {
+                setPreferenceId(data.preferenceId);
+                setShowBrick(true);
+            } else {
+                setPayError("No se pudo obtener la preferencia de pago.");
+            }
+        } catch (err: unknown) {
+            let message = "Error al iniciar el pago. Intenta nuevamente.";
+            if (
+                err &&
+                typeof err === "object" &&
+                "response" in err &&
+                err.response &&
+                typeof err.response === "object" &&
+                "data" in err.response &&
+                err.response.data &&
+                typeof err.response.data === "object" &&
+                "message" in err.response.data
+            ) {
+                message = String((err.response as { data?: { message?: string } }).data?.message);
+            }
+            setPayError(message);
+        } finally {
+            setPaying(false);
+        }
+    };
 
     return (
         <main className="relative z-20 responsive-padding-y bg-gradient-to-br from-emerald-50 via-teal-50 to-green-100 ">
@@ -172,11 +220,16 @@ const CartPage: React.FC = () => {
                             <button
                                 className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-4 px-6 rounded-2xl font-semibold text-lg shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 group"
                                 aria-label="Continuar Compra"
-                                disabled={items.length === 0}
+                                disabled={items.length === 0 || paying}
+                                onClick={handlePay}
                             >
                                 <div className="flex items-center justify-center space-x-3">
-                                    <CreditCard className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
-                                    <span>Continuar Compra</span>
+                                    {paying ? (
+                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                                    ) : (
+                                        <CreditCard className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
+                                    )}
+                                    <span>{paying ? 'Preparando pago...' : 'Continuar Compra'}</span>
                                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
                                 </div>
                             </button>
@@ -215,7 +268,30 @@ const CartPage: React.FC = () => {
                                 </div>
                             </div>
                         </div>
+
+                        {payError && (
+                            <div className="mt-4 text-red-600 text-center font-semibold">
+                                {payError}
+                            </div>
+                        )}
                     </aside>
+                </div>
+            )}
+
+            {/* Modal para el Brick de Mercado Pago */}
+            {showBrick && preferenceId && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-lg w-full relative">
+                        <button
+                            className="absolute top-4 right-4 text-gray-500 hover:text-red-500 text-2xl font-bold"
+                            onClick={() => setShowBrick(false)}
+                            aria-label="Cerrar modal"
+                        >
+                            ×
+                        </button>
+                        <h2 className="text-2xl font-bold mb-4 text-center text-emerald-700">Paga con Mercado Pago</h2>
+                        <MercadoPagoCheckoutBrick preferenceId={preferenceId} />
+                    </div>
                 </div>
             )}
         </main>
