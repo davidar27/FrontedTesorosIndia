@@ -41,6 +41,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       price: Number(product.price),
       quantity: 1,
       stock: product.stock,
+      priceWithTax: Number(product.priceWithTax),
     });
   };
 
