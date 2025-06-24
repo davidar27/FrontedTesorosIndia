@@ -26,6 +26,9 @@ export const PUBLIC_ROUTES = [
     // Rutas de experiencias (edición protegida)
     '/experiencia/:experience_id/editar',
 
+    // Rutas de carrito y pago
+    '/carrito',
+    '/metodo-pago',
 
     //
     '/perfil/:id'

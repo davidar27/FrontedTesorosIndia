@@ -6,8 +6,8 @@ import { getImageUrl } from "@/utils/getImageUrl";
 import { Minus, Plus, Trash2, ShoppingCart, MapPin, Sparkles, CreditCard, ArrowRight } from "lucide-react";
 import React, { useState } from "react";
 import { axiosInstance } from "@/api/axiosInstance";
-import { MercadoPagoCheckoutBrick } from "@/components/payments/MercadoPagoCheckoutBrick";
 import Button from "@/components/ui/buttons/Button";
+import { useNavigate } from "react-router-dom";
 
 const CartPage: React.FC = () => {
     const {
@@ -19,10 +19,9 @@ const CartPage: React.FC = () => {
         loading,
     } = useCart();
 
+    const navigate = useNavigate();
     const [paying, setPaying] = useState(false);
     const [payError, setPayError] = useState<string | null>(null);
-    const [preferenceId, setPreferenceId] = useState<string | null>(null);
-    const [showBrick, setShowBrick] = useState(false);
 
     const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
     const finalTotal = total + total * 0.19;
@@ -42,8 +41,8 @@ const CartPage: React.FC = () => {
             };
             const { data } = await axiosInstance.post("/pagos/preferencia", payload);
             if (data && data.preferenceId) {
-                setPreferenceId(data.preferenceId);
-                setShowBrick(true);
+                // Redirect to payment page with preference ID
+                navigate(`/metodo-pago?preferenceId=${data.preferenceId}`);
             } else {
                 setPayError("No se pudo obtener la preferencia de pago.");
             }
@@ -90,7 +89,7 @@ const CartPage: React.FC = () => {
             ) : (
                 <div className="p-8 md:p-12 flex gap-4">
                     {/* Cart Items */}
-                    <section className="w-full">
+                    <section className="w-3/4">
                         <div className="flex items-center gap-3 bg-white rounded-2xl p-4 justify-between">
                             <div className="flex items-center gap-3">
                                 <div className="w-8 h-8 bg-emerald-500 rounded-xl flex items-center justify-center">
@@ -146,7 +145,7 @@ const CartPage: React.FC = () => {
                                                     <h3 className="text-xl font-bold text-gray-800">{item.name}</h3>
                                                     <div className="flex items-center gap-2 text-emerald-600">
                                                         <MapPin className="w-4 h-4" />
-                                                        <span className="text-sm font-medium">Producto Colombiano</span>
+                                                        <span className="text-sm font-medium">Producto Artesanal</span>
                                                     </div>
                                                     <p className="text-2xl font-bold text-emerald-600">
                                                         {formatPrice(item.priceWithTax)}
@@ -154,40 +153,49 @@ const CartPage: React.FC = () => {
                                                 </div>
 
                                                 {/* Quantity Controls */}
-                                                <div className="flex items-center gap-3">
-                                                    <div className="flex items-center bg-gray-100 rounded-xl p-1">
-                                                        <button
-                                                            aria-label="Disminuir cantidad"
-                                                            className="w-10 h-10 rounded-xl bg-white hover:bg-emerald-50 hover:text-emerald-600 flex items-center justify-center transition-all duration-200 shadow-sm"
-                                                            onClick={() => handleUpdateQuantity({ ...item, quantity: Math.max(1, item.quantity - 1) })}
-                                                        >
-                                                            <Minus className="w-4 h-4" />
-                                                        </button>
+                                                <div className="flex items-start gap-3">
+                                                    <div className="flex flex-col">
+                                                        <div className="flex items-center bg-gray-100 rounded-xl p-1">
+                                                            <button
+                                                                disabled={item.quantity <= 1}
+                                                                onClick={() => handleUpdateQuantity({ ...item, quantity: Math.max(1, item.quantity - 1) })}
+                                                                className="w-10 h-10 rounded-xl bg-white hover:bg-emerald-50 hover:text-emerald-600 flex items-center justify-center transition-all duration-200 shadow-sm"
+                                                            >
+                                                                <Minus className="w-4 h-4" />
+                                                            </button>
 
-                                                        <Input
-                                                            type="number"
-                                                            value={item.quantity}
-                                                            onChange={(e) =>
-                                                                handleUpdateQuantity({
-                                                                    ...item,
-                                                                    quantity: parseInt(e.target.value) || 1,
-                                                                })
-                                                            }
-                                                            className="!w-16 bg-transparent border-none !shadow-none hover:bg-gray-50 !p-2 !text-center font-semibold text-lg appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-moz-appearance]:textfield"
-                                                            inputSize="sm"
-                                                            aria-valuemax={item.stock}
-                                                            aria-valuemin={1}
-                                                        />
+                                                            <Input
+                                                                type="number"
+                                                                value={item.quantity}
+                                                                min={1}
+                                                                max={item.stock || 999}
+                                                                onChange={(e) => {
+                                                                    const maxStock = item.stock || 999;
+                                                                    const value = Math.max(1, Math.min(maxStock, parseInt(e.target.value) || 1));
+                                                                    handleUpdateQuantity({
+                                                                        ...item,
+                                                                        quantity: value,
+                                                                    });
+                                                                }}
+                                                                className="!w-16 bg-transparent border-none !shadow-none hover:bg-gray-50 !p-2 !text-center font-semibold text-lg appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-moz-appearance]:textfield"
+                                                                inputSize="sm"
+                                                                aria-valuemax={item.stock || 999}
+                                                                aria-valuemin={1}
+                                                            />
 
-                                                        <button
-                                                            aria-label="Aumentar cantidad"
-                                                            className="w-10 h-10 rounded-xl bg-white hover:bg-emerald-50 hover:text-emerald-600 flex items-center justify-center transition-all duration-200 shadow-sm"
-                                                            onClick={() => handleUpdateQuantity({ ...item, quantity: item.quantity + 1 })}
-                                                        >
-                                                            <Plus className="w-4 h-4" />
-                                                        </button>
+                                                            <button
+                                                                disabled={!item.stock || item.quantity >= item.stock}
+                                                                onClick={() => handleUpdateQuantity({ ...item, quantity: item.quantity + 1 })}
+                                                                className={`w-10 h-10 rounded-xl bg-white hover:bg-emerald-50 hover:text-emerald-600 flex items-center justify-center transition-all duration-200 shadow-sm`}
+                                                            >
+                                                                <Plus className="w-4 h-4" />
+                                                            </button>
+
+                                                        </div>
+                                                        <span className="text-xs text-center text-gray-500">
+                                                            Productos Disponibles: {(item.stock) - item.quantity}
+                                                        </span>
                                                     </div>
-
                                                     <button
                                                         aria-label="Eliminar producto"
                                                         className="w-12 h-12 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center transition-all duration-200 group-hover:scale-105"
@@ -196,7 +204,9 @@ const CartPage: React.FC = () => {
                                                         <Trash2 className="w-5 h-5" />
                                                     </button>
                                                 </div>
+
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -205,13 +215,13 @@ const CartPage: React.FC = () => {
                     </section>
 
                     {/* Order Summary */}
-                    <aside className="sticky top-20 group bg-gradient-to-r from-white to-gray-50 rounded-2xl p-6 border border-gray-100 hover:shadow-lg transition-all duration-300"
+                    <aside className="sticky top-20 group bg-gradient-to-r from-white to-gray-50 rounded-2xl p-6 border border-gray-100 hover:shadow-lg transition-all duration-300 w-1/4 h-fit"
                     >
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 bg-emerald-500 rounded-xl flex items-center justify-center">
                                 <CreditCard className="w-4 h-4 text-white" />
                             </div>
-                            <h2 className="text-md font-bold text-gray-800">Resumen de tu Compra</h2>
+                            <h2 className="text-lg font-bold text-gray-800">Resumen de tu Compra</h2>
                         </div>
 
                         <div className="space-y-4">
@@ -272,23 +282,6 @@ const CartPage: React.FC = () => {
                             </div>
                         )}
                     </aside>
-                </div>
-            )}
-
-            {/* Modal para el Brick de Mercado Pago */}
-            {showBrick && preferenceId && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-lg w-full relative">
-                        <button
-                            className="absolute top-4 right-4 text-gray-500 hover:text-red-500 text-2xl font-bold"
-                            onClick={() => setShowBrick(false)}
-                            aria-label="Cerrar modal"
-                        >
-                            ×
-                        </button>
-                        <h2 className="text-2xl font-bold text-center text-emerald-700">Paga con Mercado Pago</h2>
-                        <MercadoPagoCheckoutBrick preferenceId={preferenceId} />
-                    </div>
                 </div>
             )}
         </main>

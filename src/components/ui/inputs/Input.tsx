@@ -30,6 +30,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             rightElement,
             validationRules,
             showValidation = false,
+            value,
+            onChange,
             ...props
         },
         ref
@@ -60,6 +62,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                     ref={ref}
                     type={isPassword ? (showPassword ? 'text' : 'password') : type}
                     className={finalClassName}
+                    value={value}
+                    onChange={onChange}
                     {...props}
                 />
                 {isPassword && (
@@ -83,7 +87,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                 )}
                 {validationRules && (
                     <FieldValidation
-                        value={props.value?.toString() || ''}
+                        value={value?.toString() || ''}
                         rules={validationRules}
                         showValidation={showValidation}
                     />
