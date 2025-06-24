@@ -454,7 +454,7 @@ const CreatePackageForm: React.FC<PackageFormProps> = ({
                 <div className="space-y-3">
                     <label htmlFor="price" className="block text-sm font-medium text-green-600">
                         <DollarSign className="inline mr-2 h-4 w-4" />
-                        Precio por persona (COP) *
+                        Precio por persona
                     </label>
                     <input
                         id="price"

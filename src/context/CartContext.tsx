@@ -4,18 +4,21 @@ import { useAuth } from "./AuthContext";
 
 export type CartItem = {
     id: number;
+    productId?: number;
     name: string;
     price: number;
+    priceWithTax: number;
     quantity: number;
     image?: string;
+    stock: number;
 };
 
 interface CartContextType {
     items: CartItem[];
     total: number;
     handleAddToCart: (item: CartItem) => Promise<void>;
-    handleRemoveFromCart: (id: number) => Promise<void>;
-    handleUpdateQuantity: (id: number, quantity: number) => Promise<void>;
+    handleRemoveFromCart: (item: CartItem) => Promise<void>;
+    handleUpdateQuantity: (item: CartItem) => Promise<void>;
     handleClearCart: () => Promise<void>;
     handleFetchCart: () => Promise<void>;
     loading: boolean;
@@ -47,8 +50,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         setLoading(true);
         try {
             const { data } = await axiosInstance.get("/carrito/obtener");
-            setItems(data.products || []);
-            guardarEnLocalStorage(data.products || []);
+            setItems(data || []);
+            guardarEnLocalStorage(data || []);
         } catch {
             // Si falla, intenta cargar del localStorage
             const local = localStorage.getItem(CART_STORAGE_KEY);
@@ -60,6 +63,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
     const handleAddToCart = async (item: CartItem) => {
         setLoading(true);
+        console.log(item);
         try {
             await axiosInstance.post("/carrito/agregar", { productId: item.id, quantity: item.quantity, userId: user?.id });
             await handleFetchCart();
@@ -68,20 +72,21 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    const handleRemoveFromCart = async (id: number) => {
+    const handleRemoveFromCart = async (item: CartItem) => {
         setLoading(true);
         try {
-            await axiosInstance.delete("/carrito/eliminar", { data: { productId: id } });
+            await axiosInstance.delete("/carrito/eliminar", { data: { productId: item.productId } });
             await handleFetchCart();
         } finally {
             setLoading(false);
         }
     };
 
-    const handleUpdateQuantity = async (id: number, quantity: number) => {
+    const handleUpdateQuantity = async (item: CartItem) => {
+        console.log(item);
         setLoading(true);
         try {
-            await axiosInstance.put("/carrito/actualizar", { productId: id, quantity });
+            await axiosInstance.put("/carrito/actualizar", { productId: item.productId, quantity: item.quantity });
             await handleFetchCart();
         } finally {
             setLoading(false);

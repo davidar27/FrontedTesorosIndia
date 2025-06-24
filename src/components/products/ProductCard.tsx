@@ -7,7 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ConfirmDialog from '@/components/ui/feedback/ConfirmDialog';
-
+import { formatPrice } from "@/utils/formatPrice";
 export interface Product {
   id: number;
   name: string;
@@ -16,6 +16,8 @@ export interface Product {
   rating: number;
   category?: string;
   experience_id?: number;
+  stock: number;
+  priceWithTax: number;
 }
 
 interface ProductCardProps {
@@ -38,7 +40,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       name: product.name,
       price: Number(product.price),
       quantity: 1,
-      image: product.image,
+      stock: product.stock,
     });
   };
 
@@ -96,7 +98,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <div className="flex justify-center items-center text-yellow-400">
             {renderStars()}
           </div>
-          <p className="text-gray-800 font-bold text-lg">${product.price} COP</p>
+          <p className="text-gray-800 font-bold text-lg">{formatPrice(product.priceWithTax)}</p>
           <div className="flex items-center justify-between">
             <Button type="button" onClick={handleAdd}>
               Añadir al carrito

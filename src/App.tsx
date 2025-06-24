@@ -19,6 +19,7 @@ const EmailVerificationPage = lazy(() => import('@/pages/Auth/VerificationPage')
 const NotFoundPage = lazy(() => import('@/pages/Errors/NotFoundPage'));
 const AboutUs = lazy(() => import('@/pages/AboutUs/AboutUs'));
 const AccessDenied = lazy(() => import('@/pages/Errors/AccessDenied'));
+const CartPage = lazy(() => import('@/pages/Cart/CartPage'));
 
 // Admin Pages
 const ExperiencesPage = lazy(() => import('@/pages/Admin/ExperiencesPage'));
@@ -58,6 +59,9 @@ function App() {
 
               {/* Rutas informativas */}
               <Route path="/nosotros" element={<AboutUs />} />
+
+              {/* Rutas de carrito */}
+              <Route path="/carrito" element={<CartPage />} />
 
               {/* Rutas de experiencias */}
               <Route path="/experiencias">

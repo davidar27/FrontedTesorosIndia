@@ -6,10 +6,9 @@ import { Package } from "lucide-react";
 import UserMenu from "@/components/layouts/menu/UserMenu";
 import { motion } from "framer-motion";
 import SidebarExperiences from "@/features/home/SidebarExperience";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
 import useExperiencePermissions from "@/hooks/useExperiencePermissions";
 import { useAuth } from "@/context/AuthContext";
-import CartSidebar from "@/components/ui/display/CartSidebar";
 import { useCart } from "@/context/CartContext";
 
 interface HeaderActionsProps {
@@ -19,7 +18,6 @@ interface HeaderActionsProps {
 
 const HeaderActions = ({ isEditMode = false, onToggleEditMode }: HeaderActionsProps) => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [cartOpen, setCartOpen] = useState(false);
     const location = useLocation();
     const permissions = useExperiencePermissions();
     const { experience_id } = useParams();
@@ -28,6 +26,8 @@ const HeaderActions = ({ isEditMode = false, onToggleEditMode }: HeaderActionsPr
     const { user } = useAuth();
     const isOwner = user?.role === "emprendedor";
     const { items } = useCart();
+    const navigate = useNavigate();
+
 
     return (
         <>
@@ -129,7 +129,7 @@ const HeaderActions = ({ isEditMode = false, onToggleEditMode }: HeaderActionsPr
                             <button
                                 aria-label="Abrir carrito"
                                 className="p-2 rounded hover:bg-gray-100 focus:outline-none"
-                                onClick={() => setCartOpen(true)}
+                                onClick={() => navigate("/carrito")}
                                 tabIndex={0}
                             >
                                 <ShoppingCart className="w-6 h-6" />
@@ -160,7 +160,6 @@ const HeaderActions = ({ isEditMode = false, onToggleEditMode }: HeaderActionsPr
                     onClose={() => setSidebarOpen(false)}
                 />
             )}
-            <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />
         </>
     );
 };
