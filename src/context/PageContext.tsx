@@ -47,7 +47,7 @@ export const PageProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             setSearchValue("");
             setSearchPageValue("");
         }
-    }, [searchParams, setSearchPageValue]);
+    }, [searchParams, setSearchPageValue, setSearchValue]);
 
     const value = {
         pageInfo,
