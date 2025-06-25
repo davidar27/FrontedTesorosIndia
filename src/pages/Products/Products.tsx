@@ -8,7 +8,8 @@ import { usePageContext } from "@/context/PageContext";
 import { Product } from "@/components/products/ProductCard";
 import { Experience } from "@/features/admin/experiences/ExperienceTypes";
 import { ExperiencesApi } from "@/services/home/experiences";
-
+import { useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 interface Category {
     id: number;
     name: string;
@@ -32,9 +33,12 @@ export default function ProductList() {
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
     const [experiences, setExperiences] = useState<Experience[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    
+    const [searchParams] = useSearchParams();
+    const searchParam = searchParams.get("search") || "";
+    const navigate = useNavigate();
+
     const [filters, setFilters] = useState<FilterState>({
-        category: searchValue || null,
+        category: null,
         experience: null,
         priceRange: { min: 0, max: 1000000 },
         rating: null,
@@ -46,7 +50,7 @@ export default function ProductList() {
             setIsLoading(true);
             try {
                 const [dataProducts, dataCategories, dataExperiences] = await Promise.all([
-                    ProductsApi.getProducts(),
+                    ProductsApi.getProducts(searchParam || undefined),
                     CategoriesApi.getCategories(),
                     ExperiencesApi.getExperiences()
                 ]);
@@ -61,7 +65,7 @@ export default function ProductList() {
             }
         };
         fetchData();
-    }, []);
+    }, [searchParam]);
 
     useEffect(() => {
         const normalizeText = (text: string) => {
@@ -103,8 +107,9 @@ export default function ProductList() {
         }
 
         // Filtrar por búsqueda
-        if (searchValue) {
-            const normalizedSearch = normalizeText(searchValue);
+        const effectiveSearch = searchParam || searchValue;
+        if (effectiveSearch) {
+            const normalizedSearch = normalizeText(effectiveSearch);
             filtered = filtered.filter(product => {
                 const name = product.name || '';
                 return normalizeText(name).includes(normalizedSearch);
@@ -137,7 +142,7 @@ export default function ProductList() {
         });
 
         setFilteredProducts(filtered);
-    }, [searchValue, filters, products, experiences]);
+    }, [searchParam, searchValue, filters, products, experiences]);
 
     const handleFilterChange = (key: keyof FilterState, value: string | number | null | { min: number; max: number }) => {
         setFilters(prev => ({ ...prev, [key]: value }));
@@ -189,10 +194,15 @@ export default function ProductList() {
                         <div className="flex items-center justify-between mb-6 pb-2 border-b border-green-100">
                             <h2 className="text-green-700 font-bold text-xl">Filtros</h2>
                             <button
-                                onClick={clearFilters}
+                                onClick={() => {
+                                    clearFilters();
+                                    if (searchParam) {
+                                        navigate(`/productos`);
+                                    }
+                                }}
                                 className="text-sm text-green-600 hover:text-green-800 underline"
                             >
-                                Limpiar
+                                Limpiar filtros
                             </button>
                         </div>
 
