@@ -12,7 +12,6 @@ export const PUBLIC_ROUTES = [
     
     // Rutas informativas
     '/nosotros',
-    '/contacto',
     
     // Rutas de productos
     '/productos',
@@ -25,5 +24,12 @@ export const PUBLIC_ROUTES = [
     '/experiencias/categorias/:categoryId',
     
     // Rutas de experiencias (edición protegida)
-    '/experiencia/:experience_id/editar'
+    '/experiencia/:experience_id/editar',
+
+    // Rutas de carrito y pago
+    '/carrito',
+    '/metodo-pago',
+
+    //
+    '/perfil/:id'
 ];

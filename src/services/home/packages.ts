@@ -5,4 +5,5 @@ export const PackagesApi = {
         const response = await publicAxiosInstance.get(`/paquetes/`);
         return response.data;
     }
+    
 }

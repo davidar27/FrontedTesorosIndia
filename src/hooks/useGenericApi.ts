@@ -2,6 +2,7 @@
 import { useQuery, useMutation, useQueryClient, QueryKey } from '@tanstack/react-query';
 import { axiosInstance } from '@/api/axiosInstance';
 import { AxiosError } from 'axios';
+import { useCallback } from 'react';
 
 interface BaseEntity<TId extends string | number = string> {
     id?: TId;
@@ -68,10 +69,15 @@ export function useGenericApi<T extends BaseEntity<TId>, TId extends string | nu
     const queryClient = useQueryClient();
 
     // Helper para construir URLs
-    const buildUrl = (endpoint: string | ((id: string | number) => string), id?: string | number) => {
-        if (!id) throw new Error('ID is required');
-        return typeof endpoint === 'function' ? endpoint(id) : `${endpoint}/${id}`;
-    };
+    const buildUrl = useCallback((endpoint: string | ((id: string | number) => string), id?: string | number) => {
+        if (typeof endpoint === 'function') {
+            if (!id) throw new Error('ID is required for this endpoint type');
+            return endpoint(id);
+        }
+        // Si no se proporciona un ID, devolvemos el endpoint tal cual para rutas estáticas.
+        // Si se proporciona un ID, lo adjuntamos, útil para operaciones no estándar.
+        return id ? `${endpoint}/${id}` : endpoint;
+    }, []);
 
     // GET ALL
     const {
@@ -238,7 +244,7 @@ export function useGenericApi<T extends BaseEntity<TId>, TId extends string | nu
     };
 
     // Custom request helper
-    const customRequest = async <R = any>(
+    const customRequest = useCallback(async <R = any>(
         endpointKey: string,
         method: HttpMethod,
         data?: any,
@@ -247,6 +253,8 @@ export function useGenericApi<T extends BaseEntity<TId>, TId extends string | nu
         const endpoint = endpoints[endpointKey];
         if (!endpoint) throw new Error(`Endpoint ${endpointKey} not configured`);
 
+        // La lógica de la URL se simplifica: si el endpoint es una función, necesita un ID.
+        // Si es una cadena, puede o no tener un ID. buildUrl se encargará de ello.
         const url = buildUrl(endpoint, id);
 
         switch (method) {
@@ -263,7 +271,7 @@ export function useGenericApi<T extends BaseEntity<TId>, TId extends string | nu
             default:
                 throw new Error(`Unsupported HTTP method: ${method}`);
         }
-    };
+    }, [endpoints, buildUrl]);
 
     return {
         // Query state

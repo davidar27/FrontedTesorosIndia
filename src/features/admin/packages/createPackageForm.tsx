@@ -1,14 +1,21 @@
-import React, { useState, ChangeEvent, FormEvent, DragEvent } from 'react';
-import { Calendar, Upload, MapPin, Clock, DollarSign, FileText, Star } from 'lucide-react';
+import React, { useState, ChangeEvent, FormEvent, DragEvent, useCallback, useMemo } from 'react';
+import { Calendar, Upload, MapPin, Clock, DollarSign, Star } from 'lucide-react';
 import { CreatePackageData } from '@/features/admin/packages/PackageTypes';
 import { ExperiencesApi } from '@/services/home/experiences';
 import { Experience } from '../experiences/ExperienceTypes';
+import { formatPrice } from '@/utils/formatPrice';
+import { usePackagesManagement } from '@/services/admin/usePackagesManagement';
 
 interface PackageFormProps {
     initialData?: Partial<CreatePackageData>;
     onSubmit?: (data: CreatePackageData, file: File | null) => void;
     onCancel?: () => void;
     isLoading?: boolean;
+}
+
+interface DashboardDetails {
+    detail_id: number;
+    description: string;
 }
 
 const CreatePackageForm: React.FC<PackageFormProps> = ({
@@ -24,7 +31,7 @@ const CreatePackageForm: React.FC<PackageFormProps> = ({
         unavailableDates: initialData?.unavailableDates || [],
         duration: initialData?.duration || '',
         pricePerPerson: initialData?.pricePerPerson || '',
-        services: initialData?.services || ''
+        selectedDetails: initialData?.selectedDetails || ''
     });
 
     const [currentMonth, setCurrentMonth] = useState<Date>(new Date(2025, 5));
@@ -32,15 +39,36 @@ const CreatePackageForm: React.FC<PackageFormProps> = ({
     const [errors, setErrors] = useState<Partial<Record<keyof CreatePackageData, string>>>({});
     const [experiences, setExperiences] = useState<Experience[]>([]);
     const [loadingExperiences, setLoadingExperiences] = useState(true);
+    const [displayValue, setDisplayValue] = useState('');
+    const [, setNumericValue] = useState<number | null>(null);
+    const { getDashboardDetails } = usePackagesManagement();
+    const [details, setDetails] = useState<DashboardDetails[] | null>(null);
+    const [loadingDetails, setLoadingDetails] = useState(true);
 
     React.useEffect(() => {
-        ExperiencesApi.getExperiences().then(data => {
-            setExperiences(data);
-            setLoadingExperiences(false);
-        });
-    }, []);
+        const fetchData = async () => {
+            setLoadingExperiences(true);
+            setLoadingDetails(true);
+            try {
+                const [experiencesData, detailsData] = await Promise.all([
+                    ExperiencesApi.getExperiences(),
+                    getDashboardDetails(),
+                ]);
+                setExperiences(experiencesData);
+                setDetails(detailsData as DashboardDetails[]);
+            } catch (error) {
+                console.error('Error al cargar los datos del dashboard:', error);
+            } finally {
+                setLoadingExperiences(false);
+                setLoadingDetails(false);
+            }
+        };
 
-    const handleInputChange = (field: keyof CreatePackageData, value: string | string[] | number[]): void => {
+        fetchData();
+    }, [getDashboardDetails]);
+
+
+    const handleInputChange = useCallback((field: keyof CreatePackageData, value: string | string[] | number[]): void => {
         setFormData(prev => ({
             ...prev,
             [field]: value
@@ -52,32 +80,57 @@ const CreatePackageForm: React.FC<PackageFormProps> = ({
                 [field]: undefined
             }));
         }
-    };
+    }, [errors]);
 
-    const handleExperienceToggle = (id: string): void => {
-        setFormData(prev => ({
-            ...prev,
-            selectedExperiences: prev.selectedExperiences.includes(id)
-                ? prev.selectedExperiences.filter(eid => eid !== id)
-                : [...prev.selectedExperiences, id]
-        }));
-    };
 
-    const handleDateToggle = (date: number): void => {
-        setFormData(prev => ({
-            ...prev,
-            unavailableDates: prev.unavailableDates.includes(date)
-                ? prev.unavailableDates.filter(d => d !== date)
-                : [...prev.unavailableDates, date]
-        }));
-    };
 
-    const handleDragOver = (e: DragEvent<HTMLDivElement>): void => {
+    const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        const raw = e.target.value.replace(/\D/g, '');
+        const number = parseInt(raw, 10);
+
+        if (!isNaN(number)) {
+            setNumericValue(number);
+            setDisplayValue(formatPrice(number));
+        } else {
+            setNumericValue(null);
+            setDisplayValue('');
+        }
+    }, []);
+
+
+    const toggleArrayItem = useCallback(<K extends keyof Pick<CreatePackageData, 'selectedExperiences' | 'unavailableDates' | 'selectedDetails'>>(
+        key: K,
+        item: CreatePackageData[K][number]
+    ) => {
+        setFormData(prev => {
+            const list = prev[key] as (string | number)[];
+            const updatedList = list.includes(item)
+                ? list.filter(i => i !== item)
+                : [...list, item];
+            return { ...prev, [key]: updatedList };
+        });
+    }, []);
+
+
+    const handleExperienceToggle = useCallback((id: string) => {
+        toggleArrayItem('selectedExperiences', id);
+    }, [toggleArrayItem]);
+
+    const handleDetailToggle = useCallback((id: string) => {
+        toggleArrayItem('selectedDetails', id);
+    }, [toggleArrayItem]);
+
+    const handleDateToggle = useCallback((date: number) => {
+        toggleArrayItem('unavailableDates', date);
+    }, [toggleArrayItem]);
+
+
+    const handleDragOver = useCallback((e: DragEvent<HTMLDivElement>): void => {
         e.preventDefault();
         e.stopPropagation();
-    };
+    }, []);
 
-    const handleDrop = (e: DragEvent<HTMLDivElement>): void => {
+    const handleDrop = useCallback((e: DragEvent<HTMLDivElement>): void => {
         e.preventDefault();
         e.stopPropagation();
         const files = e.dataTransfer.files;
@@ -89,9 +142,9 @@ const CreatePackageForm: React.FC<PackageFormProps> = ({
                 alert('Por favor selecciona una imagen menor a 5MB');
             }
         }
-    };
+    }, []);
 
-    const handleFileSelect = (e: ChangeEvent<HTMLInputElement>): void => {
+    const handleFileSelect = useCallback((e: ChangeEvent<HTMLInputElement>): void => {
         const file = e.target.files?.[0];
         if (file) {
             if (file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024) { // 5MB
@@ -100,9 +153,9 @@ const CreatePackageForm: React.FC<PackageFormProps> = ({
                 alert('Por favor selecciona una imagen menor a 5MB');
             }
         }
-    };
+    }, []);
 
-    const validateForm = (): boolean => {
+    const validateForm = useCallback((): boolean => {
         const newErrors: Partial<Record<keyof CreatePackageData, string>> = {};
 
         if (!formData.title.trim()) {
@@ -127,20 +180,21 @@ const CreatePackageForm: React.FC<PackageFormProps> = ({
             newErrors.pricePerPerson = 'Ingresa un precio válido';
         }
 
-        if (!formData.services.trim()) {
-            newErrors.services = 'Los servicios son requeridos';
+        if (!formData.selectedDetails.trim()) {
+            newErrors.selectedDetails = 'Los servicios son requeridos';
         }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
-    };
+    }, [formData]);
 
-    const getDaysInMonth = (date: Date): (number | null)[] => {
+    const daysInMonth = useMemo(() => {
+        const date = currentMonth;
         const year = date.getFullYear();
         const month = date.getMonth();
         const firstDay = new Date(year, month, 1);
         const lastDay = new Date(year, month + 1, 0);
-        const daysInMonth = lastDay.getDate();
+        const daysInMonthCount = lastDay.getDate();
         const startingDayOfWeek = firstDay.getDay();
 
         const days: (number | null)[] = [];
@@ -151,20 +205,20 @@ const CreatePackageForm: React.FC<PackageFormProps> = ({
         }
 
         // Días del mes
-        for (let day = 1; day <= daysInMonth; day++) {
+        for (let day = 1; day <= daysInMonthCount; day++) {
             days.push(day);
         }
 
         return days;
-    };
+    }, [currentMonth]);
 
-    const navigateMonth = (direction: number): void => {
+    const navigateMonth = useCallback((direction: number): void => {
         setCurrentMonth(prev => {
             const newMonth = new Date(prev);
             newMonth.setMonth(prev.getMonth() + direction);
             return newMonth;
         });
-    };
+    }, []);
 
     const monthNames: string[] = [
         'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
@@ -200,7 +254,7 @@ const CreatePackageForm: React.FC<PackageFormProps> = ({
                 unavailableDates: [],
                 duration: '',
                 pricePerPerson: '',
-                services: ''
+                selectedDetails: ''
             });
             setDraggedFile(null);
             setErrors({});
@@ -284,7 +338,7 @@ const CreatePackageForm: React.FC<PackageFormProps> = ({
             {/* Selección de experiencias */}
             <div className="grid grid-cols-2 md:grid-cols-2 gap-6 w-full my-8">
                 <div className="w-full border-2 border-primary/30 rounded-lg p-4">
-                    <label className="block text-sm font-medium text-green-600 mb-2 flex items-center">
+                    <label className="text-sm font-medium text-green-600 mb-2 flex items-center">
                         <MapPin className="inline mr-2 h-4 w-4" />
                         Experiencias *
                     </label>
@@ -313,7 +367,7 @@ const CreatePackageForm: React.FC<PackageFormProps> = ({
 
                 {/* Fechas no disponibles */}
                 <div className="w-full border-2 border-primary/30 rounded-lg p-4">
-                    <label className="block text-sm font-medium text-green-600 mb-2 flex items-center">
+                    <label className=" text-sm font-medium text-green-600 mb-2 flex items-center">
                         <Calendar className="inline mr-2 h-4 w-4" />
                         Fechas no disponibles
                     </label>
@@ -339,15 +393,15 @@ const CreatePackageForm: React.FC<PackageFormProps> = ({
                         </div>
 
                         <div className="grid grid-cols-7 gap-1 mb-2">
-                            {dayNames.map((day) => (
-                                <div key={day} className="text-center text-sm font-medium text-gray-500 py-2">
+                            {dayNames.map((day, index) => (
+                                <div key={`${day}-${index}`} className="text-center text-sm font-medium text-gray-500 py-2">
                                     {day}
                                 </div>
                             ))}
                         </div>
 
                         <div className="grid grid-cols-7 gap-1">
-                            {getDaysInMonth(currentMonth).map((day, index) => (
+                            {daysInMonth.map((day, index) => (
                                 <div key={index} className="aspect-square flex items-center justify-center">
                                     {day && (
                                         <button
@@ -367,8 +421,8 @@ const CreatePackageForm: React.FC<PackageFormProps> = ({
                             ))}
                         </div>
 
-                        <div className="flex items-center mt-4 text-sm text-gray-600">
-                            <div className="w-3 h-3 bg-gray-300 rounded-full mr-2"></div>
+                        <div className="flex items-center mt-4 text-sm text-red-600">
+                            <div className="w-3 h-3 bg-red-600 rounded-full mr-2"></div>
                             <span>No disponibles</span>
                         </div>
                     </div>
@@ -384,11 +438,13 @@ const CreatePackageForm: React.FC<PackageFormProps> = ({
                     </label>
                     <input
                         type="number"
+                        inputMode="numeric"
                         value={formData.duration}
                         onChange={(e) => handleInputChange('duration', e.target.value)}
                         className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${errors.duration ? 'border-red-500' : 'border-gray-300'
                             }`}
                         placeholder="0"
+                        min="0"
                     />
                     {errors.duration && (
                         <p className="text-sm text-red-600">{errors.duration}</p>
@@ -396,19 +452,20 @@ const CreatePackageForm: React.FC<PackageFormProps> = ({
                 </div>
 
                 <div className="space-y-3">
-                    <label className="block text-sm font-medium text-green-600">
+                    <label htmlFor="price" className="block text-sm font-medium text-green-600">
                         <DollarSign className="inline mr-2 h-4 w-4" />
-                        Precio por persona (COP) *
+                        Precio por persona
                     </label>
                     <input
-                        type="number"
-                        value={formData.pricePerPerson}
-                        onChange={(e) => handleInputChange('pricePerPerson', e.target.value)}
-                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${errors.pricePerPerson ? 'border-red-500' : 'border-gray-300'
-                            }`}
-                        placeholder="0"
-                        min="0"
+                        id="price"
+                        type="text"
+                        inputMode="numeric"
+                        value={displayValue}
+                        onChange={handleChange}
+                        placeholder="$1.000"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none"
                     />
+
                     {errors.pricePerPerson && (
                         <p className="text-sm text-red-600">{errors.pricePerPerson}</p>
                     )}
@@ -423,20 +480,26 @@ const CreatePackageForm: React.FC<PackageFormProps> = ({
                 </h3>
 
                 <div className="space-y-3">
-                    <label className="block text-sm font-medium text-green-600">
-                        <FileText className="inline mr-2 h-4 w-4" />
-                        Servicios *
-                    </label>
-                    <textarea
-                        value={formData.services}
-                        onChange={(e) => handleInputChange('services', e.target.value)}
-                        rows={4}
-                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none ${errors.services ? 'border-red-500' : 'border-gray-300'
-                            }`}
-                        placeholder="Detalla los servicios incluidos: alimentación, transporte, guías, actividades, etc."
-                    />
-                    {errors.services && (
-                        <p className="text-sm text-red-600">{errors.services}</p>
+                    <div className="space-y-2">
+                        {loadingDetails ? (
+                            <div className="text-center text-gray-400">Cargando detalles...</div>
+                        ) : (
+                            details?.map((detail) => (
+                                <label key={detail.detail_id} className="flex items-center space-x-3 cursor-pointer w-fit  transition-all duration-300">
+                                    <input
+                                        type="checkbox"
+                                        checked={formData.selectedDetails.includes(detail.detail_id?.toString() || '')}
+                                        onChange={() => handleDetailToggle(detail.detail_id?.toString() || '')}
+                                        className="w-4 h-4 border-2 border-primary/50 rounded-full appearance-none checked:bg-primary checked:border-primary cursor-pointer mr-2 "
+                                        aria-label={`Seleccionar detalle ${detail.description}`}
+                                    />
+                                    <span className="text-gray-700">{detail.description}</span>
+                                </label>
+                            ))
+                        )}
+                    </div>
+                    {errors.selectedDetails && (
+                        <p className="text-sm text-red-600">{errors.selectedDetails}</p>
                     )}
                 </div>
             </div>

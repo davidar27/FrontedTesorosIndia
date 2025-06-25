@@ -6,12 +6,13 @@ import Picture from "@/components/ui/display/Picture";
 import Navbar from "@/components/layouts/nav/Navbar";
 import imgLogo from "@/assets/icons/logotesorosindia.webp";
 import background from "/images/FondoMobile.webp";
-import SearchBar from "../ui/display/SearchBar";
+import SearchBar from "../../features/home/searchBar/SearchBar";
 import HeaderActions from "./HeaderActions";
+import { useAuth } from "@/context/AuthContext";
 
 interface HeaderProps {
-    isEditMode?: boolean;
-    onToggleEditMode?: () => void;
+  isEditMode?: boolean;
+  onToggleEditMode?: () => void;
 }
 
 const excludedPaths = ["/auth/iniciar-sesion", "/auth/registro"];
@@ -45,8 +46,9 @@ const Header: React.FC<HeaderProps> = ({ isEditMode = false, onToggleEditMode })
   const isHome = pathname === "/";
   const isAboutUs = pathname === "/nosotros";
   const shouldRender = !excludedPaths.includes(pathname);
-  const isExperiencePage = pathname.includes('/experiencias/') || pathname.includes('/experiencia/');
+  const { user } = useAuth();
   const { scrollY } = useScroll();
+  const isOwner = user?.role === "emprendedor";
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     setScrolled(latest > 50);
@@ -126,18 +128,18 @@ const Header: React.FC<HeaderProps> = ({ isEditMode = false, onToggleEditMode })
         </AnimatePresence>
 
         {/* Search bar */}
-        {!isExperiencePage && (
+        {!isOwner && (
 
-        <motion.div
-          layout
-          transition={{ duration: 0.3 }}
-          className={`${isSearchExpanded ? 'absolute inset-x-0 mx-4 md:relative md:mx-0' : 'relative'}`}
-        >
-          <SearchBar
-            onToggle={handleSearchToggle}
-            expanded={isSearchExpanded}
-          />
-        </motion.div>
+          <motion.div
+            layout
+            transition={{ duration: 0.3 }}
+            className={`${isSearchExpanded ? 'absolute inset-x-0 mx-4 md:relative md:mx-0' : 'relative'}`}
+          >
+            <SearchBar
+              onToggle={handleSearchToggle}
+              expanded={isSearchExpanded}
+            />
+          </motion.div>
         )}
         {/* Navbar mobile */}
         <AnimatePresence>
@@ -165,7 +167,7 @@ const Header: React.FC<HeaderProps> = ({ isEditMode = false, onToggleEditMode })
               exit={{ opacity: 0, x: 20 }}
               transition={{ duration: 0.2 }}
             >
-              <HeaderActions 
+              <HeaderActions
                 isEditMode={isEditMode}
                 onToggleEditMode={onToggleEditMode}
               />

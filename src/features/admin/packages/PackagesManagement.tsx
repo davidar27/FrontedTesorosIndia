@@ -17,7 +17,7 @@ type PackageWithForm = Package | {
     description: string;
     duration: string;
     capacity: string;
-    image: string | null;
+    image: string;
     joinDate: string;
 };
 
@@ -107,7 +107,7 @@ export default function PackagesManagement() {
 
     const config = useMemo(() => {
         return PackagesConfig({
-            data: itemsWithForm,
+            data: itemsWithForm as Package[],
             CardComponent: (props) => {
                 if ('isForm' in props.item) {
                     return (

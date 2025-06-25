@@ -1,145 +1,195 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Experience } from '@/features/admin/experiences/ExperienceTypes';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import LoadingSpinner from '@/components/layouts/LoadingSpinner';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import clsx from 'clsx';
 import { useScroll, useMotionValueEvent } from 'framer-motion';
 import ButtonIcon from '../../components/ui/buttons/ButtonIcon';
 import { ExperiencesApi } from '@/services/home/experiences';
-import Button from '../../components/ui/buttons/Button';
 import { ExperienceItem } from './ExperienceItem';
-import { X } from 'lucide-react';
+import { X, RefreshCw, Sparkles } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { Experience } from '@/features/admin/experiences/ExperienceTypes';
 
 interface SidebarExperiencesProps {
     isOpen: boolean;
     onClose: () => void;
 }
 
-
 const SidebarExperiences: React.FC<SidebarExperiencesProps> = ({ isOpen, onClose }) => {
     const navigate = useNavigate();
-    const [activeEstateId, setActiveEstateId] = useState<number | null>(null);
-    const [experiences, setExperiences] = useState<Experience[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const location = useLocation();
     const [scrolled, setScrolled] = useState(false);
     const { scrollY } = useScroll();
+    
+    const [isRendered, setIsRendered] = useState(false);
+    const [isClosing, setIsClosing] = useState(false);
+
+    const activeExperienceId = useMemo(() => {
+        const match = location.pathname.match(/\/experiencias\/(\d+)/);
+        return match ? Number(match[1]) : null;
+    }, [location.pathname]);
 
     useMotionValueEvent(scrollY, "change", (latest) => {
         setScrolled(latest > 50);
     });
 
-    const fetchExperiences = useCallback(async () => {
-        setIsLoading(true);
-        setError(null);
-        try {
-            const experiencesData = await ExperiencesApi.getExperiences();
-            setExperiences(experiencesData || []);
-        } catch (err) {
-            setError('Error al cargar las experiencias');
-            console.error('Error fetching Experiences:', err);
-            setExperiences([]);
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
-
     useEffect(() => {
         if (isOpen) {
-            fetchExperiences();
+            setIsRendered(true);
+            setIsClosing(false);
+        } else {
+            setIsClosing(true);
         }
-    }, [isOpen, fetchExperiences]);
+    }, [isOpen]);
 
-    const navigateToEstate = useCallback((id: number) => {
-        setActiveEstateId(id);
-        navigate(`/experiencias/${id}`);
-        onClose();
-    }, [navigate, onClose]);
+    const { 
+        data: experiences = [],
+        isLoading, 
+        error,
+        refetch
+    } = useQuery<Experience[]>({
+        queryKey: ['experiences'],
+        queryFn: ExperiencesApi.getExperiences,
+        staleTime: 5 * 60 * 1000,
+        enabled: isRendered,
+    });
 
-    const handleRetry = useCallback(async () => {
-        setError(null);
-        setExperiences([]);
-        const data = await ExperiencesApi.getExperiences();
-        setExperiences(data || []);
-    }, []);
+    const handleAnimationEnd = () => {
+        if (isClosing) {
+            setIsRendered(false);
+        }
+    };
+    
+    const handleClose = useCallback(() => {
+        setIsClosing(true);
+        setTimeout(onClose, 300);
+    }, [onClose]);
 
-    const handleViewAll = useCallback(() => {
-        navigate('/experiencias');
-        onClose();
-    }, [navigate, onClose]);
+    const navigateToEstate = useCallback((experience_id: number) => {
+        navigate(`/experiencias/${experience_id}`);
+        handleClose();
+    }, [navigate, handleClose]);
 
-    if (!isOpen) return null;
+    const handleRetry = useCallback(() => {
+        refetch();
+    }, [refetch]);
 
-    const sidebarContent = (
-        <aside 
-            className={clsx(
-                'fixed right-0 z-40 w-64 h-[calc(100vh-${scrolled ? "70px" : "90px"})]',
-                'animate-fade-in-right transition-all duration-300 bg-white border-r border-gray-200',
-                isOpen ? 'translate-x-0' : '-translate-x-full'
-            )} 
-            style={{ top: scrolled ? '70px' : '90px' }}
-        >
-            <div className='p-4 border-b border-gray-200 flex justify-between items-center'>
-                <h2 className="text-lg font-semibold text-gray-800">
-                    Nuestras Experiencias
-                </h2>
-                <ButtonIcon
-                    onClick={onClose}
-                    className='!text-gray-500'
-                    aria-label="Cerrar barra lateral"
-                >
-                    <X size={20} />
-                </ButtonIcon>
-            </div>
+    if (!isRendered) return null;
 
-            {isLoading ? (
-                <div className="flex items-center justify-center h-32">
-                    <LoadingSpinner message="Cargando experiencias..." />
-                </div>
-            ) : (
-                <nav className="p-4">
-                    {error ? (
-                        <div className="p-4 text-center text-red-600">
-                            <p>{error}</p>
-                            <ButtonIcon 
-                                onClick={handleRetry}
-                            >
-                                Intentar de nuevo
-                            </ButtonIcon>
+    return (
+        <>
+            {/* Backdrop */}
+            <div
+                onClick={handleClose}
+                className={clsx(
+                    "fixed inset-0 bg-black/20 z-30 lg:hidden",
+                    !isClosing ? 'animate-fade-in' : 'animate-fade-out'
+                )}
+                style={{ animationDuration: '300ms' }}
+            />
+
+            {/* Sidebar */}
+            <aside
+                onAnimationEnd={handleAnimationEnd}
+                className={clsx(
+                    'fixed right-0 z-40 w-80 lg:w-96 h-full transition-all duration-300',
+                    'bg-gradient-to-br from-white via-white to-green-50/30',
+                    'border-l border-green-100 shadow-2xl shadow-green-900/10',
+                    !isClosing ? 'animate-fade-in-right' : 'animate-slide-out-right'
+                )}
+                style={{
+                    top: scrolled ? '70px' : '90px',
+                    height: `calc(100vh - ${scrolled ? '70px' : '90px'})`
+                }}
+            >
+                {/* Header */}
+                <div className='relative p-6 border-b border-green-100 bg-gradient-to-r from-green-50 to-emerald-50'>
+                    <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg">
+                                <Sparkles className="w-5 h-5 text-white" />
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-bold text-gray-800">
+                                    Experiencias
+                                </h2>
+                                <p className="text-sm text-gray-600">
+                                    Descubre nuevas aventuras
+                                </p>
+                            </div>
                         </div>
-                    ) : !Array.isArray(experiences) || experiences.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center h-full p-4 text-center text-gray-500">
-                            <p className="text-lg font-medium">No hay experiencias disponibles</p>
-                            <p className="text-sm mt-2">Aún no se han registrado experiencias en el sistema</p>
+                        <ButtonIcon
+                            onClick={handleClose}
+                            className='!text-gray-500 hover:!text-gray-700 hover:bg-white/50 transition-all duration-200'
+                            aria-label="Cerrar barra lateral"
+                            type='button'
+                        >
+                            <X size={30} />
+                        </ButtonIcon>
+                    </div>
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 overflow-y-auto">
+                    {isLoading ? (
+                        <div className="flex flex-col items-center justify-center h-64 px-6">
+                            <LoadingSpinner message="Cargando experiencias..." />
                         </div>
                     ) : (
-                        <ul className="space-y-2">
-                            {experiences.map((experience, index) => (
-                                <ExperienceItem
-                                    key={`experience-${experience.id}-${index}`}
-                                    experience={experience}
-                                    activeEstateId={activeEstateId}
-                                    onNavigate={navigateToEstate}
-                                />
-                            ))}
-                        </ul>
+                        <nav className="p-6">
+                            {error ? (
+                                <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center animate-scale-in">
+                                    <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto">
+                                        <X className="w-6 h-6 text-red-600" />
+                                    </div>
+                                    <p className="text-red-700 font-medium">Error al cargar experiencias</p>
+                                    <button
+                                        onClick={handleRetry}
+                                        className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg
+                                                 hover:bg-red-700 transition-colors duration-200 text-sm font-medium"
+                                    >
+                                        <RefreshCw size={16} />
+                                        Intentar de nuevo
+                                    </button>
+                                </div>
+                            ) : !Array.isArray(experiences) || experiences.length === 0 ? (
+                                <div className="flex flex-col items-center justify-center h-64 text-center animate-fade-in">
+                                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                                        <Sparkles className="w-8 h-8 text-gray-400" />
+                                    </div>
+                                    <p className="text-lg font-semibold text-gray-600">
+                                        No hay experiencias disponibles
+                                    </p>
+                                    <p className="text-sm text-gray-500 max-w-xs">
+                                        Aún no se han registrado experiencias en el sistema
+                                    </p>
+                                </div>
+                            ) : (
+                                <div>
+                                    <div className="flex items-center justify-between">
+                                        <p className="text-sm text-gray-600">
+                                            {experiences.length} experiencia{experiences.length !== 1 ? 's' : ''}
+                                        </p>
+                                    </div>
+                                    <ul className="space-y-3 mt-4">
+                                        {experiences.map((experience, index) => (
+                                            <ExperienceItem
+                                                key={`experience-${experience.id}`}
+                                                index={index}
+                                                experience={experience}
+                                                activeEstateId={activeExperienceId}
+                                                onNavigate={navigateToEstate}
+                                            />
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                        </nav>
                     )}
-
-                    <div className="mt-4">
-                        <Button
-                            variant='primary'
-                            fullWidth
-                            onClick={handleViewAll}
-                        >
-                            Ver todas las experiencias
-                        </Button>
-                    </div>
-                </nav>
-            )}
-        </aside>
+                </div>
+            </aside>
+        </>
     );
-
-    return sidebarContent;
 };
 
 export default React.memo(SidebarExperiences);

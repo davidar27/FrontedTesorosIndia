@@ -1,3 +1,4 @@
+import Profile from '@/features/user/Profile';
 import { lazy } from 'react';
 
 // Layouts
@@ -10,6 +11,10 @@ export const Home = lazy(() => import('@/pages/Home/Home'));
 export const ProductsPage = lazy(() => import('@/pages/Products/Products'));
 export const AboutUs = lazy(() => import('@/pages/AboutUs/AboutUs'));
 export const ExperiencePage = lazy(() => import('@/pages/Experience/ExperiencePage'));
+
+// Cart & Payment Pages
+export const CartPage = lazy(() => import('@/pages/Cart/CartPage'));
+export const PaymentPage = lazy(() => import('@/pages/Cart/PaymentPage'));
 
 // Auth Pages
 export const LoginPage = lazy(() => import('@/pages/Auth/LoginPage'));
@@ -69,6 +74,22 @@ export const publicRoutes: RouteConfig[] = [
         layout: MainLayout,
         title: 'Detalle de Experiencia',
         description: 'Información detallada de la experiencia',
+        allowAdmin: false
+    },
+    {
+        path: '/carrito',
+        element: CartPage,
+        layout: MainLayout,
+        title: 'Carrito de Compras',
+        description: 'Gestionar productos en el carrito',
+        allowAdmin: false
+    },
+    {
+        path: '/metodo-pago',
+        element: PaymentPage,
+        layout: MainLayout,
+        title: 'Procesar Pago',
+        description: 'Página de pago seguro',
         allowAdmin: false
     }
 ];
@@ -157,6 +178,14 @@ export const adminRoutes: RouteConfig[] = [
         protected: true,
         roles: ['administrador'],
         title: 'Gestión de Categorías'
+    },
+    {
+        path: '/perfil/:id',
+        element: Profile,
+        layout:MainLayout,
+        protected:true,
+        roles:['administrador', 'emprendedor', 'cliente'],
+        title:'Perfil'
     }
 ];
 

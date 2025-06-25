@@ -1,4 +1,4 @@
-import { getImageUrl } from '@/features/admin/adminHelpers';
+import { getImageUrl } from '@/utils/getImageUrl';
 
 type AvatarProps = {
     name?: string | null;
@@ -17,9 +17,9 @@ const getColorFromName = (name: string) => {
     return `hsl(${hue}, 70%, 75%)`;
 };
 
-const Avatar = ({ name = 'Usuario', size = 40, className = '', src = null }: AvatarProps) => {
-    const initial = name?.trim().charAt(0).toUpperCase() || 'U';
-    const backgroundColor = getColorFromName(name || 'U');
+const Avatar = ({ name = '', size = 40, className = '', src = null }: AvatarProps) => {
+    const initial = name?.trim().charAt(0).toUpperCase() || '';
+    const backgroundColor = getColorFromName(name || '');
     const hasImage = src && src.trim() !== '';
 
     return (
@@ -50,12 +50,12 @@ const Avatar = ({ name = 'Usuario', size = 40, className = '', src = null }: Ava
                     }}
                 />
             ) : (
-                <span>{initial}</span>
+                <span className="text-2xl">{initial}</span>
             )}
             <span 
                 className="absolute opacity-0 pointer-events-none"
                 aria-label={`Avatar de ${name}`}
-                title={name || 'Usuario'}
+                title={name || ''}
             >
                 {initial}
             </span>

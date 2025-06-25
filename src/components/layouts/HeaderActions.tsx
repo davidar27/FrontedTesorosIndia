@@ -1,5 +1,4 @@
 import { useState } from "react";
-import ButtonIcon from "@/components/ui/buttons/ButtonIcon";
 import Button from "@/components/ui/buttons/Button";
 import { ShoppingCart, Edit, Eye, Settings } from "lucide-react";
 import { Users } from "lucide-react";
@@ -7,8 +6,10 @@ import { Package } from "lucide-react";
 import UserMenu from "@/components/layouts/menu/UserMenu";
 import { motion } from "framer-motion";
 import SidebarExperiences from "@/features/home/SidebarExperience";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
 import useExperiencePermissions from "@/hooks/useExperiencePermissions";
+import { useAuth } from "@/context/AuthContext";
+import { useCart } from "@/context/CartContext";
 
 interface HeaderActionsProps {
     isEditMode?: boolean;
@@ -20,9 +21,13 @@ const HeaderActions = ({ isEditMode = false, onToggleEditMode }: HeaderActionsPr
     const location = useLocation();
     const permissions = useExperiencePermissions();
     const { experience_id } = useParams();
-    // Verificar si estamos en una página de experiencia
     const isExperiencePage = location.pathname.includes('/experiencias/') || location.pathname.includes('/experiencia/');
     const canEditExperience = permissions.canEdit && isExperiencePage;
+    const { user } = useAuth();
+    const isOwner = user?.role === "emprendedor";
+    const { items } = useCart();
+    const navigate = useNavigate();
+
 
     return (
         <>
@@ -118,11 +123,23 @@ const HeaderActions = ({ isEditMode = false, onToggleEditMode }: HeaderActionsPr
                 )}
 
                 {/* Acciones normales del header */}
-                {!isExperiencePage && (
+                {!isOwner && (
                     <>
-                        <ButtonIcon>
-                            <ShoppingCart />
-                        </ButtonIcon>
+                        <div className="relative">
+                            <button
+                                aria-label="Abrir carrito"
+                                className="p-2 rounded hover:bg-gray-100 focus:outline-none"
+                                onClick={() => navigate("/carrito")}
+                                tabIndex={0}
+                            >
+                                <ShoppingCart className="w-6 h-6" />
+                                {items.length > 0 && (
+                                    <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                                        {items.length}
+                                    </span>
+                                )}
+                            </button>
+                        </div>
                         <Button
                             className="hidden md:block"
                             onClick={() => setSidebarOpen(true)}
@@ -137,7 +154,7 @@ const HeaderActions = ({ isEditMode = false, onToggleEditMode }: HeaderActionsPr
             </motion.div>
 
             {/* Integramos la barra lateral que se abrirá al hacer clic en el botón */}
-            {!isExperiencePage && (
+            {!isOwner && (
                 <SidebarExperiences
                     isOpen={sidebarOpen}
                     onClose={() => setSidebarOpen(false)}

@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Star, ShoppingCart, MessageCircle, MapPin, Users, Award, Heart, ArrowRight, Plus, Trash2 } from 'lucide-react';
 import { ExperienceApi } from '@/services/experience/experience';
 import { useParams } from 'react-router-dom';
-import { getImageUrl } from '@/features/admin/adminHelpers';
+import { getImageUrl } from '@/utils/getImageUrl';
 import ReusableMap from '@/components/shared/ReusableMap';
 import useAuth from '@/context/useAuth';
 import useExperiencePermissions from '@/hooks/useExperiencePermissions';
 import EditModeNotification from '@/components/experience/EditModeNotification';
 import { usePageContext } from '@/context/PageContext';
+import { formatPrice } from '@/utils/formatPrice';
 
 interface Experience {
     id: number;
@@ -65,9 +66,7 @@ const ExperiencePage: React.FC = () => {
     const [editMembers, setEditMembers] = useState<TeamMember[]>([]);
     const [editProducts, setEditProducts] = useState<Product[]>([]);
 
-    // El modo edición ahora se activa manualmente con el botón
     useEffect(() => {
-        // El modo edición se activará manualmente con el botón de editar
     }, [user, experience_id]);
 
     useEffect(() => {
@@ -100,15 +99,7 @@ const ExperiencePage: React.FC = () => {
     const currentExperience = info[0];
     const permissions = useExperiencePermissions();
 
-    const formatPrice = (price: number): string => {
-        return new Intl.NumberFormat('es-CO', {
-            style: 'currency',
-            currency: 'COP',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        }).format(price);
-    };
-
+   
     const convertRatingToFiveScale = (rating: number): number => {
         return (rating / 2);
     };

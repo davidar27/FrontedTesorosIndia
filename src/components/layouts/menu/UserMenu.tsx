@@ -32,7 +32,7 @@ const UserMenu: React.FC<{ textColor?: string }> = ({ textColor }) => {
     <div className={`"relative flex items-center gap-2 justify-between md:justify-start  text-${textColor ? textColor : 'black'} `} ref={menuRef}>
       <MobileUserSection
         user={user}
-        onProfile={() => handleAction(() => navigate("/perfil"))}
+        onProfile={() => handleAction(() => navigate(`/perfil/${user?.id}`))}
         onMenuToggle={() => setIsMobileMenuOpen(true)}
         textColor={textColor}
       />
@@ -41,7 +41,7 @@ const UserMenu: React.FC<{ textColor?: string }> = ({ textColor }) => {
         user={user}
         isOpen={isOpen}
         onToggle={() => setIsOpen(!isOpen)}
-        onProfile={() => handleAction(() => navigate("/perfil"))}
+        onProfile={() => handleAction(() => navigate(`/perfil/${user?.id}`))}
         onLogout={() => handleAction(logout)}
         textColor={textColor}
       />
@@ -49,7 +49,7 @@ const UserMenu: React.FC<{ textColor?: string }> = ({ textColor }) => {
       <MobileMenuModal
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
-        onProfile={() => handleAction(() => navigate("/perfil"))}
+        onProfile={() => handleAction(() => navigate(`/perfil/${user?.id}`))}
         onLogout={() => handleAction(logout)}
       />
     </div>
