@@ -40,7 +40,7 @@ import LoadingSpinner from "./components/layouts/LoadingSpinner";
 import ResetPassword from "./pages/Auth/ResetPassword";
 import ForgotPasswordForm from "./pages/Auth/ForgotPasswordForm";
 import ExperiencePage from "./pages/Experience/ExperiencePage";
-import Profile from "./features/user/Profile";
+import Profile from "./features/profile/Profile";
 import PaymentPage from "./pages/Cart/PaymentPage";
 
 function App() {
