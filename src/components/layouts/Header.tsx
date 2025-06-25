@@ -6,7 +6,7 @@ import Picture from "@/components/ui/display/Picture";
 import Navbar from "@/components/layouts/nav/Navbar";
 import imgLogo from "@/assets/icons/logotesorosindia.webp";
 import background from "/images/FondoMobile.webp";
-import SearchBar from "../ui/display/SearchBar";
+import SearchBar from "../../features/home/searchBar/SearchBar";
 import HeaderActions from "./HeaderActions";
 import { useAuth } from "@/context/AuthContext";
 

@@ -4,11 +4,14 @@ export type PackageStatus = 'active' | 'inactive' | 'draft';
 
 export interface Package extends BaseEntity<PackageStatus> {
     id: number;
+    name: string;
+    name_package?: string;
     price: number;
     description: string;
     duration: string;
     capacity: string;
     joinDate: string;
+    image?: string;
 }
 
 
