@@ -128,7 +128,7 @@ const HeaderActions = ({ isEditMode = false, onToggleEditMode }: HeaderActionsPr
                         <div className="relative">
                             <button
                                 aria-label="Abrir carrito"
-                                className="p-2 rounded hover:bg-gray-100 focus:outline-none"
+                                className="p-2 rounded cursor-pointer hover:scale-105 transition-all duration-300 focus:outline-none"
                                 onClick={() => navigate("/carrito")}
                                 tabIndex={0}
                             >
