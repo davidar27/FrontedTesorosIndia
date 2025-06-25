@@ -9,7 +9,9 @@ export interface User {
     phone?: string;
     token?: string;
     isVerified?: boolean;
+    image?: string;
 
     // Campos condicionales por rol
-    address?: string;        // Para clientes
+    address?: string;    // Para cliente
+    experience_id?: number //emprendedores
 }

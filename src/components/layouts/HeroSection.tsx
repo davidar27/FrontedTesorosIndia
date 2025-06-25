@@ -56,15 +56,14 @@ const HeroSection: React.FC<HeroSectionProps> = ({
           </p>
 
           {buttonLabel && (
-            <div className="animate-fade-in-up delay-200">
               <Button
                 type="button"
-                className="w-fit mx-auto md:mx-0 transform transition-all duration-300 hover:scale-105 hover:shadow-glow"
+                variant="primary"
                 onClick={onButtonClick}
+                className="w-fit mx-auto md:mx-0 animate-fade-in-up  px-8"
               >
                 {buttonLabel}
               </Button>
-            </div>
           )}
         </div>
 

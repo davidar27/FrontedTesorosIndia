@@ -9,12 +9,14 @@ import { ErrorState } from './components/ErrorState';
 import { SearchBar } from './components/SearchBar';
 import { EmptyState } from './components/EmptyState';
 import { ItemsGrid } from './components/ItemsGrid';
+import { useLocation } from 'react-router-dom';
 
-export default function GenericManagement<T extends BaseEntity<string>>({ 
-    config 
+export default function GenericManagement<T extends BaseEntity<string>>({
+    config
 }: SimplifiedManagementProps<T>): React.ReactElement {
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredByCustomFilters, setFilteredByCustomFilters] = useState<T[]>([]);
+    const location = useLocation();
 
     const {
         showResultsCount = true,
@@ -30,11 +32,13 @@ export default function GenericManagement<T extends BaseEntity<string>>({
         emptyStateDescription,
         items,
         ItemCard,
-        onEdit,
-        onDelete,
+        onUpdate,
         onCreate,
-        onRetry
+        onRetry,
+        onChangeStatus
     } = config;
+
+
 
     const searchFunction = config.searchFunction || defaultSearchFunction;
 
@@ -47,7 +51,7 @@ export default function GenericManagement<T extends BaseEntity<string>>({
     // Aplicar límite de resultados si está configurado
     const finalFilteredItems = useMemo(() => {
         const safeSearchItems = Array.isArray(searchFilteredItems) ? searchFilteredItems : [];
-        
+
         if (maxResults && safeSearchItems.length > maxResults) {
             return safeSearchItems.slice(0, maxResults);
         }
@@ -67,6 +71,16 @@ export default function GenericManagement<T extends BaseEntity<string>>({
     useEffect(() => {
         setFilteredByCustomFilters(items);
     }, [items]);
+
+
+
+
+    const handleUpdate = useCallback(
+        async (item: T) => {
+            await onUpdate(item);
+        },
+        [onUpdate]
+    );
 
     if (isLoading) {
         return <LoadingState entityNamePlural={entityNamePlural} />;
@@ -95,23 +109,25 @@ export default function GenericManagement<T extends BaseEntity<string>>({
                     onClearSearch={clearSearch}
                     entityNamePlural={entityNamePlural}
                 />
-
-                <Button
-                    onClick={onCreate}
-                    type="button"
-                    className="flex items-center gap-2 rounded-lg"
-                    aria-label={`Crear nuevo ${entityName.toLowerCase()}`}
-                >
-                    <Plus className="w-5 h-5" />
-                    <span className="hidden sm:inline">{`Crear ${entityName}`}</span>
-                    <span className="sm:hidden">Crear</span>
-                </Button>
+                {location.pathname === '/dashboard/experiencias' ? null : (
+                    <Button
+                        onClick={onCreate}
+                        type="button"
+                        className="flex items-center gap-2 rounded-lg"
+                        aria-label={`Crear nuevo ${entityName.toLowerCase()}`}
+                    >
+                        <Plus className="w-5 h-5" />
+                        <span className="hidden sm:inline">{`Crear ${entityName}`}</span>
+                        <span className="sm:hidden">Crear</span>
+                    </Button>
+                )}
             </div>
 
             {/* Custom Filters */}
             <CustomFilters
                 items={items}
                 onFilterChange={setFilteredByCustomFilters}
+                type={entityName.toLowerCase() as 'category' | 'entrepreneur' | 'experience' | 'package'}
             />
 
             {/* Results count */}
@@ -151,8 +167,10 @@ export default function GenericManagement<T extends BaseEntity<string>>({
                 <ItemsGrid
                     items={finalFilteredItems}
                     ItemCard={ItemCard}
-                    onEdit={onEdit}
-                    onDelete={onDelete}
+                    onUpdate={handleUpdate}
+                    onChangeStatus={(id: number, status: string) => {
+                        onChangeStatus(id, status);
+                    }}
                     enableAnimations={enableAnimations}
                 />
             )}
@@ -166,6 +184,7 @@ export default function GenericManagement<T extends BaseEntity<string>>({
                     </p>
                 </div>
             )}
+
         </>
     );
 }

@@ -6,8 +6,14 @@ import Picture from "@/components/ui/display/Picture";
 import Navbar from "@/components/layouts/nav/Navbar";
 import imgLogo from "@/assets/icons/logotesorosindia.webp";
 import background from "/images/FondoMobile.webp";
-import SearchBar from "../ui/display/SearchBar";
+import SearchBar from "../../features/home/searchBar/SearchBar";
 import HeaderActions from "./HeaderActions";
+import { useAuth } from "@/context/AuthContext";
+
+interface HeaderProps {
+  isEditMode?: boolean;
+  onToggleEditMode?: () => void;
+}
 
 const excludedPaths = ["/auth/iniciar-sesion", "/auth/registro"];
 
@@ -33,15 +39,16 @@ const backgroundAnimations = {
   visible: { opacity: 0.5, transition: { duration: 0.5 } }
 };
 
-const Header: React.FC = () => {
+const Header: React.FC<HeaderProps> = ({ isEditMode = false, onToggleEditMode }) => {
   const { pathname } = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const isHome = pathname === "/";
   const isAboutUs = pathname === "/nosotros";
   const shouldRender = !excludedPaths.includes(pathname);
-
+  const { user } = useAuth();
   const { scrollY } = useScroll();
+  const isOwner = user?.role === "emprendedor";
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     setScrolled(latest > 50);
@@ -121,17 +128,19 @@ const Header: React.FC = () => {
         </AnimatePresence>
 
         {/* Search bar */}
-        <motion.div
-          layout
-          transition={{ duration: 0.3 }}
-          className={`${isSearchExpanded ? 'absolute inset-x-0 mx-4 md:relative md:mx-0' : 'relative'}`}
-        >
-          <SearchBar
-            onToggle={handleSearchToggle}
-            expanded={isSearchExpanded}
-          />
-        </motion.div>
+        {!isOwner && (
 
+          <motion.div
+            layout
+            transition={{ duration: 0.3 }}
+            className={`${isSearchExpanded ? 'absolute inset-x-0 mx-4 md:relative md:mx-0' : 'relative'}`}
+          >
+            <SearchBar
+              onToggle={handleSearchToggle}
+              expanded={isSearchExpanded}
+            />
+          </motion.div>
+        )}
         {/* Navbar mobile */}
         <AnimatePresence>
           {!isSearchExpanded && (
@@ -158,7 +167,10 @@ const Header: React.FC = () => {
               exit={{ opacity: 0, x: 20 }}
               transition={{ duration: 0.2 }}
             >
-              <HeaderActions />
+              <HeaderActions
+                isEditMode={isEditMode}
+                onToggleEditMode={onToggleEditMode}
+              />
             </motion.div>
           )}
         </AnimatePresence>

@@ -1,125 +1,152 @@
-import { useQueryClient } from '@tanstack/react-query';
+import { useState, useMemo, useCallback } from 'react';
+import { toast } from 'sonner';
 import GenericManagement from '@/components/admin/GenericManagent';
-import { createPackagesConfig } from '@/features/admin/packages/createPackagesConfig';
-import useAuth from '@/context/useAuth';
-import { usePermissions } from '@/hooks/usePermissions';
-import { useAuthenticatedQuery } from '@/hooks/useAuthenticatedQuery';
-import { useProtectedMutation } from '@/hooks/useProtectedMutation';
-import { Package } from './PackageTypes';
-import { packagesApi } from '@/services/admin/packages';
+import { usePackagesManagement } from '@/services/admin/usePackagesManagement';
+import { PackagesCard } from './PackagesCard';
+import { PackagesConfig } from '@/features/admin/packages/PackagesConfig';
+import { Package, CreatePackageData, PackageStatus } from './PackageTypes';
+import { UpdatePackageData } from './PackageTypes';
+import CreatePackageForm from './createPackageForm';
 
-function PackagesManagement() {
-    const queryClient = useQueryClient();
-    const { isAuthenticated, isLoading: authLoading } = useAuth();
-    const { hasPermission, isAdmin } = usePermissions();
-    
-    const canEdit = isAdmin() || hasPermission('packages:edit');
-    const canDelete = isAdmin() || hasPermission('packages:delete');
+type PackageWithForm = Package | {
+    id: -1;
+    isForm: true;
+    name: string;
+    status: PackageStatus;
+    price: number;
+    description: string;
+    duration: string;
+    capacity: string;
+    image: string;
+    joinDate: string;
+};
 
+export default function PackagesManagement() {
+    const [showCreateForm, setShowCreateForm] = useState(false);
+    const [isCreating, setIsCreating] = useState(false);
     const {
-        data: packages = [],
-        isLoading,
-        error,
-        refetch
-    } = useAuthenticatedQuery<Package[]>({
-        queryKey: ['packages'],
-        queryFn: () => packagesApi.getAllPackages(),
-        staleTime: 5 * 60 * 1000,
-        retry: 2
-    });
+        items,
+        changeStatus,
+        updateAsync,
+        createAsync
+    } = usePackagesManagement();
 
-    const deleteMutation = useProtectedMutation({
-        mutationFn: packagesApi.deletePackage,
-        requiredPermission: 'packages:delete',
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['packages'] });
+    const handleCreateSubmit = useCallback(async (data: CreatePackageData) => {
+        setIsCreating(true);
+        try {
+            const packageData = {
+                name: data.title,
+                price: Number(data.pricePerPerson),
+                description: data.description,
+                duration: data.duration,
+                capacity: data.selectedExperiences.length.toString(),
+            };
+            
+            await createAsync(packageData, {
+                onSuccess: () => {
+                    toast.success('Paquete creado exitosamente');
+                    setShowCreateForm(false);
+                },
+                onError: (err) => {
+                    toast.error(err.message);
+                }
+            });
+        } finally {
+            setIsCreating(false);
+        }
+    }, [createAsync]);
+
+    const handleUpdate = useCallback(
+        async (id: number, data: UpdatePackageData) => {
+            updateAsync({ id, ...data }, {
+                onSuccess: () => {
+                    toast.success('Paquete actualizado exitosamente');
+                },
+                onError: (err) => {
+                    toast.error(err.message);
+                }
+            });
         },
-        onError: (error: Error) => {
-            console.error('Error deleting package:', error);
-        },
-        onUnauthorized: () => {
-            alert('No tienes permisos para eliminar paquetes');
+        [updateAsync]
+    );
+
+    const handleChangeStatus = useCallback(
+        (id: number, status: string) => {
+            changeStatus({
+                id,
+                status,
+                entityType: 'package'
+            }, {
+                onSuccess: () => {
+                    toast.success('Estado actualizado exitosamente');
+                },
+                onError: (err) => {
+                    toast.error(err.message);
+                }
+            });
+        }, [changeStatus]);
+
+    const itemsWithForm = useMemo(() => {
+        const packages = Array.isArray(items) ? items : [];
+        if (showCreateForm) {
+            return [{
+                id: -1,
+                isForm: true,
+                name: '',
+                status: 'active' as PackageStatus,
+                price: 0,
+                description: '',
+                duration: '',
+                capacity: '',
+                image: null,
+                joinDate: new Date().toISOString()
+            }, ...packages];
         }
-    });
+        return packages;
+    }, [items, showCreateForm]);
 
-    const handleEdit = (pkg: Package) => {
-        if (!canEdit) {
-            alert('No tienes permisos para editar paquetes');
-            return;
-        }
-        console.log('Editing package:', pkg);
-    };
+    const config = useMemo(() => {
+        return PackagesConfig({
+            data: itemsWithForm as Package[],
+            CardComponent: (props) => {
+                if ('isForm' in props.item) {
+                    return (
+                        <div className="animate-fade-in-up">
+                            <CreatePackageForm
+                                onSubmit={handleCreateSubmit}
+                                onCancel={() => setShowCreateForm(false)}
+                                isLoading={isCreating}
+                            />
+                        </div>
+                    );
+                }
+                return <PackagesCard {...props} />;
+            },
+            actions: {
+                onCreate: () => setShowCreateForm(true),
+                onUpdate: (item) => {
+                    if (!('isForm' in item)) {
+                        handleUpdate(item.id ?? 0, item as unknown as UpdatePackageData);
+                    }
+                },
+                onChangeStatus: (id, status) => {
+                    if (id !== -1) {
+                        handleChangeStatus(id, status);
+                    }
+                }
+            }
+        });
+    }, [itemsWithForm, isCreating, handleUpdate, handleChangeStatus, handleCreateSubmit]);
 
-    const handleDelete = (packageId: number) => {
-        if (!canDelete) {
-            alert('No tienes permisos para eliminar paquetes');
-            return;
-        }
-        if (window.confirm('¿Estás seguro de que quieres eliminar este paquete?')) {
-            deleteMutation.mutate(packageId);
-        }
-    };
-
-    const handleCreate = () => {
-        console.log('Creating new package');
-    };
-
-    if (authLoading) {
-        return (
-            <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-                <span className="ml-3 text-gray-600">Verificando autenticación...</span>
-            </div>
-        );
-    }
-
-    if (!isAuthenticated) {
-        return (
-            <div className="bg-red-50 border border-red-200 rounded-md p-4">
-                <p className="text-red-800">Debes iniciar sesión para acceder a esta página</p>
-                <button
-                    onClick={() => window.location.href = '/auth/iniciar-sesion'}
-                    className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                >
-                    Ir al Login
-                </button>
-            </div>
-        );
-    }
-
-    if (isLoading) {
-        return (
-            <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-                <span className="ml-3 text-gray-600">Cargando paquetes...</span>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="bg-red-50 border border-red-200 rounded-md p-4">
-                <p className="text-red-800">Error al cargar los paquetes</p>
-                <button
-                    onClick={() => refetch()}
-                    className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                >
-                    Reintentar
-                </button>
-            </div>
-        );
-    }
-
-    const config = createPackagesConfig({
-        data: packages,
-        actions: {
-            onEdit: canEdit ? handleEdit : undefined,
-            onDelete: canDelete ? handleDelete : undefined,
-            onCreate: handleCreate
-        }
-    });
-
-    return <GenericManagement config={config} />;
+    return showCreateForm ? (
+        <div className="w-full">
+            <CreatePackageForm
+                onSubmit={handleCreateSubmit}
+                onCancel={() => setShowCreateForm(false)}
+                isLoading={isCreating}
+            />
+        </div>
+    ) : (
+        <GenericManagement<PackageWithForm> config={config} />
+    );
 }
-
-export default PackagesManagement;

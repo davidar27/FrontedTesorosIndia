@@ -16,14 +16,16 @@ const LoginPage = lazy(() => import('@/pages/Auth/LoginPage'));
 const RegisterPage = lazy(() => import('@/pages/Auth/RegisterPage'));
 const SendEmail = lazy(() => import('@/pages/Auth/SendEmail'));
 const EmailVerificationPage = lazy(() => import('@/pages/Auth/VerificationPage'));
-const FarmPage = lazy(() => import('@/pages/Farm/FarmPage'));
 const NotFoundPage = lazy(() => import('@/pages/Errors/NotFoundPage'));
 const AboutUs = lazy(() => import('@/pages/AboutUs/AboutUs'));
 const AccessDenied = lazy(() => import('@/pages/Errors/AccessDenied'));
-const ContactPage = lazy(() => import('@/pages/Contact/ContactPage'));
+const CartPage = lazy(() => import('@/pages/Cart/CartPage'));
+const PaymentSuccess = lazy(() => import('@/pages/Cart/PaymentSuccess'));
+const PaymentFailure = lazy(() => import('@/pages/Cart/PaymentFailure'));
+const PaymentPending = lazy(() => import('@/pages/Cart/PaymentPending'));
 
 // Admin Pages
-const FarmsPage = lazy(() => import('@/pages/Admin/FarmsPage'));
+const ExperiencesPage = lazy(() => import('@/pages/Admin/ExperiencesPage'));
 const EntrepreneursPage = lazy(() => import('@/pages/Admin/EntrepreneursPage'));
 const PackagesPage = lazy(() => import('@/pages/Admin/PackagesPage'));
 const CategoriesPage = lazy(() => import('@/pages/Admin/CategoriesPage'));
@@ -37,18 +39,21 @@ import ErrorFallback from "./pages/Errors/ErrorFallback";
 import LoadingSpinner from "./components/layouts/LoadingSpinner";
 import ResetPassword from "./pages/Auth/ResetPassword";
 import ForgotPasswordForm from "./pages/Auth/ForgotPasswordForm";
+import ExperiencePage from "./pages/Experience/ExperiencePage";
+import Profile from "./features/user/Profile";
+import PaymentPage from "./pages/Cart/PaymentPage";
 
 function App() {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <PageProvider>
-        <Suspense fallback={<LoadingSpinner message="Cargando aplicación..." />}>
+        <Suspense fallback={<LoadingSpinner position="overlay" size="lg" variant="primary" speed="slow" overlayBg="bg-white/90" message="Cargando aplicación..." />}>
           <ToastProvider />
           <Routes>
             {/* Rutas públicas con MainLayout */}
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />} />
-              
+
               {/* Rutas de productos */}
               <Route path="/productos">
                 <Route index element={<ProductsPage />} />
@@ -58,18 +63,29 @@ function App() {
 
               {/* Rutas informativas */}
               <Route path="/nosotros" element={<AboutUs />} />
-              <Route path="/contacto" element={<ContactPage />} />
-              
-              {/* Rutas de fincas */}
-              <Route path="/fincas">
-                <Route index element={<FarmPage />} />
-                <Route path=":id" element={<FarmPage />} />
-                <Route path="categorias/:categoryId" element={<FarmPage />} />
+
+              {/* Rutas de carrito */}
+              <Route path="/carrito" element={<CartPage />} />
+
+              {/* Rutas de resultado de pago */}
+              <Route path="/metodo-pago" element={<PaymentPage />} />
+              <Route path="/pago-exitoso" element={<PaymentSuccess />} />
+              <Route path="/pago-fallido" element={<PaymentFailure />} />
+              <Route path="/pago-pendiente" element={<PaymentPending />} />
+
+              {/* Rutas de experiencias */}
+              <Route path="/experiencias">
+                <Route index element={<ExperiencePage />} />
+                <Route path="categorias/:categoryId" element={<ExperiencePage />} />
+                <Route path=":experience_id" element={<ExperiencePage />} />
               </Route>
-              
-              {/* Rutas específicas para emprendedores */}
-              <Route element={<ProtectedRoute roles={['emprendedor']} />}>
-                <Route path="/mi-finca" element={<FarmPage />} />
+
+              {/* Rutas de edición de experiencias - accesible públicamente, protección interna */}
+              <Route path="/experiencia/:experience_id/editar" element={<ExperiencePage />} />
+
+              {/* Rutas de perfil de usuario */}
+              <Route element={<ProtectedRoute roles={['administrador', 'emprendedor', 'cliente']} />}>
+                <Route path="/perfil/:id" element={<Profile />} />
               </Route>
             </Route>
 
@@ -89,8 +105,9 @@ function App() {
             <Route element={<ProtectedRoute roles={['administrador']} />}>
               <Route path="/dashboard" element={<DashboardLayout />}>
                 <Route index element={<EntrepreneursPage />} />
+                <Route path="estadisticas" />
                 <Route path="emprendedores" element={<EntrepreneursPage />} />
-                <Route path="fincas" element={<FarmsPage />} />
+                <Route path="experiencias" element={<ExperiencesPage />} />
                 <Route path="paquetes" element={<PackagesPage />} />
                 <Route path="categorias" element={<CategoriesPage />} />
               </Route>
@@ -101,7 +118,7 @@ function App() {
               <Route path="acceso-denegado" element={<AccessDenied />} />
               <Route path="no-encontrado" element={<NotFoundPage />} />
             </Route>
-            
+
             <Route path="*" element={<Navigate to="/error/no-encontrado" replace />} />
           </Routes>
         </Suspense>

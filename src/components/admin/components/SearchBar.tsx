@@ -6,6 +6,7 @@ interface SearchBarProps {
     onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onClearSearch: () => void;
     entityNamePlural: string;
+    width?: string;
 }
 
 export const SearchBar: React.FC<SearchBarProps> = ({
@@ -13,9 +14,10 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     placeholder,
     onSearchChange,
     onClearSearch,
-    entityNamePlural
+    entityNamePlural,
+    width
 }) => (
-    <div className="relative flex-1 max-w-md">
+    <div className={`relative flex-1 max-w-md ${width}`}>
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
         <input
             type="text"

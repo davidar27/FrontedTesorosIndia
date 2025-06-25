@@ -1,70 +1,132 @@
-import { useEffect, useState } from 'react';
-import GenericManagement from '@/components/admin/GenericManagent';
-import { createCategoriesConfig } from '@/features/admin/categories/createCategoriesConfig';
-import { Category } from '@/features/admin/categories/CategoriesTypes';
-import { categoriesApi } from '@/services/admin/categories';
+import { useState, useMemo, useCallback } from 'react';
 import { toast } from 'sonner';
+import GenericManagement from '@/components/admin/GenericManagent';
+import { useCategoriesManagement } from '@/services/admin/useCategoriesManagement';
+import { CategoryCard } from '@/features/admin/categories/CategoryCard';
+import { CategoriesConfig } from '@/features/admin/categories/CategoriesConfig';
+import { Category, UpdateCategoryData, CategoryStatus } from '@/features/admin/categories/CategoriesTypes';
+import { CreateCard } from '@/components/admin/ReusableCard/CreateCard';
+
+type CategoryWithForm = Category | {
+    id: -1;
+    isForm: true;
+    name: string;
+    status: CategoryStatus;
+    productsCount: number;
+    joinDate: string;
+};
 
 export default function CategoriesManagement() {
-    const [categories, setCategories] = useState<Category[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const [showCreateForm, setShowCreateForm] = useState(false);
+    const [isCreating, setIsCreating] = useState(false);
+    const {
+        items,
+        changeStatus,
+        updateAsync,
+        createAsync
+    } = useCategoriesManagement();
 
-    const fetchCategories = async () => {
+    const handleCreateSubmit = useCallback(async (data: Partial<Category>) => {
+        setIsCreating(true);
         try {
-            setIsLoading(true);
-            const data = await categoriesApi.getAllCategories();
-            setCategories(data);
-            setError(null);
-        } catch {
-            const errorMessage = 'Error al cargar las categorías';
-            setError(errorMessage);
-            toast.error(errorMessage);
+            await createAsync(data, {
+                onSuccess: () => {
+                    toast.success('Categoría creada exitosamente');
+                    setShowCreateForm(false);
+                },
+                onError: (err) => {
+                    toast.error(err.message);
+                }
+            });
         } finally {
-            setIsLoading(false);
+            setIsCreating(false);
         }
-    };
+    }, [createAsync]);
 
-    useEffect(() => {
-        fetchCategories();
-    }, []);
+    const handleUpdate = useCallback(
+        async (id: number, data: UpdateCategoryData) => {
+            updateAsync({ id, ...data }, {
+                onSuccess: () => {
+                    toast.success('Categoría actualizada exitosamente');
+                },
+                onError: (err) => {
+                    toast.error(err.message);
+                }
+            });
+        },
+        [updateAsync]
+    );
 
-    const handleEdit = async (category: Category) => {
-        try {
-            await categoriesApi.updateCategory(category.id, category);
-            await fetchCategories();
-            toast.success('Categoría actualizada correctamente');
-        } catch {
-            toast.error('Error al actualizar la categoría');
+    const handleChangeStatus = useCallback(
+        (id: number, status: string) => {
+            changeStatus({
+                id,
+                status,
+                entityType: 'category'
+            }, {
+                onSuccess: () => {
+                    toast.success('Estado actualizado exitosamente');
+                },
+                onError: (err) => {
+                    toast.error(err.message);
+                }
+            });
+        }, [changeStatus]);
+
+    const itemsWithForm = useMemo(() => {
+        const categories = Array.isArray(items) ? items : [];
+        if (showCreateForm) {
+            return [{
+                id: -1,
+                isForm: true,
+                name: '',
+                status: 'active' as CategoryStatus,
+                productsCount: 0,
+                joinDate: new Date().toISOString()
+            }, ...categories];
         }
-    };
+        return categories;
+    }, [items, showCreateForm]);
 
-    const handleDisable = async (categoryId: number) => {
-        try {
-            await categoriesApi.disableCategory(categoryId);
-            await fetchCategories();
-            toast.success('Categoría inhabilitada correctamente');
-        } catch {
-            toast.error('Error al Desactivar la categoría');
-        }
-    };
+    const config = useMemo(() => {
+        return CategoriesConfig({
+            data: itemsWithForm,
+            CardComponent: (props) => {
+                if ('isForm' in props.item) {
+                    return (
+                        <div className="animate-fade-in-up">
+                            <CreateCard
+                                item={props.item as unknown as Category}
+                                onCreate={handleCreateSubmit}
+                                onCancel={() => setShowCreateForm(false)}
+                                loading={isCreating}
+                                editFields={{
+                                    name: true
+                                }}
+                                entityName="Categoría"
+                            />
+                        </div>
+                    );
+                }
+                return <CategoryCard {...props} />;
+            },
+            actions: {
+                onCreate: () => setShowCreateForm(true),
+                onUpdate: (item) => {
+                    if (!('isForm' in item)) {
+                        handleUpdate(item.id ?? 0, item as unknown as UpdateCategoryData);
+                    }
+                },
+                onChangeStatus: (id, status) => {
+                    if (id !== -1) {
+                        handleChangeStatus(id, status);
+                    }
+                }
+            }
+        });
+    }, [itemsWithForm, isCreating, handleUpdate, handleChangeStatus, handleCreateSubmit]);
 
-    const handleCreate = async () => {
-        // Note: This would typically open a modal or navigate to a create form
-        toast.info('Funcionalidad de crear categoría pendiente');
-    };
-
-    const config = createCategoriesConfig({
-        data: categories,
-        isLoading,
-        error,
-        actions: {
-            onEdit: handleEdit,
-            onDelete: handleDisable,
-            onCreate: handleCreate,
-            onRetry: fetchCategories
-        }
-    });
-
-    return <GenericManagement config={config} />;
+    return (
+        <GenericManagement<CategoryWithForm> config={config} />
+    );
 }

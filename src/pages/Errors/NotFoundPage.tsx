@@ -46,8 +46,6 @@ const NotFoundPage = () => {
                     <Button
                         onClick={() => navigate(-1)}
                         className="flex gap-2 items-center justify-center hover:bg-primary/90 hover:text-white"
-                        bgColor="bg-white"
-                        textColor="text-primary"
                     >
                         <ArrowLeft size={20} />
                         Volver atrás

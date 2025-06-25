@@ -12,15 +12,24 @@ export const PUBLIC_ROUTES = [
     
     // Rutas informativas
     '/nosotros',
-    '/contacto',
     
     // Rutas de productos
     '/productos',
     '/productos/:id',
     '/productos/categorias/:categoryId',
     
-    // Rutas de fincas
-    '/fincas',
-    '/fincas/:id',
-    '/fincas/categorias/:categoryId'
+    // Rutas de experiencias (vista pública)
+    '/experiencias',
+    '/experiencias/:experience_id',
+    '/experiencias/categorias/:categoryId',
+    
+    // Rutas de experiencias (edición protegida)
+    '/experiencia/:experience_id/editar',
+
+    // Rutas de carrito y pago
+    '/carrito',
+    '/metodo-pago',
+
+    //
+    '/perfil/:id'
 ];

@@ -1,14 +1,16 @@
 import { BaseEntity } from "@/features/admin/types";
 
-export interface Entrepreneur extends BaseEntity<'active' | 'inactive' | 'pending'> {
+export type EntrepreneurStatus = 'active' | 'inactive';
+
+export interface Entrepreneur extends BaseEntity<EntrepreneurStatus, number> {
+    id: number;
     name: string;
     email: string;
     phone: string;
     image: string | null;
     joinDate: string;
-    status: 'active' | 'inactive' | 'pending';
-    name_farm: string;
-    createdAt?: string;
+    status: EntrepreneurStatus;
+    name_experience: string;
     updatedAt?: string;
     [key: string]: string | number | boolean | Date | null | undefined;
 }
@@ -18,15 +20,15 @@ export interface CreateEntrepreneurData {
     email: string;
     password: string;
     phone: string;
-    name_farm: string;
+    name_experience: string;
 }
 
 export interface UpdateEntrepreneurData {
     name: string;
     email: string;
     phone: string;
-    name_farm: string;
-    image?: File;
+    name_experience: string;
+    image?: File | FormData;
 }
 
 export interface EntrepreneurApiResponse {
@@ -38,8 +40,8 @@ export interface EntrepreneurApiResponse {
 
 export interface EntrepreneurCardProps {
     entrepreneur: Entrepreneur;
-    onEdit: (entrepreneur: Entrepreneur) => void;
-    onDelete: (id: number) => void;
+    onUpdate: (entrepreneur: Entrepreneur) => void;
+    onChangeStatus: (id: number, status: string) => void;
 }
 
 // Tipos para autenticación

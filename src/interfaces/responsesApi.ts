@@ -20,6 +20,8 @@ export interface TokenVerificationResponse {
       userId: number;
       name: string;
       role: string;
+      experience_id?: number;
+      image?: string;
     };
     jti: string;
     token_version: number;
@@ -27,6 +29,21 @@ export interface TokenVerificationResponse {
     exp: number;
   };
   code: string;
+}
+
+// Interfaz para el formato de respuesta del login
+export interface LoginResponse {
+  status: string;
+  user: {
+    logged: boolean;
+    status: string;
+    userId: number;
+    role: string;
+    name: string;
+    token_version: number;
+    experience_id?: number;
+    image?: string;
+  };
 }
 
 export class AuthError extends Error {

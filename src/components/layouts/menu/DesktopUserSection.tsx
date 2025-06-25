@@ -2,6 +2,7 @@ import ButtonIcon from "@/components/ui/buttons/ButtonIcon";
 import MenuButton from "./MenuButton";
 import { User, LogOut } from "lucide-react"
 import Avatar from "@/components/ui/display/Avatar";
+import { User as UserType } from "@/interfaces/user";
 
 const DesktopUserSection = ({
     user,
@@ -11,7 +12,7 @@ const DesktopUserSection = ({
     onProfile,
     onLogout
 }: {
-    user: { name?: string } | null;
+    user: UserType | null;
     textColor?: string;
     isOpen: boolean;
     onToggle: () => void;
@@ -27,6 +28,7 @@ const DesktopUserSection = ({
         >
             <Avatar
                 name={user?.name || ''}
+                src={user?.image || null}
             />
         </ButtonIcon>
 

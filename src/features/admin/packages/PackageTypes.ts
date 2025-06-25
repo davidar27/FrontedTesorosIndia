@@ -1,12 +1,35 @@
 import { BaseEntity } from '@/features/admin/types';
 
-export type PackageStatus = 'active' | 'inactive' | 'draft' | 'pending';
+export type PackageStatus = 'active' | 'inactive' | 'draft';
 
 export interface Package extends BaseEntity<PackageStatus> {
     id: number;
+    name: string;
+    name_package?: string;
     price: number;
-    category: string;
+    description: string;
     duration: string;
     capacity: string;
-    description: string;
+    joinDate: string;
+    image?: string;
 }
+
+
+export interface CreatePackageData {
+    title: string;
+    description: string;
+    selectedExperiences: string[];
+    unavailableDates: number[];
+    duration: string;
+    pricePerPerson: string;
+    selectedDetails: string;
+}
+
+export interface UpdatePackageData {
+    name: string;
+    price: number;
+    description: string;
+    duration: number;
+    capacity: number;
+}
+

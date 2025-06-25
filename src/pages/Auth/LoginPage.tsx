@@ -12,16 +12,19 @@ import { UserRole } from '@/interfaces/role';
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-const getRedirectPath = (role: UserRole | undefined, from: string | undefined): string => {
+const getRedirectPath = (role: UserRole | undefined, from: string | undefined, experience_id: number | undefined): string => {
     if (from && from !== '/auth/iniciar-sesion') {
         return from;
     }
-
+    
     switch (role) {
         case 'administrador':
             return '/dashboard';
         case 'emprendedor':
-            return '/mi-finca';
+            if (experience_id) {
+                return `/experiencias/${experience_id}`;
+            }
+            return '/';
         default:
             return '/';
     }
@@ -30,7 +33,7 @@ const getRedirectPath = (role: UserRole | undefined, from: string | undefined): 
 const LoginPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { login } = useAuth();
+    const { login } = useAuth();    
     const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
     const [errorType, setErrorType] = useState<"email" | "password" | "general" | null>(null);
 
@@ -45,8 +48,9 @@ const LoginPage = () => {
     const onSubmit = async (data: LoginFormData) => {
         try {
             const user = await login(data);
+            console.log(user);
             const from = location.state?.from;
-            const redirectPath = getRedirectPath(user.role, from);
+            const redirectPath = getRedirectPath(user.role, from,user.experience_id);
             navigate(redirectPath, { replace: true });
         } catch (error) {
             if (error instanceof AuthError) {
@@ -68,22 +72,22 @@ const LoginPage = () => {
             name: "email",
             type: "email",
             label: "Correo electrónico",
-            placeholder: "correo@ejemplo.com",
+            placeholder: "Ingresa tu correo electrónico",
             rules: emailRules,
         },
         {
             name: "password",
             type: "password",
             label: "Contraseña",
-            placeholder: "••••••••",
+            placeholder: "Ingresa tu contraseña",
             rules: passwordRules,
         }
     ];
 
     return (
         <AuthForm
-            title="Iniciar Sesión"
-            subtitle="¡Bienvenido de nuevo!"
+            title="Inicio de sesión"
+            subtitle="Inicia  sesión con tu cuenta de Tesoros India"
             fields={fields}
             submitText="Iniciar Sesión"
             loadingText="Iniciando sesión..."

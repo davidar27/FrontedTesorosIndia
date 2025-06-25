@@ -6,14 +6,31 @@ interface EntrepreneursConfigParams {
     data: Entrepreneur[];
     CardComponent: React.ComponentType<{
         item: Entrepreneur;
-        onEdit: (item: Entrepreneur) => void;
-        onDelete: (id: number) => void;
+        onUpdate: (item: Entrepreneur) => void;
+        onChangeStatus: (id: number, status: string) => void;
+        onRetry?: () => void;
     }>;
     actions: {
-        onEdit?: (item: Entrepreneur) => void;
-        onDelete?: (id: number) => void;
+        onUpdate?: (item: Entrepreneur) => void;
         onCreate?: () => void;
+        onChangeStatus?: (id: number, status: string) => void;
+        onRetry?: () => void;
     };
+}
+
+const statusPriority = {
+    active: 1,
+    inactive: 2
+};
+
+function sortByStatus(a: Entrepreneur, b: Entrepreneur) {
+    const getStatus = (e: Entrepreneur) => {
+        const s = (e.status || '').toLowerCase();
+        if (s === 'activo' || s === 'active') return 'active';
+        if (s === 'inactivo' || s === 'inactive') return 'inactive';
+        return 'inactive';
+    };
+    return statusPriority[getStatus(a)] - statusPriority[getStatus(b)];
 }
 
 export const EntrepreneursConfig = ({
@@ -29,7 +46,7 @@ export const EntrepreneursConfig = ({
     emptyStateTitle: "No hay emprendedores",
     emptyStateDescription: "Crea el primer emprendedor para comenzar",
     description: "Gestiona emprendedores",
-    items: data,
+    items: data.sort(sortByStatus),
     isLoading: false,
     error: null,
     maxResults: 50,
@@ -43,11 +60,11 @@ export const EntrepreneursConfig = ({
             entrepreneur.name?.toLowerCase().includes(searchLower) ||
             entrepreneur.email?.toLowerCase().includes(searchLower) ||
             entrepreneur.phone?.toLowerCase().includes(searchLower) ||
-            entrepreneur.name_farm?.toLowerCase().includes(searchLower)
+            entrepreneur.name?.toLowerCase().includes(searchLower)
         );
     },
-    onEdit: actions.onEdit || (() => {}),
-    onDelete: actions.onDelete || (() => {}),
+    onUpdate: actions.onUpdate || (() => {}),
     onCreate: actions.onCreate || (() => {}),
-    onRetry: () => {},
+    onRetry: actions.onRetry || (() => {}),
+    onChangeStatus: actions.onChangeStatus || (() => {}),
 });

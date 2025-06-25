@@ -15,7 +15,6 @@ const AUTH_QUERY_KEY = ['auth', 'user'];
 const TOKEN_REFRESH_INTERVAL = 4.5 * 60 * 1000;
 const TOKEN_REFRESH_SAFETY_MARGIN = 30 * 1000;
 
-// Usuario observador por defecto
 const defaultObserverUser: User = {
     id: '0',
     name: 'Observador',
@@ -32,7 +31,18 @@ function AuthProvider({ children }: { children: ReactNode }) {
     const queryClient = useQueryClient();
 
     const isPublicRoute = useCallback((path: string): boolean => {
-        return PUBLIC_ROUTES.includes(path);
+        if (PUBLIC_ROUTES.includes(path)) {
+            return true;
+        }
+
+        return PUBLIC_ROUTES.some(route => {
+            const pattern = route
+                .replace(/:[^/]+/g, '[^/]+')
+                .replace(/\//g, '\\/');
+
+            const regex = new RegExp(`^${pattern}$`);
+            return regex.test(path);
+        });
     }, []);
 
     const {
@@ -55,9 +65,9 @@ function AuthProvider({ children }: { children: ReactNode }) {
         retry: false,
         staleTime: Infinity,
         gcTime: Infinity,
-        refetchOnWindowFocus: true,
+        refetchOnWindowFocus: false,
         refetchInterval: TOKEN_REFRESH_INTERVAL,
-        refetchOnMount: true
+        refetchOnMount: false
     });
 
     useEffect(() => {
@@ -71,52 +81,17 @@ function AuthProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         if (!isInitializing && !isPublicRoute(location.pathname) && (user?.role === 'observador' || !user)) {
-            navigate('/auth/iniciar-sesion', { 
+            navigate('/auth/iniciar-sesion', {
                 replace: true,
                 state: { from: location.pathname }
             });
         }
     }, [isInitializing, user, location.pathname]);
 
-    useEffect(() => {
-        let refreshTimeout: NodeJS.Timeout;
-
-        const scheduleTokenRefresh = () => {
-            console.log('[AuthContext] Programando próximo refresh token');
-            refreshTimeout = setTimeout(async () => {
-                try {
-                    // Intentar refrescar TOKEN_REFRESH_SAFETY_MARGIN ms antes de que expire
-                    console.log('[AuthContext] Ejecutando refresh token programado');
-                    const refreshedUser = await authService.refresh_token();
-                    console.log('[AuthContext] Refresh token exitoso, actualizando usuario');
-                    queryClient.setQueryData(AUTH_QUERY_KEY, refreshedUser);
-                    scheduleTokenRefresh();
-                } catch (error) {
-                    console.error('[AuthContext] Error en refresh token programado:', error);
-                    if (!isPublicRoute(location.pathname)) {
-                        await logout();
-                    }
-                }
-            }, TOKEN_REFRESH_INTERVAL - TOKEN_REFRESH_SAFETY_MARGIN);
-        };
-
-        if (user?.role !== 'observador') {
-            console.log('[AuthContext] Usuario autenticado, iniciando ciclo de refresh');
-            scheduleTokenRefresh();
-        }
-
-        return () => {
-            if (refreshTimeout) {
-                console.log('[AuthContext] Limpiando timeout de refresh');
-                clearTimeout(refreshTimeout);
-            }
-        };
-    }, [user?.role, location.pathname]);
-
     const loginMutation = useMutation<{ user: User; }, Error, Credentials>({
         mutationFn: async (credentials: Credentials) => {
             const result = await authService.login(credentials);
-            return { user: result};
+            return { user: result };
         },
         onSuccess: (result: { user: User; }) => {
             queryClient.setQueryData(AUTH_QUERY_KEY, result.user);
@@ -165,6 +140,47 @@ function AuthProvider({ children }: { children: ReactNode }) {
             });
         });
     }, [logoutMutation]);
+
+    useEffect(() => {
+        let refreshTimeout: NodeJS.Timeout;
+
+        const scheduleTokenRefresh = () => {
+            refreshTimeout = setTimeout(async () => {
+
+                try {
+                    const refreshedUser = await authService.refresh_token();
+                    queryClient.setQueryData(AUTH_QUERY_KEY, refreshedUser);
+                    scheduleTokenRefresh();
+                } catch {
+                    try {
+                        const verifyResult = await authService.verifyToken();
+                        if (verifyResult.isValid && verifyResult.user) {
+                            queryClient.setQueryData(AUTH_QUERY_KEY, verifyResult.user);
+                            scheduleTokenRefresh();
+                            return;
+                        }
+                    } catch (verifyError) {
+                        console.error('❌ Token verification also failed:', verifyError);
+                    }
+
+                    if (!isPublicRoute(location.pathname)) {
+                        console.log('🚪 Redirecting to logout due to refresh failure');
+                        await logout();
+                    }
+                }
+            }, TOKEN_REFRESH_INTERVAL - TOKEN_REFRESH_SAFETY_MARGIN);
+        };
+
+        if (user?.role !== 'observador') {
+            scheduleTokenRefresh();
+        }
+
+        return () => {
+            if (refreshTimeout) {
+                clearTimeout(refreshTimeout);
+            }
+        };
+    }, [user?.role, location.pathname, logout, isPublicRoute, queryClient]);
 
     const checkAuth = useCallback(async (): Promise<void> => {
         await refetchAuth();

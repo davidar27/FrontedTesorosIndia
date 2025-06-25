@@ -3,7 +3,7 @@ import React from "react";
 interface PictureProps {
     className?: string;
     alt?: string;
-    src?: string;
+    src?: string | null;
     srcSet?: string;
     sizes?: string;
     icon?: React.ReactNode;
@@ -25,12 +25,12 @@ const Picture: React.FC<PictureProps> = ({
         return (
             <picture>
                 <source type="image/webp" srcSet={srcSet} sizes={sizes} />
-                <img src={src} alt={alt} className={className} loading="lazy" decoding="async" />
+                <img src={src || ''} alt={alt} className={className} loading="lazy" decoding="async" />
             </picture>
         );
     }
 
-    return <img src={src} alt={alt} className={className} loading="lazy" />;
+    return <img src={src || ''} alt={alt} className={className} loading="lazy" />;
 };
 
 export default Picture;

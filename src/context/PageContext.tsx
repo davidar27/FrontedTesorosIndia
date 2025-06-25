@@ -9,12 +9,23 @@ interface PageContextType {
     pageInfo: PageInfo | null;
     setPageInfo: (info: PageInfo) => void;
     clearPageInfo: () => void;
+    searchValue: string | null;
+    setSearchPageValue: (search: string) => void;
+    isEditMode: boolean;
+    setIsEditMode: (mode: boolean) => void;
+    toggleEditMode: () => void;
 }
 
 const PageContext = createContext<PageContextType | undefined>(undefined);
 
 export const PageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [pageInfo, setPageInfoState] = useState<PageInfo | null>(null);
+    const [searchValue, setterSearchValue] = useState<string | null>(null);
+    const [isEditMode, setIsEditMode] = useState(false);
+
+    const setSearchPageValue = useCallback((search: string) => {
+        setterSearchValue(search);
+    }, []);
 
     const setPageInfo = useCallback((info: PageInfo) => {
         setPageInfoState(info);
@@ -24,10 +35,19 @@ export const PageProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setPageInfoState(null);
     }, []);
 
+    const toggleEditMode = () => {
+        setIsEditMode(!isEditMode);
+    };
+
     const value = {
         pageInfo,
         setPageInfo,
-        clearPageInfo
+        clearPageInfo,
+        searchValue,
+        setSearchPageValue,
+        isEditMode,
+        setIsEditMode,
+        toggleEditMode
     };
 
     return (

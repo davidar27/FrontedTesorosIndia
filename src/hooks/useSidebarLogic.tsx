@@ -2,7 +2,7 @@ import { useCallback, useState, useMemo } from "react";
 
 import { useLocation,useNavigate } from "react-router-dom";
 import { SidebarItem } from "@/components/admin/SideBar";
-import { User, MapPin, Package, Tag } from "lucide-react";
+import { User, MapPin, Package, Tag, Home, BarChart } from "lucide-react";
 
 
 const useSidebarLogic = () => {
@@ -21,6 +21,20 @@ const useSidebarLogic = () => {
     // Sidebar items con estado activo
     const sidebarItems: SidebarItem[] = useMemo(() => [
         {
+            id: 'home',
+            label: 'Inicio',
+            icon: Home,
+            path: '/',
+            active: activeSection === 'home'
+        },
+        {
+            id: 'estadisticas',
+            label: 'Estadisticas',
+            icon: BarChart,
+            path: '/dashboard',
+            active: activeSection === 'estadisticas'
+        },
+        {
             id: 'emprendedores',
             label: 'Emprendedores',
             icon: User,
@@ -28,11 +42,11 @@ const useSidebarLogic = () => {
             active: activeSection === 'emprendedores'
         },
         {
-            id: 'fincas',
-            label: 'Fincas',
+            id: 'experiencias',
+            label: 'Experiencias',
             icon: MapPin,
-            path: '/dashboard/fincas',
-            active: activeSection === 'fincas'
+            path: '/dashboard/experiencias',
+            active: activeSection === 'experiencias'
         },
         {
             id: 'paquetes',
