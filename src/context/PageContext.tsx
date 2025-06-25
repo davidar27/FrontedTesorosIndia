@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useCallback, useEffect } from 'react';
+import { useSearchParams } from "react-router-dom";
 
 interface PageInfo {
     title: string;
@@ -22,6 +23,8 @@ export const PageProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [pageInfo, setPageInfoState] = useState<PageInfo | null>(null);
     const [searchValue, setterSearchValue] = useState<string | null>(null);
     const [isEditMode, setIsEditMode] = useState(false);
+    const [searchParams, setSearchValue] = useSearchParams();
+
 
     const setSearchPageValue = useCallback((search: string) => {
         setterSearchValue(search);
@@ -38,6 +41,13 @@ export const PageProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const toggleEditMode = () => {
         setIsEditMode(!isEditMode);
     };
+
+    useEffect(() => {
+        if (!searchParams.get("search")) {
+            setSearchValue("");
+            setSearchPageValue("");
+        }
+    }, [searchParams, setSearchPageValue]);
 
     const value = {
         pageInfo,
