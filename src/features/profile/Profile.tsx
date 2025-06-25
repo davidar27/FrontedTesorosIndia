@@ -2,7 +2,7 @@ import React from 'react';
 import { MapPin, Phone, Mail, User as UserIcon } from 'lucide-react';
 import useAuth from '@/context/useAuth';
 import Button from '@/components/ui/buttons/Button';
-import LoadingSpinner from '@/components/layouts/LoadingSpinner';
+import LoadingSpinner from '@/components/ui/display/LoadingSpinner';
 import { ProfileCard } from '@/features/profile/components/ProfileCard';
 import { useProfileLogic } from '@/features/profile/hook/useProfileLogic';
 import { ProfileHeader } from '@/features/profile/components/ProfileHeader';

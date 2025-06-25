@@ -1,3 +1,4 @@
+
 // Interfaces base
 export interface BaseEntity<T> {
     id: number;
@@ -18,16 +19,6 @@ export interface Leader {
     role: string;
 }
 
-export interface Location {
-    id: number;
-    name: string;
-    position: {
-        lat: number;
-        lng: number;
-    };
-    description: string;
-    type: string;
-}
 
 export interface Package {
     image: string;
@@ -41,7 +32,7 @@ export interface Package {
 }
 
 export interface SidebarItem {
-    id: string;
+    id: number;
     label: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     icon: any;

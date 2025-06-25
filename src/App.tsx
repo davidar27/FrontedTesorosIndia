@@ -36,7 +36,7 @@ import { PageProvider } from '@/context/PageContext';
 // Routes
 import ProtectedRoute from "./routes/protectedRoute";
 import ErrorFallback from "./pages/Errors/ErrorFallback";
-import LoadingSpinner from "./components/layouts/LoadingSpinner";
+import LoadingSpinner from "./components/ui/display/LoadingSpinner";
 import ResetPassword from "./pages/Auth/ResetPassword";
 import ForgotPasswordForm from "./pages/Auth/ForgotPasswordForm";
 import ExperiencePage from "./pages/Experience/ExperiencePage";

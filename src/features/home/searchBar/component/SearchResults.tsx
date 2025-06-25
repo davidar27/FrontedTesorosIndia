@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/components/layouts/LoadingSpinner";
+import LoadingSpinner from "@/components/ui/display/LoadingSpinner";
 import { SearchResult } from "@/services/home/search";
 import { motion, AnimatePresence } from "framer-motion";
 import { SearchResultItem } from "@/features/home/searchBar/component/SearchResultItem";

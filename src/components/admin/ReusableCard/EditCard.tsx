@@ -5,7 +5,7 @@ import Avatar from '@/components/ui/display/Avatar';
 import { BaseItem, EditCardProps } from './types';
 import { getImageUrl } from '@/utils/getImageUrl';
 import Button from '@/components/ui/buttons/Button';
-import LoadingSpinner from '@/components/layouts/LoadingSpinner';
+import LoadingSpinner from '@/components/ui/display/LoadingSpinner';
 
 const CARD_VARIANTS = {
     default: 'p-6',
