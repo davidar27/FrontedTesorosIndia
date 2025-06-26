@@ -31,5 +31,8 @@ export const PUBLIC_ROUTES = [
     '/metodo-pago',
 
     //
-    '/perfil/:id'
+    '/perfil/:id',
+
+
+    '/testpay'
 ];

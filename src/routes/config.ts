@@ -11,10 +11,10 @@ export const Home = lazy(() => import('@/pages/Home/Home'));
 export const ProductsPage = lazy(() => import('@/pages/Products/Products'));
 export const AboutUs = lazy(() => import('@/pages/AboutUs/AboutUs'));
 export const ExperiencePage = lazy(() => import('@/pages/Experience/ExperiencePage'));
+export const TestPay = lazy(() => import('@/pages/payment/CardPayment'));
 
 // Cart & Payment Pages
 export const CartPage = lazy(() => import('@/pages/Cart/CartPage'));
-export const PaymentPage = lazy(() => import('@/pages/payment/PaymentPage'));
 export const PaymentSuccess = lazy(() => import('@/pages/payment/PaymentSuccess'));
 export const PaymentFailure = lazy(() => import('@/pages/payment/PaymentFailure'));
 export const PaymentPending = lazy(() => import('@/pages/payment/PaymentPending'));
@@ -88,10 +88,10 @@ export const publicRoutes: RouteConfig[] = [
         allowAdmin: false
     },
     {
-        path: '/metodo-pago',
-        element: PaymentPage,
+        path: '/testpay',
+        element: TestPay,
         layout: MainLayout,
-        title: 'Procesar Pago',
+        title: 'Probar Pago',
         description: 'Página de pago seguro',
         allowAdmin: false
     },

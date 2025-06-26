@@ -11,8 +11,8 @@ const PaymentFailure: React.FC = () => {
   useEffect(() => {
     // Obtener parámetros de URL de MercadoPago
     const statusParam = searchParams.get('status');
-    const paymentIdParam = searchParams.get('payment_id');
-    const preferenceIdParam = searchParams.get('preference_id');
+    // const paymentIdParam = searchParams.get('payment_id');
+    // const preferenceIdParam = searchParams.get('preference_id');
 
     if (statusParam === 'rejected') {
       setErrorDetails('El pago fue rechazado por el banco o entidad financiera.');

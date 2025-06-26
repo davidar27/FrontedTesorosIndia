@@ -11,8 +11,7 @@ const Footer = () => {
 
   const serviceLinks = [
     { label: "Productos", path: "/productos" },
-    { label: "Paquetes", path: "/paquetes" },
-    { label: "Reservas", path: "/reservas" },
+    { label: "Paquetes", path: "/" },
   ];
 
   const socialLinks = [
@@ -22,8 +21,8 @@ const Footer = () => {
   ] as const;
 
   return (
-    <footer className="bg-[#F1F6FA] text-black px-8 py-10">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between gap-8">
+    <footer className="bg-[#F1F6FA] text-black responsive-padding-x py-10">
+      <div className=" mx-auto flex flex-col md:flex-row justify-between gap-8">
 
         {/* Contacto */}
         <div>

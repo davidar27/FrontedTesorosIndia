@@ -50,6 +50,7 @@ function App() {
           <ToastProvider />
           <Routes>
             {/* Rutas públicas con MainLayout */}
+
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />} />
 
