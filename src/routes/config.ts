@@ -1,4 +1,4 @@
-import Profile from '@/features/user/Profile';
+import Profile from '@/features/profile/Profile';
 import { lazy } from 'react';
 
 // Layouts

@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import LoadingSpinner from '@/components/layouts/LoadingSpinner';
+import LoadingSpinner from '@/components/ui/display/LoadingSpinner';
 import { useNavigate, useLocation } from 'react-router-dom';
 import clsx from 'clsx';
 import { useScroll, useMotionValueEvent } from 'framer-motion';
@@ -20,7 +20,7 @@ const SidebarExperiences: React.FC<SidebarExperiencesProps> = ({ isOpen, onClose
     const location = useLocation();
     const [scrolled, setScrolled] = useState(false);
     const { scrollY } = useScroll();
-    
+
     const [isRendered, setIsRendered] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
 
@@ -42,9 +42,9 @@ const SidebarExperiences: React.FC<SidebarExperiencesProps> = ({ isOpen, onClose
         }
     }, [isOpen]);
 
-    const { 
+    const {
         data: experiences = [],
-        isLoading, 
+        isLoading,
         error,
         refetch
     } = useQuery<Experience[]>({
@@ -59,7 +59,7 @@ const SidebarExperiences: React.FC<SidebarExperiencesProps> = ({ isOpen, onClose
             setIsRendered(false);
         }
     };
-    
+
     const handleClose = useCallback(() => {
         setIsClosing(true);
         setTimeout(onClose, 300);
@@ -146,7 +146,7 @@ const SidebarExperiences: React.FC<SidebarExperiencesProps> = ({ isOpen, onClose
                                     <button
                                         onClick={handleRetry}
                                         className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg
-                                                 hover:bg-red-700 transition-colors duration-200 text-sm font-medium"
+                                                    hover:bg-red-700 transition-colors duration-200 text-sm font-medium"
                                     >
                                         <RefreshCw size={16} />
                                         Intentar de nuevo

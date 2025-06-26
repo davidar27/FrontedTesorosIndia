@@ -36,17 +36,17 @@ import { PageProvider } from '@/context/PageContext';
 // Routes
 import ProtectedRoute from "./routes/protectedRoute";
 import ErrorFallback from "./pages/Errors/ErrorFallback";
-import LoadingSpinner from "./components/layouts/LoadingSpinner";
+import LoadingSpinner from "./components/ui/display/LoadingSpinner";
 import ResetPassword from "./pages/Auth/ResetPassword";
 import ForgotPasswordForm from "./pages/Auth/ForgotPasswordForm";
 import ExperiencePage from "./pages/Experience/ExperiencePage";
-import Profile from "./features/user/Profile";
+import Profile from "./features/profile/Profile";
 
 function App() {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <PageProvider>
-        <Suspense fallback={<LoadingSpinner message="Cargando aplicación..." />}>
+        <Suspense fallback={<LoadingSpinner position="overlay" size="lg" variant="primary" speed="slow" overlayBg="bg-white/90" message="Cargando aplicación..." />}>
           <ToastProvider />
           <Routes>
             {/* Rutas públicas con MainLayout */}
@@ -109,7 +109,7 @@ function App() {
                 <Route path="paquetes" element={<PackagesPage />} />
                 <Route path="categorias" element={<CategoriesPage />} />
               </Route>
-            </Route>            
+            </Route>
 
             {/* Páginas de error */}
             <Route path="/error">

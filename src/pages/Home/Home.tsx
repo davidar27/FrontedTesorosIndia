@@ -1,6 +1,6 @@
 import Hero from "@/features/home/Hero";
 import PackageSelector from "@/features/home/PackageSelector";
-import TouristRoute from "@/features/home/TouristRoute";
+import TouristRoute from "@/features/home/map/TouristRoute";
 import UniqueExperiences from "@/features/home/UniqueExperiences";
 import Leaders from "@/features/home/Leaders";
 import HandleReservation from "@/features/home/HandleReservation";

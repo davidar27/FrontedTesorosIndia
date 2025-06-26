@@ -6,14 +6,9 @@ import { Experience } from "@/features/admin/experiences/ExperienceTypes";
 export interface SearchResult {
     type: 'product' | 'package' | 'experience';
     id: number;
-    name: string;
-    description?: string;
-    price?: string | number;
+    name?: string;
     image?: string;
     category?: string;
-    location?: string;
-    duration?: string;
-    rating?: number;
 }
 
 export interface SearchResponse {
@@ -26,15 +21,15 @@ export const SearchApi = {
     searchAll: async (query: string): Promise<SearchResponse> => {
         try {
             const [productsRes, packagesRes, experiencesRes] = await Promise.all([
-                publicAxiosInstance.get(`/productos/?search=${encodeURIComponent(query)}`),
-                publicAxiosInstance.get(`/paquetes/?search=${encodeURIComponent(query)}`),
-                publicAxiosInstance.get(`/experiencias/?buscar=${encodeURIComponent(query)}`)
+                publicAxiosInstance.get(`/productos/buscar?search=${encodeURIComponent(query)}`),
+                publicAxiosInstance.get(`/paquetes/buscar?search=${encodeURIComponent(query)}`),
+                publicAxiosInstance.get(`/experiencias/buscar?search=${encodeURIComponent(query)}`)
             ]);
 
             return {
-                products: productsRes.data || [],
-                packages: packagesRes.data || [],
-                experiences: experiencesRes.data || []
+                products: productsRes.data.products || [],
+                packages: packagesRes.data.packages || [],
+                experiences: experiencesRes.data.experiences || []
             };
         } catch (error) {
             console.error('Error searching:', error);
@@ -49,8 +44,8 @@ export const SearchApi = {
     // Search individual entities
     searchProducts: async (query: string): Promise<Product[]> => {
         try {
-            const response = await publicAxiosInstance.get(`/productos/?search=${encodeURIComponent(query)}`);
-            return response.data || [];
+            const response = await publicAxiosInstance.get(`/productos/buscar?search=${encodeURIComponent(query)}`);
+            return response.data.products || [];
         } catch (error) {
             console.error('Error searching products:', error);
             return [];
@@ -59,8 +54,8 @@ export const SearchApi = {
 
     searchPackages: async (query: string): Promise<Package[]> => {
         try {
-            const response = await publicAxiosInstance.get(`/paquetes/?search=${encodeURIComponent(query)}`);
-            return response.data || [];
+            const response = await publicAxiosInstance.get(`/paquetes/buscar?search=${encodeURIComponent(query)}`);
+            return response.data.packages || [];
         } catch (error) {
             console.error('Error searching packages:', error);
             return [];
@@ -69,8 +64,8 @@ export const SearchApi = {
 
     searchExperiences: async (query: string): Promise<Experience[]> => {
         try {
-            const response = await publicAxiosInstance.get(`/experiencias/?buscar=${encodeURIComponent(query)}`);
-            return response.data || [];
+            const response = await publicAxiosInstance.get(`/experiencias/buscar?search=${encodeURIComponent(query)}`);
+            return response.data.experiences || [];
         } catch (error) {
             console.error('Error searching experiences:', error);
             return [];
@@ -78,50 +73,37 @@ export const SearchApi = {
     }
 };
 
-// Utility function to transform search results into a unified format
 export const transformSearchResults = (searchResponse: SearchResponse): SearchResult[] => {
     const results: SearchResult[] = [];
 
-    // Transform products
-    searchResponse.products.forEach(product => {
+    (searchResponse.products ?? []).forEach(product => {
         results.push({
             type: 'product',
-            id: product.id,
-            name: product.name,
-            description: product.category,
-            price: product.price,
-            image: product.image,
-            category: product.category,
-            rating: product.rating
+            id: product.id || 0,
+            name: product.name || product.name_product || '',
+            image: product.image || '',
+            category: product.category || '',
         });
     });
 
-    // Transform packages
-    searchResponse.packages.forEach(pkg => {
+    (searchResponse.packages ?? []).forEach(pkg => {
         results.push({
             type: 'package',
-            id: pkg.id,
-            name: pkg.name,
-            description: pkg.description,
-            price: pkg.price,
-            duration: pkg.duration
+            id: pkg.id || 0,
+            name: pkg.name || pkg.name_package || '',
+            image: pkg.image || '',
         });
     });
 
-    // Transform experiences
-    // Transform experiences
-    if (searchResponse.experiences) {
-        searchResponse.experiences.forEach((experience: Experience) => {
-            results.push({
-                type: 'experience',
-                id: experience.id || 0,
-                name: experience.name_experience,
-                description: experience.type,
-                location: experience.location,
-                image: experience.image
-            });
+    (searchResponse.experiences ?? []).forEach((experience: Experience) => {
+        results.push({
+            type: 'experience',
+            id: experience.id || 0,
+            name: experience.name_experience || '',
+            image: experience.image || '',
+            category: experience.type || '',
         });
-    }
+    });
 
     return results;
 }; 

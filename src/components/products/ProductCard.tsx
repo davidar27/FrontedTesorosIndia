@@ -11,6 +11,7 @@ import { formatPrice } from "@/utils/formatPrice";
 export interface Product {
   id: number;
   name: string;
+  name_product?: string;
   price: string;
   image: string;
   rating: number;

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -36,6 +36,16 @@ const LoginPage = () => {
     const { login } = useAuth();    
     const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
     const [errorType, setErrorType] = useState<"email" | "password" | "general" | null>(null);
+    const { user } = useAuth();
+
+
+    useEffect(() => {
+        if (user) {
+            const from = location.state?.from;
+            const redirectPath = getRedirectPath(user.role, from, user.experience_id);
+            navigate(redirectPath, { replace: true });
+        }
+    }, [user, location.state?.from, navigate]);
 
     const {
         register,
