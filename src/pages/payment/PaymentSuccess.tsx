@@ -20,7 +20,6 @@ const PaymentSuccess: React.FC = () => {
       setPaymentId(paymentIdParam);
     }
 
-    // Limpiar carrito solo si el pago fue exitoso
     if (statusParam === 'approved' || statusParam === 'pending') {
       handleClearCartAfterPayment();
     }
