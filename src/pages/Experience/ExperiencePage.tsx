@@ -106,5 +106,4 @@ const ExperiencePage: React.FC = () => {
         </div>
     );
 };
-
 export default ExperiencePage;

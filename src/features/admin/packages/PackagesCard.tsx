@@ -91,12 +91,9 @@ export const PackagesCard = React.memo(function PackagesCard({
 
     const stats = [
         { value: `${item.duration}H`, label: 'Duración', bgColor: 'bg-blue-50', textColor: 'text-blue-600', icon: Calendar },
-        { value: item.capacity, label: 'Capacidad (personas)', bgColor: 'bg-purple-50', textColor: 'text-purple-600', icon: Users },
+        { value: item.capacity, label: 'Cantidad (personas)', bgColor: 'bg-purple-50', textColor: 'text-purple-600', icon: Users },
 
     ];
-
-   
-    console.log(normalized);
     const actions: ActionButton[] = [
         {
             icon: Edit,

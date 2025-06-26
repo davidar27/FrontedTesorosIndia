@@ -11,6 +11,7 @@ export const Home = lazy(() => import('@/pages/Home/Home'));
 export const ProductsPage = lazy(() => import('@/pages/Products/Products'));
 export const AboutUs = lazy(() => import('@/pages/AboutUs/AboutUs'));
 export const ExperiencePage = lazy(() => import('@/pages/Experience/ExperiencePage'));
+export const PackageDetailsView = lazy(() => import('@/pages/Packages/PackageDetailsView'));
 
 // Cart & Payment Pages
 export const CartPage = lazy(() => import('@/pages/Cart/CartPage'));
@@ -108,6 +109,14 @@ export const publicRoutes: RouteConfig[] = [
         layout: MainLayout,
         title: 'Pago Pendiente',
         description: 'Pago en proceso',
+        allowAdmin: false
+    },
+    {
+        path: '/detalles-paquete',
+        element: PackageDetailsView,
+        layout: MainLayout,
+        title: 'Detalles del Paquete',
+        description: '',
         allowAdmin: false
     }
 ];
