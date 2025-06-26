@@ -14,7 +14,10 @@ export const ExperiencePage = lazy(() => import('@/pages/Experience/ExperiencePa
 
 // Cart & Payment Pages
 export const CartPage = lazy(() => import('@/pages/Cart/CartPage'));
-export const PaymentPage = lazy(() => import('@/pages/Cart/PaymentPage'));
+export const PaymentPage = lazy(() => import('@/pages/payment/PaymentPage'));
+export const PaymentSuccess = lazy(() => import('@/pages/payment/PaymentSuccess'));
+export const PaymentFailure = lazy(() => import('@/pages/payment/PaymentFailure'));
+export const PaymentPending = lazy(() => import('@/pages/payment/PaymentPending'));
 
 // Auth Pages
 export const LoginPage = lazy(() => import('@/pages/Auth/LoginPage'));
@@ -90,6 +93,30 @@ export const publicRoutes: RouteConfig[] = [
         layout: MainLayout,
         title: 'Procesar Pago',
         description: 'Página de pago seguro',
+        allowAdmin: false
+    },
+    {
+        path: '/payment-success',
+        element: PaymentSuccess,
+        layout: MainLayout,
+        title: 'Pago Exitoso',
+        description: 'Confirmación de pago exitoso',
+        allowAdmin: false
+    },
+    {
+        path: '/payment-failure',
+        element: PaymentFailure,
+        layout: MainLayout,
+        title: 'Pago Fallido',
+        description: 'Pago no procesado',
+        allowAdmin: false
+    },
+    {
+        path: '/payment-pending',
+        element: PaymentPending,
+        layout: MainLayout,
+        title: 'Pago Pendiente',
+        description: 'Pago en proceso',
         allowAdmin: false
     }
 ];

@@ -10,6 +10,7 @@ import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
 import useExperiencePermissions from "@/hooks/useExperiencePermissions";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
+import ButtonIcon from "../ui/buttons/ButtonIcon";
 
 interface HeaderActionsProps {
     isEditMode?: boolean;
@@ -27,6 +28,7 @@ const HeaderActions = ({ isEditMode = false, onToggleEditMode }: HeaderActionsPr
     const isOwner = user?.role === "emprendedor";
     const { items } = useCart();
     const navigate = useNavigate();
+
 
 
     return (
@@ -126,19 +128,18 @@ const HeaderActions = ({ isEditMode = false, onToggleEditMode }: HeaderActionsPr
                 {!isOwner && (
                     <>
                         <div className="relative">
-                            <button
+                            <ButtonIcon
                                 aria-label="Abrir carrito"
-                                className="p-2 rounded hover:bg-gray-100 focus:outline-none"
                                 onClick={() => navigate("/carrito")}
-                                tabIndex={0}
+                                
                             >
                                 <ShoppingCart className="w-6 h-6" />
                                 {items.length > 0 && (
-                                    <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                                    <span className="absolute -top-1 -right-1 bg-secondary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                                         {items.length}
                                     </span>
                                 )}
-                            </button>
+                            </ButtonIcon>
                         </div>
                         <Button
                             className="hidden md:block"

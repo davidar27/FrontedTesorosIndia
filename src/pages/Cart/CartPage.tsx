@@ -3,11 +3,10 @@ import Input from "@/components/ui/inputs/Input";
 import { useCart } from "@/context/CartContext";
 import { formatPrice } from "@/utils/formatPrice";
 import { getImageUrl } from "@/utils/getImageUrl";
-import { Minus, Plus, Trash2, ShoppingCart, MapPin, Sparkles, CreditCard, ArrowRight } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingCart, MapPin, Sparkles, CreditCard, ArrowRight, Loader2 } from "lucide-react";
 import React, { useState } from "react";
 import { axiosInstance } from "@/api/axiosInstance";
 import Button from "@/components/ui/buttons/Button";
-import { useNavigate } from "react-router-dom";
 
 const CartPage: React.FC = () => {
     const {
@@ -19,7 +18,6 @@ const CartPage: React.FC = () => {
         loading,
     } = useCart();
 
-    const navigate = useNavigate();
     const [paying, setPaying] = useState(false);
     const [payError, setPayError] = useState<string | null>(null);
 
@@ -41,8 +39,9 @@ const CartPage: React.FC = () => {
             };
             const { data } = await axiosInstance.post("/pagos/preferencia", payload);
             if (data && data.preferenceId) {
-                // Redirect to payment page with preference ID
-                navigate(`/metodo-pago?preferenceId=${data.preferenceId}`);
+                // Redirigir directamente a MercadoPago Checkout Pro
+                const checkoutUrl = `https://www.mercadopago.com.co/checkout/v1/redirect?pref_id=${data.preferenceId}`;
+                window.location.href = checkoutUrl;
             } else {
                 setPayError("No se pudo obtener la preferencia de pago.");
             }
@@ -215,12 +214,12 @@ const CartPage: React.FC = () => {
                     </section>
 
                     {/* Order Summary */}
-                    <aside className="sticky top-20 group bg-gradient-to-r from-white to-gray-50 rounded-2xl p-6 border border-gray-100 hover:shadow-lg transition-all duration-300 w-1/4 h-fit"
+                    <aside className="sticky top-20 group bg-gradient-to-r from-white to-gray-50 rounded-2xl p-6 border border-gray-100 hover:shadow-lg transition-all duration-300 w-1/4 h-fit space-y-4"
                     >
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 bg-emerald-500 rounded-xl flex items-center justify-center">
                                 <CreditCard className="w-4 h-4 text-white" />
-                            </div>
+                            </div> 
                             <h2 className="text-lg font-bold text-gray-800">Resumen de tu Compra</h2>
                         </div>
 
@@ -244,27 +243,29 @@ const CartPage: React.FC = () => {
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="flex flex-col md:flex-row gap-4">
-                            <Button
-                                variant="primary"
-                                className="flex-1"
-                                aria-label="Continuar Compra"
-                                disabled={items.length === 0 || paying}
-                                onClick={handlePay}
-                            >
+                        <Button
+                            onClick={handlePay}
+                            disabled={paying}
+                            variant="primary"
+                            className="w-full py-4 text-lg font-semibold"
+                            aria-label="Pagar con MercadoPago"
+                        >
+                            {paying ? (
                                 <div className="flex items-center justify-center space-x-3">
-                                    {paying ? (
-                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                                    ) : (
-                                        <CreditCard className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
-                                    )}
-                                    <span>{paying ? 'Preparando pago...' : 'Continuar Compra'}</span>
-                                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                    <span>Redirigiendo a MercadoPago...</span>
                                 </div>
-                            </Button>
+                            ) : (
+                                <div className="flex items-center justify-center space-x-3">
+                                    <CreditCard className="w-5 h-5" />
+                                    <span>Pagar con MercadoPago</span>
+                                    <ArrowRight className="w-5 h-5" />  
+                                </div>
+                            )}
+                        </Button>
 
 
-                        </div>
+   
 
                         {/* Trust Indicators */}
                         <div className="mt-6 pt-6 border-t border-emerald-200">
