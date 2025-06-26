@@ -11,7 +11,6 @@ export const Home = lazy(() => import('@/pages/Home/Home'));
 export const ProductsPage = lazy(() => import('@/pages/Products/Products'));
 export const AboutUs = lazy(() => import('@/pages/AboutUs/AboutUs'));
 export const ExperiencePage = lazy(() => import('@/pages/Experience/ExperiencePage'));
-export const TestPay = lazy(() => import('@/pages/payment/CardPayment'));
 
 // Cart & Payment Pages
 export const CartPage = lazy(() => import('@/pages/Cart/CartPage'));
@@ -85,14 +84,6 @@ export const publicRoutes: RouteConfig[] = [
         layout: MainLayout,
         title: 'Carrito de Compras',
         description: 'Gestionar productos en el carrito',
-        allowAdmin: false
-    },
-    {
-        path: '/testpay',
-        element: TestPay,
-        layout: MainLayout,
-        title: 'Probar Pago',
-        description: 'Página de pago seguro',
         allowAdmin: false
     },
     {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Experience } from '../types/TouristRouteTypes';
+import { Experience } from '@/features/home/map/types/TouristRouteTypes';
 import { transformExperienceData } from '../utils/transformExperienceData';
 import { ExperiencesApi } from '@/services/home/experiences';
 

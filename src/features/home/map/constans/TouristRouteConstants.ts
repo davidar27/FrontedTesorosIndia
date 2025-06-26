@@ -1,4 +1,4 @@
-import { Position } from "./types/TouristRouteTypes";
+import { Position } from "@/features/home/map/types/TouristRouteTypes";
 
 export const DEFAULT_POSITION: Position = { lat: 4.678, lng: -75.668 };
 export const MAP_CENTER: Position = { lat: 4.676, lng: -75.655 };
