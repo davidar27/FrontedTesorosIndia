@@ -4,7 +4,7 @@ import Picture from '@/components/ui/display/Picture';
 import { BaseItem, StatInfo } from './types';
 import { getImageUrl } from '@/utils/getImageUrl';
 import Button from '@/components/ui/buttons/Button';
-import LoadingSpinner from '@/components/layouts/LoadingSpinner';
+import LoadingSpinner from '@/components/ui/display/LoadingSpinner';
 import { getExperienceTypeDetails } from '@/features/admin/experiences/experienceUtils';
 interface ExperiencePackageEditCardProps<T extends BaseItem> {
     item: T;

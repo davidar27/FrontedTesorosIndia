@@ -1,4 +1,4 @@
-import LoadingSpinner, { LoadingSpinnerProps } from "@/components/layouts/LoadingSpinner";
+import LoadingSpinner, { LoadingSpinnerProps } from "@/components/ui/display/LoadingSpinner";
 import React from "react";
 
 

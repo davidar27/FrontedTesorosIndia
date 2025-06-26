@@ -3,10 +3,12 @@ import { MapContainer, TileLayer, Popup, useMap, Marker } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import ZoomWithShift from '@/hooks/ZoomWithShift';
-import { Location } from '@/types';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+import { Experience } from '@/features/home/map/types/TouristRouteTypes';
+import { MapPin } from 'lucide-react';
+import { getExperienceTypeDetails } from '@/features/admin/experiences/experienceUtils';
 
 
 delete (L.Icon.Default.prototype as unknown as { _getIconUrl: unknown })._getIconUrl;
@@ -16,6 +18,17 @@ interface ReusableMapProps {
     initialCenter?: { lat: number; lng: number };
     initialZoom?: number;
     className?: string;
+}
+
+export interface Location {
+    id: number;
+    name: string;
+    position: {
+        lat: number;
+        lng: number;
+    };
+    description: string;
+    type: string;
 }
 
 
@@ -46,9 +59,20 @@ const ReusableMap: React.FC<ReusableMapProps> = ({
     initialZoom = 13,
     className = ''
 }) => {
-    const [activeLocation, setActiveLocation] = useState<Location | null>(null);
+    const [activeExperience, setActiveExperience] = useState<Experience | null>(null);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const [, setIsMapInteractive] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+    const { Icon: IconComponent, color } = getExperienceTypeDetails(activeExperience?.type ?? '');
+
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 768);
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
 
     return (
@@ -59,7 +83,8 @@ const ReusableMap: React.FC<ReusableMapProps> = ({
             }}
             onMouseLeave={() => {
             }}
-            style={{ height: '500px', width: '100%' }}
+            style={{ height: isMobile ? '200px' : '400px', width: '100%' }}
+
         >
             <MapContainer
                 center={initialCenter}
@@ -82,28 +107,30 @@ const ReusableMap: React.FC<ReusableMapProps> = ({
                         key={location.id}
                         position={[location.position.lat, location.position.lng]}
                         eventHandlers={{
-                            click: () => setActiveLocation(location),
-                            mouseover: () => setActiveLocation(location)
+                            click: () => setActiveExperience(location as Experience),
+                            mouseover: () => setActiveExperience(location as Experience)
                         }}
-                    > <Popup>
-                            <div className="p-2">
-                                <h3 className="font-bold text-lg">{location.name}</h3>
-                                <p className="text-gray-600">{location.description}</p>
-                                <span className="inline-block mt-1 px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
-                                    {location.type}
-                                </span>
+                    > <Popup >
+                            {activeExperience && (<div className="bg-gradient-to-br from-green-50 to-emerald-50 p-5 rounded-xl border border-green-100 hover:shadow-md transition-shadow w-max">
+                                <div className="flex items-center space-x-3 mb-3">
+                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-to-br ${color}`}>
+                                        <IconComponent className="w-4 h-4 text-white" />
+                                    </div>
+                                    <h3 className="font-semibold text-green-700">{activeExperience.name}</h3>
+                                </div>
+                                <p className="text-gray-600 text-sm mb-2">{activeExperience.description}</p>
+                                {activeExperience && (
+                                    <p className="text-xs text-gray-500 flex items-center">
+                                        <MapPin className="w-3 h-3 mr-1" />
+                                        {activeExperience.location}
+                                    </p>
+                                )}
                             </div>
+                            )}
                         </Popup>
                     </Marker>
                 ))}
             </MapContainer>
-
-            {activeLocation && (
-                <div className="absolute bottom-4 left-4 bg-white p-4 rounded-lg shadow-md max-w-xs z-[1000]">
-                    <h3 className="font-bold text-lg">{activeLocation.name}</h3>
-                    <p className="text-gray-600">{activeLocation.description}</p>
-                </div>
-            )}
         </div>
     );
 };

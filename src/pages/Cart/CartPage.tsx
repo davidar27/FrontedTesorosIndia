@@ -3,13 +3,14 @@ import Input from "@/components/ui/inputs/Input";
 import { useCart } from "@/context/CartContext";
 import { formatPrice } from "@/utils/formatPrice";
 import { getImageUrl } from "@/utils/getImageUrl";
-import { Minus, Plus, Trash2, ShoppingCart, MapPin, Sparkles, CreditCard, ArrowRight } from "lucide-react";
-import React, { useState } from "react";
-import { axiosInstance } from "@/api/axiosInstance";
+import { Minus, Plus, Trash2, ShoppingCart, MapPin, Sparkles, CreditCard } from "lucide-react";
+import React from "react";
 import Button from "@/components/ui/buttons/Button";
 import { useNavigate } from "react-router-dom";
+import { MercadoPagoWallet } from "../payment/MercadoPagoWallet";
 
 const CartPage: React.FC = () => {
+    const navigate = useNavigate();
     const {
         items,
         total,
@@ -19,59 +20,15 @@ const CartPage: React.FC = () => {
         loading,
     } = useCart();
 
-    const navigate = useNavigate();
-    const [paying, setPaying] = useState(false);
-    const [payError, setPayError] = useState<string | null>(null);
-
     const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
     const finalTotal = total + total * 0.19;
 
-    const handlePay = async () => {
-        setPaying(true);
-        setPayError(null);
-        try {
-            const payload = {
-                items: items.map(item => ({
-                    id: item.id,
-                    name: item.name,
-                    quantity: item.quantity,
-                    price: item.priceWithTax,
-                })),
-                total: finalTotal,
-            };
-            const { data } = await axiosInstance.post("/pagos/preferencia", payload);
-            if (data && data.preferenceId) {
-                // Redirect to payment page with preference ID
-                navigate(`/metodo-pago?preferenceId=${data.preferenceId}`);
-            } else {
-                setPayError("No se pudo obtener la preferencia de pago.");
-            }
-        } catch (err: unknown) {
-            let message = "Error al iniciar el pago. Intenta nuevamente.";
-            if (
-                err &&
-                typeof err === "object" &&
-                "response" in err &&
-                err.response &&
-                typeof err.response === "object" &&
-                "data" in err.response &&
-                err.response.data &&
-                typeof err.response.data === "object" &&
-                "message" in err.response.data
-            ) {
-                message = String((err.response as { data?: { message?: string } }).data?.message);
-            }
-            setPayError(message);
-        } finally {
-            setPaying(false);
-        }
-    };
 
     return (
         <main className="relative z-20 responsive-padding-y bg-gradient-to-br from-emerald-50 via-teal-50 to-green-100 ">
             {items.length === 0 ? (
                 // Empty Cart State
-                <div className="text-center py-16 px-8 space-y-4">
+                <div className="text-center h-screen flex flex-col items-center justify-center gap-4">
                     <div className="w-24 h-24 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-full flex items-center justify-center mx-auto">
                         <ShoppingCart className="w-12 h-12 text-emerald-600" />
                     </div>
@@ -79,7 +36,9 @@ const CartPage: React.FC = () => {
                     <p className="text-gray-600 max-w-md mx-auto">
                         ¡Explora nuestros increíbles productos y experiencias para comenzar tu aventura!
                     </p>
-                    <button className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-8 py-4 rounded-2xl font-semibold text-lg shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+                    <button className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-8 py-4 rounded-2xl font-semibold text-lg shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+                    onClick={() => navigate("/productos")}
+                    >
                         <div className="flex items-center space-x-2">
                             <Sparkles className="w-5 h-5" />
                             <span>Explorar Productos</span>
@@ -159,7 +118,7 @@ const CartPage: React.FC = () => {
                                                             <button
                                                                 disabled={item.quantity <= 1}
                                                                 onClick={() => handleUpdateQuantity({ ...item, quantity: Math.max(1, item.quantity - 1) })}
-                                                                className="w-10 h-10 rounded-xl bg-white hover:bg-emerald-50 hover:text-emerald-600 flex items-center justify-center transition-all duration-200 shadow-sm"
+                                                                className="w-10 h-10 rounded-xl bg-white hover:bg-emerald-50 hover:text-emerald-600 flex items-center justify-center transition-all duration-200 shadow-sm cursor-pointer"
                                                             >
                                                                 <Minus className="w-4 h-4" />
                                                             </button>
@@ -186,7 +145,7 @@ const CartPage: React.FC = () => {
                                                             <button
                                                                 disabled={!item.stock || item.quantity >= item.stock}
                                                                 onClick={() => handleUpdateQuantity({ ...item, quantity: item.quantity + 1 })}
-                                                                className={`w-10 h-10 rounded-xl bg-white hover:bg-emerald-50 hover:text-emerald-600 flex items-center justify-center transition-all duration-200 shadow-sm`}
+                                                                className={`w-10 h-10 rounded-xl bg-white hover:bg-emerald-50 hover:text-emerald-600 flex items-center justify-center transition-all duration-200 shadow-sm cursor-pointer`}
                                                             >
                                                                 <Plus className="w-4 h-4" />
                                                             </button>
@@ -198,7 +157,7 @@ const CartPage: React.FC = () => {
                                                     </div>
                                                     <button
                                                         aria-label="Eliminar producto"
-                                                        className="w-12 h-12 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center transition-all duration-200 group-hover:scale-105"
+                                                        className="w-12 h-12 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center transition-all duration-200 group-hover:scale-105 cursor-pointer"
                                                         onClick={() => handleRemoveFromCart(item)}
                                                     >
                                                         <Trash2 className="w-5 h-5" />
@@ -215,12 +174,12 @@ const CartPage: React.FC = () => {
                     </section>
 
                     {/* Order Summary */}
-                    <aside className="sticky top-20 group bg-gradient-to-r from-white to-gray-50 rounded-2xl p-6 border border-gray-100 hover:shadow-lg transition-all duration-300 w-1/4 h-fit"
+                    <aside className="sticky top-20 group bg-gradient-to-r from-white to-gray-50 rounded-2xl p-6 border border-gray-100 hover:shadow-lg transition-all duration-300 w-1/4 h-fit space-y-4"
                     >
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 bg-emerald-500 rounded-xl flex items-center justify-center">
                                 <CreditCard className="w-4 h-4 text-white" />
-                            </div>
+                            </div> 
                             <h2 className="text-lg font-bold text-gray-800">Resumen de tu Compra</h2>
                         </div>
 
@@ -244,27 +203,7 @@ const CartPage: React.FC = () => {
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="flex flex-col md:flex-row gap-4">
-                            <Button
-                                variant="primary"
-                                className="flex-1"
-                                aria-label="Continuar Compra"
-                                disabled={items.length === 0 || paying}
-                                onClick={handlePay}
-                            >
-                                <div className="flex items-center justify-center space-x-3">
-                                    {paying ? (
-                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                                    ) : (
-                                        <CreditCard className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
-                                    )}
-                                    <span>{paying ? 'Preparando pago...' : 'Continuar Compra'}</span>
-                                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-                                </div>
-                            </Button>
-
-
-                        </div>
+                        <MercadoPagoWallet items={items} total={finalTotal} />
 
                         {/* Trust Indicators */}
                         <div className="mt-6 pt-6 border-t border-emerald-200">
@@ -275,12 +214,6 @@ const CartPage: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-
-                        {payError && (
-                            <div className="mt-4 text-red-600 text-center font-semibold">
-                                {payError}
-                            </div>
-                        )}
                     </aside>
                 </div>
             )}

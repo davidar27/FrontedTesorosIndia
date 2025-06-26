@@ -3,7 +3,7 @@ import { Edit, LucideIcon, Check, X, MapPin, Calendar, DollarSign, User } from '
 import Picture from '@/components/ui/display/Picture';
 import { getImageUrl } from '@/utils/getImageUrl';
 import { normalizeStatus, formatDate } from '@/features/admin/adminHelpers';
-import LoadingSpinner from '@/components/layouts/LoadingSpinner';
+import LoadingSpinner from '@/components/ui/display/LoadingSpinner';
 import { BaseItem } from './types';
 
 interface StatusConfig {

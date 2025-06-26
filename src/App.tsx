@@ -20,9 +20,9 @@ const NotFoundPage = lazy(() => import('@/pages/Errors/NotFoundPage'));
 const AboutUs = lazy(() => import('@/pages/AboutUs/AboutUs'));
 const AccessDenied = lazy(() => import('@/pages/Errors/AccessDenied'));
 const CartPage = lazy(() => import('@/pages/Cart/CartPage'));
-const PaymentSuccess = lazy(() => import('@/pages/Cart/PaymentSuccess'));
-const PaymentFailure = lazy(() => import('@/pages/Cart/PaymentFailure'));
-const PaymentPending = lazy(() => import('@/pages/Cart/PaymentPending'));
+const PaymentSuccess = lazy(() => import('@/pages/payment/PaymentSuccess'));
+const PaymentFailure = lazy(() => import('@/pages/payment/PaymentFailure'));
+const PaymentPending = lazy(() => import('@/pages/payment/PaymentPending'));
 
 // Admin Pages
 const ExperiencesPage = lazy(() => import('@/pages/Admin/ExperiencesPage'));
@@ -36,12 +36,11 @@ import { PageProvider } from '@/context/PageContext';
 // Routes
 import ProtectedRoute from "./routes/protectedRoute";
 import ErrorFallback from "./pages/Errors/ErrorFallback";
-import LoadingSpinner from "./components/layouts/LoadingSpinner";
+import LoadingSpinner from "./components/ui/display/LoadingSpinner";
 import ResetPassword from "./pages/Auth/ResetPassword";
 import ForgotPasswordForm from "./pages/Auth/ForgotPasswordForm";
 import ExperiencePage from "./pages/Experience/ExperiencePage";
 import Profile from "./features/profile/Profile";
-import PaymentPage from "./pages/Cart/PaymentPage";
 
 function App() {
   return (
@@ -51,6 +50,7 @@ function App() {
           <ToastProvider />
           <Routes>
             {/* Rutas públicas con MainLayout */}
+
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />} />
 
@@ -68,7 +68,6 @@ function App() {
               <Route path="/carrito" element={<CartPage />} />
 
               {/* Rutas de resultado de pago */}
-              <Route path="/metodo-pago" element={<PaymentPage />} />
               <Route path="/pago-exitoso" element={<PaymentSuccess />} />
               <Route path="/pago-fallido" element={<PaymentFailure />} />
               <Route path="/pago-pendiente" element={<PaymentPending />} />

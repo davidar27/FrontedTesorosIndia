@@ -33,7 +33,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
             value={searchValue}
             onChange={onInputChange}
             onClick={onSearchClick}
-            className="w-full pl-10 pr-8 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white/90 text-gray-900 placeholder-gray-500"
+            className="w-full pl-10 pr-8 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white/90 text-gray-900 placeholder-gray-500 truncate"
             whileHover={{
                 backgroundColor: "rgba(255, 255, 255, 1)",
                 transition: { duration: 0.2 }
