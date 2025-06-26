@@ -14,7 +14,7 @@ const PaymentSuccess: React.FC = () => {
     // Obtener parámetros de URL de MercadoPago
     const paymentIdParam = searchParams.get('payment_id');
     const statusParam = searchParams.get('status');
-    const preferenceIdParam = searchParams.get('preference_id');
+    // const preferenceIdParam = searchParams.get('preference_id');
 
     if (paymentIdParam) {
       setPaymentId(paymentIdParam);
