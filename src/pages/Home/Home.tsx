@@ -5,11 +5,7 @@ import UniqueExperiences from "@/features/home/UniqueExperiences";
 import Leaders from "@/features/home/Leaders";
 import HandleReservation from "@/features/home/HandleReservation";
 
-
 const Home: React.FC = () => {
-
-
-
   return (
     <div className=" relative">
       <Hero />
@@ -25,7 +21,6 @@ const Home: React.FC = () => {
       <UniqueExperiences />
 
       <Leaders />
-
     </div>
   );
 };
