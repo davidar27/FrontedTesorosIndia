@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
 import PackageCard from '@/components/ui/cards/PackageCard';
 import AnimatedTitle from '@/components/ui/display/AnimatedTitle';
-import { Package } from '@/types';
+import { PackageData } from '@/features/packages/types/packagesTypes';
 import { PackagesApi } from '@/services/home/packages';
 
 
 const PackageSelector = () => {
-  const [packages, setPackages] = useState<Package[]>([])
+  const [packages, setPackages] = useState<PackageData[]>([])
 
   useEffect(() => {
     const fetchPackages = async () => {
-      const dataPackages: Package[] = await PackagesApi.getPackages();
+      const dataPackages: PackageData[] = await PackagesApi.getPackages();
       setPackages(dataPackages);
     }
     fetchPackages()
@@ -42,17 +42,15 @@ const PackageSelector = () => {
       >
         {packages
           .map((pkg, index) => {
-            const features: string[] = [];
-            if (pkg.has_food) features.push("Incluye Comida");
             return (< PackageCard
               key={index}
-              id={pkg.package_id}
+              id={pkg.package_id} 
               image={pkg.image}
-              title={pkg.title}
+              name={pkg.name}
               description={pkg.description}
               price={pkg.price}
-              features={features}
-              onClick={pkg.onClick}
+              details={pkg.details || [] }
+              onClick={() => { }}
             />)
           })}
       </div>

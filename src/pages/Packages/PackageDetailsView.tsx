@@ -1,32 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useParams } from 'react-router-dom';
-import { Calendar, MapPin, Clock, DollarSign, Star, Users, Edit, Trash2, Eye } from 'lucide-react';
-import { CreatePackageData } from '@/features/admin/packages/PackageTypes';
-import { ExperiencesApi } from '@/services/home/experiences';
-import { Experience } from '@/features/admin/experiences/ExperienceTypes';
+import { MapPin, Clock, DollarSign, Star, Users } from 'lucide-react';
 import { formatPrice } from '@/utils/formatPrice';
-import { PackagesApi } from '@/services/packages/packages';
-
-interface PackageData extends CreatePackageData {
-    id?: string;
-    imageUrl?: string;
-    createdAt?: string;
-    status?: 'active' | 'inactive' | 'draft';
-    bookingsCount?: number;
-}
-
-interface PackageDetailsViewProps {
-    onEdit?: (packageData: PackageData) => void;
-    onDelete?: (packageId: string) => void;
-    onStatusChange?: (packageId: string, status: string) => void;
-    isEditable?: boolean;
-    showActions?: boolean;
-}
-
-interface DashboardDetails {
-    detail_id: number;
-    description: string;
-}
+import LoadingSpinner from '@/components/ui/display/LoadingSpinner';
+import { PackageDetailsViewProps } from '@/features/packages/types/packagesTypes';
+import { usePackageData } from '@/features/packages/hooks/usePackageData';
+import { PackageHeader } from '@/features/packages/components/PackageHeader';
+import { PackageImage } from '@/features/packages/components/PackageImage';
+import { InfoCard } from '@/features/packages/components/InfoCard';
+import { ExperienceList } from '@/features/packages/components/ExperienceList';
 
 const PackageDetailsView: React.FC<PackageDetailsViewProps> = ({
     onEdit,
@@ -36,223 +18,68 @@ const PackageDetailsView: React.FC<PackageDetailsViewProps> = ({
     showActions = true
 }) => {
     const { packageId } = useParams<{ packageId: string }>();
-    const [packageData, setPackageData] = useState<PackageData | null>(null);
-    const [experiences, setExperiences] = useState<Experience[]>([]);
-    const [details, setDetails] = useState<DashboardDetails[]>([]);
-    const [loadingData, setLoadingData] = useState(true);
-    const [currentMonth, setCurrentMonth] = useState<Date>(new Date(2025, 5));
+    const { packageData, loading, error } = usePackageData(packageId);
+    console.log(packageData);
 
-    // Cargar datos del paquete, experiencias y detalles
-    useEffect(() => {
-        const fetchData = async () => {
-            if (!packageId) return;
-            
-            setLoadingData(true);
-            try {
-                const [packageDataResult, experiencesData, detailsData] = await Promise.all([
-                    PackagesApi.getPackageById(packageId),
-                    ExperiencesApi.getExperiences(),
-                    PackagesApi.getPackageDetails(packageId),
-                ]);
-                setPackageData(packageDataResult as unknown as PackageData);
-                setExperiences(experiencesData);
-                setDetails(detailsData as DashboardDetails[]);
-            } catch (error) {
-                console.error('Error al cargar los datos:', error);
-            } finally {
-                setLoadingData(false);
-            }
-        };
-
-        fetchData();
-    }, [packageId]);
-
-    // Mostrar loading mientras se cargan los datos
-    if (loadingData || !packageData) {
-        return (
-            <div className="w-full max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl border border-primary/20 p-8">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-                    <p className="mt-4 text-gray-600">Cargando detalles del paquete...</p>
-                </div>
-            </div>
-        );
-    }
-
-    // Obtener experiencias seleccionadas
-    const selectedExperiences = experiences.filter(exp =>
-        packageData.selectedExperiences.includes(exp.id?.toString() || '')
-    );
-
-    // Obtener detalles seleccionados
-    const selectedDetails = details.filter(detail =>
-        packageData.selectedDetails.includes(detail.detail_id?.toString() || '')
-    );
-
-    // Funciones para el calendario
-    const navigateMonth = (direction: number): void => {
-        setCurrentMonth(prev => {
-            const newMonth = new Date(prev);
-            newMonth.setMonth(prev.getMonth() + direction);
-            return newMonth;
-        });
-    };
-
-    const getDaysInMonth = (date: Date) => {
-        const year = date.getFullYear();
-        const month = date.getMonth();
-        const firstDay = new Date(year, month, 1);
-        const lastDay = new Date(year, month + 1, 0);
-        const daysInMonthCount = lastDay.getDate();
-        const startingDayOfWeek = firstDay.getDay();
-
-        const days: (number | null)[] = [];
-
-        // Días vacíos al inicio
-        for (let i = 0; i < startingDayOfWeek; i++) {
-            days.push(null);
-        }
-
-        // Días del mes
-        for (let day = 1; day <= daysInMonthCount; day++) {
-            days.push(day);
-        }
-
-        return days;
-    };
-
-    const monthNames: string[] = [
-        'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-    ];
-
-    const dayNames: string[] = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
-
-    const getStatusColor = (status?: string) => {
-        switch (status) {
-            case 'active':
-                return 'bg-green-100 text-green-800 border-green-200';
-            case 'inactive':
-                return 'bg-red-100 text-red-800 border-red-200';
-            case 'draft':
-                return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-            default:
-                return 'bg-gray-100 text-gray-800 border-gray-200';
-        }
-    };
-
-    const getStatusText = (status?: string) => {
-        switch (status) {
-            case 'active':
-                return 'Activo';
-            case 'inactive':
-                return 'Inactivo';
-            case 'draft':
-                return 'Borrador';
-            default:
-                return 'Sin estado';
-        }
-    };
-
+    // Event handlers
     const handleEdit = () => {
-        if (onEdit) {
+        if (onEdit && packageData) {
             onEdit(packageData);
         }
     };
 
     const handleDelete = () => {
-        if (onDelete && packageData.id) {
+        if (onDelete && packageData?.package_id) {
             if (window.confirm('¿Estás seguro de que deseas eliminar este paquete?')) {
-                onDelete(packageData.id);
+                onDelete(packageData.package_id.toString());
             }
         }
     };
 
     const handleStatusChange = (newStatus: string) => {
-        if (onStatusChange && packageData.id) {
-            onStatusChange(packageData.id, newStatus);
+        if (onStatusChange && packageData?.package_id) {
+            onStatusChange(packageData.package_id.toString(), newStatus);
         }
     };
 
-    return (
-        <div className="w-full max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl border border-primary/20">
-            {/* Header con acciones */}
-            <header className="p-6 border-b border-gray-200">
-                <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                        <div className="flex items-center gap-4 mb-2">
-                            <h1 className="text-3xl font-extrabold text-primary">{packageData.title}</h1>
-                            {packageData.status && (
-                                <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(packageData.status)}`}>
-                                    {getStatusText(packageData.status)}
-                                </span>
-                            )}
-                        </div>
-                        <div className="flex items-center gap-4 text-sm text-gray-500">
-                            {packageData.createdAt && (
-                                <span>Creado: {new Date(packageData.createdAt).toLocaleDateString()}</span>
-                            )}
-                            {packageData.bookingsCount !== undefined && (
-                                <span className="flex items-center gap-1">
-                                    <Users className="h-4 w-4" />
-                                    {packageData.bookingsCount} reservas
-                                </span>
-                            )}
-                        </div>
-                    </div>
+    // Loading state
+    if (loading || !packageData) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <LoadingSpinner message="Cargando detalles del paquete..." />
+            </div>
+        );
+    }
 
-                    {showActions && (
-                        <div className="flex gap-2">
-                            <button
-                                onClick={handleEdit}
-                                disabled={!isEditable}
-                                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                title="Editar paquete"
-                            >
-                                <Edit className="h-5 w-5" />
-                            </button>
-                            <button
-                                onClick={handleDelete}
-                                disabled={!isEditable}
-                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                title="Eliminar paquete"
-                            >
-                                <Trash2 className="h-5 w-5" />
-                            </button>
-                            {packageData.status && (
-                                <select
-                                    value={packageData.status}
-                                    onChange={(e) => handleStatusChange(e.target.value)}
-                                    disabled={!isEditable}
-                                    className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    <option value="active">Activo</option>
-                                    <option value="inactive">Inactivo</option>
-                                    <option value="draft">Borrador</option>
-                                </select>
-                            )}
-                        </div>
-                    )}
+    // Error state
+    if (error) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="text-red-600 text-center">
+                    <p className="text-xl font-semibold mb-2">Error</p>
+                    <p>{error}</p>
                 </div>
-            </header>
+            </div>
+        );
+    }
+
+    return (
+        <div className="w-full max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl border border-primary/20
+        my-30">
+            <PackageHeader
+                packageData={packageData}
+                showActions={showActions}
+                isEditable={isEditable}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onStatusChange={handleStatusChange}
+            />
 
             <div className="p-8">
-                {/* Imagen del paquete */}
-                {packageData.imageUrl && (
-                    <section className="mb-8 flex justify-center">
-                        <div className="relative max-w-md w-full">
-                            <img
-                                src={packageData.imageUrl}
-                                alt={packageData.title}
-                                className="w-full h-64 object-cover rounded-xl shadow-lg"
-                            />
-                            <div className="absolute top-2 right-2 bg-black/50 text-white px-2 py-1 rounded-lg text-xs">
-                                <Eye className="inline h-3 w-3 mr-1" />
-                                Vista previa
-                            </div>
-                        </div>
-                    </section>
-                )}
+                <PackageImage
+                    image={packageData.image}
+                    name={packageData.name}
+                />
 
                 {/* Descripción */}
                 <section className="mb-8">
@@ -264,105 +91,40 @@ const PackageDetailsView: React.FC<PackageDetailsViewProps> = ({
 
                 {/* Información principal */}
                 <section className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                    <div className="bg-blue-50 p-4 rounded-lg">
-                        <h3 className="font-semibold text-blue-700 mb-2 flex items-center">
-                            <Clock className="mr-2 h-5 w-5" />
-                            Duración
-                        </h3>
-                        <p className="text-2xl font-bold text-blue-800">{packageData.duration} horas</p>
-                    </div>
-
-                    <div className="bg-green-50 p-4 rounded-lg">
-                        <h3 className="font-semibold text-green-700 mb-2 flex items-center">
-                            <DollarSign className="mr-2 h-5 w-5" />
-                            Precio por persona
-                        </h3>
-                        <p className="text-2xl font-bold text-green-800">
-                            {formatPrice(Number(packageData.pricePerPerson))}
-                        </p>
-                    </div>
+                    <InfoCard
+                        title="Duración"
+                        value={`${packageData.duration} horas`}
+                        icon={<Clock className="mr-2 h-5 w-5" />}
+                        bgColor="bg-blue-50"
+                        textColor="text-blue-700"
+                    />
+                    <InfoCard
+                        title="Precio por persona"
+                        value={formatPrice(Number(packageData.price))}
+                        icon={<DollarSign className="mr-2 h-5 w-5" />}
+                        bgColor="bg-green-50"
+                        textColor="text-green-700"
+                    />
                 </section>
 
-                {/* Experiencias y Fechas */}
+                {/* Experiencias y Capacidad */}
                 <section className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                    {/* Experiencias incluidas */}
-                    <div className="border-2 border-primary/30 rounded-lg p-6">
-                        <h3 className="text-lg font-semibold text-green-700 mb-4 flex items-center">
-                            <MapPin className="mr-2 h-5 w-5" />
-                            Experiencias Incluidas
-                        </h3>
-                        <div className="space-y-3">
-                            {loadingData ? (
-                                <div className="text-center text-gray-400">Cargando experiencias...</div>
-                            ) : selectedExperiences.length > 0 ? (
-                                selectedExperiences.map((experience) => (
-                                    <div key={experience.id} className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg">
-                                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                                        <span className="text-gray-700 font-medium">{experience.name}</span>
-                                    </div>
-                                ))
-                            ) : (
-                                <p className="text-gray-500 italic">No hay experiencias seleccionadas</p>
-                            )}
-                        </div>
-                    </div>
+                    <ExperienceList
+                        title="Experiencias Incluidas"
+                        icon={<MapPin className="mr-2 h-5 w-5" />}
+                        experiences={packageData.experiences || []}
+                        loading={loading}
+                        emptyMessage="No hay experiencias seleccionadas"
+                    />
 
-                    {/* Fechas no disponibles */}
                     <div className="border-2 border-primary/30 rounded-lg p-6">
                         <h3 className="text-lg font-semibold text-green-700 mb-4 flex items-center">
-                            <Calendar className="mr-2 h-5 w-5" />
-                            Fechas No Disponibles
+                            <Users className="mr-2 h-5 w-5" />
+                            Cantidad
                         </h3>
                         <div className="bg-gray-50 p-4 rounded-lg">
-                            <div className="flex items-center justify-between mb-4">
-                                <button
-                                    type="button"
-                                    onClick={() => navigateMonth(-1)}
-                                    className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
-                                >
-                                    ←
-                                </button>
-                                <h4 className="font-medium">
-                                    {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
-                                </h4>
-                                <button
-                                    type="button"
-                                    onClick={() => navigateMonth(1)}
-                                    className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
-                                >
-                                    →
-                                </button>
-                            </div>
-
-                            <div className="grid grid-cols-7 gap-1 mb-2">
-                                {dayNames.map((day, index) => (
-                                    <div key={`${day}-${index}`} className="text-center text-sm font-medium text-gray-500 py-2">
-                                        {day}
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div className="grid grid-cols-7 gap-1">
-                                {getDaysInMonth(currentMonth).map((day, index) => (
-                                    <div key={index} className="aspect-square flex items-center justify-center">
-                                        {day && (
-                                            <div
-                                                className={`w-8 h-8 rounded-full text-sm font-medium flex items-center justify-center ${packageData.unavailableDates.includes(day)
-                                                        ? 'bg-red-500 text-white'
-                                                        : 'text-gray-400'
-                                                    }`}
-                                            >
-                                                {day}
-                                            </div>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div className="flex items-center mt-4 text-sm text-red-600">
-                                <div className="w-3 h-3 bg-red-600 rounded-full mr-2"></div>
-                                <span>Fechas no disponibles: {packageData.unavailableDates.length}</span>
-                            </div>
+                            <p className="text-2xl font-bold text-green-800">{packageData.capacity} personas</p>
+                            <p className="text-gray-600 text-sm mt-2">Máximo de personas por reserva</p>
                         </div>
                     </div>
                 </section>
@@ -374,17 +136,24 @@ const PackageDetailsView: React.FC<PackageDetailsViewProps> = ({
                         Detalles Incluidos
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {loadingData ? (
-                            <div className="text-center text-gray-400 col-span-full">Cargando detalles...</div>
-                        ) : selectedDetails.length > 0 ? (
-                            selectedDetails.map((detail) => (
-                                <div key={detail.detail_id} className="flex items-center space-x-3 p-3 bg-white rounded-lg shadow-sm">
+                        {loading ? (
+                            <div className="text-center text-gray-400 col-span-full">
+                                Cargando detalles...
+                            </div>
+                        ) : packageData.details.length > 0 ? (
+                            packageData.details.map((detail) => (
+                                <div
+                                    key={detail.detail_id}
+                                    className="flex items-center space-x-3 p-3 bg-white rounded-lg shadow-sm"
+                                >
                                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                    <span className="text-gray-700">{detail.description}</span>
+                                    <span className="text-gray-700">{detail.detail}</span>
                                 </div>
                             ))
                         ) : (
-                            <p className="text-gray-500 italic col-span-full">No hay detalles seleccionados</p>
+                            <p className="text-gray-500 italic col-span-full">
+                                No hay detalles seleccionados
+                            </p>
                         )}
                     </div>
                 </section>

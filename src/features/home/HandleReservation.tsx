@@ -71,7 +71,7 @@ export default function QuickReservation() {
             className="bg-white !text-primary py-3 px-10 rounded-xl  !border-white hover:!bg-primary  hover:!text-white"
             type="submit"
           >
-            Reservar ahora
+            Comprar ahora
           </Button>
         </div>
       </div>

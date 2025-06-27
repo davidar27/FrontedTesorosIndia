@@ -5,8 +5,4 @@ export const PackagesApi = {
         const response = await publicAxiosInstance.get(`/paquetes/${id}`);
         return response.data;
     },
-    getPackageDetails: async (id: string) => {
-        const response = await publicAxiosInstance.get(`/paquetes/${id}/detalles`);
-        return response.data;
-    }
 }
