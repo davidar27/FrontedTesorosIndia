@@ -8,7 +8,7 @@ const packageApiOptions = {
         getAll: '/dashboard/paquetes',
         getById: (id: number | string) => `/dashboard/paquete/${id}`,
         getDetails: '/dashboard/detalles',
-        create: '/dashboard/paquetes/crear',
+        create: '/dashboard/paquetes',
         update: (id: number | string) => `/dashboard/actualizar/paquetes/${id}`,
         delete: (id: number | string) => `/dashboard/paquetes/${id}`,
         changeStatus: (id: number | string) => `/dashboard/estado/paquetes/${id}`,

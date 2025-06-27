@@ -7,9 +7,10 @@ export const usePackageForm = (initialData?: Partial<CreatePackageData>) => {
         description: initialData?.description || '',
         selectedExperiences: initialData?.selectedExperiences || [],
         unavailableDates: initialData?.unavailableDates || [],
-        duration: initialData?.duration || '',
+        duration: initialData?.duration || 0,
+        capacity: initialData?.capacity || 0,
         pricePerPerson: initialData?.pricePerPerson || '',
-        selectedDetails: initialData?.selectedDetails || ''
+        selectedDetails: initialData?.selectedDetails || []
     });
 
     const [errors, setErrors] = useState<Partial<Record<keyof CreatePackageData, string>>>({});
@@ -56,17 +57,17 @@ export const usePackageForm = (initialData?: Partial<CreatePackageData>) => {
             newErrors.selectedExperiences = 'Selecciona al menos una experiencia';
         }
 
-        if (!formData.duration.trim()) {
+        if (!formData.duration) {
             newErrors.duration = 'La duración es requerida';
         }
 
-        if (!formData.pricePerPerson.trim()) {
+        if (!formData.pricePerPerson) {
             newErrors.pricePerPerson = 'El precio es requerido';
         } else if (isNaN(Number(formData.pricePerPerson)) || Number(formData.pricePerPerson) <= 0) {
             newErrors.pricePerPerson = 'Ingresa un precio válido';
         }
 
-        if (!formData.selectedDetails.trim()) {
+        if (formData.selectedDetails.length === 0) {
             newErrors.selectedDetails = 'Los servicios son requeridos';
         }
 
@@ -80,9 +81,10 @@ export const usePackageForm = (initialData?: Partial<CreatePackageData>) => {
             description: '',
             selectedExperiences: [],
             unavailableDates: [],
-            duration: '',
+            duration: 0,
+            capacity: 0,
             pricePerPerson: '',
-            selectedDetails: ''
+            selectedDetails: []
         });
         setErrors({});
     }, []);

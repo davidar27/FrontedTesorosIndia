@@ -12,9 +12,9 @@ export interface BaseItem {
     name_entrepreneur?: string;
     location?: string;
     type?: string;
-    duration?: string;
+    duration?: number;
     price?: number;
-    capacity?: string;
+    capacity?: number;
     name_experience?: string;
     password?: string;
     joinDate?: string;

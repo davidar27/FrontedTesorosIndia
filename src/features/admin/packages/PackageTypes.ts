@@ -20,9 +20,10 @@ export interface CreatePackageData {
     description: string;
     selectedExperiences: string[];
     unavailableDates: number[];
-    duration: string;
+    duration: number;
+    capacity: number;
     pricePerPerson: string;
-    selectedDetails: string;
+    selectedDetails: number[];
 }
 
 export interface UpdatePackageData {

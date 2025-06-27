@@ -9,8 +9,8 @@ interface Detail {
 
 interface DetailsSelectorProps {
     details: Detail[] | null;
-    selectedDetails: string;
-    onToggle: (detailId: string) => void;
+    selectedDetails: number[];
+    onToggle: (detailId: number) => void;
     loading?: boolean;
     error?: string;
 }
@@ -38,8 +38,8 @@ export const DetailsSelector: React.FC<DetailsSelectorProps> = ({
                             <label key={detail.detail_id} className="flex items-center space-x-3 cursor-pointer w-fit transition-all duration-300">
                                 <input
                                     type="checkbox"
-                                    checked={selectedDetails.includes(detail.detail_id?.toString() || '')}
-                                    onChange={() => onToggle(detail.detail_id?.toString() || '')}
+                                    checked={selectedDetails.includes(detail.detail_id)}
+                                    onChange={() => onToggle(detail.detail_id)}
                                     className="w-4 h-4 border-2 border-primary/50 rounded-full appearance-none checked:bg-primary checked:border-primary cursor-pointer mr-2"
                                     aria-label={`Seleccionar detalle ${detail.description}`}
                                 />
