@@ -136,9 +136,7 @@ const authService = {
 
       localStorage.setItem('lastTokenRefresh', Date.now().toString());
       return normalizedUser;
-    } catch (error: unknown) {
-      console.error('❌ Refresh token failed:', error);
-      
+    } catch (error: unknown) {      
       if (error && typeof error === 'object' && 'response' in error && 
           error.response && typeof error.response === 'object' && 'status' in error.response) {
         const response = error.response as { status: number };
