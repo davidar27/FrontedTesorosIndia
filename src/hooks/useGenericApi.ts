@@ -112,15 +112,22 @@ export function useGenericApi<T extends BaseEntity<TId>, TId extends string | nu
     };
 
     // CREATE
-    const createMutation = useMutation<T, AxiosError, Omit<T, 'id'>>({
+    const createMutation = useMutation<T, AxiosError, Omit<T, 'id'> | FormData>({
         mutationFn: async (data) => {
-            if (methods.create) return methods.create(data);
+            if (methods.create) return methods.create(data as Omit<T, 'id'>);
 
             const endpoint = endpoints.create;
             if (!endpoint) throw new Error('No create endpoint or method provided');
 
-            const response = await axiosInstance.post<T>(endpoint, data);
-            return response.data;
+            if (data instanceof FormData) {
+                const response = await axiosInstance.post<T>(endpoint, data, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+                return response.data;
+            } else {
+                const response = await axiosInstance.post<T>(endpoint, data);
+                return response.data;
+            }
         },
         onSuccess: (data) => {
             queryClient.setQueryData(Array.isArray(entityKey) ? entityKey : [entityKey], (old: T[] = []) => [...old, data]);
@@ -132,12 +139,8 @@ export function useGenericApi<T extends BaseEntity<TId>, TId extends string | nu
     // UPDATE
     const updateMutation = useMutation<T, AxiosError, any>({
         mutationFn: async (dataOrFormData) => {
-            console.log('DEBUG - updateMutation called with:', dataOrFormData, 'is FormData:', dataOrFormData instanceof FormData);
 
             if (dataOrFormData instanceof FormData) {
-                for (const pair of dataOrFormData.entries()) {
-                    console.log('DEBUG - FormData in updateMutation:', pair[0], pair[1]);
-                }
                 const id = dataOrFormData.get('id');
                 if (!id) throw new Error('ID is required for update');
                 const endpoint = endpoints.update;
@@ -147,7 +150,6 @@ export function useGenericApi<T extends BaseEntity<TId>, TId extends string | nu
                 });
                 return response.data;
             } else {
-                console.log('DEBUG - Object in updateMutation:', dataOrFormData);
                 const { id, ...data } = dataOrFormData;
                 if (!id) throw new Error('ID is required for update');
                 if (methods.update) return methods.update(id, data as Partial<T>);

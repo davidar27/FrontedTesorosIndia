@@ -6,10 +6,13 @@ export interface Package extends BaseEntity<PackageStatus> {
     id: number;
     name: string;
     name_package?: string;
-    price: number;
+    pricePerPerson: number;
     description: string;
-    duration: string;
-    capacity: string;
+    duration: number;
+    capacity: number;
+    unavailableDates: string[] ;
+    selectedDetails: number[];
+    selectedExperiences: number[];
     joinDate: string;
     image?: string;
 }
@@ -18,17 +21,17 @@ export interface Package extends BaseEntity<PackageStatus> {
 export interface CreatePackageData {
     title: string;
     description: string;
-    selectedExperiences: string[];
-    unavailableDates: number[];
+    selectedExperiences: number[];
+    unavailableDates: string[];
     duration: number;
     capacity: number;
-    pricePerPerson: string;
+    pricePerPerson: number;
     selectedDetails: number[];
 }
 
 export interface UpdatePackageData {
     name: string;
-    price: number;
+    pricePerPerson: number;
     description: string;
     duration: number;
     capacity: number;

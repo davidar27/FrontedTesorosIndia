@@ -6,6 +6,8 @@ import { getImageUrl } from '@/utils/getImageUrl';
 import Button from '@/components/ui/buttons/Button';
 import LoadingSpinner from '@/components/ui/display/LoadingSpinner';
 import { getExperienceTypeDetails } from '@/features/admin/experiences/experienceUtils';
+import { fileToWebp } from '@/utils/fileToWebp';
+
 interface ExperiencePackageEditCardProps<T extends BaseItem> {
     item: T;
     onSave: (data: Partial<T> | FormData) => void;
@@ -16,7 +18,7 @@ interface ExperiencePackageEditCardProps<T extends BaseItem> {
         phone?: boolean;
         image?: boolean;
         location?: boolean;
-        type?: boolean;
+        type: boolean;
         name_experience?: boolean;
         price?: boolean;
         duration?: boolean;
@@ -42,7 +44,7 @@ export function ExperiencePackageEditCard<T extends BaseItem>({
     const [formData, setFormData] = useState<Partial<T>>(item);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
     const [imageFile, setImageFile] = useState<File | null>(null);
-    const { Icon: TypeIcon } = getExperienceTypeDetails(item.type || '');
+    const { Icon: TypeIcon } = getExperienceTypeDetails(item.type as string);
 
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -59,22 +61,11 @@ export function ExperiencePackageEditCard<T extends BaseItem>({
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const hasChanges = Object.keys(formData).some(key => {
-            if (key === 'image') return false;
-            return formData[key as keyof T] !== item[key as keyof T];
-        });
-
-        if (!hasChanges && !imageFile) {
-            onCancel();
-            return;
-        }
-
         const modifiedFields: Partial<T> = {};
-        Object.keys(formData).forEach(key => {
-            if (key === 'image') return;
+        Object.keys(editFields).forEach(key => {
             const typedKey = key as keyof T;
             if (formData[typedKey] !== item[typedKey]) {
                 modifiedFields[typedKey] = formData[typedKey];
@@ -90,7 +81,8 @@ export function ExperiencePackageEditCard<T extends BaseItem>({
                 }
             });
 
-            submitData.append('file', imageFile);
+            const webpFile = await fileToWebp(imageFile);
+            submitData.append('file', webpFile);
 
             onSave(submitData);
         } else if (Object.keys(modifiedFields).length > 0) {
