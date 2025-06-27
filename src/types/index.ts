@@ -21,6 +21,7 @@ export interface Leader {
 
 
 export interface Package {
+    package_id: number;
     image: string;
     title: string;
     price: string;

@@ -46,6 +46,7 @@ const PackageSelector = () => {
             if (pkg.has_food) features.push("Incluye Comida");
             return (< PackageCard
               key={index}
+              id={pkg.package_id}
               image={pkg.image}
               title={pkg.title}
               description={pkg.description}

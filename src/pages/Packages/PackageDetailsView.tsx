@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { Calendar, MapPin, Clock, DollarSign, Star, Users, Edit, Trash2, Eye } from 'lucide-react';
 import { CreatePackageData } from '@/features/admin/packages/PackageTypes';
 import { ExperiencesApi } from '@/services/home/experiences';
 import { Experience } from '@/features/admin/experiences/ExperienceTypes';
 import { formatPrice } from '@/utils/formatPrice';
-import { usePackagesManagement } from '@/services/admin/usePackagesManagement';
+import { PackagesApi } from '@/services/packages/packages';
 
 interface PackageData extends CreatePackageData {
     id?: string;
@@ -15,7 +16,6 @@ interface PackageData extends CreatePackageData {
 }
 
 interface PackageDetailsViewProps {
-    packageData: PackageData;
     onEdit?: (packageData: PackageData) => void;
     onDelete?: (packageId: string) => void;
     onStatusChange?: (packageId: string, status: string) => void;
@@ -29,28 +29,32 @@ interface DashboardDetails {
 }
 
 const PackageDetailsView: React.FC<PackageDetailsViewProps> = ({
-    packageData,
     onEdit,
     onDelete,
     onStatusChange,
     isEditable = true,
     showActions = true
 }) => {
+    const { packageId } = useParams<{ packageId: string }>();
+    const [packageData, setPackageData] = useState<PackageData | null>(null);
     const [experiences, setExperiences] = useState<Experience[]>([]);
     const [details, setDetails] = useState<DashboardDetails[]>([]);
     const [loadingData, setLoadingData] = useState(true);
     const [currentMonth, setCurrentMonth] = useState<Date>(new Date(2025, 5));
-    const { getDashboardDetails } = usePackagesManagement();
 
-    // Cargar datos de experiencias y detalles
+    // Cargar datos del paquete, experiencias y detalles
     useEffect(() => {
         const fetchData = async () => {
+            if (!packageId) return;
+            
             setLoadingData(true);
             try {
-                const [experiencesData, detailsData] = await Promise.all([
+                const [packageDataResult, experiencesData, detailsData] = await Promise.all([
+                    PackagesApi.getPackageById(packageId),
                     ExperiencesApi.getExperiences(),
-                    getDashboardDetails(),
+                    PackagesApi.getPackageDetails(packageId),
                 ]);
+                setPackageData(packageDataResult as unknown as PackageData);
                 setExperiences(experiencesData);
                 setDetails(detailsData as DashboardDetails[]);
             } catch (error) {
@@ -61,7 +65,19 @@ const PackageDetailsView: React.FC<PackageDetailsViewProps> = ({
         };
 
         fetchData();
-    }, [getDashboardDetails]);
+    }, [packageId]);
+
+    // Mostrar loading mientras se cargan los datos
+    if (loadingData || !packageData) {
+        return (
+            <div className="w-full max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl border border-primary/20 p-8">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+                    <p className="mt-4 text-gray-600">Cargando detalles del paquete...</p>
+                </div>
+            </div>
+        );
+    }
 
     // Obtener experiencias seleccionadas
     const selectedExperiences = experiences.filter(exp =>

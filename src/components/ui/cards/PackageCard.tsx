@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import Button from "@/components/ui/buttons/Button";
+import { useNavigate } from "react-router-dom";
 
 
 type PackageCardProps = {
@@ -11,6 +12,7 @@ type PackageCardProps = {
     features?: string[];
     onClick?: () => void;
     isCreateCard?: boolean;
+    id?: number;
 };
 
 export const PackageCard = ({
@@ -21,9 +23,10 @@ export const PackageCard = ({
     features = [],
     onClick,
     isCreateCard = false,
+    id,
 }: PackageCardProps) => {
     const [isHovered, setIsHovered] = useState(false);
-
+    const navigate = useNavigate();
     return (
         <motion.div
             className={`relative overflow-hidden flex flex-col justify-center rounded-xl shadow-lg w-full max-w-xs border-2 ${isCreateCard
@@ -109,7 +112,8 @@ export const PackageCard = ({
             <div className="p-5 pt-0 flex justify-center">
                 <Button
                     variant="primary"
-                    onClick={onClick}
+                    onClick={() => navigate(`/detalles-paquete/${id}`)}
+                    disabled={!id}
                 >
                     <span>Ver detalles</span>
                     <svg

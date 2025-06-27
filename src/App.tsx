@@ -34,13 +34,14 @@ const CategoriesPage = lazy(() => import('@/pages/Admin/CategoriesPage'));
 import { PageProvider } from '@/context/PageContext';
 
 // Routes
-import ProtectedRoute from "./routes/protectedRoute";
-import ErrorFallback from "./pages/Errors/ErrorFallback";
-import LoadingSpinner from "./components/ui/display/LoadingSpinner";
-import ResetPassword from "./pages/Auth/ResetPassword";
-import ForgotPasswordForm from "./pages/Auth/ForgotPasswordForm";
-import ExperiencePage from "./pages/Experience/ExperiencePage";
-import Profile from "./features/profile/Profile";
+import ProtectedRoute from "@/routes/protectedRoute";
+import ErrorFallback from "@/pages/Errors/ErrorFallback";
+import LoadingSpinner from "@/components/ui/display/LoadingSpinner";
+import ResetPassword from "@/pages/Auth/ResetPassword";
+import ForgotPasswordForm from "@/pages/Auth/ForgotPasswordForm";
+import ExperiencePage from "@/pages/Experience/ExperiencePage";
+import Profile from "@/features/profile/Profile";
+import PackageDetailsView from "@/pages/Packages/PackageDetailsView";
 
 function App() {
   return (
@@ -78,6 +79,9 @@ function App() {
                 <Route path="categorias/:categoryId" element={<ExperiencePage />} />
                 <Route path=":experience_id" element={<ExperiencePage />} />
               </Route>
+
+              {/* Rutas de paquetes */}
+              <Route path="/detalles-paquete/:packageId" element={<PackageDetailsView />} />
 
               {/* Rutas de edición de experiencias - accesible públicamente, protección interna */}
               <Route path="/experiencia/:experience_id/editar" element={<ExperiencePage />} />
