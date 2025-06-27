@@ -9,13 +9,13 @@ export const usePackageForm = (initialData?: Partial<CreatePackageData>) => {
         unavailableDates: initialData?.unavailableDates || [],
         duration: initialData?.duration || 0,
         capacity: initialData?.capacity || 0,
-        pricePerPerson: initialData?.pricePerPerson || '',
+        pricePerPerson: initialData?.pricePerPerson || 0,
         selectedDetails: initialData?.selectedDetails || []
     });
 
     const [errors, setErrors] = useState<Partial<Record<keyof CreatePackageData, string>>>({});
 
-    const handleInputChange = useCallback((field: keyof CreatePackageData, value: string | string[] | number[]): void => {
+    const handleInputChange = useCallback((field: keyof CreatePackageData, value: string | string[] | number): void => {
         setFormData(prev => ({
             ...prev,
             [field]: value
@@ -61,9 +61,13 @@ export const usePackageForm = (initialData?: Partial<CreatePackageData>) => {
             newErrors.duration = 'La duración es requerida';
         }
 
+        if (!formData.capacity) {
+            newErrors.capacity = 'La capacidad es requerida';
+        }
+
         if (!formData.pricePerPerson) {
             newErrors.pricePerPerson = 'El precio es requerido';
-        } else if (isNaN(Number(formData.pricePerPerson)) || Number(formData.pricePerPerson) <= 0) {
+        } else if (formData.pricePerPerson <= 0) {
             newErrors.pricePerPerson = 'Ingresa un precio válido';
         }
 
@@ -83,7 +87,7 @@ export const usePackageForm = (initialData?: Partial<CreatePackageData>) => {
             unavailableDates: [],
             duration: 0,
             capacity: 0,
-            pricePerPerson: '',
+            pricePerPerson: 0,
             selectedDetails: []
         });
         setErrors({});
@@ -95,6 +99,7 @@ export const usePackageForm = (initialData?: Partial<CreatePackageData>) => {
         handleInputChange,
         toggleArrayItem,
         validateForm,
-        resetForm
+        resetForm,
+        setFormData
     };
 };

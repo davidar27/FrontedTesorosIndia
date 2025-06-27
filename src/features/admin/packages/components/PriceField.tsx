@@ -4,8 +4,8 @@ import { formatPrice } from '@/utils/formatPrice';
 import Input from '@/components/ui/inputs/Input';
 
 interface PriceFieldProps {
-    value: string;
-    onChange: (value: string) => void;
+    value: number;
+    onChange: (value: number) => void;
     error?: string;
 }
 
@@ -18,10 +18,10 @@ export const PriceField: React.FC<PriceFieldProps> = ({ onChange, error }) => {
 
         if (!isNaN(number)) {
             setDisplayValue(formatPrice(number));
-            onChange(number.toString());
+            onChange(number);
         } else {
             setDisplayValue('');
-            onChange('');
+            onChange(0);
         }
     }, [onChange]);
 

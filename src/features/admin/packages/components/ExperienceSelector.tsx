@@ -6,8 +6,8 @@ import LoadingSpinner from '@/components/ui/display/LoadingSpinner';
 
 interface ExperienceSelectorProps {
     experiences: Experience[];
-    selectedExperiences: string[];
-    onToggle: (experienceId: string) => void;
+    selectedExperiences: number[];
+    onToggle: (experienceId: number) => void;
     loading?: boolean;
     error?: string;
 }
@@ -33,8 +33,8 @@ export const ExperienceSelector: React.FC<ExperienceSelectorProps> = ({
                         <label key={experience.id} className="flex items-center space-x-3 cursor-pointer w-fit transition-all duration-300">
                             <input
                                 type="checkbox"
-                                checked={selectedExperiences.includes(experience.id?.toString() || '')}
-                                onChange={() => onToggle(experience.id?.toString() || '')}
+                                checked={selectedExperiences.includes(experience.id || 0)}
+                                onChange={() => onToggle(experience.id || 0)}
                                 className="w-4 h-4 border-2 border-primary/50 rounded-full appearance-none checked:bg-primary checked:border-primary cursor-pointer mr-2"
                                 aria-label={`Seleccionar experiencia ${experience.name}`}
                             />

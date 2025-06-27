@@ -4,6 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { ProfileApi } from "@/services/user/profile";
+import { fileToWebp } from "@/utils/fileToWebp";
 
 
 
@@ -37,7 +38,6 @@ export const useProfileLogic = () => {
         }
     });
 
-    // Funciones auxiliares
     const resetImageState = () => {
         setImageFile(null);
         if (previewImage) {
@@ -65,7 +65,7 @@ export const useProfileLogic = () => {
         }
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!editedProfile || !user) return;
 
         const formData = new FormData();
@@ -74,7 +74,11 @@ export const useProfileLogic = () => {
         
         if (editedProfile.phone) formData.append('phone', editedProfile.phone);
         if (editedProfile.address) formData.append('address', editedProfile.address);
-        if (imageFile) formData.append('image', imageFile);
+        
+        if (imageFile) {
+            const webpFile = await fileToWebp(imageFile);
+            formData.append('image', webpFile);
+        }
 
         if (editedProfile.password) {
             console.warn("La actualización de la contraseña debe realizarse a través de un flujo seguro y no se incluye aquí.");

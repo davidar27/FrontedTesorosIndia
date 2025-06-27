@@ -13,12 +13,16 @@ export async function fileToWebp(file: File, quality = 0.8): Promise<File> {
                     if (!blob) return reject(new Error('No se pudo convertir a webp'));
                     const webpFile = new File([blob], file.name.replace(/\.\w+$/, '.webp'), { type: 'image/webp' });
                     resolve(webpFile);
+                    console.log(webpFile);
                 },
                 'image/webp',
                 quality
             );
+            console.log(canvas);
         };
         img.onerror = reject;
         img.src = URL.createObjectURL(file);
+        console.log(img.src);
+        console.log(file);
     });
 }

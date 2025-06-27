@@ -6,6 +6,7 @@ import { BaseItem, EditCardProps } from './types';
 import { getImageUrl } from '@/utils/getImageUrl';
 import Button from '@/components/ui/buttons/Button';
 import LoadingSpinner from '@/components/ui/display/LoadingSpinner';
+import { fileToWebp } from '@/utils/fileToWebp';
 
 const CARD_VARIANTS = {
     default: 'p-6',
@@ -44,9 +45,9 @@ export function EditCard<T extends BaseItem>({
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         const hasChanges = Object.keys(formData).some(key => {
             if (key === 'image') return false;
             return formData[key as keyof T] !== item[key as keyof T];
@@ -75,7 +76,8 @@ export function EditCard<T extends BaseItem>({
                 }
             });
 
-            submitData.append('file', imageFile);
+            const webpFile = await fileToWebp(imageFile);
+            submitData.append('file', webpFile);
             
             onSave(submitData);
         } else if (Object.keys(modifiedFields).length > 0) {

@@ -30,7 +30,7 @@ const CreatePackageForm: React.FC<PackageFormProps> = ({
     onCancel,
     isLoading = false
 }) => {
-    const { formData, errors, handleInputChange, toggleArrayItem, validateForm, resetForm } = usePackageForm(initialData);
+    const { formData, errors, handleInputChange, toggleArrayItem, validateForm, resetForm, setFormData } = usePackageForm(initialData);
 
     const [draggedFile, setDraggedFile] = useState<File | null>(null);
     const [experiences, setExperiences] = useState<Experience[]>([]);
@@ -62,7 +62,7 @@ const CreatePackageForm: React.FC<PackageFormProps> = ({
         fetchData();
     }, [getDashboardDetails]);
 
-    const handleExperienceToggle = useCallback((id: string) => {
+    const handleExperienceToggle = useCallback((id: number) => {
         toggleArrayItem('selectedExperiences', id);
     }, [toggleArrayItem]);
 
@@ -71,11 +71,30 @@ const CreatePackageForm: React.FC<PackageFormProps> = ({
     }, [toggleArrayItem]);
 
     const handleDateToggle = (dateString: string) => {
+        const date = new Date(dateString);
+        const formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+        
         setUnavailableDates(prev => {
             if (prev.includes(dateString)) {
                 return prev.filter(date => date !== dateString);
             } else {
                 return [...prev, dateString];
+            }
+        });
+
+        // Also update the form data with formatted date
+        setFormData(prev => {
+            const currentDates = prev.unavailableDates || [];
+            if (currentDates.includes(formattedDate)) {
+                return {
+                    ...prev,
+                    unavailableDates: currentDates.filter(date => date !== formattedDate)
+                };
+            } else {
+                return {
+                    ...prev,
+                    unavailableDates: [...currentDates, formattedDate]
+                };
             }
         });
     }
@@ -174,13 +193,12 @@ const CreatePackageForm: React.FC<PackageFormProps> = ({
                         id="duration"
                         type="number"
                         value={formData.duration}
-                        onChange={(e) => handleInputChange('duration', e.target.value)}
+                        onChange={(e) => handleInputChange('duration', Number(e.target.value))}
                         placeholder="0"
                         inputMode="numeric"
                         min={0}
                         max={10000000}
                         className='!p-2'
-
                     />
                     {errors.duration && <p className="text-sm text-red-600">{errors.duration}</p>}
                 </div>
@@ -199,7 +217,7 @@ const CreatePackageForm: React.FC<PackageFormProps> = ({
                         id="capacity"
                         type="number"
                         value={formData.capacity}
-                        onChange={(e) => handleInputChange('capacity', e.target.value)}
+                        onChange={(e) => handleInputChange('capacity', Number(e.target.value))}
                         placeholder="0"
                         inputMode="numeric"
                         min={0}

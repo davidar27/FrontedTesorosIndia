@@ -11,14 +11,14 @@ export interface BaseItem {
     phone?: string;
     name_entrepreneur?: string;
     location?: string;
-    type?: string;
+    type: string;
     duration?: number;
     price?: number;
     capacity?: number;
     name_experience?: string;
     password?: string;
     joinDate?: string;
-    [key: string]: string | number | boolean | Date | null | undefined;
+    [key: string]: string | number | boolean | Date | null | undefined | string[] | number[];
 }
 
 export interface ContactInfo {
@@ -50,10 +50,11 @@ export interface ActionButton {
 }
 
 export interface BaseCardProps<T> {
-    item: T;
+    item: T ;
     className?: string;
     variant?: 'default' | 'compact' | 'detailed';
     loading?: boolean;
+    
 }
 
 export interface ViewCardProps<T> extends BaseCardProps<T> {

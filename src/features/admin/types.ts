@@ -2,7 +2,7 @@ export interface BaseEntity<TStatus extends string, TId = number> {
     id?: TId;
     name: string;
     status: TStatus;
-    [key: string]: string | number | boolean | Date | null | undefined | TId;
+    [key: string]: string | number | boolean | Date | null | undefined | TId | string[] | number[];
 }
 
 export interface EntityConfig<T extends BaseEntity<string>> {
@@ -20,6 +20,7 @@ export interface EntityConfig<T extends BaseEntity<string>> {
     isLoading?: boolean;
     error?: string | null;
 
+    
     // Componentes
     ItemCard: React.ComponentType<{
         item: T;

@@ -145,7 +145,7 @@ export const PackagesCard = React.memo(function PackagesCard({
     return (
         <>
             <ExperiencePackageViewCard
-                item={{ ...item, id: item.id ?? 0 }}
+                item={{ ...item, id: item.id ?? 0 } }
                 onUpdate={onUpdate}
                 onChangeStatus={onChangeStatus}
                 entity="packages"
