@@ -9,7 +9,7 @@ const packageApiOptions = {
         getById: (id: number | string) => `/dashboard/paquete/${id}`,
         getDetails: '/dashboard/detalles',
         create: '/dashboard/paquetes/crear',
-        update: (id: number | string) => `/dashboard/paquetes/actualizar/${id}`,
+        update: (id: number | string) => `/dashboard/actualizar/paquetes/${id}`,
         delete: (id: number | string) => `/dashboard/paquetes/${id}`,
         changeStatus: (id: number | string) => `/dashboard/estado/paquetes/${id}`,
         search: '/usuario/paquetes/search',

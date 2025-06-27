@@ -134,6 +134,7 @@ export const PackagesCard = React.memo(function PackagesCard({
                     price: true,
                     duration: true,
                     capacity: true,
+                    image: true,
                 }}
                 entity="packages"
                 loading={isLoading}
