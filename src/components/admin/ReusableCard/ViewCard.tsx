@@ -192,7 +192,7 @@ export function ViewCard<T extends BaseItem>({
                     justifyContent: 'center',
                     zIndex: 20
                 }}>
-                    <LoadingSpinner message="Cargando..." />
+                    <LoadingSpinner message={`Cargando ${title}...`} />
                 </div>
             )}
 

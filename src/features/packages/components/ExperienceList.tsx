@@ -1,4 +1,5 @@
 import { Experience } from "../types/packagesTypes";
+import LoadingSpinner from "@/components/ui/display/LoadingSpinner";
 
 interface ExperienceListProps {
     title: string;
@@ -24,7 +25,7 @@ export const ExperienceList: React.FC<ExperienceListProps> = ({
         </h3>
         <div className="space-y-3">
             {loading ? (
-                <div className="text-center text-gray-400">Cargando...</div>
+                <LoadingSpinner message='Cargando experiencias...' />
             ) : experiences.length > 0 ? (
                 experiences.map((experience) => (
                     <div key={experience.experience_id} className={itemClassName}>

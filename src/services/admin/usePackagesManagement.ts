@@ -21,7 +21,7 @@ export function usePackagesManagement() {
 
     const getDashboardDetails = useCallback(() => {
         return genericApi.customRequest<unknown>('getDetails', 'GET');
-    }, [genericApi]);
+    }, []);
 
     return {
         ...genericApi,

@@ -137,9 +137,7 @@ const PackageDetailsView: React.FC<PackageDetailsViewProps> = ({
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {loading ? (
-                            <div className="text-center text-gray-400 col-span-full">
-                                Cargando detalles...
-                            </div>
+                            <LoadingSpinner message='Cargando detalles...' />
                         ) : packageData.details.length > 0 ? (
                             packageData.details.map((detail) => (
                                 <div
