@@ -26,21 +26,34 @@ export default function QuickReservation() {
   const [touched, setTouched] = useState(false);
 
   const [packages, setPackages] = useState<Package[]>([])
+  const [packageSelected, setPackageSelected] = useState<Package>({})
   const [maxPeopleSelected, setMaxPeopleSelected] = useState(0);
   const [people, setPeople] = useState(0);
+
+  const handlePackageSelected = (package_id: number) => {
+    const packageFinded: any = packages.find((p) => p.package_id == package_id)
+    setPackageSelected(packageFinded)
+  }
+
+  const handleReservation = () => {
+    setTouched(true);
+    // manejar reserva
+  };
 
   useEffect(() => {
     const fecthData = async () => {
       const packagesData: Package[] = await PackagesApi.getPackages()
       setPackages([...packagesData])
+      setPackageSelected(packagesData[0])
       setMaxPeopleSelected(packagesData[0].capacity as any)
     }
     fecthData()
   }, [])
 
-  const handleReservation = () => {
-    setTouched(true);
-  };
+  useEffect(() => {
+    setMaxPeopleSelected(packageSelected.capacity as number)
+  }, [packageSelected])
+
 
   return (
     <div className="bg-primary rounded-xl shadow-lg overflow-hidden ">
@@ -64,9 +77,9 @@ export default function QuickReservation() {
         <SelectInput
           id="package"
           label="Paquete"
-          value={packages as any}
+          value={packageSelected.package_id as number}
           options={packages.map((p: Package) => ({ value: (p.package_id as number), label: (p.name as string) }))}
-          onChange={(p: any) => setMaxPeopleSelected(p.capacity)}
+          onChange={(package_id: any) => handlePackageSelected(package_id)}
         />
 
         {/* Botón de reserva */}
