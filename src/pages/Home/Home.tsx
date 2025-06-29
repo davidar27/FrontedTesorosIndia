@@ -15,27 +15,11 @@ const Home: React.FC = () => {
   useEffect(() => {
     setTimeout(() => {
       setIsLoading(false);
-    }, 300);
+    }, 250);
   }, []);
 
 
-  const useMediaQuery = (query: string): boolean => {
-    const [matches, setMatches] = useState(false);
 
-    useEffect(() => {
-      const media = window.matchMedia(query);
-      const listener = () => setMatches(media.matches);
-      listener();
-
-      media.addEventListener('change', listener);
-      return () => media.removeEventListener('change', listener);
-    }, [query]);
-
-    return matches;
-  };
-
-
-  const isLarge = useMediaQuery('(min-width: 1024px)');
 
   return (
     <section>
@@ -44,8 +28,8 @@ const Home: React.FC = () => {
         {!isLoading && (
           <div
             className={clsx(
-              "w-full max-w-5xl mx-auto px-4 z-20 transition-all duration-800",
-              isLarge && "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-in"
+              "w-full max-w-5xl mx-auto pt-4 px-4 z-20 transition-all duration-300 ease-in",
+              "lg:absolute lg:top-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 "
             )}
           >
             <HandleFastPackage />
