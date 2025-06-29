@@ -1,5 +1,6 @@
 import Button from "@/components/ui/buttons/Button";
-import { Users } from "lucide-react";
+import { Users, Plus, Minus } from "lucide-react";
+import Input from "@/components/ui/inputs/Input";
 interface PeopleCounterProps {
     people: number;
     setPeople: (people: number) => void;
@@ -25,10 +26,19 @@ export const PeopleCounter = ({ people, setPeople, maxCapacity, error, className
                 aria-disabled={people <= 1}
                 variant="success"
             >
-                -
+                <Minus className="h-4 w-4" />
             </Button>
             <div className="text-center min-w-[60px]">
-                <div className="text-lg font-semibold text-white">{people}</div>
+
+                <Input
+                    type="number"
+                    value={people}
+                    onChange={(e) => setPeople(Number(e.target.value))}
+                    className="w-fit text-center text-white bg-transparent !shadow-none border-none outline-none !p-0 "
+                    inputMode="numeric"
+                    min={1}
+                    max={maxCapacity}
+                />
                 <div className="text-xs text-white/70">
                     {people === 1 ? 'persona' : 'personas'}
                 </div>
@@ -36,15 +46,14 @@ export const PeopleCounter = ({ people, setPeople, maxCapacity, error, className
             <Button
                 onClick={() => setPeople(Math.min(maxCapacity, people + 1))}
                 className={`rounded-full bg-white/20 text-white hover:bg-white/30 ${classNameButton}`}
-                disabled={maxCapacity ? people >= maxCapacity : false}
+                // disabled={maxCapacity ? people >= maxCapacity : false}
                 type="button"
                 aria-label="Aumentar número de personas"
                 title="Aumentar número de personas"
                 aria-disabled={maxCapacity ? people >= maxCapacity : false}
                 variant="success"
-
             >
-                +
+                <Plus className="h-4 w-4" />
             </Button>
         </div>
         {maxCapacity === 0 && (

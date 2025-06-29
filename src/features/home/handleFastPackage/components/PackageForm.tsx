@@ -37,6 +37,10 @@ export const PackageForm: React.FC<PackageFormProps> = ({
 }) => {
     const { packageId } = useParams();
 
+    const maxPeople = availablePackages.length > 0
+        ? Math.max(...availablePackages.map(pkg => pkg.capacity!))
+        : 20; // o cualquier valor razonable por defecto
+
     useEffect(() => {
         if (packageId && Number(packageId) !== selectedPackageId) {
             onPackageChange(Number(packageId));
@@ -48,6 +52,20 @@ export const PackageForm: React.FC<PackageFormProps> = ({
     return (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pt-4 items-center relative">
             {/* Columna 1: Contador de personas */}
+
+            <PeopleCounter
+                people={people}
+                setPeople={onPeopleChange}
+                maxCapacity={maxPeople}
+            />
+
+            {errors.package && (
+                <p className="text-red-300 text-xs mt-1">{errors.package}</p>
+            )}
+
+            {/* Columna 2: Selector de paquetes */}
+
+
             <SelectInput
                 id={selectedPackageId}
                 label="Paquete disponible"
@@ -60,18 +78,6 @@ export const PackageForm: React.FC<PackageFormProps> = ({
                 onChange={onPackageChange as (value: number) => void}
                 className="h-19"
             />
-            {errors.package && (
-                <p className="text-red-300 text-xs mt-1">{errors.package}</p>
-            )}
-
-            {/* Columna 2: Selector de paquetes */}
-
-            <PeopleCounter
-                people={people}
-                setPeople={onPeopleChange}
-                maxCapacity={selectedPackage?.capacity || 0}
-            />
-
 
 
             {/* Columna 3: Selector de fecha */}

@@ -11,18 +11,13 @@ import { InfoCard } from '@/features/packages/components/InfoCard';
 import { ExperienceList } from '@/features/packages/components/ExperienceList';
 import { DateSelector } from '@/features/home/handleFastPackage/components/DateSelector';
 import { PeopleCounter } from '@/features/home/handleFastPackage/components/PeopleCounter';
-const PackageBuy: React.FC<PackageDetailsViewProps> = ({
-    onEdit,
-    onDelete,
-    onStatusChange,
-    isEditable = true,
-    showActions = true
-}) => {
+const PackageBuy: React.FC<PackageDetailsViewProps> = (
+) => {
     const { packageId } = useParams<{ packageId: string }>();
     const { packageData, loading, error } = usePackageData(packageId);
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
-    
+
     const date = searchParams.get("date");
     const people = searchParams.get("people");
     const [selectedDate, setSelectedDate] = useState(date || "");
@@ -31,28 +26,6 @@ const PackageBuy: React.FC<PackageDetailsViewProps> = ({
 
     // Calcular precio total
     const totalPrice = packageData ? Number(packageData.price) * selectedPeople : 0;
-
-    // Event handlers
-    const handleEdit = () => {
-        if (onEdit && packageData) {
-            onEdit(packageData);
-        }
-    };
-
-    const handleDelete = () => {
-        if (onDelete && packageData?.package_id) {
-            if (window.confirm('¿Estás seguro de que deseas eliminar este paquete?')) {
-                onDelete(packageData.package_id.toString());
-            }
-        }
-    };
-
-    const handleStatusChange = (newStatus: string) => {
-        if (onStatusChange && packageData?.package_id) {
-            onStatusChange(packageData.package_id.toString(), newStatus);
-        }
-    };
-
 
     // Manejar compra del paquete
     const handlePurchase = async () => {
@@ -68,7 +41,7 @@ const PackageBuy: React.FC<PackageDetailsViewProps> = ({
         try {
             // Aquí iría la lógica de compra/reserva
             // Por ejemplo, llamar a tu API para crear la reserva
-            
+
             const reservationData = {
                 packageId: packageData.package_id,
                 date: selectedDate,
@@ -126,11 +99,6 @@ const PackageBuy: React.FC<PackageDetailsViewProps> = ({
         <div className="w-full max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl border border-primary/20 my-8">
             <PackageHeader
                 packageData={packageData}
-                showActions={showActions}
-                isEditable={isEditable}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                onStatusChange={handleStatusChange}
             />
 
             <div className="p-8">
@@ -219,11 +187,11 @@ const PackageBuy: React.FC<PackageDetailsViewProps> = ({
                     <h3 className="text-2xl font-bold text-green-800 mb-6 text-center">
                         ¡Reserva tu Paquete!
                     </h3>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         {/* Selección de Fecha */}
                         <div className="bg-primary p-4 rounded-lg shadow-sm">
-                            
+
                             <DateSelector
                                 date={selectedDate}
                                 onDateChange={setSelectedDate}
@@ -265,11 +233,10 @@ const PackageBuy: React.FC<PackageDetailsViewProps> = ({
                     <button
                         onClick={handlePurchase}
                         disabled={!canPurchase || isProcessing}
-                        className={`w-full py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center space-x-2 ${
-                            canPurchase && !isProcessing
+                        className={`w-full py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center space-x-2 ${canPurchase && !isProcessing
                                 ? 'bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
                                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                        }`}
+                            }`}
                     >
                         {isProcessing ? (
                             <>
@@ -287,7 +254,7 @@ const PackageBuy: React.FC<PackageDetailsViewProps> = ({
                     {!canPurchase && !isProcessing && (
                         <p className="text-center text-red-600 text-sm mt-3">
                             {!selectedDate && "Selecciona una fecha para continuar"}
-                            {selectedDate && selectedPeople > (packageData.capacity || 0) && 
+                            {selectedDate && selectedPeople > (packageData.capacity || 0) &&
                                 `El número de personas excede la capacidad máxima (${packageData.capacity})`}
                         </p>
                     )}

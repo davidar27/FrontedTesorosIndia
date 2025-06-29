@@ -10,36 +10,11 @@ import { PackageImage } from '@/features/packages/components/PackageImage';
 import { InfoCard } from '@/features/packages/components/InfoCard';
 import { ExperienceList } from '@/features/packages/components/ExperienceList';
 
-const PackageDetailsView: React.FC<PackageDetailsViewProps> = ({
-    onEdit,
-    onDelete,
-    onStatusChange,
-    isEditable = true,
-    showActions = true
-}) => {
+const PackageDetailsView: React.FC<PackageDetailsViewProps> = (
+) => {
     const { packageId } = useParams<{ packageId: string }>();
     const { packageData, loading, error } = usePackageData(packageId);
 
-    // Event handlers
-    const handleEdit = () => {
-        if (onEdit && packageData) {
-            onEdit(packageData);
-        }
-    };
-
-    const handleDelete = () => {
-        if (onDelete && packageData?.package_id) {
-            if (window.confirm('¿Estás seguro de que deseas eliminar este paquete?')) {
-                onDelete(packageData.package_id.toString());
-            }
-        }
-    };
-
-    const handleStatusChange = (newStatus: string) => {
-        if (onStatusChange && packageData?.package_id) {
-            onStatusChange(packageData.package_id.toString(), newStatus);
-        }
-    };
 
     // Loading state
     if (loading || !packageData) {
@@ -67,11 +42,6 @@ const PackageDetailsView: React.FC<PackageDetailsViewProps> = ({
         my-30">
             <PackageHeader
                 packageData={packageData}
-                showActions={showActions}
-                isEditable={isEditable}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                onStatusChange={handleStatusChange}
             />
 
             <div className="p-8">
