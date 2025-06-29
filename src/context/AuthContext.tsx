@@ -170,7 +170,6 @@ function AuthProvider({ children }: { children: ReactNode }) {
                             return;
                         }
                     if (!isPublicRoute(location.pathname)) {
-                        console.log('🚪 Redirecting to logout due to refresh failure');
                         await logout();
                     }
                 }

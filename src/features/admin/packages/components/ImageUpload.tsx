@@ -32,7 +32,6 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({ onFileSelect, currentF
 
     const handleFileSelect = useCallback((e: ChangeEvent<HTMLInputElement>): void => {
         const file = e.target.files?.[0];
-        console.log(file);
         if (file) {
             if (file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024) {
                 setDraggedFile(file);

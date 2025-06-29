@@ -12,6 +12,8 @@ export interface Package {
     price?: string;
     capacity?: number;
     details?: Detail[];
+    unavailableDates?: string[]  ;
+    
 }
 
 export interface ReservationData {

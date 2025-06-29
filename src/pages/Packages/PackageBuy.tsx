@@ -10,7 +10,7 @@ import { PackageImage } from '@/features/packages/components/PackageImage';
 import { InfoCard } from '@/features/packages/components/InfoCard';
 import { ExperienceList } from '@/features/packages/components/ExperienceList';
 
-const PackageDetailsView: React.FC<PackageDetailsViewProps> = ({
+const PackageBuy: React.FC<PackageDetailsViewProps> = ({
     onEdit,
     onDelete,
     onStatusChange,
@@ -159,4 +159,4 @@ const PackageDetailsView: React.FC<PackageDetailsViewProps> = ({
     );
 };
 
-export default PackageDetailsView;
+export default PackageBuy;

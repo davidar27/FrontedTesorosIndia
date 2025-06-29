@@ -8,11 +8,11 @@ interface PeopleCounterProps {
 }
 
 export const PeopleCounter = ({ people, setPeople, maxCapacity, error }: PeopleCounterProps) => (
-    <div className="space-y-2">
+    <div className="space-y-1">
         <label className="text-sm font-medium text-white">
             Número de personas
         </label>
-        <div className="flex items-center gap-3 bg-white/10 rounded-lg p-2 justify-center">
+        <div className="flex items-center gap-3 bg-white/30 rounded-xl p-2 justify-center">
             <Button
                 onClick={() => setPeople(Math.max(1, people - 1))}
                 className=" rounded-full bg-white/20 text-white hover:bg-white/30"
@@ -45,7 +45,10 @@ export const PeopleCounter = ({ people, setPeople, maxCapacity, error }: PeopleC
                 +
             </Button>
         </div>
-        {maxCapacity && (
+        {maxCapacity === 0 && (
+            <div className="pb-4"></div>
+        )}
+        {maxCapacity > 0 && (
             <p className="text-xs text-white/70">
                 Máximo: {maxCapacity} personas
             </p>

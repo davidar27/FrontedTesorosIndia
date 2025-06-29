@@ -112,7 +112,7 @@ export const publicRoutes: RouteConfig[] = [
         allowAdmin: false
     },
     {
-        path: '/detalles-paquete/:packageId',
+        path: '/paquetes/:packageId',
         element: PackageDetailsView as React.ComponentType,
         layout: MainLayout,
         title: 'Detalles del Paquete',

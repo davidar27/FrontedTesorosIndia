@@ -109,8 +109,6 @@ const CreatePackageForm: React.FC<PackageFormProps> = ({
         if (onSubmit) {
             onSubmit(formData, draggedFile);
         } else {
-            console.log('Datos del paquete:', formData);
-            console.log('Archivo:', draggedFile);
             alert('¡Paquete guardado exitosamente!');
         }
     };

@@ -101,7 +101,7 @@ export const PackageCard = ({
             <div className="p-5 pt-0 flex justify-center">
                 <Button
                     variant="primary"
-                    onClick={() => navigate(`/detalles-paquete/${id}`)}
+                    onClick={() => navigate(`/paquetes/${id}`)}
                     disabled={!id}
                 >
                     <span>Ver detalles</span>

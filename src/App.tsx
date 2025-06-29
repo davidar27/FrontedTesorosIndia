@@ -42,6 +42,7 @@ import ForgotPasswordForm from "@/pages/Auth/ForgotPasswordForm";
 import ExperiencePage from "@/pages/Experience/ExperiencePage";
 import Profile from "@/features/profile/Profile";
 import PackageDetailsView from "@/pages/Packages/PackageDetailsView";
+import PackageBuy from "./pages/Packages/PackageBuy";
 
 function App() {
   return (
@@ -81,7 +82,12 @@ function App() {
               </Route>
 
               {/* Rutas de paquetes */}
-              <Route path="/detalles-paquete/:packageId" element={<PackageDetailsView />} />
+              <Route path="/paquetes">
+                <Route index element={<PackagesPage />} />
+                <Route path=":packageId" element={<PackageDetailsView />} />
+                <Route path=":packageId/comprar" element={<PackageBuy />} />
+              </Route>
+
 
               {/* Rutas de edición de experiencias - accesible públicamente, protección interna */}
               <Route path="/experiencia/:experience_id/editar" element={<ExperiencePage />} />
