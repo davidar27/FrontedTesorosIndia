@@ -38,7 +38,7 @@ const CART_STORAGE_KEY = "cart_items";
 export const CartProvider = ({ children }: { children: ReactNode }) => {
     const [items, setItems] = useState<CartItem[]>([]);
     const [loading, setLoading] = useState(false);
-    const { user } = useAuth();
+    const { user, isAuthenticated, isLoading: authLoading } = useAuth();
 
     const calcularTotal = (products: CartItem[]) =>
         products.reduce((acc, item) => acc + item.price * item.quantity, 0);
@@ -53,7 +53,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const handleFetchCart = useCallback(async () => {
-        if (!user) return;
+        // Solo ejecutar si el usuario está autenticado y no es un observador
+        if (!isAuthenticated || user?.role === 'observador') return;
+        
         setLoading(true);
         try {
             const { data } = await axiosInstance.get("/carrito/obtener");
@@ -64,7 +66,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         } finally {
             setLoading(false);
         }
-    }, [user]);
+    }, [isAuthenticated, user?.role]);
 
     // Inicializar carrito desde localStorage
     useEffect(() => {
@@ -72,12 +74,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         if (local) {
             setItems(JSON.parse(local));
         }
-        // Si hay usuario, sincronizar con backend en background
-        if (user) {
+        
+        // Solo sincronizar con backend si el usuario está autenticado y no es un observador
+        // y la autenticación ya se ha inicializado
+        if (isAuthenticated && user?.role !== 'observador' && !authLoading) {
             handleFetchCart();
         }
-        // eslint-disable-next-line
-    }, [user, handleFetchCart]);
+    }, [isAuthenticated, user?.role, authLoading, handleFetchCart]);
 
     const handleAddToCart = (item: CartItem) => {
         setItems(prev => {
@@ -91,8 +94,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             guardarEnLocalStorage(updated);
             return updated;
         });
-        // Sincronizar en background
-        if (user) {
+        // Sincronizar en background solo si el usuario está autenticado
+        if (isAuthenticated && user?.role !== 'observador' && user?.id) {
             axiosInstance.post("/carrito/agregar", { productId: item.id, quantity: item.quantity, userId: user.id })
                 .catch(() => mostrarToast("Error al sincronizar con el servidor (agregar)."));
         }
@@ -104,7 +107,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             guardarEnLocalStorage(updated);
             return updated;
         });
-        if (user) {
+        if (isAuthenticated && user?.role !== 'observador') {
             axiosInstance.delete("/carrito/eliminar", { data: { productId: item.id } })
                 .catch(() => mostrarToast("Error al sincronizar con el servidor (eliminar)."));
         }
@@ -120,7 +123,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             guardarEnLocalStorage(updated);
             return updated;
         });
-        if (user) {
+        if (isAuthenticated && user?.role !== 'observador') {
             axiosInstance.put("/carrito/actualizar", { productId: item.productId ?? item.id, quantity: item.quantity })
                 .catch(() => mostrarToast("Error al sincronizar con el servidor (actualizar cantidad)."));
         }
@@ -129,7 +132,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const handleClearCart = () => {
         setItems([]);
         guardarEnLocalStorage([]);
-        if (user) {
+        if (isAuthenticated && user?.role !== 'observador') {
             axiosInstance.delete("/carrito/vaciar")
                 .catch(() => mostrarToast("Error al sincronizar con el servidor (vaciar carrito)."));
         }

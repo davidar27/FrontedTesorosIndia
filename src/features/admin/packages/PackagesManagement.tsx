@@ -7,17 +7,21 @@ import { PackagesConfig } from '@/features/admin/packages/PackagesConfig';
 import { Package, CreatePackageData, PackageStatus } from './PackageTypes';
 import { UpdatePackageData } from './PackageTypes';
 import CreatePackageForm from './createPackageForm';
+import { fileToWebp } from '@/utils/fileToWebp';
 
 type PackageWithForm = Package | {
     id: -1;
     isForm: true;
     name: string;
     status: PackageStatus;
-    price: number;
-    description: string;
-    duration: string;
-    capacity: string;
+    unavailableDates: string[];
+    selectedDetails: number[];
+    selectedExperiences: number[];
     image: string;
+    pricePerPerson: number;
+    description: string;
+    duration: number;
+    capacity: number;
     joinDate: string;
 };
 
@@ -31,26 +35,55 @@ export default function PackagesManagement() {
         createAsync
     } = usePackagesManagement();
 
-    const handleCreateSubmit = useCallback(async (data: CreatePackageData) => {
+    const handleCreateSubmit = useCallback(async (data: CreatePackageData, file: File | null) => {
         setIsCreating(true);
         try {
-            const packageData = {
-                name: data.title,
-                price: Number(data.pricePerPerson),
-                description: data.description,
-                duration: data.duration,
-                capacity: data.selectedExperiences.length.toString(),
-            };
-            
-            await createAsync(packageData, {
-                onSuccess: () => {
-                    toast.success('Paquete creado exitosamente');
-                    setShowCreateForm(false);
-                },
-                onError: (err) => {
-                    toast.error(err.message);
-                }
-            });
+            if (file) {
+                const webpFile = await fileToWebp(file);
+                
+                const formData = new FormData();
+                formData.append('name', data.title);
+                formData.append('description', data.description);
+                formData.append('duration', data.duration.toString());
+                formData.append('capacity', data.capacity.toString());
+                formData.append('pricePerPerson', data.pricePerPerson.toString());
+                formData.append('unavailableDates', JSON.stringify(data.unavailableDates));
+                formData.append('selectedDetails', JSON.stringify(data.selectedDetails));
+                formData.append('selectedExperiences', JSON.stringify(data.selectedExperiences));
+                formData.append('file', webpFile);
+                
+                await createAsync(formData, {
+                    onSuccess: () => {
+                        toast.success('Paquete creado exitosamente');
+                        setShowCreateForm(false);
+                    },
+                    onError: (err) => {
+                        toast.error(err.message);
+                    }
+                });
+            } else {
+                // Use regular JSON for data without file
+                const packageData = {
+                    name: data.title,
+                    description: data.description,
+                    duration: data.duration,
+                    capacity: data.capacity,
+                    pricePerPerson: Number(data.pricePerPerson),
+                    unavailableDates: data.unavailableDates,
+                    selectedDetails: data.selectedDetails,
+                    selectedExperiences: data.selectedExperiences,
+                };
+                
+                await createAsync(packageData, {
+                    onSuccess: () => {
+                        toast.success('Paquete creado exitosamente');
+                        setShowCreateForm(false);
+                    },
+                    onError: (err) => {
+                        toast.error(err.message);
+                    }
+                });
+            }
         } finally {
             setIsCreating(false);
         }

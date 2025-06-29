@@ -91,12 +91,9 @@ export const PackagesCard = React.memo(function PackagesCard({
 
     const stats = [
         { value: `${item.duration}H`, label: 'Duración', bgColor: 'bg-blue-50', textColor: 'text-blue-600', icon: Calendar },
-        { value: item.capacity, label: 'Capacidad (personas)', bgColor: 'bg-purple-50', textColor: 'text-purple-600', icon: Users },
+        { value: item.capacity, label: 'Cantidad (personas)', bgColor: 'bg-purple-50', textColor: 'text-purple-600', icon: Users },
 
     ];
-
-   
-    console.log(normalized);
     const actions: ActionButton[] = [
         {
             icon: Edit,
@@ -128,7 +125,7 @@ export const PackagesCard = React.memo(function PackagesCard({
         if (!item.id) return null;
         return (
             <ExperiencePackageEditCard
-                item={{ ...item, id: item.id }}
+                item={{ ...item, id: item.id } as unknown as Package & { type: string }}
                 onSave={handleSave}
                 onCancel={handleCancel}
                 editFields={{
@@ -137,6 +134,8 @@ export const PackagesCard = React.memo(function PackagesCard({
                     price: true,
                     duration: true,
                     capacity: true,
+                    image: true,
+                    type: true
                 }}
                 entity="packages"
                 loading={isLoading}
@@ -147,7 +146,7 @@ export const PackagesCard = React.memo(function PackagesCard({
     return (
         <>
             <ExperiencePackageViewCard
-                item={{ ...item, id: item.id ?? 0 }}
+                item={{ ...item, id: item.id ?? 0 } as unknown as Package & { type: string }}
                 onUpdate={onUpdate}
                 onChangeStatus={onChangeStatus}
                 entity="packages"

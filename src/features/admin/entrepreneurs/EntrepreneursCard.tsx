@@ -74,7 +74,7 @@ export const EntrepreneurCard = React.memo(function EntrepreneurCard({
         }
     };
     const handleChangeStatus = () => {
-        
+            
         const action = normalizedStatus === 'inactive' ? 'activate' : 'disable';
         setConfirmAction(action);
         setConfirmOpen(true);
@@ -151,7 +151,7 @@ export const EntrepreneurCard = React.memo(function EntrepreneurCard({
     if (isEditing) {
         return (
             <EditCard
-                item={item}
+                item={item as unknown as Entrepreneur & { type: string }}
                 onSave={handleSave}
                 onCancel={handleCancel}
                 editFields={{
@@ -172,7 +172,7 @@ export const EntrepreneurCard = React.memo(function EntrepreneurCard({
     return (
         <>
             <ViewCard
-                item={item}
+                item={item as unknown as Entrepreneur & { type: string }}
                 contactInfo={contactInfo}
                 showStatus={true}
                 stats={stats}

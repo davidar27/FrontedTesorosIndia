@@ -45,7 +45,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
       <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/70 via-black/50 to-black/30" />
 
       {/* Contenido con animaciones */}
-      <div className="relative z-20 responsive-padding-x h-full flex flex-col md:flex-row items-center justify-center md:justify-between gap-8 lg:gap-12">
+      <div className="relative z-10 responsive-padding-x h-full flex flex-col md:flex-row items-center justify-center md:justify-between gap-8 lg:gap-12">
         <div className="flex flex-col justify-center space-y-6">
           <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-tight mb-4 animate-fade-in-up">
             {title}

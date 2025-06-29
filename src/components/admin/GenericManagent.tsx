@@ -4,12 +4,12 @@ import Button from '@/components/ui/buttons/Button';
 import { DefaultCustomFilters } from '@/components/admin/Filter';
 import { BaseEntity, SimplifiedManagementProps } from '../../features/admin/types';
 import { defaultSearchFunction } from './utils/searchUtils';
-import { LoadingState } from './components/LoadingState';
 import { ErrorState } from './components/ErrorState';
 import { SearchBar } from './components/SearchBar';
 import { EmptyState } from './components/EmptyState';
 import { ItemsGrid } from './components/ItemsGrid';
 import { useLocation } from 'react-router-dom';
+import LoadingSpinner from '../ui/display/LoadingSpinner';
 
 export default function GenericManagement<T extends BaseEntity<string>>({
     config
@@ -83,7 +83,7 @@ export default function GenericManagement<T extends BaseEntity<string>>({
     );
 
     if (isLoading) {
-        return <LoadingState entityNamePlural={entityNamePlural} />;
+        return <LoadingSpinner message={`Cargando ${entityNamePlural.toLowerCase()}...`} />;
     }
 
     if (error) {

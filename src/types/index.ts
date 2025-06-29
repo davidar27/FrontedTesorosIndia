@@ -18,19 +18,6 @@ export interface Leader {
     age: string;
     role: string;
 }
-
-
-export interface Package {
-    image: string;
-    title: string;
-    price: string;
-    category?: string;
-    has_food: boolean | number;
-    description: string;
-    features?: string[];
-    onClick: () => void;
-}
-
 export interface SidebarItem {
     id: number;
     label: string;

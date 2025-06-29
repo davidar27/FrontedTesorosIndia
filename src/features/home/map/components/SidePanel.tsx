@@ -1,6 +1,5 @@
 import React from 'react';
-import { MapPin, Users } from 'lucide-react';
-import Button from '@/components/ui/buttons/Button';
+import { MapPin } from 'lucide-react';
 import { SidePanelProps } from '@/features/home/map/types/TouristRouteTypes';
 import { LocationCard } from './LocationCard';
 
@@ -22,16 +21,6 @@ export const SidePanel: React.FC<SidePanelProps> = ({ locations, onLocationClick
                     />
                 ))}
             </div>
-
-
-
-            <Button
-                variant="primary"
-                className="w-full"
-            >
-                <Users className="w-4 h-4 mr-2" />
-                Reservar Ruta Turística
-            </Button>
         </div>
     </div>
 );

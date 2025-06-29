@@ -52,17 +52,12 @@ axiosInstance.interceptors.request.use(
     }
 
     if (isTokenExpiringSoon() && !config.url?.includes('/auth/token/refrescar') && !config._retry) {
-      try {
         config._retry = true;
-        await authService.refresh_token();
-      } catch (error) {
-        console.error('❌ Failed to refresh token in request interceptor:', error);
-      }
+        await authService.refresh_token();  
     }
     return config;
   },
   (error) => {
-    console.error('❌ Request interceptor error:', error);
     return Promise.reject(error);
   }
 );
@@ -72,17 +67,12 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   async (error: AxiosError) => {
-    console.log('📥 Response interceptor error:', {
-      url: error.config?.url,
-      status: error.response?.status,
-      message: error.message
-    });
+    
     
     const originalRequest = error.config as ExtendedAxiosRequestConfig & { _retry?: boolean };
     const errorData = error.response?.data;
     
     if (Number(error.response?.status) === 401 && originalRequest.url?.includes('/auth/iniciar-sesion')) {
-      console.log('🔐 Login 401 error - invalid credentials');
       return Promise.reject(
         new AuthError("El correo o la contraseña son incorrectos", {
           errorType: "general"
@@ -91,10 +81,8 @@ axiosInstance.interceptors.response.use(
     }
     
     if (Number(error.response?.status) === 401 && !originalRequest.url?.includes('/auth/token/refrescar')) {
-      console.log('🔐 401 error - attempting token refresh');
       
       if (originalRequest._retry) {
-        console.log('❌ Token refresh already attempted, redirecting to login');
         isRefreshing = false;
         refreshSubscribers = [];
         return Promise.reject(
@@ -106,19 +94,16 @@ axiosInstance.interceptors.response.use(
       }
 
       if (!isRefreshing) {
-        console.log('🔄 Starting token refresh process');
         isRefreshing = true;
         originalRequest._retry = true;
 
         try {
           await authService.refresh_token();
-          console.log('✅ Token refresh successful, retrying original request');
           isRefreshing = false;
           onRefreshed();
           
           return axiosInstance(originalRequest);
-        } catch (refreshError) {
-          console.error('❌ Token refresh failed:', refreshError);
+        } catch {
           isRefreshing = false;
           refreshSubscribers = [];
           return Promise.reject(
@@ -129,7 +114,6 @@ axiosInstance.interceptors.response.use(
           );
         }
       } else {
-        console.log('⏳ Token refresh already in progress, queuing request');
         return new Promise((resolve) => {
           addRefreshSubscriber(() => {
             resolve(axiosInstance(originalRequest));

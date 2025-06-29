@@ -66,7 +66,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
         staleTime: Infinity,
         gcTime: Infinity,
         refetchOnWindowFocus: false,
-        refetchInterval: TOKEN_REFRESH_INTERVAL,
+        refetchInterval: false,
         refetchOnMount: false
     });
 
@@ -107,13 +107,23 @@ function AuthProvider({ children }: { children: ReactNode }) {
         mutationFn: authService.logout,
         onSuccess: () => {
             queryClient.clear();
+            localStorage.removeItem('cart_items');
+            localStorage.removeItem('lastTokenRefresh');
             setError(null);
             navigate("/");
+            if (window.location.pathname === "/") {
+                window.location.reload();
+            }
         },
         onError: () => {
             queryClient.clear();
+            localStorage.removeItem('cart_items');
+            localStorage.removeItem('lastTokenRefresh');
             setError(null);
             navigate("/");
+            if (window.location.pathname === "/") {
+                window.location.reload();
+            }
         }
     });
 
@@ -152,26 +162,21 @@ function AuthProvider({ children }: { children: ReactNode }) {
                     queryClient.setQueryData(AUTH_QUERY_KEY, refreshedUser);
                     scheduleTokenRefresh();
                 } catch {
-                    try {
+                    
                         const verifyResult = await authService.verifyToken();
                         if (verifyResult.isValid && verifyResult.user) {
                             queryClient.setQueryData(AUTH_QUERY_KEY, verifyResult.user);
                             scheduleTokenRefresh();
                             return;
                         }
-                    } catch (verifyError) {
-                        console.error('❌ Token verification also failed:', verifyError);
-                    }
-
                     if (!isPublicRoute(location.pathname)) {
-                        console.log('🚪 Redirecting to logout due to refresh failure');
                         await logout();
                     }
                 }
             }, TOKEN_REFRESH_INTERVAL - TOKEN_REFRESH_SAFETY_MARGIN);
         };
 
-        if (user?.role !== 'observador') {
+        if (!isInitializing && user?.role !== 'observador' && !isPublicRoute(location.pathname)) {
             scheduleTokenRefresh();
         }
 
@@ -180,7 +185,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
                 clearTimeout(refreshTimeout);
             }
         };
-    }, [user?.role, location.pathname, logout, isPublicRoute, queryClient]);
+    }, [isInitializing, user?.role, location.pathname, logout, isPublicRoute, queryClient]);
 
     const checkAuth = useCallback(async (): Promise<void> => {
         await refetchAuth();

@@ -59,8 +59,6 @@ export const PackagesConfig = ({
         return (
             p.name?.toLowerCase().includes(searchLower) ||
             p.price?.toString().includes(searchLower) ||
-            p.duration?.toLowerCase().includes(searchLower) ||
-            p.capacity?.toLowerCase().includes(searchLower) ||
             p.joinDate?.toLowerCase().includes(searchLower)
         );
     },

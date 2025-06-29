@@ -131,7 +131,7 @@ export const CategoryCard = React.memo(function CategoryCard({
     if (isEditing) {
         return (
             <EditCard
-                item={item}
+                item={item as unknown as Category & { type: string }}
                 onSave={handleSave}
                 onCancel={handleCancel}
                 editFields={{
@@ -152,7 +152,7 @@ export const CategoryCard = React.memo(function CategoryCard({
     return (
         <>
             <ViewCard
-                item={item}
+                item={item as unknown as Category & { type: string }}
                 showImage={false}
                 showStatus={true}
                 stats={stats}

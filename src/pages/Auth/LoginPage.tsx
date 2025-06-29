@@ -58,7 +58,6 @@ const LoginPage = () => {
     const onSubmit = async (data: LoginFormData) => {
         try {
             const user = await login(data);
-            console.log(user);
             const from = location.state?.from;
             const redirectPath = getRedirectPath(user.role, from,user.experience_id);
             navigate(redirectPath, { replace: true });
