@@ -3,30 +3,28 @@ import PackageSelector from "@/features/home/PackageSelector";
 import TouristRoute from "@/features/home/map/TouristRoute";
 import UniqueExperiences from "@/features/home/UniqueExperiences";
 import Leaders from "@/features/home/Leaders";
-import HandleReservation from "@/features/home/HandleReservation";
-
+import HandleFastPackage from "@/features/home/HandleFastPackage";
 
 const Home: React.FC = () => {
 
 
 
   return (
-    <div className=" relative">
-      <Hero />
-
-      <div className="absolute -translate-y-1/2 z-10 left-1/2 transform -translate-x-1/2 w-[95%] md:w-[90%] max-w-5xl">
-        <HandleReservation />
+    <section>
+      <div className="relative">
+        <Hero />
+        <PackageSelector />
+        <div className={`
+        w-full max-w-5xl px-4 z-20
+        ${window.innerWidth < 768 ? '' : 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'}
+        `}>
+          <HandleFastPackage />
+        </div>
       </div>
-
-      <PackageSelector />
-
       <TouristRoute />
-
       <UniqueExperiences />
-
       <Leaders />
-
-    </div>
+    </section>
   );
 };
 

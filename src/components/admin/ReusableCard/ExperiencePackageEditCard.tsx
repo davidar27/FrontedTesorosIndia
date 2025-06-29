@@ -18,7 +18,7 @@ interface ExperiencePackageEditCardProps<T extends BaseItem> {
         phone?: boolean;
         image?: boolean;
         location?: boolean;
-        type: boolean;
+        type?: boolean;
         name_experience?: boolean;
         price?: boolean;
         duration?: boolean;

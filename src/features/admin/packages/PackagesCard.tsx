@@ -125,7 +125,7 @@ export const PackagesCard = React.memo(function PackagesCard({
         if (!item.id) return null;
         return (
             <ExperiencePackageEditCard
-                item={{ ...item, id: item.id }}
+                item={{ ...item, id: item.id } as unknown as Package & { type: string }}
                 onSave={handleSave}
                 onCancel={handleCancel}
                 editFields={{
@@ -135,6 +135,7 @@ export const PackagesCard = React.memo(function PackagesCard({
                     duration: true,
                     capacity: true,
                     image: true,
+                    type: true
                 }}
                 entity="packages"
                 loading={isLoading}
@@ -145,7 +146,7 @@ export const PackagesCard = React.memo(function PackagesCard({
     return (
         <>
             <ExperiencePackageViewCard
-                item={{ ...item, id: item.id ?? 0 } }
+                item={{ ...item, id: item.id ?? 0 } as unknown as Package & { type: string }}
                 onUpdate={onUpdate}
                 onChangeStatus={onChangeStatus}
                 entity="packages"

@@ -1,38 +1,55 @@
 import Button from "@/components/ui/buttons/Button";
-import { FormField } from "../handleFastPackage";
 
+interface PeopleCounterProps {
+    people: number;
+    setPeople: (people: number) => void;
+    maxCapacity: number;
+    error?: string;
+}
 
-
-export const PeopleCounter = ({ people, setPeople, maxCapacity, error }) => (
-    <FormField label="Número de personas" error={error} required>
-        <div className="flex items-center gap-3">
+export const PeopleCounter = ({ people, setPeople, maxCapacity, error }: PeopleCounterProps) => (
+    <div className="space-y-2">
+        <label className="text-sm font-medium text-white">
+            Número de personas
+        </label>
+        <div className="flex items-center gap-3 bg-white/10 rounded-lg p-2 justify-center">
             <Button
                 onClick={() => setPeople(Math.max(1, people - 1))}
-                className="w-10 h-10 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200"
+                className=" rounded-full bg-white/20 text-white hover:bg-white/30"
                 disabled={people <= 1}
-                aria-label="Disminuir personas"
+                type="button"
+                aria-label="Disminuir número de personas"
+                title="Disminuir número de personas"
+                aria-disabled={people <= 1}
+                variant="success"
             >
                 -
             </Button>
             <div className="text-center min-w-[60px]">
-                <div className="text-lg font-semibold">{people}</div>
-                <div className="text-xs text-gray-500">
+                <div className="text-lg font-semibold text-white">{people}</div>
+                <div className="text-xs text-white/70">
                     {people === 1 ? 'persona' : 'personas'}
                 </div>
             </div>
             <Button
-                onClick={() => setPeople(Math.min(maxCapacity || 20, people + 1))}
-                className="w-10 h-10 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200"
-                disabled={people >= maxCapacity}
-                aria-label="Aumentar personas"
+                onClick={() => setPeople(Math.min(maxCapacity, people + 1))}
+                className=" rounded-full bg-white/20 text-white hover:bg-white/30"
+                disabled={maxCapacity ? people >= maxCapacity : false}
+                type="button"
+                aria-label="Aumentar número de personas"
+                title="Aumentar número de personas"
+                aria-disabled={maxCapacity ? people >= maxCapacity : false}
+                variant="success"
+
             >
                 +
             </Button>
         </div>
         {maxCapacity && (
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-white/70">
                 Máximo: {maxCapacity} personas
             </p>
         )}
-    </FormField>
+        {error && <p className="text-xs text-red-200">{error}</p>}
+    </div>
 );

@@ -1,10 +1,11 @@
 
 
 
-const DateInput = ({ date, setDate, touched }: {
+const DateInput = ({ date, setDate, touched, label }: {
     date: string;
     setDate: (date: string) => void;
     touched: boolean;
+    label: string;
 }) => {
     const inputStyles = `
     w-full rounded-lg p-3 bg-white/90 text-gray-800 border border-gray-200
@@ -16,7 +17,7 @@ const DateInput = ({ date, setDate, touched }: {
     return (
         <div className="space-y-1">
             <label htmlFor="date" className="block text-sm font-semibold mb-1 text-white">
-                Fecha
+                {label}
             </label>
             <div className="relative">
                 <input
@@ -33,7 +34,7 @@ const DateInput = ({ date, setDate, touched }: {
                         Selecciona fecha
                     </span>
                 )}
-                
+
             </div>
         </div>
     );

@@ -102,7 +102,7 @@ export default function EntrepreneursManagement() {
                     return (
                         <div className="animate-fade-in-up">
                             <CreateCard
-                                item={props.item as unknown as Entrepreneur}
+                                item={props.item as unknown as Entrepreneur & { type: string }}
                                 onCreate={handleCreateSubmit}
                                 onCancel={() => setShowCreateForm(false)}
                                 loading={isCreating}

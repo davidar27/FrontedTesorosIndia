@@ -1,10 +1,11 @@
+
 export interface Detail {
     detail_id?: number;
     detail?: string;
 }
 
 export interface Package {
-    package_id?: number;
+    package_id: number;
     name?: string;
     description?: string;
     image?: string;
@@ -23,6 +24,6 @@ export interface ReservationData {
     timestamp: number;
 }
 
-export interface ValidationErrors {
+export  interface ValidationErrors {
     [key: string]: string;
 }

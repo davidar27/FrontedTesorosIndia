@@ -17,7 +17,7 @@ const PackageSelector = () => {
   }, [])
 
   return (
-    <div className="responsive-padding-x pt-20 ">
+    <div className="responsive-padding-x pt-50">
       <div className="text-center pb-6">
         <AnimatedTitle
           title='NUESTROS PAQUETES'

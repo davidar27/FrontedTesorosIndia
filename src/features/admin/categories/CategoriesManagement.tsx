@@ -96,7 +96,7 @@ export default function CategoriesManagement() {
                     return (
                         <div className="animate-fade-in-up">
                             <CreateCard
-                                item={props.item as unknown as Category }
+                                item={props.item as unknown as Category & { type: string }}
                                 onCreate={handleCreateSubmit}
                                 onCancel={() => setShowCreateForm(false)}
                                 loading={isCreating}
