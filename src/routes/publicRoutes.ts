@@ -34,5 +34,7 @@ export const PUBLIC_ROUTES = [
     '/perfil/:id',
 
 
-    '/testpay'
+    // Rutas de paquetes
+    '/paquetes/:packageId',
+    '/paquetes/:packageId/comprar'
 ];

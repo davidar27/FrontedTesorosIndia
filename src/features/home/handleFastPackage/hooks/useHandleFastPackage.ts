@@ -7,7 +7,7 @@ export const useHandleFastPackage = () => {
     const navigate = useNavigate();
     const [date, setDate] = useState<string>("");
     const [people, setPeople] = useState<number>(1);
-    const [selectedPackageId, setSelectedPackageId] = useState<number>(1);
+    const [selectedPackageId, setSelectedPackageId] = useState<number>(0);
     const [packages, setPackages] = useState<Package[]>([]);
     const [errors, setErrors] = useState<ValidationErrors>({});
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -114,15 +114,14 @@ export const useHandleFastPackage = () => {
     const handlePeopleChange = (newPeople: number) => {
         setPeople(newPeople);
 
-        if (errors.people) {
-            setErrors(prev => ({ ...prev, people: "" }));
+        // Si el paquete seleccionado no soporta la nueva cantidad, deselecciónalo
+        const pkg = packages.find(p => p.package_id === selectedPackageId);
+        if (pkg && newPeople > pkg.capacity!) {
+            setSelectedPackageId(0); // Deselecciona el paquete
+            setDate(""); // Opcional: limpia la fecha
         }
 
-        if (selectedPackage && newPeople > selectedPackage.capacity!) {
-            setSelectedPackageId(0);
-            setDate("");
-        }
-
+        // Actualiza la URL con la nueva cantidad de personas
         updateUrl(selectedPackageId, date, newPeople);
     };
 

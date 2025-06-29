@@ -10,16 +10,11 @@ import { useEffect, useState } from "react";
 
 const Home: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
-
   useEffect(() => {
     setTimeout(() => {
       setIsLoading(false);
     }, 250);
   }, []);
-
-
-
-
   return (
     <section>
       <div className="relative">
@@ -33,10 +28,8 @@ const Home: React.FC = () => {
             <HandleFastPackage />
           </div>
         )}
-
         <PackageSelector />
       </div>
-
       <TouristRoute />
       <UniqueExperiences />
       <Leaders />

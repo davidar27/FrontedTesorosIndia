@@ -190,7 +190,6 @@ const CreatePackageForm: React.FC<PackageFormProps> = ({
                     <Input
                         id="duration"
                         type="number"
-                        value={formData.duration}
                         onChange={(e) => handleInputChange('duration', Number(e.target.value))}
                         placeholder="0"
                         inputMode="numeric"
@@ -214,11 +213,10 @@ const CreatePackageForm: React.FC<PackageFormProps> = ({
                     <Input
                         id="capacity"
                         type="number"
-                        value={formData.capacity}
                         onChange={(e) => handleInputChange('capacity', Number(e.target.value))}
                         placeholder="0"
                         inputMode="numeric"
-                        min={0}
+                        min={1}
                         max={10000000}
                         className='!p-2'
                     />

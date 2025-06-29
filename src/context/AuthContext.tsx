@@ -23,6 +23,8 @@ const defaultObserverUser: User = {
     isVerified: false
 };
 
+
+
 function AuthProvider({ children }: { children: ReactNode }) {
     const [error, setError] = useState<string | null>(null);
     const [isInitializing, setIsInitializing] = useState(true);
