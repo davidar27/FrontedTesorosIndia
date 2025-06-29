@@ -17,7 +17,7 @@ const PackageSelector = () => {
   }, [])
 
   return (
-    <div className="responsive-padding-x pt-50">
+    <div className="responsive-padding-x pt-12 lg:pt-60">
       <div className="text-center pb-6">
         <AnimatedTitle
           title='NUESTROS PAQUETES'
@@ -32,24 +32,24 @@ const PackageSelector = () => {
 
       {/* Grid de paquetes */}
       <div className={`grid gap-6 justify-items-center ${packages.length === 1
-          ? 'grid-cols-1'
-          : packages.length === 2
-            ? 'grid-cols-1 md:grid-cols-2'
-            : packages.length === 3
-              ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
-              : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
+        ? 'grid-cols-1'
+        : packages.length === 2
+          ? 'grid-cols-1 md:grid-cols-2'
+          : packages.length === 3
+            ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+            : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
         }`}
       >
         {packages
           .map((pkg, index) => {
             return (< PackageCard
               key={index}
-              id={pkg.package_id} 
+              id={pkg.package_id}
               image={pkg.image}
               name={pkg.name}
               description={pkg.description}
               price={pkg.price}
-              details={pkg.details || [] }
+              details={pkg.details || []}
               onClick={() => { }}
             />)
           })}
