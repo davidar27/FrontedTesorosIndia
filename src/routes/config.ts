@@ -1,4 +1,5 @@
 import Profile from '@/features/profile/Profile';
+import PackageBuy from '@/pages/Packages/PackageBuy';
 import { lazy } from 'react';
 
 // Layouts
@@ -116,6 +117,13 @@ export const publicRoutes: RouteConfig[] = [
         element: PackageDetailsView as React.ComponentType,
         layout: MainLayout,
         title: 'Detalles del Paquete',
+        description: 'Detalles del paquete',
+        allowAdmin: false
+    },{
+        path: '/paquetes/:packageId/comprar',
+        element: PackageBuy,
+        layout: MainLayout,
+        title: 'Comprar Paquete',
         description: 'Detalles del paquete',
         allowAdmin: false
     }

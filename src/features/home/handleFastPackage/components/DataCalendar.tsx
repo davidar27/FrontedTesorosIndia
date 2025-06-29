@@ -65,7 +65,11 @@ export const DateCalendar: React.FC<DateCalendarProps> = ({
 
     const isDateUnavailable = useCallback((day: number): boolean => {
         const dateString = formatDateToString(day);
+        console.log(dateString);
         const convertedUnavailableDates = unavailableDates.map(convertUnavailableDate);
+        console.log(unavailableDates);
+        
+        console.log(convertedUnavailableDates);
         return convertedUnavailableDates.includes(dateString);
     }, [unavailableDates, formatDateToString, convertUnavailableDate]);
 

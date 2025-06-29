@@ -22,7 +22,10 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
 
     return (
         <div className={`space-y-1 flex items-center flex-col pb-4 ${className}`}>
-            <span className="text-white text-sm font-semibold">Selecciona la fecha</span>
+            <span className="text-white text-sm font-semibold flex items-center">
+                <Calendar className="mr-2 h-4 w-4" />
+                Selecciona la fecha
+            </span>
             <button
                 ref={buttonRef}
                 onClick={() => setOpen(!open)}

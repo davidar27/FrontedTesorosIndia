@@ -48,14 +48,6 @@ export const PackageForm: React.FC<PackageFormProps> = ({
     return (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pt-4 items-center relative">
             {/* Columna 1: Contador de personas */}
-            <PeopleCounter
-                people={people}
-                setPeople={onPeopleChange}
-                maxCapacity={selectedPackage?.capacity || 0}
-            />
-
-            {/* Columna 2: Selector de paquetes */}
-
             <SelectInput
                 id={selectedPackageId}
                 label="Paquete disponible"
@@ -72,6 +64,15 @@ export const PackageForm: React.FC<PackageFormProps> = ({
                 <p className="text-red-300 text-xs mt-1">{errors.package}</p>
             )}
 
+            {/* Columna 2: Selector de paquetes */}
+
+            <PeopleCounter
+                people={people}
+                setPeople={onPeopleChange}
+                maxCapacity={selectedPackage?.capacity || 0}
+            />
+
+
 
             {/* Columna 3: Selector de fecha */}
 
@@ -86,7 +87,7 @@ export const PackageForm: React.FC<PackageFormProps> = ({
             {/* Columna 4: Botón de reserva */}
             <Button
                 onClick={onReservation}
-                disabled={isLoading || !selectedPackageId || !date || !selectedPackage}
+                disabled={isLoading || !selectedPackageId || !date || !selectedPackage || people <= 0 || people > (selectedPackage?.capacity || 0) || people > 10}
                 type="button"
                 variant="success"
                 className="w-full h-16 !rounded-xl"

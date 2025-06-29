@@ -46,7 +46,6 @@ export default function HandleFastPackage() {
           onPackageChange={handlePackageChange}
           onDateChange={handleDateChange}
           onReservation={handleReservation}
-          calculateTotalPrice={calculateTotalPrice}
           getUnavailableDates={getUnavailableDates}
         />
 
