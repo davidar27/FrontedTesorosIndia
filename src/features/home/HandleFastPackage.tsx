@@ -141,7 +141,7 @@ export default function HandleFastPackage() {
 
 
   return (
-    <div className="bg-primary rounded-xl shadow-lg overflow-hidden text-center">
+    <div className="bg-primary rounded-xl shadow-lg overflow-hidden text-center transition-all duration-300 ease-in">
       <div className="p-4">
         {/* Header */}
         <div className="flex flex-col items-center gap-2 border-b border-white/50 pb-2">
