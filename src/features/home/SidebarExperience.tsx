@@ -32,7 +32,6 @@ const SidebarExperiences: React.FC<SidebarExperiencesProps> = ({ isOpen, onClose
         setScrolled(latest > 50);
     });
 
-    // Simplificamos el manejo del estado de cierre
     useEffect(() => {
         if (isOpen) {
             setIsClosing(false);
@@ -48,18 +47,14 @@ const SidebarExperiences: React.FC<SidebarExperiencesProps> = ({ isOpen, onClose
         queryKey: ['experiences'],
         queryFn: ExperiencesApi.getExperiences,
         staleTime: 5 * 60 * 1000,
-        enabled: isOpen, // Solo cargar cuando el sidebar esté abierto
+        enabled: isOpen,
     });
 
     const handleClose = useCallback(() => {
-        console.log('Iniciando cierre del sidebar');
         setIsClosing(true);
-
-        // Llamamos onClose inmediatamente o después de un pequeño delay
-        // para permitir que la animación se vea
         setTimeout(() => {
             onClose();
-        }, 250); // Ajusta este tiempo según la duración de tu animación
+        }, 250);
     }, [onClose]);
 
     const navigateToEstate = useCallback((experience_id: number) => {
@@ -71,7 +66,6 @@ const SidebarExperiences: React.FC<SidebarExperiencesProps> = ({ isOpen, onClose
         refetch();
     }, [refetch]);
 
-    // Si no está abierto, no renderizar nada
     if (!isOpen) return null;
 
     return (

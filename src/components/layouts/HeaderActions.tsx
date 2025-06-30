@@ -29,12 +29,10 @@ const HeaderActions = ({ isEditMode = false, onToggleEditMode }: HeaderActionsPr
     const navigate = useNavigate();
 
     const handleClose = useCallback(() => {
-        console.log('handleClose ejecutado');
         setSidebarOpen(false);
     }, []);
 
     useEffect(() => {
-        console.log('sidebarOpen:', sidebarOpen);
     }, [sidebarOpen]);
 
     return (
