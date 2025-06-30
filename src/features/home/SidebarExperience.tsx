@@ -6,7 +6,7 @@ import { useScroll, useMotionValueEvent } from 'framer-motion';
 import ButtonIcon from '../../components/ui/buttons/ButtonIcon';
 import { ExperiencesApi } from '@/services/home/experiences';
 import { ExperienceItem } from './ExperienceItem';
-import { X, RefreshCw, Sparkles } from 'lucide-react';
+import { X, RefreshCw, Sparkles, LucideSparkles } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { Experience } from '@/features/admin/experiences/ExperienceTypes';
 
@@ -21,7 +21,6 @@ const SidebarExperiences: React.FC<SidebarExperiencesProps> = ({ isOpen, onClose
     const [scrolled, setScrolled] = useState(false);
     const { scrollY } = useScroll();
 
-    const [isRendered, setIsRendered] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
 
     const activeExperienceId = useMemo(() => {
@@ -33,12 +32,10 @@ const SidebarExperiences: React.FC<SidebarExperiencesProps> = ({ isOpen, onClose
         setScrolled(latest > 50);
     });
 
+    // Simplificamos el manejo del estado de cierre
     useEffect(() => {
         if (isOpen) {
-            setIsRendered(true);
             setIsClosing(false);
-        } else {
-            setIsClosing(true);
         }
     }, [isOpen]);
 
@@ -51,18 +48,18 @@ const SidebarExperiences: React.FC<SidebarExperiencesProps> = ({ isOpen, onClose
         queryKey: ['experiences'],
         queryFn: ExperiencesApi.getExperiences,
         staleTime: 5 * 60 * 1000,
-        enabled: isRendered,
+        enabled: isOpen, // Solo cargar cuando el sidebar esté abierto
     });
 
-    const handleAnimationEnd = () => {
-        if (isClosing) {
-            setIsRendered(false);
-        }
-    };
-
     const handleClose = useCallback(() => {
+        console.log('Iniciando cierre del sidebar');
         setIsClosing(true);
-        setTimeout(onClose, 300);
+
+        // Llamamos onClose inmediatamente o después de un pequeño delay
+        // para permitir que la animación se vea
+        setTimeout(() => {
+            onClose();
+        }, 250); // Ajusta este tiempo según la duración de tu animación
     }, [onClose]);
 
     const navigateToEstate = useCallback((experience_id: number) => {
@@ -74,7 +71,8 @@ const SidebarExperiences: React.FC<SidebarExperiencesProps> = ({ isOpen, onClose
         refetch();
     }, [refetch]);
 
-    if (!isRendered) return null;
+    // Si no está abierto, no renderizar nada
+    if (!isOpen) return null;
 
     return (
         <>
@@ -82,51 +80,40 @@ const SidebarExperiences: React.FC<SidebarExperiencesProps> = ({ isOpen, onClose
             <div
                 onClick={handleClose}
                 className={clsx(
-                    "fixed inset-0 bg-black/20 z-30 lg:hidden",
-                    !isClosing ? 'animate-fade-in' : 'animate-fade-out'
+                    "fixed inset-0 bg-black/20 z-30 lg:hidden transition-opacity duration-300",
+                    isClosing ? 'opacity-0' : 'opacity-100'
                 )}
-                style={{ animationDuration: '300ms' }}
             />
 
             {/* Sidebar */}
             <aside
-                onAnimationEnd={handleAnimationEnd}
                 className={clsx(
-                    'fixed right-0 z-40 w-80 lg:w-96 h-full transition-all duration-300',
+                    'fixed right-0 z-40 w-80 lg:w-96 h-full transition-transform duration-300 ease-in-out',
                     'bg-gradient-to-br from-white via-white to-green-50/30',
                     'border-l border-green-100 shadow-2xl shadow-green-900/10',
-                    !isClosing ? 'animate-fade-in-right' : 'animate-slide-out-right'
+                    isClosing ? 'translate-x-full' : 'translate-x-0'
                 )}
                 style={{
                     top: scrolled ? '70px' : '90px',
                     height: `calc(100vh - ${scrolled ? '70px' : '90px'})`
                 }}
             >
-                {/* Header */}
-                <div className='relative p-6 border-b border-green-100 bg-gradient-to-r from-green-50 to-emerald-50'>
-                    <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg">
-                                <Sparkles className="w-5 h-5 text-white" />
-                            </div>
-                            <div>
-                                <h2 className="text-xl font-bold text-gray-800">
-                                    Experiencias
-                                </h2>
-                                <p className="text-sm text-gray-600">
-                                    Descubre nuevas aventuras
-                                </p>
-                            </div>
+                {/* Header con botón de cerrar */}
+                <div className="flex items-center justify-between py-4 px-6 border-b border-green-100">
+                    <div className='flex items-center gap-2'>
+                        <div className='p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg'>
+                            <LucideSparkles className='w-5 h-5 text-white' />
                         </div>
-                        <ButtonIcon
-                            onClick={handleClose}
-                            className='!text-gray-500 hover:!text-gray-700 hover:bg-white/50 transition-all duration-200'
-                            aria-label="Cerrar barra lateral"
-                            type='button'
-                        >
-                            <X size={30} />
-                        </ButtonIcon>
+                        <h3 className="text-xl font-bold text-gray-800">Experiencias</h3>
                     </div>
+                    <ButtonIcon
+                        onClick={handleClose}
+                        className='!text-gray-500 hover:!text-gray-700 hover:bg-white/50 transition-all duration-200'
+                        aria-label="Cerrar barra lateral"
+                        type='button'
+                    >
+                        <X size={24} />
+                    </ButtonIcon>
                 </div>
 
                 {/* Content */}
@@ -138,11 +125,11 @@ const SidebarExperiences: React.FC<SidebarExperiencesProps> = ({ isOpen, onClose
                     ) : (
                         <nav className="p-6">
                             {error ? (
-                                <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center animate-scale-in">
-                                    <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto">
+                                <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+                                    <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
                                         <X className="w-6 h-6 text-red-600" />
                                     </div>
-                                    <p className="text-red-700 font-medium">Error al cargar experiencias</p>
+                                    <p className="text-red-700 font-medium mb-3">Error al cargar experiencias</p>
                                     <button
                                         onClick={handleRetry}
                                         className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg
@@ -153,11 +140,11 @@ const SidebarExperiences: React.FC<SidebarExperiencesProps> = ({ isOpen, onClose
                                     </button>
                                 </div>
                             ) : !Array.isArray(experiences) || experiences.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center h-64 text-center animate-fade-in">
-                                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                                <div className="flex flex-col items-center justify-center h-64 text-center">
+                                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                                         <Sparkles className="w-8 h-8 text-gray-400" />
                                     </div>
-                                    <p className="text-lg font-semibold text-gray-600">
+                                    <p className="text-lg font-semibold text-gray-600 mb-2">
                                         No hay experiencias disponibles
                                     </p>
                                     <p className="text-sm text-gray-500 max-w-xs">
@@ -166,12 +153,7 @@ const SidebarExperiences: React.FC<SidebarExperiencesProps> = ({ isOpen, onClose
                                 </div>
                             ) : (
                                 <div>
-                                    <div className="flex items-center justify-between">
-                                        <p className="text-sm text-gray-600">
-                                            {experiences.length} experiencia{experiences.length !== 1 ? 's' : ''}
-                                        </p>
-                                    </div>
-                                    <ul className="space-y-3 mt-4">
+                                    <ul className="space-y-3">
                                         {experiences.map((experience, index) => (
                                             <ExperienceItem
                                                 key={`experience-${experience.id}`}
