@@ -5,8 +5,8 @@ import { useCallback } from 'react';
 const packageApiOptions = {
     entityKey: 'packages',
     endpoints: {
-        getAll: '/dashboard/paquetes',
-        getById: (id: number | string) => `/dashboard/paquete/${id}`,
+        getAll: '/paquetes',
+        getById: (id: number | string) => `/paquetes/${id}`,
         getDetails: '/dashboard/detalles',
         create: '/dashboard/paquetes',
         update: (id: number | string) => `/dashboard/actualizar/paquetes/${id}`,
@@ -14,6 +14,7 @@ const packageApiOptions = {
         changeStatus: (id: number | string) => `/dashboard/estado/paquetes/${id}`,
         search: '/usuario/paquetes/search',
     },
+    
 };
 
 export function usePackagesManagement() {

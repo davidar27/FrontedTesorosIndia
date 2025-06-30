@@ -43,7 +43,7 @@ const PackageBuy: React.FC<PackageDetailsViewProps> = (
             // Por ejemplo, llamar a tu API para crear la reserva
 
             const reservationData = {
-                packageId: packageData.package_id,
+                id: packageData.id,
                 date: selectedDate,
                 people: selectedPeople,
                 totalPrice: totalPrice,

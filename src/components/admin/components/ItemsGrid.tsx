@@ -7,9 +7,11 @@ interface ItemsGridProps<T extends BaseEntity<string>> {
         item: T;
         onUpdate: (item: T) => void;
         onChangeStatus: (id: number, status: string) => void;
+        onView?: (item: T) => void | undefined;
     }>;
     onUpdate: (item: T) => void;
     onChangeStatus: (id: number, status: string) => void;
+    onView?: (item: T) => void | undefined;
     enableAnimations?: boolean;
 }   
 
@@ -17,7 +19,8 @@ export function ItemsGrid<T extends BaseEntity<string>>({
     items,
     ItemCard,
     onUpdate,
-    onChangeStatus, 
+    onChangeStatus,
+    onView,
     enableAnimations = true
 }: ItemsGridProps<T>) {
     const [editingCardId, setEditingCardId] = useState<number | null>(null);
@@ -55,6 +58,7 @@ export function ItemsGrid<T extends BaseEntity<string>>({
                         item={item}
                         onUpdate={onUpdate}
                         onChangeStatus={onChangeStatus}
+                        onView={onView}
                     />
                 </div>
             ))}

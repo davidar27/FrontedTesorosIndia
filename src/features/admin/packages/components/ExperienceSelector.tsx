@@ -19,6 +19,7 @@ export const ExperienceSelector: React.FC<ExperienceSelectorProps> = ({
     loading = false,
     error
 }) => {
+
     return (
         <div className="w-full border-2 border-primary/30 rounded-lg p-4 h-fit">
             <label className="text-sm font-medium text-green-600 mb-2 flex items-center">
@@ -30,11 +31,11 @@ export const ExperienceSelector: React.FC<ExperienceSelectorProps> = ({
                     <LoadingSpinner message='Cargando experiencias...' />
                 ) : (
                     experiences.map((experience) => (
-                        <label key={experience.id} className="flex items-center space-x-3 cursor-pointer w-fit transition-all duration-300">
+                        <label key={experience.id || experience.experience_id} className="flex items-center space-x-3 cursor-pointer w-fit transition-all duration-300">
                             <input
                                 type="checkbox"
-                                checked={selectedExperiences.includes(experience.id || 0)}
-                                onChange={() => onToggle(experience.id || 0)}
+                                checked={selectedExperiences.includes(experience.id ?? experience.experience_id ?? 0)}
+                                onChange={() => onToggle(experience.id ?? experience.experience_id ?? 0)}
                                 className="w-4 h-4 border-2 border-primary/50 rounded-full appearance-none checked:bg-primary checked:border-primary cursor-pointer mr-2"
                                 aria-label={`Seleccionar experiencia ${experience.name}`}
                             />

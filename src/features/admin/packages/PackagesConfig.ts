@@ -9,12 +9,15 @@ interface PackagesConfigParams {
         onUpdate: (item: Package) => void;
         onChangeStatus: (id: number, status: string) => void;
         onRetry?: () => void;
+        onView?: (item: Package) => void;
     }>;
     actions: {
         onUpdate?: (item: Package) => void;
         onCreate?: () => void;
         onChangeStatus?: (id: number, status: string) => void;
         onRetry?: () => void;
+        onView?: (item: Package) => void;
+
     };
 }
 
@@ -62,8 +65,10 @@ export const PackagesConfig = ({
             p.joinDate?.toLowerCase().includes(searchLower)
         );
     },
-    onUpdate: actions.onUpdate || (() => {}),
-    onCreate: actions.onCreate || (() => {}),
-    onRetry: actions.onRetry || (() => {}),
-    onChangeStatus: actions.onChangeStatus || (() => {}),
+    onUpdate: actions.onUpdate || (() => { }),
+    onCreate: actions.onCreate || (() => { }),
+    onRetry: actions.onRetry || (() => { }),
+    onChangeStatus: actions.onChangeStatus || (() => { }),
+    onView: actions.onView || (() => { }),
+
 });

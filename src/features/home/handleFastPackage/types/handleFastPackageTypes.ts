@@ -5,7 +5,7 @@ export interface Detail {
 }
 
 export interface Package {
-    package_id: number;
+    id: number;
     name?: string;
     description?: string;
     image?: string;
@@ -17,7 +17,7 @@ export interface Package {
 }
 
 export interface ReservationData {
-    packageId: number;
+    id: number;
     packageName: string;
     date: string;
     people: number;

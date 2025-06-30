@@ -3,15 +3,13 @@ import { useParams } from 'react-router-dom';
 import { MapPin, Clock, DollarSign, Star, Users } from 'lucide-react';
 import { formatPrice } from '@/utils/formatPrice';
 import LoadingSpinner from '@/components/ui/display/LoadingSpinner';
-import { PackageDetailsViewProps } from '@/features/packages/types/packagesTypes';
 import { usePackageData } from '@/features/packages/hooks/usePackageData';
 import { PackageHeader } from '@/features/packages/components/PackageHeader';
 import { PackageImage } from '@/features/packages/components/PackageImage';
 import { InfoCard } from '@/features/packages/components/InfoCard';
 import { ExperienceList } from '@/features/packages/components/ExperienceList';
 
-const PackageDetailsView: React.FC<PackageDetailsViewProps> = (
-) => {
+const PackageDetailsView: React.FC = () => {
     const { packageId } = useParams<{ packageId: string }>();
     const { packageData, loading, error } = usePackageData(packageId);
 

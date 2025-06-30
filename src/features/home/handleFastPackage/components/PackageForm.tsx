@@ -39,7 +39,7 @@ export const PackageForm: React.FC<PackageFormProps> = ({
 
     const maxPeople = availablePackages.length > 0
         ? Math.max(...availablePackages.map(pkg => pkg.capacity!))
-        : 20; // o cualquier valor razonable por defecto
+        : 20;
 
     useEffect(() => {
         if (packageId && Number(packageId) !== selectedPackageId) {
@@ -71,7 +71,7 @@ export const PackageForm: React.FC<PackageFormProps> = ({
                 label="Paquete disponible"
                 value={selectedPackageId}
                 options={availablePackages.map(p => ({
-                    value: p.package_id!,
+                    value: p.id!,
                     label: p.name!
                 }))}
                 required

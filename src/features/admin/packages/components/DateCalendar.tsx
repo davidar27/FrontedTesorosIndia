@@ -8,7 +8,6 @@ interface DateCalendarProps {
 
 export const DateCalendar: React.FC<DateCalendarProps> = ({ unavailableDates, onDateToggle }) => {
     const [currentMonth, setCurrentMonth] = useState<Date>(new Date(2025, 5));
-
     const daysInMonth = useMemo(() => {
         const date = currentMonth;
         const year = date.getFullYear();
@@ -16,8 +15,7 @@ export const DateCalendar: React.FC<DateCalendarProps> = ({ unavailableDates, on
         const firstDay = new Date(year, month, 1);
         const lastDay = new Date(year, month + 1, 0);
         const daysInMonthCount = lastDay.getDate();
-        const startingDayOfWeek = firstDay.getDay();
-
+        const startingDayOfWeek = (firstDay.getDay() + 6) % 7;
         const days: (number | null)[] = [];
 
         for (let i = 0; i < startingDayOfWeek; i++) {
@@ -31,23 +29,38 @@ export const DateCalendar: React.FC<DateCalendarProps> = ({ unavailableDates, on
         return days;
     }, [currentMonth]);
 
-    const formatDateToString = useCallback((day: number): string => {
-        const year = currentMonth.getFullYear();
-        const month = currentMonth.getMonth();
-        const date = new Date(year, month, day);
+    const normalizedUnavailableDates = useMemo(() => {
+        return unavailableDates.map(date => {
+            if (date.includes('/')) {
+                const [day, month, year] = date.split('/');
+                return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+            } else if (date.includes('-')) {
+                return date;
+            }
+            return date;
+        });
+    }, [unavailableDates]);
 
-        return date.toISOString().split('T')[0];
-    }, [currentMonth]);
+    const toDDMMYYYY = useCallback((date: string) => {
+        if (date.includes('-')) {
+            const [year, month, day] = date.split('-');
+            return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
+        }
+        return date;
+    }, []);
 
     const isDateUnavailable = useCallback((day: number): boolean => {
-        const dateString = formatDateToString(day);
-        return unavailableDates.includes(dateString);
-    }, [unavailableDates, formatDateToString]);
+        const year = currentMonth.getFullYear();
+        const month = (currentMonth.getMonth() + 1).toString().padStart(2, '0');
+        const dayString = day.toString().padStart(2, '0');
+        const dateString = `${year}-${month}-${dayString}`;
+
+        return normalizedUnavailableDates.includes(dateString);
+    }, [normalizedUnavailableDates, currentMonth]);
 
     const isToday = useCallback((day: number): boolean => {
         const today = new Date();
         const currentDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
-
         return today.toDateString() === currentDate.toDateString();
     }, [currentMonth]);
 
@@ -72,10 +85,13 @@ export const DateCalendar: React.FC<DateCalendarProps> = ({ unavailableDates, on
         if (isPastDate(day)) {
             return;
         }
-
-        const dateString = formatDateToString(day);
-        onDateToggle(dateString);
-    }, [formatDateToString, onDateToggle, isPastDate]);
+        const year = currentMonth.getFullYear();
+        const month = (currentMonth.getMonth() + 1).toString().padStart(2, '0');
+        const dayString = day.toString().padStart(2, '0');
+        const dateString = `${year}-${month}-${dayString}`;
+        const ddmmyyyy = toDDMMYYYY(dateString);
+        onDateToggle(ddmmyyyy);
+    }, [currentMonth, isPastDate, onDateToggle, toDDMMYYYY]);
 
     const monthNames: string[] = [
         'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
@@ -128,12 +144,12 @@ export const DateCalendar: React.FC<DateCalendarProps> = ({ unavailableDates, on
                                     onClick={() => handleDateClick(day)}
                                     disabled={isPastDate(day)}
                                     className={`w-8 h-8 rounded-full text-sm font-medium transition-colors ${isPastDate(day)
-                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                            : isDateUnavailable(day)
-                                                ? 'bg-red-500 text-white hover:bg-red-600'
-                                                : isToday(day)
-                                                    ? 'bg-blue-500 text-white hover:bg-blue-600'
-                                                    : 'hover:bg-gray-200 text-gray-700'
+                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                        : isDateUnavailable(day)
+                                            ? 'bg-red-500 text-white hover:bg-red-600'
+                                            : isToday(day)
+                                                ? 'bg-blue-500 text-white hover:bg-blue-600'
+                                                : 'hover:bg-gray-200 text-gray-700'
                                         }`}
                                 >
                                     {day}
@@ -164,7 +180,7 @@ export const DateCalendar: React.FC<DateCalendarProps> = ({ unavailableDates, on
                         <div className="flex flex-wrap gap-1">
                             {unavailableDates.map((date, index) => (
                                 <span key={index} className="text-xs bg-red-200 text-red-800 px-2 py-1 rounded">
-                                    {new Date(date).toLocaleDateString('es-ES')}
+                                    {date}
                                 </span>
                             ))}
                         </div>

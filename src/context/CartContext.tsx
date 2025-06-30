@@ -53,8 +53,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const handleFetchCart = useCallback(async () => {
-        // Solo ejecutar si el usuario está autenticado y no es un observador
-        if (!isAuthenticated || user?.role === 'observador') return;
+        const blockedRoles = ['observador', 'administrador', 'emprendedor'];
+
+        if (!isAuthenticated || blockedRoles.includes(user?.role ?? '')) return;
         
         setLoading(true);
         try {

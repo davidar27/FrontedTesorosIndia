@@ -1,16 +1,18 @@
 import { useState, useCallback } from 'react';
 import { CreatePackageData } from '@/features/admin/packages/PackageTypes';
 
-export const usePackageForm = (initialData?: Partial<CreatePackageData>) => {
-    const [formData, setFormData] = useState<CreatePackageData>({
-        title: initialData?.title || '',
+export const usePackageForm = (initialData?: Partial<CreatePackageData> & { id?: number }) => {
+    const [formData, setFormData] = useState<CreatePackageData & { id?: number }>({
+        id: initialData?.id,
+        name: initialData?.name || '',
         description: initialData?.description || '',
         selectedExperiences: initialData?.selectedExperiences || [],
         unavailableDates: initialData?.unavailableDates || [],
         duration: initialData?.duration || 0,
         capacity: initialData?.capacity || 0,
         pricePerPerson: initialData?.pricePerPerson || 0,
-        selectedDetails: initialData?.selectedDetails || []
+        selectedDetails: initialData?.selectedDetails || [],
+        price: initialData?.price || 0
     });
 
     const [errors, setErrors] = useState<Partial<Record<keyof CreatePackageData, string>>>({});
@@ -18,7 +20,9 @@ export const usePackageForm = (initialData?: Partial<CreatePackageData>) => {
     const handleInputChange = useCallback((field: keyof CreatePackageData, value: string | string[] | number): void => {
         setFormData(prev => ({
             ...prev,
-            [field]: value
+            [field]: field === 'price' || field === 'duration' || field === 'capacity'
+                ? Number(value)
+                : value
         }));
 
         if (errors[field]) {
@@ -45,8 +49,8 @@ export const usePackageForm = (initialData?: Partial<CreatePackageData>) => {
     const validateForm = useCallback((): boolean => {
         const newErrors: Partial<Record<keyof CreatePackageData, string>> = {};
 
-        if (!formData.title.trim()) {
-            newErrors.title = 'El título es requerido';
+        if (!formData.name.trim()) {
+            newErrors.name = 'El nombre es requerido';
         }
 
         if (!formData.description.trim()) {
@@ -81,17 +85,21 @@ export const usePackageForm = (initialData?: Partial<CreatePackageData>) => {
 
     const resetForm = useCallback(() => {
         setFormData({
-            title: '',
+            id: 0,
+            name: '',
             description: '',
             selectedExperiences: [],
             unavailableDates: [],
             duration: 0,
             capacity: 0,
             pricePerPerson: 0,
-            selectedDetails: []
+            selectedDetails: [],
+            price: 0
         });
         setErrors({});
     }, []);
+
+
 
     return {
         formData,
@@ -100,6 +108,6 @@ export const usePackageForm = (initialData?: Partial<CreatePackageData>) => {
         toggleArrayItem,
         validateForm,
         resetForm,
-        setFormData
+        setFormData,
     };
 };

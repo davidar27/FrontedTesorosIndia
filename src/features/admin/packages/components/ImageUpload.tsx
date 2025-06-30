@@ -1,15 +1,14 @@
-
-import React, { useState, useCallback, DragEvent, ChangeEvent } from 'react';
+import React, {  useCallback, DragEvent, ChangeEvent } from 'react';
 import { Upload } from 'lucide-react';
+import Picture from '@/components/ui/display/Picture';
+import { getImageUrl } from '@/utils/getImageUrl';
 
 interface ImageUploadProps {
     onFileSelect: (file: File | null) => void;
-    currentFile?: File | null;
+    currentFile?: File | null | string;
 }
 
 export const ImageUpload: React.FC<ImageUploadProps> = ({ onFileSelect, currentFile }) => {
-    const [draggedFile, setDraggedFile] = useState<File | null>(currentFile || null);
-
     const handleDragOver = useCallback((e: DragEvent<HTMLDivElement>): void => {
         e.preventDefault();
         e.stopPropagation();
@@ -22,7 +21,6 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({ onFileSelect, currentF
         if (files.length > 0) {
             const file = files[0];
             if (file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024) {
-                setDraggedFile(file);
                 onFileSelect(file);
             } else {
                 alert('Por favor selecciona una imagen menor a 5MB');
@@ -34,7 +32,6 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({ onFileSelect, currentF
         const file = e.target.files?.[0];
         if (file) {
             if (file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024) {
-                setDraggedFile(file);
                 onFileSelect(file);
             } else {
                 alert('Por favor selecciona una imagen menor a 5MB');
@@ -43,21 +40,30 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({ onFileSelect, currentF
     }, [onFileSelect]);
 
     const handleRemoveFile = useCallback(() => {
-        setDraggedFile(null);
         onFileSelect(null);
     }, [onFileSelect]);
+
+    const getImageSrc = () => {
+        if (currentFile instanceof File) {
+            return URL.createObjectURL(currentFile);
+        }
+        if (typeof currentFile === 'string') {
+            return getImageUrl(currentFile);
+        }
+        return null;
+    };
 
     return (
         <section className="mb-8 flex flex-col items-center">
             <label className="block text-lg font-semibold text-green-700 mb-2">Imagen del paquete</label>
             <div
-                className={`relative border-2 border-dashed rounded-xl p-6 w-full max-w-md bg-gray-50 flex flex-col items-center justify-center ${draggedFile ? 'border-green-500 bg-green-50' : 'border-gray-200'
+                className={`relative border-2 border-dashed rounded-xl p-6 w-full max-w-md bg-gray-50 flex flex-col items-center justify-center ${currentFile ? 'border-green-500 bg-green-50' : 'border-gray-200'
                     }`}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
             >
-                {draggedFile ? (
-                    <img src={URL.createObjectURL(draggedFile)} alt="Preview" className="w-40 h-40 object-cover rounded-lg mb-2" />
+                {getImageSrc() ? (
+                    <Picture src={getImageSrc()} alt="Preview" className="w-40 h-40 object-cover rounded-lg mb-2" />
                 ) : (
                     <Upload className="h-12 w-12 text-gray-400 mb-2" />
                 )}
@@ -69,7 +75,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({ onFileSelect, currentF
                     aria-label="Cargar imagen del paquete"
                 />
                 <span className="text-gray-500 text-sm">Arrastra o haz clic para subir una imagen (máx 5MB)</span>
-                {draggedFile && (
+                {currentFile && (
                     <button
                         type="button"
                         onClick={handleRemoveFile}
