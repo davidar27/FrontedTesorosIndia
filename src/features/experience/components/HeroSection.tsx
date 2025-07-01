@@ -1,18 +1,21 @@
-import React from 'react';
-import { MapPin } from 'lucide-react';
+import React, { useState } from 'react';
+import {  MapPin } from 'lucide-react';
 import { Experience, Review } from '@/features/experience/types/experienceTypes';
 import { getImageUrl } from '@/utils/getImageUrl';
 import { calculateAverageRating } from '@/features/experience/utils/rating';
 import StarRating from '@/features/experience/components/StarRating';
 import Picture from '@/components/ui/display/Picture';
+import Input from '@/components/ui/inputs/Input';
 
 interface HeroSectionProps {
     experience: Experience;
     reviews: Review[];
+    isEditMode: boolean;
 }
 
-const HeroSection: React.FC<HeroSectionProps> = ({ experience, reviews }) => {
+const HeroSection: React.FC<HeroSectionProps> = ({ experience, reviews, isEditMode }) => {
     const averageRating = calculateAverageRating(reviews);
+    const [experienceName, setExperienceName] = useState(experience.name);
 
     return (
         <section className="relative h-96 overflow-hidden">
@@ -38,9 +41,20 @@ const HeroSection: React.FC<HeroSectionProps> = ({ experience, reviews }) => {
                                     <span className="text-sm">Colombia</span>
                                 </div>
                             </div>
-                            <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">
-                                {experience.name}
-                            </h1>
+                            {isEditMode ? (
+                                <div className='flex items-center gap-2 relative w-fit'>
+                                    <Input
+                                        value={experienceName}
+                                        onChange={(e) => setExperienceName(e.target.value)}
+                                        placeholder="Nombre de la experiencia"
+                                        className='bg-transparent text-4xl md:text-5xl font-bold text-white  w-fit border-secondary border-2 truncate'
+                                    />
+                                </div>
+                            ) : (
+                                <h1 className="text-4xl md:text-5xl font-bold text-white">
+                                    {experience.name}
+                                </h1>
+                            )}
                             <div className="flex items-center gap-4 text-white">
                                 <div className="flex items-center gap-1">
                                     <StarRating rating={Math.round(averageRating)} />

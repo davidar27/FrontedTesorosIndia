@@ -112,6 +112,7 @@ const Leaders = () => {
       />
 
       <div className="relative w-full max-w-6xl overflow-hidden">
+        {/* Leaders Card */}
         <div className="relative">
           <motion.div
             className="flex gap-6 py-8 justify-center"
