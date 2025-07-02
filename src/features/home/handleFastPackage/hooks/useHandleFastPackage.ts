@@ -146,7 +146,7 @@ export const useHandleFastPackage = () => {
                 timestamp: Date.now()
             };
 
-            navigate(`/paquetes/${selectedPackage.id}/comprar?date=${date}&people=${people}`, {
+            navigate(`/paquetes/${selectedPackage.id}?date=${date}&people=${people}`, {
                 state: reservationData
             });
 
@@ -166,7 +166,7 @@ export const useHandleFastPackage = () => {
         const params = new URLSearchParams();
         if (date) params.set("date", date);
         if (people) params.set("people", people.toString());
-        const newUrl = `/paquetes/${pkgId}/comprar?${params.toString()}`;
+        const newUrl = `/paquetes/${pkgId}?${params.toString()}`;
         window.history.replaceState({}, '', newUrl);
     };
 

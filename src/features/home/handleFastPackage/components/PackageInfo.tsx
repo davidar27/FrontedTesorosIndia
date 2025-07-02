@@ -40,7 +40,7 @@ export const PackageInfo: React.FC<PackageInfoProps> = ({
 
                 {/* Resumen de la compra */}
                 {selectedPackage && date && (
-                    <div className="bg-white/10 rounded-lg p-3 mt-2">
+                    <div className="bg-white/10 rounded-lg p-3 mt-2 ">
                         <div className="text-center">
                             <div className="text-lg font-bold text-green-300">
                                 Total: ${calculateTotalPrice().toLocaleString()}

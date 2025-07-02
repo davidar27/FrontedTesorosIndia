@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
-import { MapPin, Clock, DollarSign, Star, Users, ShoppingCart, Briefcase, Hotel } from 'lucide-react';
+import { MapPin, Clock, DollarSign, Star, Users, ShoppingCart, Briefcase, Hotel, ArrowRight } from 'lucide-react';
 import { formatPrice } from '@/utils/formatPrice';
 import LoadingSpinner from '@/components/ui/display/LoadingSpinner';
 import { PackageData, PackageDetailsViewProps } from '@/features/packages/types/packagesTypes';
@@ -19,7 +19,7 @@ interface Hostel {
     name: string;
 }
 
-const PackageBuy: React.FC<PackageDetailsViewProps> = (
+const PackageDetailsView: React.FC<PackageDetailsViewProps> = (
 ) => {
     const { packageId } = useParams<{ packageId: string }>();
     const { packageData, loading, error } = usePackageData(packageId);
@@ -88,6 +88,11 @@ const PackageBuy: React.FC<PackageDetailsViewProps> = (
     // Validar si se puede comprar
     const canPurchase = selectedDate && selectedPeople > 0 && selectedPeople <= (packageData?.capacity || 0);
 
+
+    const handleHostelClick = (hostel: Hostel) => {
+        setShowHospedaje(true);
+    };
+
     // Loading state
     if (loading || !packageData) {
         return (
@@ -115,11 +120,10 @@ const PackageBuy: React.FC<PackageDetailsViewProps> = (
 
             <HeroSection
                 packageData={packageData as unknown as PackageData}
-                reviews={[]}
             />
 
+            <section className="responsive-padding-x responsive-padding-y space-y-8">
             {/* Descripción */}
-            <section className="responsive-padding-x responsive-padding-y">
 
                 <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="bg-gray-50 p-4 rounded-lg">
@@ -127,26 +131,33 @@ const PackageBuy: React.FC<PackageDetailsViewProps> = (
                         <p className="text-gray-700 leading-relaxed">{packageData.description}</p>
                     </div>
                     <div className="flex flex-col gap-4">
-                        <InfoCard
-                            title="Duración"
-                            value={`${packageData.duration} horas`}
-                            icon={<Clock className="mr-2 h-5 w-5" />}
-                            bgColor="bg-blue-50"
-                            textColor="text-blue-700"
-                        />
-                        <InfoCard
-                            title="Precio por persona"
-                            value={formatPrice(Number(packageData.price))}
-                            icon={<DollarSign className="mr-2 h-5 w-5" />}
-                            bgColor="bg-green-50"
-                            textColor="text-green-700"
-                        />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <InfoCard
+                                title="Duración"
+                                value={`${packageData.duration} horas`}
+                                icon={<Clock className="mr-2 h-5 w-5" />}
+                                bgColor="bg-blue-50"
+                                textColor="text-blue-700"
+                            />
+                            <InfoCard
+                                title="Precio por persona"
+                                value={formatPrice(Number(packageData.price))}
+                                icon={<DollarSign className="mr-2 h-5 w-5" />}
+                                bgColor="bg-green-50"
+                                textColor="text-green-700"
+                            />
+                        </div>
+                        <div className="border-2 border-primary/30 rounded-lg p-6">
+                            <h3 className="text-lg font-semibold text-green-700 flex items-center ">
+                                <Users className="mr-2 h-5 w-5" />
+                                Capacidad Máxima
+                            </h3>
+                            <div className="bg-gray-50 p-4 rounded-lg">
+                                <p className="text-2xl font-bold text-green-800">{packageData.capacity} personas</p>
+                                <p className="text-gray-600 text-sm ">Máximo de personas por reserva</p>
+                            </div>
+                        </div>
                     </div>
-                </section>
-
-                {/* Información principal */}
-                <section className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-
                 </section>
 
                 {/* Experiencias y Capacidad */}
@@ -187,25 +198,7 @@ const PackageBuy: React.FC<PackageDetailsViewProps> = (
 
                 </section>
 
-                <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="border-2 border-primary/30 rounded-lg p-6">
-                        <h3 className="text-lg font-semibold text-green-700 flex items-center ">
-                            <Users className="mr-2 h-5 w-5" />
-                            Capacidad Máxima
-                        </h3>
-                        <div className="bg-gray-50 p-4 rounded-lg">
-                            <p className="text-2xl font-bold text-green-800">{packageData.capacity} personas</p>
-                            <p className="text-gray-600 text-sm ">Máximo de personas por reserva</p>
-                        </div>
-                    </div>
 
-                    <div>
-                        <h3>Hostels</h3>
-                        {hostels?.map((hostel: Hostel) => (
-                            <h3 key={hostel.id}>{hostel.name}</h3>
-                        ))}
-                    </div>
-                </section>
                 {/* Sección de Reserva */}
                 <section className="bg-gradient-to-r from-green-50 to-blue-50 p-6 rounded-2xl border-2 border-green-200">
                     <h3 className="text-2xl font-bold text-green-800 mb-6 text-center">
@@ -234,18 +227,29 @@ const PackageBuy: React.FC<PackageDetailsViewProps> = (
                         </div>
 
                         <div className="mx-auto">
-                                {showHospedaje?(
-                            <Button onClick={() => setShowHospedaje(!showHospedaje)} className="bg-primary text-white px-4 py-2 rounded-lg">
-                                <span className="flex items-center gap-2"> <Hotel className="h-5 w-5" />¿Necesitas Hospedaje?</span>
-                            </Button>
-                                ):(
-                                    <div>
-                                        <h3>Hostels</h3>
-                                        {hostels?.map((hostel: Hostel) => (
-                                            <h3 key={hostel.id}>{hostel.name}</h3>
-                                        ))}
-                                    </div>
-                                )}
+                            {showHospedaje ? (
+                                <Button onClick={() => setShowHospedaje(!showHospedaje)} className="bg-primary text-white flex flex-col items-center justify-center gap-y-4  px-13 rounded-lg w-full group relative">
+                                    <Hotel className="h-8 w-8 " />
+                                    <span
+                                        className="flex items-center gap-2 text-xl"> ¿Necesitas Hospedaje?</span>
+                                    <span
+                                        className="text-sm text-gray-100 group-hover:text-gray-500 flex items-center  justify-center transition-all duration-300">
+                                        Dale click para ver los hostels disponibles
+                                        <ArrowRight
+                                            className="h-6 w-6 absolute right-5" />
+                                    </span>
+                                </Button>
+                            ) : (
+                                <div className="bg-white p-4 rounded-lg shadow-sm">
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                        <Hotel className="mr-2 h-5 w-5 text-green-600" />
+                                        Habitaciones Disponibles
+                                    </h3>
+                                    {hostels?.map((hostel: Hostel) => (
+                                        <h3 key={hostel.id} onClick={() => handleHostelClick(hostel)} className="text-gray-700 hover:text-green-600 cursor-pointer">{hostel.name}</h3>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -303,4 +307,4 @@ const PackageBuy: React.FC<PackageDetailsViewProps> = (
     );
 };
 
-export default PackageBuy;
+export default PackageDetailsView;
