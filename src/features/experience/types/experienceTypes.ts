@@ -23,7 +23,7 @@ export interface TeamMember {
     id: number;
     name: string;
     age: number;
-    occupation: string;
+    profession: string;
     description: string;
     image: string;
 }

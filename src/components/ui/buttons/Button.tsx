@@ -1,11 +1,14 @@
 import React from 'react';
 import LoadingSpinner from '@/components/ui/display/LoadingSpinner';
+import { SpinnerVariant } from '@/components/ui/display/LoadingSpinner';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: 'primary' | 'secondary' | 'danger' | 'success' | 'warning' | 'disabled';
     fullWidth?: boolean;
     loading?: boolean;
     icon?: React.ReactNode;
+    messageLoading?: string;
+    variantLoading?: string;
 }
 
 
@@ -28,6 +31,8 @@ export default function Button({
     fullWidth = false,
     loading = false,
     icon,
+    messageLoading = '',
+    variantLoading = '',
     disabled,
     ...props
 }: ButtonProps) {
@@ -45,7 +50,12 @@ export default function Button({
             {...props}
         >
             {loading ? (
-                <LoadingSpinner />
+                <LoadingSpinner
+                    size='xs'
+                    position='inline'
+                    message={messageLoading}
+                    variant={variantLoading as SpinnerVariant}
+                />
             ) : (
                 <>
                     {icon}
