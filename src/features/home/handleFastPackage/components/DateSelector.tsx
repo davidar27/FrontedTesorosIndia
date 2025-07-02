@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { Calendar } from "lucide-react";
-import { DateCalendar } from "@/features/home/handleFastPackage/components/DataCalendar";
+import { DateCalendar } from "@/features/home/handleFastPackage/components/DateCalendar";
 
 interface DateSelectorProps {
     date: string;

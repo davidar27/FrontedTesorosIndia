@@ -10,7 +10,7 @@ export interface Detail {
 }
 
 export interface PackageData {
-    package_id: number;
+    id: number;
     name: string;
     description: string;
     price: string;

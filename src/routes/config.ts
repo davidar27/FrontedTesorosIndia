@@ -113,14 +113,14 @@ export const publicRoutes: RouteConfig[] = [
         allowAdmin: false
     },
     {
-        path: '/paquetes/:packageId',
+        path: '/paquetes/:id',
         element: PackageDetailsView as React.ComponentType,
         layout: MainLayout,
         title: 'Detalles del Paquete',
         description: 'Detalles del paquete',
         allowAdmin: false
     },{
-        path: '/paquetes/:packageId/comprar',
+        path: '/paquetes/:id/comprar',
         element: PackageBuy,
         layout: MainLayout,
         title: 'Comprar Paquete',

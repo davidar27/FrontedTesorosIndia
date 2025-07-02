@@ -5,8 +5,7 @@ import { formatPrice } from '@/utils/formatPrice';
 import LoadingSpinner from '@/components/ui/display/LoadingSpinner';
 import { PackageDetailsViewProps } from '@/features/packages/types/packagesTypes';
 import { usePackageData } from '@/features/packages/hooks/usePackageData';
-import { PackageHeader } from '@/features/packages/components/PackageHeader';
-import { PackageImage } from '@/features/packages/components/PackageImage';
+import HeroSection from '@/features/packages/components/HeroSection';
 import { InfoCard } from '@/features/packages/components/InfoCard';
 import { ExperienceList } from '@/features/packages/components/ExperienceList';
 import { DateSelector } from '@/features/home/handleFastPackage/components/DateSelector';
@@ -43,7 +42,7 @@ const PackageBuy: React.FC<PackageDetailsViewProps> = (
             // Por ejemplo, llamar a tu API para crear la reserva
 
             const reservationData = {
-                packageId: packageData.package_id,
+                id: packageData.id,
                 date: selectedDate,
                 people: selectedPeople,
                 totalPrice: totalPrice,
@@ -97,14 +96,12 @@ const PackageBuy: React.FC<PackageDetailsViewProps> = (
 
     return (
         <div className="w-full max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl border border-primary/20 my-8">
-            <PackageHeader
-                packageData={packageData}
-            />
+           
 
             <div className="p-8">
-                <PackageImage
-                    image={packageData.image}
-                    name={packageData.name}
+                <HeroSection
+                    packageData={packageData}
+                    reviews={[]}
                 />
 
                 {/* Descripción */}

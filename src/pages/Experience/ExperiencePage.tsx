@@ -56,7 +56,7 @@ const ExperiencePage: React.FC = () => {
                 experienceName={experience.name}
             />
 
-            <HeroSection experience={experience} reviews={reviews} />
+            <HeroSection experience={experience} reviews={reviews} isEditMode={isEditMode} />
 
             <div className="container mx-auto py-8 responsive-padding-x">
                 <QuickStats
@@ -85,6 +85,7 @@ const ExperiencePage: React.FC = () => {
                     onAddMember={editModeData.addMember}
                     onRemoveMember={editModeData.removeMember}
                     editMembers={editModeData.editMembers}
+                    onEditDataChange={(data) => editModeData.setEditData(prev => ({ ...prev, ...data }))}
                 />
 
                 <ProductsSection

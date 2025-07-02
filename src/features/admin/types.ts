@@ -2,7 +2,7 @@ export interface BaseEntity<TStatus extends string, TId = number> {
     id?: TId;
     name: string;
     status: TStatus;
-    [key: string]: string | number | boolean | Date | null | undefined | TId | string[] | number[];
+    [key: string]: string | number | boolean | Date | null | undefined | TId | string[] | number[] | object[];
 }
 
 export interface EntityConfig<T extends BaseEntity<string>> {
@@ -28,6 +28,7 @@ export interface EntityConfig<T extends BaseEntity<string>> {
         onUpdate: (item: T) => void;
         onChangeStatus: (id: number, status: string) => void;
         onRetry?: () => void;
+        onView?: (item: T) => void;
     }>;
 
     // Callbacks
@@ -35,6 +36,8 @@ export interface EntityConfig<T extends BaseEntity<string>> {
     onCreate?: () => void;
     onRetry?: () => void;
     onChangeStatus: (id: number, status: string) => void;
+    onView?:(item : T) => void;
+
 
     // Filtros personalizados (opcional)
     customFilters?: React.ComponentType<{

@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import React from 'react';
 
 type SpinnerSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-type SpinnerVariant = 'primary' | 'secondary' | 'success' | 'error' | 'warning';
+export type SpinnerVariant = 'primary' | 'secondary' | 'success' | 'error' | 'warning';
 type SpinnerPosition = 'center' | 'inline' | 'overlay';
 
 export interface LoadingSpinnerProps {

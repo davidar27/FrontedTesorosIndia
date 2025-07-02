@@ -35,7 +35,8 @@ export default function GenericManagement<T extends BaseEntity<string>>({
         onUpdate,
         onCreate,
         onRetry,
-        onChangeStatus
+        onChangeStatus,
+        onView
     } = config;
 
 
@@ -166,11 +167,12 @@ export default function GenericManagement<T extends BaseEntity<string>>({
             ) : (
                 <ItemsGrid
                     items={finalFilteredItems}
-                    ItemCard={ItemCard}
+                    ItemCard={ItemCard as React.ComponentType<{ item: T; onUpdate: (item: T) => void; onChangeStatus: (id: number, status: string) => void; onView?: (item: T) => void | undefined; }>}
                     onUpdate={handleUpdate}
                     onChangeStatus={(id: number, status: string) => {
                         onChangeStatus(id, status);
                     }}
+                    onView={onView}
                     enableAnimations={enableAnimations}
                 />
             )}

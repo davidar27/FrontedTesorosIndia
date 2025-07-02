@@ -7,8 +7,8 @@ interface DateCalendarProps {
     selectedDate?: string;
     onDateSelect: (date: string) => void;
     disabled?: boolean;
-    anchorRef: React.RefObject<HTMLButtonElement>;
-    onClose: () => void;
+    anchorRef?: React.RefObject<HTMLButtonElement>;
+    onClose?: () => void;
 }
 
 export const DateCalendar: React.FC<DateCalendarProps> = ({
@@ -65,11 +65,7 @@ export const DateCalendar: React.FC<DateCalendarProps> = ({
 
     const isDateUnavailable = useCallback((day: number): boolean => {
         const dateString = formatDateToString(day);
-        console.log(dateString);
         const convertedUnavailableDates = unavailableDates.map(convertUnavailableDate);
-        console.log(unavailableDates);
-        
-        console.log(convertedUnavailableDates);
         return convertedUnavailableDates.includes(dateString);
     }, [unavailableDates, formatDateToString, convertUnavailableDate]);
 
@@ -111,7 +107,7 @@ export const DateCalendar: React.FC<DateCalendarProps> = ({
     }, [disabled, formatDateToString, onDateSelect, isPastDate, isDateUnavailable]);
 
     useEffect(() => {
-        if (anchorRef.current) {
+        if (anchorRef?.current) {
             const rect = anchorRef.current.getBoundingClientRect();
             setPos({
                 top: rect.bottom + window.scrollY,
@@ -124,11 +120,11 @@ export const DateCalendar: React.FC<DateCalendarProps> = ({
     useEffect(() => {
         const handleClick = (e: MouseEvent) => {
             if (
-                anchorRef.current &&
+                anchorRef?.current &&
                 !anchorRef.current.contains(e.target as Node) &&
                 !document.getElementById('calendar-portal')?.contains(e.target as Node)
             ) {
-                onClose();
+                onClose?.();
             }
         };
         document.addEventListener('mousedown', handleClick);

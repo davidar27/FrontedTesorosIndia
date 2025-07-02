@@ -1,28 +1,26 @@
-import React, { useState } from 'react';
-import {  MapPin } from 'lucide-react';
-import { Experience, Review } from '@/features/experience/types/experienceTypes';
+import React from 'react';
+import { MapPin } from 'lucide-react';
+import { Review } from '@/features/experience/types/experienceTypes';
 import { getImageUrl } from '@/utils/getImageUrl';
-import Picture from '@/components/ui/display/Picture';
-import Input from '@/components/ui/inputs/Input';
-import StarRating from '@/features/experience/components/StarRating';
 import { calculateAverageRating } from '@/features/experience/utils/rating';
+import StarRating from '@/features/experience/components/StarRating';
+import Picture from '@/components/ui/display/Picture';
+import { PackageData } from '@/features/packages/types/packagesTypes';
 
 interface HeroSectionProps {
-    experience: Experience;
+    packageData: PackageData;
     reviews: Review[];
-    isEditMode: boolean;
 }
 
-const HeroSection: React.FC<HeroSectionProps> = ({ experience, reviews, isEditMode }) => {
+const HeroSection: React.FC<HeroSectionProps> = ({ packageData, reviews }) => {
     const averageRating = calculateAverageRating(reviews);
-    const [experienceName, setExperienceName] = useState(experience.name);
 
     return (
         <section className="relative h-96 overflow-hidden">
             <div className="absolute inset-0">
                 <Picture
-                    src={getImageUrl(experience.image)}
-                    alt={experience.name}
+                    src={getImageUrl(packageData.image)}
+                    alt={packageData.name}
                     className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
@@ -33,28 +31,14 @@ const HeroSection: React.FC<HeroSectionProps> = ({ experience, reviews, isEditMo
                     <div className="flex items-center justify-between">
                         <div className="flex-1">
                             <div className="flex items-center gap-2 mb-3">
-                                <span className="bg-emerald-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                                    {experience.type}
-                                </span>
                                 <div className="flex items-center gap-1 text-white">
                                     <MapPin className="w-4 h-4" />
                                     <span className="text-sm">Colombia</span>
                                 </div>
                             </div>
-                            {isEditMode ? (
-                                <div className='flex items-center gap-2 relative w-fit'>
-                                    <Input
-                                        value={experienceName}
-                                        onChange={(e) => setExperienceName(e.target.value)}
-                                        placeholder="Nombre de la experiencia"
-                                        className='bg-transparent text-4xl md:text-5xl font-bold text-white  w-fit border-secondary border-2 truncate'
-                                    />
-                                </div>
-                            ) : (
-                                <h1 className="text-4xl md:text-5xl font-bold text-white">
-                                    {experience.name}
-                                </h1>
-                            )}
+                            <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">
+                                {packageData.name}
+                            </h1>
                             <div className="flex items-center gap-4 text-white">
                                 <div className="flex items-center gap-1">
                                     <StarRating rating={Math.round(averageRating)} />

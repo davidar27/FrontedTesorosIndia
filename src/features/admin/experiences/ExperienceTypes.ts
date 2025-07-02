@@ -11,6 +11,7 @@ export interface ExperienceResponse {
     joinDate: string;
     status: Experiencestatus;
     name_entrepreneur: string;
+    experience_id?:number;
 }
 
 export interface Experience extends BaseEntity<Experiencestatus> {
@@ -20,6 +21,8 @@ export interface Experience extends BaseEntity<Experiencestatus> {
     image: string | ' ';
     joinDate: string;
     name_entrepreneur: string;
+    experience_id?:number;
+
 }
 
 export interface ExperienceApiResponse {

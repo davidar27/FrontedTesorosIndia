@@ -68,14 +68,11 @@ export function useGenericApi<T extends BaseEntity<TId>, TId extends string | nu
 
     const queryClient = useQueryClient();
 
-    // Helper para construir URLs
     const buildUrl = useCallback((endpoint: string | ((id: string | number) => string), id?: string | number) => {
         if (typeof endpoint === 'function') {
             if (!id) throw new Error('ID is required for this endpoint type');
             return endpoint(id);
         }
-        // Si no se proporciona un ID, devolvemos el endpoint tal cual para rutas estáticas.
-        // Si se proporciona un ID, lo adjuntamos, útil para operaciones no estándar.
         return id ? `${endpoint}/${id}` : endpoint;
     }, []);
 
@@ -140,8 +137,11 @@ export function useGenericApi<T extends BaseEntity<TId>, TId extends string | nu
     const updateMutation = useMutation<T, AxiosError, any>({
         mutationFn: async (dataOrFormData) => {
 
+
             if (dataOrFormData instanceof FormData) {
+
                 const id = dataOrFormData.get('id');
+                
                 if (!id) throw new Error('ID is required for update');
                 const endpoint = endpoints.update;
                 if (!endpoint) throw new Error('No update endpoint or method provided');
@@ -151,6 +151,7 @@ export function useGenericApi<T extends BaseEntity<TId>, TId extends string | nu
                 return response.data;
             } else {
                 const { id, ...data } = dataOrFormData;
+                
                 if (!id) throw new Error('ID is required for update');
                 if (methods.update) return methods.update(id, data as Partial<T>);
 

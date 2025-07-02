@@ -4,18 +4,6 @@ import AnimatedTitle from '@/components/ui/display/AnimatedTitle';
 import { PackageData } from '@/features/packages/types/packagesTypes';
 import { PackagesApi } from '@/services/home/packages';
 
-const PackageCardSkeleton = () => {
-  return (
-    <div className="w-full max-w-xs rounded-lg bg-white p-4 shadow animate-pulse space-y-3">
-      <div className="h-40 bg-gray-300 rounded-lg" />
-      <div className="h-4 bg-gray-300 rounded w-3/4" />
-      <div className="h-3 bg-gray-200 rounded w-2/4" />
-      <div className="h-3 bg-gray-200 rounded w-4/5" />
-      <div className="h-10 bg-gray-300 rounded mt-4" />
-    </div>
-  );
-};
-
 
 const PackageSelector = () => {
   const [packages, setPackages] = useState<PackageData[]>([])
@@ -52,20 +40,18 @@ const PackageSelector = () => {
             : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
         }`}
       >
-        {packages.length === 0
-          ? Array.from({ length: 4 }).map((_, idx) => <PackageCardSkeleton key={idx} />)
-          : packages.map((pkg, index) => (
-            <PackageCard
-              key={index}
-              id={pkg.package_id}
-              image={pkg.image}
-              name={pkg.name}
-              description={pkg.description}
+        {packages.map((pkg, index) => (
+          <PackageCard
+            key={index}
+            id={pkg.id}
+            image={pkg.image}
+            name={pkg.name}
+            description={pkg.description}
               price={pkg.price}
               details={pkg.details || []}
               onClick={() => { }}
-            />
-          ))}
+          />
+        ))}
       </div>
     </div>
   );

@@ -27,7 +27,7 @@ export const useHandleFastPackage = () => {
         fetchPackages();
     }, []);
 
-    const selectedPackage = packages.find(p => p.package_id == selectedPackageId);
+    const selectedPackage = packages.find(p => p.id == selectedPackageId);
     
     const availablePackages = packages.filter(pkg => pkg.capacity && pkg.capacity >= people);
 
@@ -86,11 +86,11 @@ export const useHandleFastPackage = () => {
         return basePrice * people;
     };
 
-    const handlePackageChange = (packageId: number) => {
-        setSelectedPackageId(packageId);
+    const handlePackageChange = (id: number) => {
+        setSelectedPackageId(id);
         setDate("");
 
-        const newPackage = packages.find(p => p.package_id === packageId);
+        const newPackage = packages.find(p => p.id === id);
         if (newPackage && people > newPackage.capacity!) {
             setPeople(newPackage.capacity!);
         }
@@ -99,7 +99,7 @@ export const useHandleFastPackage = () => {
             setErrors(prev => ({ ...prev, package: "", date: "" }));
         }
 
-        updateUrl(packageId, "", people);
+        updateUrl(id, "", people);
     };
 
     const handleDateChange = (newDate: string) => {
@@ -115,7 +115,7 @@ export const useHandleFastPackage = () => {
         setPeople(newPeople);
 
         // Si el paquete seleccionado no soporta la nueva cantidad, deselecciónalo
-        const pkg = packages.find(p => p.package_id === selectedPackageId);
+        const pkg = packages.find(p => p.id === selectedPackageId);
         if (pkg && newPeople > pkg.capacity!) {
             setSelectedPackageId(0); // Deselecciona el paquete
             setDate(""); // Opcional: limpia la fecha
@@ -137,7 +137,7 @@ export const useHandleFastPackage = () => {
 
         try {
             const reservationData: ReservationData = {
-                packageId: selectedPackage.package_id!,
+                id: selectedPackage.id!,
                 packageName: selectedPackage.name!,
                 date: date,
                 people: people,
@@ -146,7 +146,7 @@ export const useHandleFastPackage = () => {
                 timestamp: Date.now()
             };
 
-            navigate(`/paquetes/${selectedPackage.package_id}/comprar?date=${date}&people=${people}`, {
+            navigate(`/paquetes/${selectedPackage.id}/comprar?date=${date}&people=${people}`, {
                 state: reservationData
             });
 

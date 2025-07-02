@@ -2,7 +2,7 @@ import React, { useState, useCallback, FormEvent } from 'react';
 import { Clock } from 'lucide-react';
 import { CreatePackageData } from '@/features/admin/packages/PackageTypes';
 import { ExperiencesApi } from '@/services/home/experiences';
-import { Experience } from '../experiences/ExperienceTypes';
+import { Experience } from '@/features/admin/experiences/ExperienceTypes';
 import { usePackagesManagement } from '@/services/admin/usePackagesManagement';
 import { usePackageForm } from './hooks/usePackageForm';
 import { ImageUpload } from '@/features/admin/packages/components/ImageUpload';
@@ -140,14 +140,14 @@ const CreatePackageForm: React.FC<PackageFormProps> = ({
                     <label className="block text-sm font-medium text-green-600 mb-1">Título *</label>
                     <input
                         type="text"
-                        value={formData.title}
-                        onChange={(e) => handleInputChange('title', e.target.value)}
-                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 ${errors.title ? 'border-red-500' : 'border-gray-300'
+                        value={formData.name}
+                        onChange={(e) => handleInputChange('name', e.target.value)}
+                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 ${errors.name ? 'border-red-500' : 'border-gray-300'
                             }`}
                         placeholder="Nombre del paquete turístico"
                         aria-label="Título del paquete"
                     />
-                    {errors.title && <p className="text-xs text-red-600 mt-1">{errors.title}</p>}
+                    {errors.name && <p className="text-xs text-red-600 mt-1">{errors.name}</p>}
                 </div>
 
                 <div className="space-y-3">

@@ -1,118 +1,187 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { getImageUrl } from '@/utils/getImageUrl';
 import { Experience } from '@/features/experience/types/experienceTypes';
+import Picture from '@/components/ui/display/Picture';
+import { CameraIcon, Save, Edit3 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface HistorySectionProps {
     experience: Experience;
     isEditMode: boolean;
     editData: Partial<Experience>;
     onEditDataChange: (data: Partial<Experience>) => void;
+    onSave?: () => void;
 }
 
 const HistorySection: React.FC<HistorySectionProps> = ({
     experience,
     isEditMode,
     editData,
-    onEditDataChange
+    onEditDataChange,
+    onSave
 }) => {
+    const [previewImage, setPreviewImage] = useState<string | null>(null);
+    const [, setImageFile] = useState<File | null>(null);
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            // Validación básica de tipo y tamaño (5MB máximo)
+            if (!file.type.match('image.*')) {
+                alert('Por favor selecciona un archivo de imagen válido');
+                return;
+            }
+            if (file.size > 5 * 1024 * 1024) {
+                alert('La imagen no debe exceder los 5MB');
+                return;
+            }
+
+            const imageUrl = URL.createObjectURL(file);
+            setPreviewImage(imageUrl);
+            setImageFile(file);
+            onEditDataChange({ ...editData, image: file.name });
+        }
+    };
+
     return (
-        <section className="mb-16">
-            <div className="relative bg-gradient-to-br from-white via-emerald-50/30 to-amber-50/20 rounded-3xl shadow-2xl overflow-hidden">
-                {/* Decorative elements */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-400/10 to-amber-400/10 rounded-full -translate-y-16 translate-x-16"></div>
-                <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-emerald-300/10 to-transparent rounded-full translate-y-12 -translate-x-12"></div>
+        <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mb-16"
+        >
+            <div className="relative bg-gradient-to-br from-white via-emerald-50/30 to-amber-50/20 rounded-3xl shadow-lg overflow-hidden border border-gray-100">
+                {/* Decorative elements - más sutiles */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-400/5 to-amber-400/5 rounded-full -translate-y-16 translate-x-16"></div>
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-emerald-300/5 to-transparent rounded-full translate-y-12 -translate-x-12"></div>
 
                 <div className="flex flex-col lg:flex-row min-h-[500px]">
                     {/* Imagen Section */}
-                    <div className="lg:w-1/2 relative overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/20 to-transparent z-10"></div>
-                        <img
-                            src={getImageUrl(experience?.image) || ''}
-                            alt={experience?.name}
-                            className="w-full h-64 lg:h-full object-cover transform hover:scale-105 transition-transform duration-700"
+                    <div className="lg:w-1/2 relative overflow-hidden group">
+                        <input
+                            type="file"
+                            accept="image/jpeg, image/png"
+                            onChange={handleImageChange}
+                            className="hidden"
+                            id="history-image-input"
+                            aria-label="Cargar imagen de la experiencia"
+                            disabled={!isEditMode}
                         />
-                        {/* Overlay decorativo */}
-                        <div className="absolute bottom-4 left-4 z-20">
-                            <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-4 py-2 shadow-lg">
-                                <span className="text-emerald-600 font-semibold text-sm">Experiencia Auténtica</span>
-                            </div>
-                        </div>
+                        <label
+                            htmlFor={isEditMode ? "history-image-input" : undefined}
+                            className={`block h-full w-full ${isEditMode ? 'cursor-pointer' : 'cursor-default'}`}
+                        >
+                            {previewImage || getImageUrl(experience?.image) ? (
+                                <div className="relative h-full w-full">
+                                    <Picture
+                                        src={previewImage || getImageUrl(experience?.image) || ''}
+                                        alt={experience?.name as string}
+                                        className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105"
+                                    />
+                                    {isEditMode && (
+                                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            <motion.span
+                                                className="text-white font-medium text-lg flex items-center gap-2"
+                                                initial={{ y: 10 }}
+                                                animate={{ y: 0 }}
+                                            >
+                                                <Edit3 className="w-5 h-5" />
+                                                {previewImage ? 'Cambiar imagen' : 'Editar imagen'}
+                                            </motion.span>
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className={`w-full h-full aspect-video flex flex-col items-center justify-center gap-2 ${isEditMode ? 'bg-gray-100 hover:bg-gray-50' : 'bg-gray-50'
+                                    } transition-colors`}>
+                                    <CameraIcon className="w-10 h-10 text-gray-400" />
+                                    <span className="text-sm font-medium">
+                                        {isEditMode ? 'Agregar imagen' : 'Sin imagen'}
+                                    </span>
+                                    {isEditMode && (
+                                        <span className="text-xs text-gray-400">JPEG, PNG (Max. 5MB)</span>
+                                    )}
+                                </div>
+                            )}
+                        </label>
                     </div>
 
                     {/* Content Section */}
-                    <div className="lg:w-1/2 p-8 lg:p-12 relative z-10">
-                        {/* Header con animación mejorada */}
-                        <div className="flex items-center gap-4 mb-8">
+                    <div className="lg:w-1/2 p-8 lg:p-12 relative z-10 flex flex-col">
+                        {/* Header */}
+                        <motion.div
+                            className="flex items-center gap-4 mb-8"
+                            initial={{ x: -20 }}
+                            animate={{ x: 0 }}
+                        >
                             <div className="relative">
-                                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg transform rotate-3 hover:rotate-0 transition-transform duration-300">
+                                <motion.div
+                                    className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg"
+                                    whileHover={{ rotate: 3 }}
+                                >
                                     <span className="text-white text-2xl">📜</span>
-                                </div>
-                                {/* Sparkle effect */}
-                                <div className="absolute -top-1 -right-1 w-4 h-4 bg-amber-400 rounded-full animate-pulse"></div>
+                                </motion.div>
                             </div>
                             <div>
-                                <h2 className="text-4xl font-bold bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 bg-clip-text text-transparent">
+                                <h2 className="text-3xl font-bold text-gray-800">
                                     Nuestra Historia
                                 </h2>
                                 <div className="w-12 h-1 bg-gradient-to-r from-emerald-500 to-amber-400 rounded-full mt-2"></div>
                             </div>
-                        </div>
+                        </motion.div>
 
-                        {/* Content con mejor tipografía */}
-                        <div className="relative">
+                        {/* Content */}
+                        <div className="flex-grow">
                             {isEditMode ? (
-                                <div className="relative">
+                                <div className="relative h-full">
                                     <textarea
                                         value={editData.history || ''}
                                         onChange={(e) => onEditDataChange({ ...editData, history: e.target.value })}
-                                        className="w-full p-6 border-2 border-emerald-200 rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-400 resize-none transition-all duration-300 bg-white/80 backdrop-blur-sm text-gray-700 placeholder-gray-400"
-                                        rows={8}
-                                        placeholder="Cuenta la historia fascinante de tu experiencia, los orígenes de tu emprendimiento y lo que hace especial este lugar..."
+                                        className="w-full h-full p-6 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-400 resize-none transition-all duration-200 bg-white text-gray-700 placeholder-gray-400"
+                                        placeholder="Cuenta la historia fascinante de tu experiencia..."
+                                        maxLength={2000}
                                     />
-                                    {/* Character counter */}
-                                    <div className="absolute bottom-3 right-3 text-xs text-gray-400 bg-white/80 px-2 py-1 rounded-lg">
-                                        {editData.history?.length || 0} caracteres
+                                    <div className="absolute bottom-3 right-3 text-xs text-gray-500 bg-white px-2 py-1 rounded">
+                                        {editData.history?.length || 0}/2000
                                     </div>
                                 </div>
                             ) : (
-                                <div className="space-y-4">
-                                    <div className="relative">
-                                        {/* Quote decoration */}
-                                        <div className="absolute -left-4 -top-2 text-6xl text-emerald-200 font-serif">"</div>
-                                        <p className="text-lg leading-relaxed text-gray-700 pl-8 relative z-10 font-light">
-                                            {experience?.history || 'Cada lugar tiene una historia única que contar. Esta experiencia representa años de tradición, pasión y dedicación por ofrecer lo mejor de nuestra cultura y territorio.'}
+                                <div className="h-full flex items-center">
+                                    {experience?.history ? (
+                                        <blockquote className="relative pl-8 text-gray-700 italic">
+                                            <div className="absolute left-0 top-0 text-5xl text-emerald-100 font-serif leading-none">"</div>
+                                            <p className="text-lg leading-relaxed">
+                                                {experience.history}
+                                            </p>
+                                            <div className="absolute right-0 bottom-0 text-5xl text-emerald-100 font-serif leading-none">"</div>
+                                        </blockquote>
+                                    ) : (
+                                        <p className="text-gray-500 italic">
+                                            No se ha agregado la historia de esta experiencia.
                                         </p>
-                                        <div className="absolute -right-2 -bottom-2 text-4xl text-emerald-200 font-serif">"</div>
-                                    </div>
-
-                                    {/* Elementos decorativos adicionales */}
-                                    <div className="flex items-center gap-6 mt-8 pt-6 border-t border-emerald-100">
-                                        <div className="flex items-center gap-2 text-emerald-600">
-                                            <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                                            <span className="text-sm font-medium">Tradición Familiar</span>
-                                        </div>
-                                        <div className="flex items-center gap-2 text-amber-600">
-                                            <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse"></div>
-                                            <span className="text-sm font-medium">Experiencia Auténtica</span>
-                                        </div>
-                                    </div>
+                                    )}
                                 </div>
                             )}
                         </div>
 
-                        {/* Botón de acción si está en modo edición */}
+                        {/* Action Button */}
                         {isEditMode && (
                             <div className="mt-6 flex justify-end">
-                                <button className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-6 py-3 rounded-xl hover:from-emerald-600 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center gap-2">
-                                    <span>💾</span>
-                                    Guardar Historia
-                                </button>
+                                <motion.button
+                                    className="bg-emerald-600 text-white px-6 py-3 rounded-xl hover:bg-emerald-700 transition-colors flex items-center gap-2 shadow-md"
+                                    whileHover={{ y: -2 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    onClick={onSave}
+                                >
+                                    <Save className="w-5 h-5" />
+                                    Guardar Cambios
+                                </motion.button>
                             </div>
                         )}
                     </div>
                 </div>
             </div>
-        </section>
+        </motion.section>
     );
 };
 

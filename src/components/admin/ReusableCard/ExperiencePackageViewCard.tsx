@@ -1,10 +1,11 @@
 import React from 'react';
-import { Edit, LucideIcon, Check, X, MapPin, Calendar, DollarSign, User } from 'lucide-react';
+import { Edit, LucideIcon, Check, X, MapPin, Calendar, DollarSign, User, Eye } from 'lucide-react';
 import Picture from '@/components/ui/display/Picture';
 import { getImageUrl } from '@/utils/getImageUrl';
 import { normalizeStatus, formatDate } from '@/features/admin/adminHelpers';
 import LoadingSpinner from '@/components/ui/display/LoadingSpinner';
 import { BaseItem } from './types';
+import { formatPrice } from '@/utils/formatPrice';
 
 interface StatusConfig {
     active: { bg: string; text: string; label: string };
@@ -41,6 +42,7 @@ interface ExperiencePackageViewCardProps<T> {
     actions?: ActionButton[];
     onUpdate?: (item: T) => void;
     onChangeStatus?: (id: number, status: string) => void;
+    onView?: (item: T) => void;
     statusConfig?: StatusConfig;
     className?: string;
     clickable?: boolean;
@@ -71,7 +73,6 @@ export function ExperiencePackageViewCard<T extends BaseItem>({
     stats = [],
     actions = [],
     onUpdate,
-    onChangeStatus,
     className = "",
     clickable = false,
     statusConfig = DEFAULT_STATUS_CONFIG,
@@ -79,10 +80,11 @@ export function ExperiencePackageViewCard<T extends BaseItem>({
     loading = false,
     children,
     title,
-    entity
+    entity,
+    onView
 }: ExperiencePackageViewCardProps<T>) {
     const [, setConfirmOpen] = React.useState(false);
-    const [, setConfirmAction] = React.useState<'activate' | 'disable' | 'publish' | 'draft' | null>(null);
+    const [, setConfirmAction] = React.useState<'activate' | 'disable' | 'published' | 'draft' | null>(null);
 
     const getStatusStyle = (status: string) => {
         const normalizedStatus = normalizeStatus(status);
@@ -95,17 +97,28 @@ export function ExperiencePackageViewCard<T extends BaseItem>({
         const normalizedStatus = normalizeStatus(status);
         return statusConfig[normalizedStatus]?.label || status.charAt(0).toUpperCase() + status.slice(1);
     };
+    const handleActionWithConfirm = (action: 'activate' | 'disable' | 'published' | 'draft') => {
+        return () => {
+            setConfirmAction(action);
+            setConfirmOpen(true);
+        };
+    };
 
     const defaultActions: ActionButton[] = React.useMemo(() => {
-        const handleActionWithConfirm = (action: 'activate' | 'disable') => {
-            return () => {
-                setConfirmAction(action);
-                setConfirmOpen(true);
-            };
-        };
+
 
         const actionsArr: ActionButton[] = [];
         const status = normalizeStatus(item.status);
+        if (onView) {
+            actionsArr.push({
+                icon: Eye,
+                label: 'Ver',
+                onClick: () => onView(item),
+                variant: 'success',
+                fullWidth: true,
+                tooltip: 'Ver elemento'
+            });
+        }
 
         if (onUpdate) {
             actionsArr.push({
@@ -118,28 +131,51 @@ export function ExperiencePackageViewCard<T extends BaseItem>({
             });
         }
 
-        if (status === 'active' && onChangeStatus) {
-            actionsArr.push({
-                icon: X,
-                label: 'Desactivar',
-                onClick: handleActionWithConfirm('disable'),
-                variant: 'danger',
-                fullWidth: false,
-                tooltip: `Desactivar ${title}`
-            });
-        } else if (status === 'inactive' && onChangeStatus) {
-            actionsArr.push({
-                icon: Check,
-                label: 'Activar',
-                onClick: handleActionWithConfirm('activate'),
-                variant: 'success',
-                fullWidth: false,
-                tooltip: `Activar ${title}`
-            });
-        }
 
+        switch (status) {
+            case 'active':
+                actionsArr.push({
+                    icon: X,
+                    label: 'Desactivar',
+                    onClick: handleActionWithConfirm('disable'),
+                    variant: 'danger',
+                    fullWidth: false,
+                    tooltip: `Desactivar ${title}`
+                });
+                break;
+            case 'inactive':
+                actionsArr.push({
+                    icon: Check,
+                    label: 'Activar',
+                    onClick: handleActionWithConfirm('activate'),
+                    variant: 'success',
+                    fullWidth: false,
+                    tooltip: `Activar ${title}`
+                });
+                break;
+            case 'published':
+                actionsArr.push({
+                    icon: Check,
+                    label: 'Borrador',
+                    onClick: handleActionWithConfirm('draft'),
+                    variant: 'warning',
+                    fullWidth: false,
+                    tooltip: `Borrador ${title}`
+                });
+                break;
+            case 'draft':
+                actionsArr.push({
+                    icon: Check,
+                    label: 'Publicar',
+                    onClick: handleActionWithConfirm('published'),
+                    variant: 'success',
+                    fullWidth: false,
+                    tooltip: `Publicar ${title}`
+                });
+                break;
+        }
         return actionsArr;
-    }, [onUpdate, onChangeStatus, item, title]);
+    }, [onUpdate, item, title, onView]);
 
     const finalActions = actions.length > 0 ? actions : defaultActions;
 
@@ -241,7 +277,7 @@ export function ExperiencePackageViewCard<T extends BaseItem>({
                             {item.price && (
                                 <div className="flex items-center gap-2 text-gray-600">
                                     <DollarSign className="w-5 h-5 flex-shrink-0" />
-                                    <span className="text-sm">${item.price}</span>
+                                    <span className="text-sm">{formatPrice(item.price)}</span>
                                 </div>
                             )}
                         </>

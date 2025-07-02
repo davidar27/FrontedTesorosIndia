@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Button from "@/components/ui/buttons/Button";
 import { ShoppingCart, Edit, Eye, Settings } from "lucide-react";
 import { Users } from "lucide-react";
@@ -10,7 +10,6 @@ import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
 import useExperiencePermissions from "@/hooks/useExperiencePermissions";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
-import ButtonIcon from "../ui/buttons/ButtonIcon";
 
 interface HeaderActionsProps {
     isEditMode?: boolean;
@@ -29,7 +28,12 @@ const HeaderActions = ({ isEditMode = false, onToggleEditMode }: HeaderActionsPr
     const { items } = useCart();
     const navigate = useNavigate();
 
+    const handleClose = useCallback(() => {
+        setSidebarOpen(false);
+    }, []);
 
+    useEffect(() => {
+    }, [sidebarOpen]);
 
     return (
         <>
@@ -128,11 +132,11 @@ const HeaderActions = ({ isEditMode = false, onToggleEditMode }: HeaderActionsPr
                 {!isOwner && (
                     <>
                         <div className="relative">
-                            <ButtonIcon
+                            <button
                                 aria-label="Abrir carrito"
-                                className="p-2 rounded cursor-pointer hover:scale-105 transition-all duration-300 focus:outline-none"
                                 onClick={() => navigate("/carrito")}
-                                
+                                className="p-2 cursor-pointer transition-all duration-300 focus:outline-none"
+                                type="button"
                             >
                                 <ShoppingCart className="w-6 h-6" />
                                 {items.length > 0 && (
@@ -140,8 +144,9 @@ const HeaderActions = ({ isEditMode = false, onToggleEditMode }: HeaderActionsPr
                                         {items.length}
                                     </span>
                                 )}
-                            </ButtonIcon>
+                            </button>
                         </div>
+
                         <Button
                             className="hidden md:block"
                             onClick={() => setSidebarOpen(true)}
@@ -159,7 +164,7 @@ const HeaderActions = ({ isEditMode = false, onToggleEditMode }: HeaderActionsPr
             {!isOwner && (
                 <SidebarExperiences
                     isOpen={sidebarOpen}
-                    onClose={() => setSidebarOpen(false)}
+                    onClose={handleClose}
                 />
             )}
         </>

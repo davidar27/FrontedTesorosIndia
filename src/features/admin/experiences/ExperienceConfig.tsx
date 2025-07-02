@@ -26,8 +26,8 @@ const statusPriority = {
 function sortByStatus(a: Experience, b: Experience) {
     const getStatus = (e: Experience) => {
         const s = (e.status || '').toLowerCase();
-        if (s === 'activo' || s === 'active') return 'active';
-        if (s === 'inactivo' || s === 'inactive') return 'inactive';
+        if (s === 'publicada' || s === 'active') return 'active';
+        if (s === 'borrador' || s === 'inactive') return 'inactive';
         return 'inactive';
     };
     return statusPriority[getStatus(a)] - statusPriority[getStatus(b)];

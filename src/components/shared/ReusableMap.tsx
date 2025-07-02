@@ -18,6 +18,7 @@ interface ReusableMapProps {
     initialCenter?: { lat: number; lng: number };
     initialZoom?: number;
     className?: string;
+    style?: React.CSSProperties;
 }
 
 export interface Location {
@@ -57,7 +58,8 @@ const ReusableMap: React.FC<ReusableMapProps> = ({
     locations,
     initialCenter = { lat: 4.676, lng: -75.655 },
     initialZoom = 13,
-    className = ''
+    className = '',
+    style = {}
 }) => {
     const [activeExperience, setActiveExperience] = useState<Experience | null>(null);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -74,6 +76,7 @@ const ReusableMap: React.FC<ReusableMapProps> = ({
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    console.log(style);
 
     return (
         <div
@@ -83,17 +86,17 @@ const ReusableMap: React.FC<ReusableMapProps> = ({
             }}
             onMouseLeave={() => {
             }}
-            style={{ height: isMobile ? '200px' : '400px', width: '100%' }}
+            style={{ height: isMobile ? '200px' : style?.height || '400px', width: '100%' }}
 
         >
             <MapContainer
                 center={initialCenter}
                 zoom={initialZoom}
                 scrollWheelZoom={true}
-                style={{ height: '100%', width: '100%', zIndex: '1' }}
+                style={{ height: '100%', width: '100%', zIndex: 1 }}
                 whenReady={() => setIsMapInteractive(true)}
-
             >
+
                 <TileLayer
                     url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
                     attribution='&copy; <a href="https://www.esri.com/">Esri</a> — Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community'
