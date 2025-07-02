@@ -1,7 +1,11 @@
 import { BaseEntity } from '@/features/admin/types';
-import { Experience } from '@/features/experience/types/experienceTypes';
 
 export type PackageStatus = 'active' | 'inactive' | 'draft';
+interface Experience {
+    experience_id: number;
+    name: string;
+    package_id: number;
+}
 
 export interface Package extends BaseEntity<PackageStatus> {
     id: number;
@@ -13,6 +17,7 @@ export interface Package extends BaseEntity<PackageStatus> {
     capacity: number;
     unavailableDates: string[];
     selectedDetails: number[];
+    experiences?: Experience[];
     selectedExperiences: number[];
     joinDate: string;
     image?: string;
@@ -20,14 +25,14 @@ export interface Package extends BaseEntity<PackageStatus> {
 
 
 export interface CreatePackageData {
-    id?:number;
+    id?: number;
     name: string;
     description: string;
     selectedExperiences: number[];
     unavailableDates: string[];
     duration: number;
     capacity: number;
-    price:number;
+    price: number;
     pricePerPerson: number;
     selectedDetails: number[];
 }
@@ -36,15 +41,15 @@ export interface UpdatePackageData {
     id: number;
     name: string;
     description: string;
-    price?:number;
+    price?: number;
     selectedExperiences: number[];
     unavailableDates: string[];
     duration: number;
     capacity: number;
     pricePerPerson: number;
     details: number;
-    experiences:Experience[];
+    experiences: Experience[];
     selectedDetails: number[];
-    image : string | File | undefined;
+    image: string | File | undefined;
 }
 

@@ -11,7 +11,6 @@ import { ExperienceSelector } from '@/features/admin/packages/components/Experie
 import { PriceField } from '@/features/admin/packages/components/PriceField';
 import { DetailsSelector } from '@/features/admin/packages/components/DetailsSelector';
 import Input from '@/components/ui/inputs/Input';
-import { PackagesApi } from "@/services/packages/packages";
 import { DateCalendar } from '@/features/admin/packages/components/DateCalendar';
 
 
@@ -81,7 +80,7 @@ const EditPackageForm: React.FC<PackageFormProps> = ({
     const [details, setDetails] = useState<DashboardDetails[] | null>(null);
     const [loadingDetails, setLoadingDetails] = useState(true);
     const [dataLoaded, setDataLoaded] = useState(false);
-    const { getDashboardDetails } = usePackagesManagement();
+    const { getDashboardDetails, getById } = usePackagesManagement();
     const [imageFile, setImageFile] = useState<File | string | null>(initialData?.image ?? null);
 
     React.useEffect(() => {
@@ -97,7 +96,7 @@ const EditPackageForm: React.FC<PackageFormProps> = ({
                 setExperiences(experiencesData);
                 setDetails(detailsData as DashboardDetails[]);
                 if (initialData?.id && !dataLoaded) {
-                    const packageData = await PackagesApi.getPackageById(initialData.id);
+                    const packageData = await getById(initialData.id);
                     if (packageData) {
                         const parsed = parseInitialData(packageData);
                         setFormData(prevData => {

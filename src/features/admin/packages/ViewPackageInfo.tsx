@@ -1,13 +1,15 @@
-import React from 'react';
-import { Clock, DollarSign, MapPin } from 'lucide-react';
-import { UpdatePackageData } from '@/features/admin/packages/PackageTypes';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useState } from 'react';
+import { Clock, DollarSign, MapPin, Star, Users } from 'lucide-react';
+import { Package } from '@/features/admin/packages/PackageTypes';
 import { getImageUrl } from '@/utils/getImageUrl';
 import Picture from '@/components/ui/display/Picture';
 import { formatPrice } from '@/utils/formatPrice';
 import { InfoCard } from '@/features/packages/components/InfoCard';
 import { ExperienceList } from '@/features/packages/components/ExperienceList';
 import { Experience } from '@/features/packages/types/packagesTypes';
-
+import LoadingSpinner from '@/components/ui/display/LoadingSpinner';
+import UnavailableDatesComponent from './components/UnavailableDatesComponent';
 
 
 interface DashboardDetails {
@@ -16,9 +18,9 @@ interface DashboardDetails {
 }
 
 interface ViewPackageInfoProps {
-    packageData: Partial<UpdatePackageData> & { image?: string };
+    packageData: Package
     experiences?: Experience[];
-    details?: DashboardDetails[];
+    details: DashboardDetails[];
 }
 
 function toYYYYMMDD(date: string) {
@@ -32,31 +34,22 @@ function toYYYYMMDD(date: string) {
 }
 
 const ViewPackageInfo: React.FC<ViewPackageInfoProps> = ({
-    packageData,
-    experiences = [],
-    details = [],
+    packageData
 }) => {
-    // Obtener los datos a mostrar
-    
-
-    const selectedExperiences = Array.isArray(packageData.selectedExperiences)
-        ? packageData.selectedExperiences as number[]
-        : [];
-    const selectedDetails = Array.isArray(packageData.details)
-        ? packageData.details.map((d: unknown) => (typeof d === 'object' && d !== null && 'detail_id' in d ? (d as { detail_id: number }).detail_id : d as number))
-        : [];
+    const [loading,] = useState(false);
     const unavailableDates = Array.isArray(packageData.unavailableDates)
         ? packageData.unavailableDates.map(toYYYYMMDD)
         : [];
 
     return (
-        <div className="w-full max-w-3xl mx-auto bg-white rounded-2xl shadow-2xl p-8 border border-primary/20">
+        <div className="w-full max-w-3xl mx-auto bg-white rounded-2xl shadow-2xl p-8 border border-primary/20 space-y-4">
             <header className="mb-8 text-center">
                 <h1 className="text-4xl font-extrabold text-primary mb-2">Información del Paquete</h1>
                 <p className="text-gray-500">Visualiza la información del paquete turístico</p>
             </header>
 
             {/* Imagen */}
+
             <div className="mb-8 flex justify-center">
                 {packageData.image && typeof packageData.image === 'string' && (
                     <Picture
@@ -71,7 +64,7 @@ const ViewPackageInfo: React.FC<ViewPackageInfoProps> = ({
             <section className="grid grid-cols-1 gap-6 mb-8">
                 <div className="w-full">
                     <label className="block text-sm font-medium text-green-600 mb-1">Nombre</label>
-                    <div className="w-full px-4 py-3 border rounded-lg bg-gray-50">{packageData.name}</div>
+                    <div className="w-full px-4 py-3 rounded-lg bg-gray-50">{packageData.name}</div>
                 </div>
                 {/* Descripción */}
                 <div className="mb-8">
@@ -80,10 +73,11 @@ const ViewPackageInfo: React.FC<ViewPackageInfoProps> = ({
                         <p className="text-gray-700 leading-relaxed">{packageData.description}</p>
                     </div>
                 </div>
+
             </section>
 
             {/* Información principal */}
-            <section className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <InfoCard
                     title="Duración"
                     value={`${packageData.duration} horas`}
@@ -93,77 +87,63 @@ const ViewPackageInfo: React.FC<ViewPackageInfoProps> = ({
                 />
                 <InfoCard
                     title="Precio por persona"
-                    value={formatPrice(Number(packageData.price))}
+                    value={formatPrice(packageData.pricePerPerson ?? 0)}
                     icon={<DollarSign className="mr-2 h-5 w-5" />}
+                    bgColor="bg-green-50"
+                    textColor="text-green-700"
+                />
+                <InfoCard
+                    title="Cantidad Máxima"
+                    value={`${packageData.capacity} personas`}
+                    icon={<Users className="mr-2 h-5 w-5" />}
                     bgColor="bg-green-50"
                     textColor="text-green-700"
                 />
             </section>
 
             {/* Experiencias y fechas */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full my-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
                 <ExperienceList
                     title="Experiencias Incluidas"
                     icon={<MapPin className="mr-2 h-5 w-5" />}
-                    experiences={experiences.filter(e =>
-                        selectedExperiences.includes(e.experience_id)
-                    )}
+                    experiences={packageData.experiences || []}
                     loading={false}
                     emptyMessage="No hay experiencias seleccionadas"
                 />
-                <div>
-                    <label className="block text-sm font-medium text-green-600 mb-1">Fechas no disponibles</label>
-                    <div className="bg-gray-50 border rounded-lg px-4 py-3 min-h-[48px]">
-                        {unavailableDates.length === 0 ? (
-                            <span className="text-gray-400">Sin fechas</span>
+                {/* Detalles */}
+                <section className="bg-gray-50 p-6 rounded-lg">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <Star className="mr-2 h-5 w-5 text-green-600" />
+                        Detalles Incluidos
+                    </h3>
+                    <div className="grid grid-cols-1  gap-4">
+                        {loading ? (
+                            <LoadingSpinner message='Cargando detalles...' />
+                        ) : Array.isArray(packageData.details) && packageData.details.length > 0 ? (
+                            packageData.details.map((detail: any) => (
+                                <div
+                                    key={detail.detail_id}
+                                    className="flex items-center space-x-3 p-3 bg-white rounded-lg shadow-sm"
+                                >
+                                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                    <span className="text-gray-700">{detail.detail}</span>
+                                </div>
+                            ))
                         ) : (
-                            <ul className="list-disc pl-5">
-                                {unavailableDates.map((date, idx) => (
-                                    <li key={idx}>{date}</li>
-                                ))}
-                            </ul>
+                            <p className="text-gray-500 italic col-span-full">
+                                No hay detalles seleccionados
+                            </p>
                         )}
                     </div>
-                </div>
+                </section>
             </div>
 
-            {/* Duración y precio */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="space-y-3">
-                    <label className="block text-sm font-medium text-green-600">
-                        <Clock className="inline mr-2 h-4 w-4" />
-                        Duración Por Horas
-                    </label>
-                    <div className="w-full px-4 py-3 border rounded-lg bg-gray-50">{packageData.duration}</div>
-                </div>
-                <div className="space-y-3">
-                    <label className="block text-sm font-medium text-green-600">Precio</label>
-                    <div className="w-full px-4 py-3 border rounded-lg bg-gray-50">
-                        {packageData.price ? `$${packageData.price}` : 'No especificado'}
-                    </div>
-                </div>
-                <div className="space-y-3">
-                    <label className="block text-sm font-medium text-green-600">
-                        <Clock className="inline mr-2 h-4 w-4" />
-                        Cantidad de Personas
-                    </label>
-                    <div className="w-full px-4 py-3 border rounded-lg bg-gray-50">{packageData.capacity}</div>
-                </div>
-            </div>
 
-            {/* Detalles */}
-            <div className="mb-8">
-                <label className="block text-sm font-medium text-green-600 mb-1">Detalles</label>
-                <ul className="list-disc pl-5 bg-gray-50 border rounded-lg px-4 py-3 min-h-[48px]">
-                    {selectedDetails.length === 0 && <li className="text-gray-400">Sin detalles</li>}
-                    {selectedDetails.map((id: number) => {
-                        const det = details.find(d => d.detail_id === id);
-                        return (
-                            <li key={id}>{det ? det.description : `ID: ${id}`}</li>
-                        );
-                    })}
-                </ul>
-            </div>
+            <UnavailableDatesComponent
+                unavailableDates={unavailableDates}
+            />
+
+
         </div>
     );
 };

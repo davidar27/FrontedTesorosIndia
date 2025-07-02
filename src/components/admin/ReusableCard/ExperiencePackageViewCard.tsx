@@ -73,7 +73,6 @@ export function ExperiencePackageViewCard<T extends BaseItem>({
     stats = [],
     actions = [],
     onUpdate,
-    onChangeStatus,
     className = "",
     clickable = false,
     statusConfig = DEFAULT_STATUS_CONFIG,
@@ -85,7 +84,7 @@ export function ExperiencePackageViewCard<T extends BaseItem>({
     onView
 }: ExperiencePackageViewCardProps<T>) {
     const [, setConfirmOpen] = React.useState(false);
-    const [, setConfirmAction] = React.useState<'activate' | 'disable' | 'publish' | 'draft' | null>(null);
+    const [, setConfirmAction] = React.useState<'activate' | 'disable' | 'published' | 'draft' | null>(null);
 
     const getStatusStyle = (status: string) => {
         const normalizedStatus = normalizeStatus(status);
@@ -98,7 +97,7 @@ export function ExperiencePackageViewCard<T extends BaseItem>({
         const normalizedStatus = normalizeStatus(status);
         return statusConfig[normalizedStatus]?.label || status.charAt(0).toUpperCase() + status.slice(1);
     };
-    const handleActionWithConfirm = (action: 'activate' | 'disable') => {
+    const handleActionWithConfirm = (action: 'activate' | 'disable' | 'published' | 'draft') => {
         return () => {
             setConfirmAction(action);
             setConfirmOpen(true);
@@ -110,7 +109,6 @@ export function ExperiencePackageViewCard<T extends BaseItem>({
 
         const actionsArr: ActionButton[] = [];
         const status = normalizeStatus(item.status);
-
         if (onView) {
             actionsArr.push({
                 icon: Eye,
@@ -121,7 +119,7 @@ export function ExperiencePackageViewCard<T extends BaseItem>({
                 tooltip: 'Ver elemento'
             });
         }
-        
+
         if (onUpdate) {
             actionsArr.push({
                 icon: Edit,
@@ -134,31 +132,50 @@ export function ExperiencePackageViewCard<T extends BaseItem>({
         }
 
 
-
-
-
-        if (status === 'active' && onChangeStatus) {
-            actionsArr.push({
-                icon: X,
-                label: 'Desactivar',
-                onClick: handleActionWithConfirm('disable'),
-                variant: 'danger',
-                fullWidth: false,
-                tooltip: `Desactivar ${title}`
-            });
-        } else if (status === 'inactive' && onChangeStatus) {
-            actionsArr.push({
-                icon: Check,
-                label: 'Activar',
-                onClick: handleActionWithConfirm('activate'),
-                variant: 'success',
-                fullWidth: false,
-                tooltip: `Activar ${title}`
-            });
+        switch (status) {
+            case 'active':
+                actionsArr.push({
+                    icon: X,
+                    label: 'Desactivar',
+                    onClick: handleActionWithConfirm('disable'),
+                    variant: 'danger',
+                    fullWidth: false,
+                    tooltip: `Desactivar ${title}`
+                });
+                break;
+            case 'inactive':
+                actionsArr.push({
+                    icon: Check,
+                    label: 'Activar',
+                    onClick: handleActionWithConfirm('activate'),
+                    variant: 'success',
+                    fullWidth: false,
+                    tooltip: `Activar ${title}`
+                });
+                break;
+            case 'published':
+                actionsArr.push({
+                    icon: Check,
+                    label: 'Borrador',
+                    onClick: handleActionWithConfirm('draft'),
+                    variant: 'warning',
+                    fullWidth: false,
+                    tooltip: `Borrador ${title}`
+                });
+                break;
+            case 'draft':
+                actionsArr.push({
+                    icon: Check,
+                    label: 'Publicar',
+                    onClick: handleActionWithConfirm('published'),
+                    variant: 'success',
+                    fullWidth: false,
+                    tooltip: `Publicar ${title}`
+                });
+                break;
         }
-
         return actionsArr;
-    }, [onUpdate, onChangeStatus, item, title, onView]);
+    }, [onUpdate, item, title, onView]);
 
     const finalActions = actions.length > 0 ? actions : defaultActions;
 

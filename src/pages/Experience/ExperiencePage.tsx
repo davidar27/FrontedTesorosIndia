@@ -56,7 +56,7 @@ const ExperiencePage: React.FC = () => {
                 experienceName={experience.name}
             />
 
-            <HeroSection experience={experience} reviews={reviews} />
+            <HeroSection experience={experience} />
 
             <div className="container mx-auto py-8 responsive-padding-x">
                 <QuickStats

@@ -250,7 +250,7 @@ export default function PackagesManagement() {
                     <ViewPackageInfo
                         packageData={viewPackage}
                         experiences={experiences.filter(e =>
-                            viewPackage.selectedExperiences.includes(e.experience_id)
+                            (viewPackage.selectedExperiences ?? []).includes(e.experience_id)
                         )}
                         details={details}
                     />

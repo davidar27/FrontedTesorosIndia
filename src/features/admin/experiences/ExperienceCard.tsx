@@ -6,8 +6,10 @@ import React from 'react';
 import type { ActionButton } from '@/components/admin/ReusableCard/types';
 import { ExperiencePackageEditCard } from '@/components/admin/ReusableCard/ExperiencePackageEditCard';
 import { ExperiencePackageViewCard } from '@/components/admin/ReusableCard/ExperiencePackageViewCard';
-import { Edit } from 'lucide-react';
+import { Check, Edit, X } from 'lucide-react';
 import { getExperienceTypeDetails } from './experienceUtils';
+import { normalizeStatus } from '@/features/admin/adminHelpers';
+import ConfirmDialog from '@/components/ui/feedback/ConfirmDialog';
 
 interface ExperienceCardProps {
     item: Experience;
@@ -23,6 +25,10 @@ export const ExperienceCard = React.memo(function ExperienceCard({
     const [isEditing, setIsEditing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const { updateAsync } = useExperiencesManagement();
+    const normalizedStatus = normalizeStatus(item.status);
+    const [confirmAction, setConfirmAction] = useState<'draft' | 'published' | null>(null);
+    const [confirmOpen, setConfirmOpen] = useState(false);
+
 
     const { Icon: TypeIcon } = getExperienceTypeDetails(item.type);
 
@@ -69,13 +75,29 @@ export const ExperienceCard = React.memo(function ExperienceCard({
         }
     };
 
+    const handleChangeStatus = () => {
+
+        const action = normalizedStatus === 'draft' ? 'published' : 'draft';
+        setConfirmAction(action);
+        setConfirmOpen(true);
+    };
+
+    const handleConfirm = () => {
+        if (!confirmAction) return;
+
+        const newStatus = normalizedStatus === 'draft' ? 'published' : 'draft';
+        onChangeStatus?.(item.id ?? 0, newStatus);
+        setConfirmOpen(false);
+        setConfirmAction(null);
+    };
+
     const stats = [
         {
             value: item.type,
             label: 'Tipo de experiencia',
             bgColor: 'bg-green-50',
             textColor: 'text-green-600',
-            icon: TypeIcon  
+            icon: TypeIcon
         }
     ];
 
@@ -87,6 +109,25 @@ export const ExperienceCard = React.memo(function ExperienceCard({
             variant: 'primary'
         }
     ];
+
+
+    if (onChangeStatus) {
+        if (normalizedStatus === 'published') {
+            actions.push({
+                icon: X,
+                label: 'Borrador',
+                onClick: handleChangeStatus,
+                variant: 'warning'
+            });
+        } else {
+            actions.push({
+                icon: Check,
+                label: 'Publicar',
+                onClick: handleChangeStatus,
+                variant: 'success'
+            });
+        }
+    }
 
     if (isEditing) {
         if (!item.id) return null;
@@ -118,6 +159,26 @@ export const ExperienceCard = React.memo(function ExperienceCard({
                 title="Experiencia"
                 stats={stats}
                 actions={actions}
+            />
+            <ConfirmDialog
+                open={confirmOpen}
+                onConfirm={handleConfirm}
+                onCancel={() => setConfirmOpen(false)}
+                title={
+                    confirmAction === 'published'
+                        ? '¿Publicar Experiencia?'
+                        : '¿Desactivar Experiencia?'
+                }
+                description={
+                    confirmAction === 'published'
+                        ? `¿Deseas publicar ${item.name}?`
+                        : `¿Deseas desactivar ${item.name}?`
+                }
+                confirmText={
+                    confirmAction === 'published'
+                        ? 'Publicar'
+                        : 'Desactivar'
+                }
             />
         </>
     );

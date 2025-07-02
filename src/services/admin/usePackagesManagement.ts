@@ -5,8 +5,8 @@ import { useCallback } from 'react';
 const packageApiOptions = {
     entityKey: 'packages',
     endpoints: {
-        getAll: '/paquetes',
-        getById: (id: number | string) => `/paquetes/${id}`,
+        getAll: '/dashboard/paquetes/completos',
+        getById: (id: number | string) => `dashboard/paquetes/${id}`,
         getDetails: '/dashboard/detalles',
         create: '/dashboard/paquetes',
         update: (id: number | string) => `/dashboard/actualizar/paquetes/${id}`,

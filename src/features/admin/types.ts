@@ -2,7 +2,7 @@ export interface BaseEntity<TStatus extends string, TId = number> {
     id?: TId;
     name: string;
     status: TStatus;
-    [key: string]: string | number | boolean | Date | null | undefined | TId | string[] | number[] ;
+    [key: string]: string | number | boolean | Date | null | undefined | TId | string[] | number[] | object[];
 }
 
 export interface EntityConfig<T extends BaseEntity<string>> {
