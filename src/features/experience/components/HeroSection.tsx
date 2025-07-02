@@ -4,6 +4,8 @@ import { Experience, Review } from '@/features/experience/types/experienceTypes'
 import { getImageUrl } from '@/utils/getImageUrl';
 import Picture from '@/components/ui/display/Picture';
 import Input from '@/components/ui/inputs/Input';
+import StarRating from '@/features/experience/components/StarRating';
+import { calculateAverageRating } from '@/features/experience/utils/rating';
 
 interface HeroSectionProps {
     experience: Experience;

@@ -36,7 +36,7 @@ const PackageBuy: React.FC<PackageDetailsViewProps> = (
     // Calcular precio total
     const totalPrice = packageData ? Number(packageData.price) * selectedPeople : 0;
 
-    const { data: hostels, isLoading: isLoadingHostels } = useQuery({
+    const { data: hostels, /* isLoading: isLoadingHostels */ } = useQuery({
         queryKey: ['hostels'],
         queryFn: () => HostelApi.getHostels(),
     });

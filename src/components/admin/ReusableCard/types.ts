@@ -11,14 +11,14 @@ export interface BaseItem {
     phone?: string;
     name_entrepreneur?: string;
     location?: string;
-    type: string;
+    type?: string;
     duration?: number;
     price?: number;
     capacity?: number;
     name_experience?: string;
     password?: string;
     joinDate?: string;
-    [key: string]: string | number | boolean | Date | null | undefined | string[] | number[];
+    [key: string]: string | number | boolean | Date | null | undefined | string[] | number[] | object[];
 }
 
 export interface ContactInfo {
