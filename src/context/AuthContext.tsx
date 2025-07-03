@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createContext, ReactNode, useState, useCallback, useMemo, useContext, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, matchPath } from 'react-router-dom';
 import { User } from '@/interfaces/user';
 import { UserRole } from '@/interfaces/role';
 import { AuthContextType } from '@/interfaces/authContextInterface';
@@ -32,18 +32,12 @@ function AuthProvider({ children }: { children: ReactNode }) {
     const location = useLocation();
     const queryClient = useQueryClient();
 
-    const isPublicRoute = useCallback((path: string): boolean => {
-        if (PUBLIC_ROUTES.includes(path)) {
-            return true;
-        }
+    const isPublicRoute = useCallback((fullPath: string): boolean => {
+        const path = fullPath.split(/[?#]/)[0].replace(/\/+$/, "") || "/";
 
         return PUBLIC_ROUTES.some(route => {
-            const pattern = route
-                .replace(/:[^/]+/g, '[^/]+')
-                .replace(/\//g, '\\/');
-
-            const regex = new RegExp(`^${pattern}$`);
-            return regex.test(path);
+            const cleanRoute = route.replace(/\/+$/, "") || "/";
+            return matchPath({ path: cleanRoute, end: true }, path);
         });
     }, []);
 
@@ -82,7 +76,8 @@ function AuthProvider({ children }: { children: ReactNode }) {
     }, []);
 
     useEffect(() => {
-        if (!isInitializing && !isPublicRoute(location.pathname) && (user?.role === 'observador' || !user)) {
+        const isPublic = isPublicRoute(location.pathname);
+        if (!isInitializing && !isPublic && (user?.role === 'observador' || !user)) {
             navigate('/auth/iniciar-sesion', {
                 replace: true,
                 state: { from: location.pathname }
@@ -255,6 +250,13 @@ function AuthProvider({ children }: { children: ReactNode }) {
         isPublicRoute
     ]);
 
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const token = params.get('token');
+        if (token) {
+            localStorage.setItem('token', token);
+        }
+    }, [location.search]);
 
     return (
         <AuthContext.Provider value={value}>

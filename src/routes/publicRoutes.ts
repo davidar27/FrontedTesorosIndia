@@ -36,5 +36,6 @@ export const PUBLIC_ROUTES = [
 
     // Rutas de paquetes
     '/paquetes/:id',
-    '/paquetes/:id/comprar'
+    '/paquetes/:id/comprar',
+
 ];

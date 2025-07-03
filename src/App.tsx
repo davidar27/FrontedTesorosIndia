@@ -42,7 +42,6 @@ import ForgotPasswordForm from "@/pages/Auth/ForgotPasswordForm";
 import ExperiencePage from "@/pages/Experience/ExperiencePage";
 import Profile from "@/features/profile/Profile";
 import PackageDetailsView from "@/pages/Packages/PackageDetailsView";
-
 function App() {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>

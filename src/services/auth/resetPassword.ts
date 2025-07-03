@@ -1,9 +1,10 @@
 import { axiosInstance } from '@/api/axiosInstance';
 
-export const resetPassword = async (token: string, password: string): Promise<void> => {
+export const resetPassword = async (token: string, password: string, confirmPassword: string): Promise<void> => {
   try {
     const response = await axiosInstance.put(`/auth/password/restablecer?token=${token}`, {
-      password
+      password,
+      confirmPassword
     });
 
     if (Number(response.status) !== 200) {

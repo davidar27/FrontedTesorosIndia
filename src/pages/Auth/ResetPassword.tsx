@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -30,13 +30,16 @@ const resetSchema = z.object({
 type ResetFormData = z.infer<typeof resetSchema>;
 
 const ResetPasswordForm = () => {
+
     const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
-    const token = searchParams.get('token');
+    const token = localStorage.getItem('reset_token');
+
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [Message, setMessage] = useState('');
     const [showValidations, setShowValidations] = useState<Record<string, boolean>>({});
+
+
 
     const {
         register,
@@ -52,13 +55,14 @@ const ResetPasswordForm = () => {
     const validations = useFieldValidation(password, passwordRules);
 
     const { mutate: sendResetPassword } = useMutation({
-        mutationFn: (data: ResetFormData) => resetPassword(token || '', data.password),
+        mutationFn: (data: ResetFormData) => resetPassword(token || '', data.password, data.confirmPassword),
         onSuccess: () => {
             setMessage('¡Contraseña restablecida con éxito! Redirigiendo al inicio de sesión...');
             setTimeout(() => {
                 navigate('/auth/iniciar-sesion', {
                     state: { message: '¡Contraseña restablecida con éxito! Ya puedes iniciar sesión.' }
                 });
+                localStorage.removeItem('reset_token');
             }, 3000);
         },
         onError: (error) => {
@@ -97,7 +101,7 @@ const ResetPasswordForm = () => {
                             Por favor, solicita un nuevo enlace.
                         </p>
                         <Button
-                            onClick={() => navigate('/recuperar-password')}
+                            onClick={() => navigate('/auth/password/recuperar')}
                             className="w-full bg-primary hover:bg-primary-hover text-white"
                         >
                             Solicitar nuevo enlace

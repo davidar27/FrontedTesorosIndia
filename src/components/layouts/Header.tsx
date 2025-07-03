@@ -1,4 +1,4 @@
-import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useMotionValueEvent, Variants } from "framer-motion";
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -64,7 +64,7 @@ const Header: React.FC<HeaderProps> = ({ isEditMode = false, onToggleEditMode })
     <motion.header
       initial="hidden"
       animate="visible"
-      variants={headerAnimations}
+      variants={headerAnimations as Variants}
       className="fixed z-50 w-full text-white backdrop-blur-sm bg-black/30"
     >
       <AnimatePresence>
@@ -87,7 +87,7 @@ const Header: React.FC<HeaderProps> = ({ isEditMode = false, onToggleEditMode })
       <motion.div
         className={`relative flex items-center justify-between responsive-padding-x shadow-lg`}
         animate={scrolled ? "scrolled" : "unscrolled"}
-        variants={headerAnimations}
+        variants={headerAnimations as Variants}
       >
         {/* Logo */}
         <AnimatePresence>

@@ -90,6 +90,7 @@ const PackageDetailsView: React.FC<PackageDetailsViewProps> = (
 
 
     const handleHostelClick = (hostel: Hostel) => {
+        console.log("hostel", hostel);
         setShowHospedaje(true);
     };
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import { motion } from "framer-motion";
 import clsx from "clsx";
@@ -51,7 +52,7 @@ const ButtonIcon: React.FC<ButtonIconProps> = ({
 
   return url ? (
     <motion.a
-      {...commonProps}
+      {...commonProps as any}
       href={url}
       target={target}
       rel="noopener noreferrer"
@@ -59,7 +60,7 @@ const ButtonIcon: React.FC<ButtonIconProps> = ({
       {children}
     </motion.a>
   ) : (
-    <motion.button {...commonProps} type="button">
+    <motion.button {...commonProps as any} type="button">
       {children}
     </motion.button>
   );
