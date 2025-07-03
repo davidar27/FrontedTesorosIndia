@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { DateSelector } from '@/features/home/handleFastPackage/components/DateSelector';
 import { PeopleCounter } from '@/features/home/handleFastPackage/components/PeopleCounter';
 import { ShoppingCart } from 'lucide-react';
@@ -12,16 +12,11 @@ import Hostel from './Hostel';
 
 
 
-const PackageBuy = ({ packageData }: { packageData: PackageData }) => {
+const PackageBuy = ({ packageData, date, people }: { packageData: PackageData, date: string | null, people: string | null }) => {
 
     const [isProcessing, setIsProcessing] = useState(false);
     const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
 
-
-
-    const date = searchParams.get("date");
-    const people = searchParams.get("people")
 
     const [selectedDate, setSelectedDate] = useState(date || "");
     const [selectedPeople, setSelectedPeople] = useState(Number(people) || 1);

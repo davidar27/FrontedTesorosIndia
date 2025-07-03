@@ -18,7 +18,7 @@ export const ExperienceList: React.FC<ExperienceListProps> = ({
     emptyMessage,
     itemClassName = "flex items-center space-x-3 p-3 bg-green-50 rounded-lg"
 }) => (
-    <div className="border-2 border-primary/30 rounded-lg p-6">
+    <div className="border-2 border-primary/30 rounded-lg p-6 shadow-md">
         <h3 className="text-lg font-semibold text-green-700 mb-4 flex items-center">
             {icon}
             {title}

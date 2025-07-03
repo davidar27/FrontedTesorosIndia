@@ -1,5 +1,5 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { MapPin, Clock, DollarSign, Star, Users, Briefcase } from 'lucide-react';
 import { formatPrice } from '@/utils/formatPrice';
 import LoadingSpinner from '@/components/ui/display/LoadingSpinner';
@@ -15,6 +15,14 @@ const PackageDetailsView: React.FC<PackageDetailsViewProps> = (
 ) => {
     const { packageId } = useParams<{ packageId: string }>();
     const { packageData, loading, error } = usePackageData(packageId);
+    const [searchParams] = useSearchParams();
+    const date = searchParams.get("date");
+    const people = searchParams.get("people")
+
+
+    useEffect(() => {
+        console.log(date, people)
+    }, [date, people])
 
 
     // Loading state
@@ -39,18 +47,18 @@ const PackageDetailsView: React.FC<PackageDetailsViewProps> = (
     }
 
     return (
-        <section className="w-full  mx-auto bg-white rounded-2xl shadow-2xl border border-primary/20 my-8">
+        <section className="w-full mx-auto border border-primary/20 my-8">
 
 
             <HeroSection
                 packageData={packageData as unknown as PackageData}
             />
 
-            <section className="responsive-padding-x responsive-padding-y space-y-8">
+            <section className="responsive-padding-x responsive-padding-y space-y-8 rounded-2xl">
                 {/* Descripción */}
 
                 <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-gray-50 p-4 rounded-lg">
+                    <div className="bg-gray-50 p-4 rounded-lg shadow-md">
                         <h2 className="text-xl font-semibold text-green-700 flex items-center"> <Briefcase className="mr-2 h-5 w-5" />Descripción</h2>
                         <p className="text-gray-700 leading-relaxed">{packageData.description}</p>
                     </div>
@@ -71,12 +79,12 @@ const PackageDetailsView: React.FC<PackageDetailsViewProps> = (
                                 textColor="text-green-700"
                             />
                         </div>
-                        <div className="border-2 border-primary/30 rounded-lg p-6">
+                        <div className="border-2 border-primary/30 rounded-lg p-6 bg-white shadow-md">
                             <h3 className="text-lg font-semibold text-green-700 flex items-center ">
                                 <Users className="mr-2 h-5 w-5" />
                                 Capacidad Máxima
                             </h3>
-                            <div className="bg-gray-50 p-4 rounded-lg">
+                            <div className="bg-gray-50 p-4 rounded-lg shadow-md">
                                 <p className="text-2xl font-bold text-green-800">{packageData.capacity} personas</p>
                                 <p className="text-gray-600 text-sm ">Máximo de personas por reserva</p>
                             </div>
@@ -94,7 +102,7 @@ const PackageDetailsView: React.FC<PackageDetailsViewProps> = (
                         emptyMessage="No hay experiencias seleccionadas"
                     />
                     {/* Detalles del paquete */}
-                    <section className="bg-gray-50 p-6 rounded-lg">
+                    <section className="bg-gray-50 p-6 rounded-lg shadow-md">
                         <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                             <Star className="mr-2 h-5 w-5 text-green-600" />
                             Detalles Incluidos
@@ -120,7 +128,7 @@ const PackageDetailsView: React.FC<PackageDetailsViewProps> = (
                         </div>
                     </section>
                 </section>
-                <PackageBuy packageData={packageData} />
+                <PackageBuy packageData={packageData} date={date} people={people} />
             </section>
         </section>
     );

@@ -28,10 +28,9 @@ export const useHandleFastPackage = () => {
     }, []);
 
     const selectedPackage = packages.find(p => p.id == selectedPackageId);
-    
+
     const availablePackages = packages.filter(pkg => pkg.capacity && pkg.capacity >= people);
 
-    // Función para obtener fechas no disponibles del paquete seleccionado
     const getUnavailableDates = (): string[] => {
         if (!selectedPackage?.unavailableDates) return [];
 
@@ -44,7 +43,6 @@ export const useHandleFastPackage = () => {
         }
     };
 
-    // Función para verificar si una fecha está disponible
     const isDateAvailable = (dateStr: string): boolean => {
         const unavailableDates = getUnavailableDates();
         const [year, month, day] = dateStr.split('-');
@@ -114,14 +112,12 @@ export const useHandleFastPackage = () => {
     const handlePeopleChange = (newPeople: number) => {
         setPeople(newPeople);
 
-        // Si el paquete seleccionado no soporta la nueva cantidad, deselecciónalo
         const pkg = packages.find(p => p.id === selectedPackageId);
         if (pkg && newPeople > pkg.capacity!) {
-            setSelectedPackageId(0); // Deselecciona el paquete
-            setDate(""); // Opcional: limpia la fecha
+            setSelectedPackageId(0);
+            setDate("");
         }
 
-        // Actualiza la URL con la nueva cantidad de personas
         updateUrl(selectedPackageId, date, newPeople);
     };
 
@@ -171,7 +167,6 @@ export const useHandleFastPackage = () => {
     };
 
     return {
-        // Estado
         date,
         people,
         selectedPackageId,
@@ -182,7 +177,6 @@ export const useHandleFastPackage = () => {
         selectedPackage,
         availablePackages,
 
-        // Funciones
         getUnavailableDates,
         calculateTotalPrice,
         handlePackageChange,

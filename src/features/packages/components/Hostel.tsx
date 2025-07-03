@@ -42,8 +42,6 @@ const Hostel = () => {
         enabled: !!selectedHostel?.hostel_id,
     });
 
-    console.log("rooms", rooms);
-
 
     const handleHostelClick = (hostel: Hostel) => {
         setSelectedHostel(hostel);

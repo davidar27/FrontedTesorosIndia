@@ -15,7 +15,7 @@ export  const InfoCard: React.FC<InfoCardProps> = ({
     textColor,
     subtitle
 }) => (
-    <div className={`${bgColor} p-4 rounded-lg`}>
+    <div className={`${bgColor} p-4 rounded-lg shadow-md`}>
         <h3 className={`font-semibold ${textColor} mb-2 flex items-center`}>
             {icon}
             {title}
