@@ -140,8 +140,8 @@ export const DateCalendar: React.FC<DateCalendarProps> = ({
     if (closeCalendar) return null;
 
     return (
-        <div className={`w-60 z-50 absolute shadow-lg bg-white rounded-lg ${disabled ? ' pointer-events-none' : ''} `}>
-            <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/20">
+        <div className={`w-60 z-50  shadow-lg bg-white rounded-lg ${disabled ? 'pointer-events-none' : ''} `}>
+            <div id="calendar-portal" className="bg-white/10 p-4 rounded-lg border border-white/20">
                 {disabled ? (
                     <div className="text-center py-8 text-gray-900">
                         <Calendar className="h-12 w-12 mx-auto mb-2" />

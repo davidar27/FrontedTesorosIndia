@@ -50,22 +50,17 @@ export const PackageForm: React.FC<PackageFormProps> = ({
 
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pt-4 items-center relative ">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pt-4 items-center ">
             {/* Columna 1: Contador de personas */}
-
             <PeopleCounter
                 people={people}
                 setPeople={onPeopleChange}
                 maxCapacity={maxPeople}
             />
-
             {errors.package && (
                 <p className="text-red-300 text-xs mt-1">{errors.package}</p>
             )}
-
             {/* Columna 2: Selector de paquetes */}
-
-
             <SelectInput
                 id={selectedPackageId}
                 label="Paquete disponible"

@@ -21,7 +21,7 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
     const [open, setOpen] = useState(false);
 
     return (
-        <div className={`relative space-y-1 flex items-center flex-col pb-4 ${className}`}>
+        <div className={` space-y-1 flex items-center flex-col pb-4 ${className}`}>
             <span className="text-white text-sm font-semibold flex items-center">
                 <Calendar className="mr-2 h-4 w-4" />
                 Selecciona la fecha

@@ -32,7 +32,7 @@ type ResetFormData = z.infer<typeof resetSchema>;
 const ResetPasswordForm = () => {
 
     const navigate = useNavigate();
-    const token = localStorage.getItem('reset_token');
+    const token = localStorage.getItem('token');
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -62,7 +62,7 @@ const ResetPasswordForm = () => {
                 navigate('/auth/iniciar-sesion', {
                     state: { message: '¡Contraseña restablecida con éxito! Ya puedes iniciar sesión.' }
                 });
-                localStorage.removeItem('reset_token');
+                localStorage.removeItem('token');
             }, 3000);
         },
         onError: (error) => {
