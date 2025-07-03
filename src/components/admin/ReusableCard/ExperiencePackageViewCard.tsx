@@ -211,7 +211,6 @@ export function ExperiencePackageViewCard<T extends BaseItem>({
                     <LoadingSpinner message={`Cargando ${title}...`} />
                 </div>
             )}
-
             {/* Imagen principal */}
             {item.image && item.image !== null && item.image !== '' ? (
                 <div className="relative w-full h-48 rounded-t-2xl overflow-hidden mb-4">

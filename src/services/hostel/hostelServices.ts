@@ -6,7 +6,7 @@ export const HostelApi = {
         return response.data;
     },
     getRoomsHostel: async (id: number) => {
-        const response = await publicAxiosInstance.get(`hostales/${id}`);
+        const response = await publicAxiosInstance.get(`hostales/${id}/rooms`);
         return response.data;
     },
 }
