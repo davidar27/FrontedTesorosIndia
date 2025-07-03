@@ -111,8 +111,8 @@ const ForgotPasswordForm = () => {
                 Por favor, revisa tu bandeja de entrada y sigue las instrucciones.
               </p>
               <div className="space-y-2 mt-4">
-                <ProgressBar 
-                  progress={progressPercentage} 
+                <ProgressBar
+                  progress={progressPercentage}
                   className="w-full"
                   barClassName="!bg-primary"
                 />
@@ -129,6 +129,8 @@ const ForgotPasswordForm = () => {
       bottomText="¿Recordaste tu contraseña?"
       bottomLinkText="Volver al inicio de sesión"
       bottomLinkTo="/auth/iniciar-sesion"
+      extraLinkTo='/auth/registrar'
+      extraLinkText='¿Registrate?'
       onSubmit={handleSubmit(onSubmit)}
       onChange={handleFormChange}
       register={register}

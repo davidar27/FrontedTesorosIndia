@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -11,6 +11,7 @@ import Card from '@/components/ui/cards/Card';
 import CardContent from '@/components/ui/cards/CardContent';
 import Button from '@/components/ui/buttons/Button';
 import { useFieldValidation, passwordRules } from '@/hooks/useFieldValidation';
+import background from "/images/FondoDesktop.webp";
 
 const resetSchema = z.object({
     password: z
@@ -51,7 +52,7 @@ const ResetPasswordForm = () => {
     const validations = useFieldValidation(password, passwordRules);
 
     const { mutate: sendResetPassword } = useMutation({
-        mutationFn: (data: ResetFormData) => resetPassword(token || '', data.password, data.confirmPassword),
+        mutationFn: (data: ResetFormData) => resetPassword(token || '', data.password),
         onSuccess: () => {
             setMessage('¡Contraseña restablecida con éxito! Redirigiendo al inicio de sesión...');
             setTimeout(() => {
@@ -82,9 +83,14 @@ const ResetPasswordForm = () => {
 
     if (!token) {
         return (
-            <Card className="rounded-2xl shadow-lg p-8 max-w-lg">
-                <CardContent>
-                    <div className="text-center">
+            <section className="min-h-screen bg-cover bg-center flex items-center justify-center text-black md:p-14"
+                style={{ backgroundImage: `url(${background})` }}
+            >
+                <Card className="rounded-2xl shadow-lg p-4 max-w-lg mx-auto">
+                    <CardContent className="flex flex-col items-center justify-center space-y-4 text-center" >
+                        <AlertCircle
+                            className="h-16 w-16  text-red-600 mb-4 mx-auto"
+                        />
                         <h1 className="text-2xl font-bold text-red-600 mb-4">Enlace inválido</h1>
                         <p className="text-gray-600 mb-6">
                             El enlace para restablecer la contraseña es inválido o ha expirado.
@@ -96,9 +102,9 @@ const ResetPasswordForm = () => {
                         >
                             Solicitar nuevo enlace
                         </Button>
-                    </div>
-                </CardContent>
-            </Card>
+                    </CardContent>
+                </Card>
+            </section>
         );
     }
 

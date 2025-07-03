@@ -1,19 +1,14 @@
 import React from 'react';
 import { MapPin } from 'lucide-react';
-import { Review } from '@/features/experience/types/experienceTypes';
 import { getImageUrl } from '@/utils/getImageUrl';
-import { calculateAverageRating } from '@/features/experience/utils/rating';
-import StarRating from '@/features/experience/components/StarRating';
 import Picture from '@/components/ui/display/Picture';
 import { PackageData } from '@/features/packages/types/packagesTypes';
 
 interface HeroSectionProps {
     packageData: PackageData;
-    reviews: Review[];
 }
 
-const HeroSection: React.FC<HeroSectionProps> = ({ packageData, reviews }) => {
-    const averageRating = calculateAverageRating(reviews);
+const HeroSection: React.FC<HeroSectionProps> = ({ packageData }) => {
 
     return (
         <section className="relative h-96 overflow-hidden">
@@ -39,17 +34,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({ packageData, reviews }) => {
                             <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">
                                 {packageData.name}
                             </h1>
-                            <div className="flex items-center gap-4 text-white">
-                                <div className="flex items-center gap-1">
-                                    <StarRating rating={Math.round(averageRating)} />
-                                    <span className="font-medium ml-1">
-                                        {averageRating.toFixed(1)}
-                                    </span>
-                                    <span className="text-white/80">
-                                        ({reviews.length} opiniones)
-                                    </span>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>

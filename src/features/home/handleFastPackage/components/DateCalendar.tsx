@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { Calendar } from 'lucide-react';
-import { createPortal } from 'react-dom';
 
 interface DateCalendarProps {
     unavailableDates: string[];
@@ -17,11 +16,10 @@ export const DateCalendar: React.FC<DateCalendarProps> = ({
     onDateSelect,
     disabled = false,
     anchorRef,
-    onClose
+    onClose,
 }) => {
     const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
     const [closeCalendar, setCloseCalendar] = useState(false);
-    const [pos, setPos] = useState({ top: 0, left: 0, width: 0 });
 
     const daysInMonth = useMemo(() => {
         const date = currentMonth;
@@ -106,16 +104,6 @@ export const DateCalendar: React.FC<DateCalendarProps> = ({
         onDateSelect(dateString);
     }, [disabled, formatDateToString, onDateSelect, isPastDate, isDateUnavailable]);
 
-    useEffect(() => {
-        if (anchorRef?.current) {
-            const rect = anchorRef.current.getBoundingClientRect();
-            setPos({
-                top: rect.bottom + window.scrollY,
-                left: rect.left + window.scrollX,
-                width: rect.width,
-            });
-        }
-    }, [anchorRef]);
 
     useEffect(() => {
         const handleClick = (e: MouseEvent) => {
@@ -151,124 +139,112 @@ export const DateCalendar: React.FC<DateCalendarProps> = ({
 
     if (closeCalendar) return null;
 
-    return createPortal(
-        <div
-            id="calendar-portal"
-            style={{
-                position: 'absolute',
-                top: pos.top,
-                left: pos.left,
-                width: pos.width,
-                zIndex: 1000,
-            }}
-        >
-            <div className={`w-60 absolute top-1/2 translate-y-1/5 shadow-lg bg-white rounded-lg ${disabled ? ' pointer-events-none' : ''}`}>
-                <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/20">
-                    {disabled ? (
-                        <div className="text-center py-8 text-gray-900">
-                            <Calendar className="h-12 w-12 mx-auto mb-2" />
-                            <p>Primero selecciona un paquete para ver las fechas disponibles</p>
+    return (
+        <div className={`w-60 z-50 absolute shadow-lg bg-white rounded-lg ${disabled ? ' pointer-events-none' : ''} `}>
+            <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/20">
+                {disabled ? (
+                    <div className="text-center py-8 text-gray-900">
+                        <Calendar className="h-12 w-12 mx-auto mb-2" />
+                        <p>Primero selecciona un paquete para ver las fechas disponibles</p>
+                    </div>
+                ) : (
+                    <>
+                        {/* Navegación del mes */}
+                        <div className="flex items-center justify-between mb-4">
+                            <button
+                                type="button"
+                                onClick={() => navigateMonth(-1)}
+                                className="p-2 hover:bg-white/20 rounded-lg transition-colors text-gray-900"
+                            >
+                                ←
+                            </button>
+                            <h3 className="font-medium text-gray-900">
+                                {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+                            </h3>
+                            <button
+                                type="button"
+                                onClick={() => navigateMonth(1)}
+                                className="p-2 hover:bg-white/20 rounded-lg transition-colors text-gray-900"
+                            >
+                                →
+                            </button>
                         </div>
-                    ) : (
-                        <>
-                            {/* Navegación del mes */}
-                            <div className="flex items-center justify-between mb-4">
-                                <button
-                                    type="button"
-                                    onClick={() => navigateMonth(-1)}
-                                    className="p-2 hover:bg-white/20 rounded-lg transition-colors text-gray-900"
-                                >
-                                    ←
-                                </button>
-                                <h3 className="font-medium text-gray-900">
-                                    {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
-                                </h3>
-                                <button
-                                    type="button"
-                                    onClick={() => navigateMonth(1)}
-                                    className="p-2 hover:bg-white/20 rounded-lg transition-colors text-gray-900"
-                                >
-                                    →
-                                </button>
-                            </div>
 
-                            {/* Días de la semana */}
-                            <div className="grid grid-cols-7 gap-1 mb-2">
-                                {dayNames.map((day, index) => (
-                                    <div key={`${day}-${index}`} className="text-center text-sm font-medium text-gray-900 py-2">
-                                        {day}
-                                    </div>
-                                ))}
-                            </div>
+                        {/* Días de la semana */}
+                        <div className="grid grid-cols-7 gap-1 mb-2">
+                            {dayNames.map((day, index) => (
+                                <div key={`${day}-${index}`} className="text-center text-sm font-medium text-gray-900 py-2">
+                                    {day}
+                                </div>
+                            ))}
+                        </div>
 
-                            {/* Calendario */}
-                            <div className="grid grid-cols-7 gap-1">
-                                {daysInMonth.map((day, index) => (
-                                    <div key={index} className="aspect-square flex items-center justify-center">
-                                        {day && (
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    handleDateClick(day);
-                                                    setCloseCalendar(true);
-                                                }}
-                                                disabled={isPastDate(day) || isDateUnavailable(day)}
-                                                className={`w-6 h-6 rounded-full text-sm font-medium transition-all duration-200 ${isPastDate(day)
-                                                        ? 'bg-gray-500/30 text-gray-400 cursor-not-allowed'
-                                                        : isDateUnavailable(day)
-                                                            ? 'bg-red-500/50 text-red-200 cursor-not-allowed line-through'
-                                                            : isDateSelected(day)
-                                                                ? 'bg-green-500 text-black shadow-lg scale-110 ring-2 ring-green-300'
-                                                                : isToday(day)
-                                                                    ? 'bg-blue-500/70 text-black hover:bg-blue-500 ring-2 ring-blue-300'
-                                                                    : 'bg-white/20 text-black hover:bg-white/30 hover:scale-105'
+                        {/* Calendario */}
+                        <div className="grid grid-cols-7 gap-1">
+                            {daysInMonth.map((day, index) => (
+                                <div key={index} className="aspect-square flex items-center justify-center">
+                                    {day && (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                handleDateClick(day);
+                                                setCloseCalendar(true);
+                                            }}
+                                            disabled={isPastDate(day) || isDateUnavailable(day)}
+                                            className={`w-6 h-6 rounded-full text-sm font-medium transition-all duration-200 ${isPastDate(day)
+                                                ? 'bg-gray-500/30 text-gray-400 cursor-not-allowed'
+                                                : isDateUnavailable(day)
+                                                    ? 'bg-red-500/50 text-red-200 cursor-not-allowed line-through'
+                                                    : isDateSelected(day)
+                                                        ? 'bg-green-500 text-black shadow-lg scale-110 ring-2 ring-green-300'
+                                                        : isToday(day)
+                                                            ? 'bg-blue-500/70 text-black hover:bg-blue-500 ring-2 ring-blue-300'
+                                                            : 'bg-white/20 text-black hover:bg-white/30 hover:scale-105'
                                                 }`}
-                                            >
-                                                {day}
-                                            </button>
-                                        )}
-                                        {!day && <span style={{ opacity: 0.3 }}>-</span>}
-                                    </div>
-                                ))}
+                                        >
+                                            {day}
+                                        </button>
+                                    )}
+                                    {!day && <span style={{ opacity: 0.3 }}>-</span>}
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Leyenda */}
+                        <div className="flex flex-wrap gap-3 text-xs p-2 ">
+                            <div className="flex items-center text-black/80">
+                                <div className="w-3 h-3 bg-black rounded-full mr-2"></div>
+                                <span>Disponible</span>
                             </div>
+                            <div className="flex items-center text-green-300">
+                                <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                                <span>Seleccionada</span>
+                            </div>
+                            <div className="flex items-center text-blue-300">
+                                <div className="w-3 h-3 bg-blue-500/70 rounded-full mr-2"></div>
+                                <span>Hoy</span>
+                            </div>
+                            <div className="flex items-center text-red-300">
+                                <div className="w-3 h-3 bg-red-500/50 rounded-full mr-2"></div>
+                                <span>No disponible</span>
+                            </div>
+                        </div>
 
-                            {/* Leyenda */}
-                            <div className="flex flex-wrap gap-3 text-xs p-2 ">
-                                <div className="flex items-center text-black/80">
-                                    <div className="w-3 h-3 bg-black rounded-full mr-2"></div>
-                                    <span>Disponible</span>
-                                </div>
-                                <div className="flex items-center text-green-300">
-                                    <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                                    <span>Seleccionada</span>
-                                </div>
-                                <div className="flex items-center text-blue-300">
-                                    <div className="w-3 h-3 bg-blue-500/70 rounded-full mr-2"></div>
-                                    <span>Hoy</span>
-                                </div>
-                                <div className="flex items-center text-red-300">
-                                    <div className="w-3 h-3 bg-red-500/50 rounded-full mr-2"></div>
-                                    <span>No disponible</span>
+
+                        {/* Aviso si no hay fechas disponibles */}
+                        {availableDatesCount === 0 && (
+                            <div className="mt-4 p-3 bg-yellow-500/20 rounded-lg border border-yellow-500/30">
+                                <div className="flex items-center text-yellow-300">
+                                    <span>⚠️</span>
+                                    <span className="ml-2 text-sm">
+                                        No hay fechas disponibles en este mes. Navega a otro mes.
+                                    </span>
                                 </div>
                             </div>
-
-
-                            {/* Aviso si no hay fechas disponibles */}
-                            {availableDatesCount === 0 && (
-                                <div className="mt-4 p-3 bg-yellow-500/20 rounded-lg border border-yellow-500/30">
-                                    <div className="flex items-center text-yellow-300">
-                                        <span>⚠️</span>
-                                        <span className="ml-2 text-sm">
-                                            No hay fechas disponibles en este mes. Navega a otro mes.
-                                        </span>
-                                    </div>
-                                </div>
-                            )}
-                        </>
-                    )}
-                </div>
+                        )}
+                    </>
+                )}
             </div>
-        </div>,
-        document.body
+        </div>
     );
 };

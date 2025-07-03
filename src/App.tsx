@@ -42,7 +42,6 @@ import ForgotPasswordForm from "@/pages/Auth/ForgotPasswordForm";
 import ExperiencePage from "@/pages/Experience/ExperiencePage";
 import Profile from "@/features/profile/Profile";
 import PackageDetailsView from "@/pages/Packages/PackageDetailsView";
-import PackageBuy from "./pages/Packages/PackageBuy";
 
 function App() {
   return (
@@ -85,7 +84,6 @@ function App() {
               <Route path="/paquetes">
                 <Route index element={<PackagesPage />} />
                 <Route path=":packageId" element={<PackageDetailsView />} />
-                <Route path=":packageId/comprar" element={<PackageBuy />} />
               </Route>
 
 

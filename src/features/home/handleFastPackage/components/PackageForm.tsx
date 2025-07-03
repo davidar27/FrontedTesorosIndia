@@ -50,7 +50,7 @@ export const PackageForm: React.FC<PackageFormProps> = ({
 
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pt-4 items-center relative">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pt-4 items-center relative ">
             {/* Columna 1: Contador de personas */}
 
             <PeopleCounter

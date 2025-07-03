@@ -29,7 +29,7 @@ const SelectInput = ({
 }: SelectInputProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-  const [dropdownPos, setDropdownPos] = useState<{top: number, left: number, width: number}>({top: 0, left: 0, width: 0});
+  const [dropdownPos, setDropdownPos] = useState<{ top: number, left: number, width: number }>({ top: 0, left: 0, width: 0 });
   const triggerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -151,11 +151,12 @@ const SelectInput = ({
                 role="option"
                 aria-selected={option.value === value}
               >
-                <span className="block truncate">{option.label}</span>
+                <span className="block truncate">{option.label} </span>
                 {option.value === value && (
                   <CheckIcon className="w-4 h-4 text-amber-600 flex-shrink-0" />
                 )}
               </div>
+              
             ))}
           </div>,
           document.body
