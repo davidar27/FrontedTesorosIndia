@@ -21,6 +21,7 @@ const PaymentSuccess: React.FC = () => {
     }
 
     if (statusParam === 'approved' || statusParam === 'pending') {
+      localStorage.removeItem('cart_items');
       handleClearCartAfterPayment();
     }
   }, [searchParams, handleClearCartAfterPayment]);
@@ -29,11 +30,11 @@ const PaymentSuccess: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-green-100 flex items-center justify-center p-8">
       <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
         <CheckCircle className="w-20 h-20 text-emerald-500 mx-auto mb-6" />
-        
+
         <h1 className="text-3xl font-bold text-emerald-700 mb-4">
           ¡Pago realizado con éxito!
         </h1>
-        
+
         <p className="text-lg text-gray-700 mb-6">
           Gracias por tu compra. Tu pago ha sido procesado correctamente.
         </p>
@@ -65,7 +66,7 @@ const PaymentSuccess: React.FC = () => {
           >
             Volver al inicio
           </Button>
-          
+
           <Button
             onClick={() => navigate("/productos")}
             variant="secondary"
