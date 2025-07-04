@@ -1,7 +1,9 @@
 import React from 'react';
-import { ShoppingCart, Plus, Trash2, Heart, ArrowRight } from 'lucide-react';
+import { ShoppingCart, Plus, Trash2, ArrowRight } from 'lucide-react';
 import { formatPrice } from '@/utils/formatPrice';
 import { Product } from '@/features/experience/types/experienceTypes';
+import { getImageUrl } from '@/utils/getImageUrl';
+import Picture from '@/components/ui/display/Picture';
 
 interface ProductsSectionProps {
     products: Product[];
@@ -51,8 +53,8 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({
                         {displayProducts.map((product) => (
                             <div key={product.id} className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                                 <div className="relative overflow-hidden">
-                                    <img
-                                        src={product.image}
+                                    <Picture
+                                        src={getImageUrl(product.image)}
                                         alt={product.name}
                                         className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                                     />
@@ -62,9 +64,6 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({
                                                 <Trash2 className="w-4 h-4 text-white" />
                                             </button>
                                         )}
-                                        <button className="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:bg-white transition-colors">
-                                            <Heart className="w-4 h-4 text-gray-600" />
-                                        </button>
                                     </div>
                                 </div>
 

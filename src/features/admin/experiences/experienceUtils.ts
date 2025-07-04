@@ -9,7 +9,7 @@ export const getExperienceTypeDetails = (type: string) => {
             return { Icon: BedDouble, color: 'from-indigo-500 to-purple-600' };
         case 'masajes':
             return { Icon: Bubbles, color: 'from-pink-500 to-rose-600' };
-        case 'agroecologia':
+        case 'agroecológico':
             return { Icon: Leaf, color: 'from-green-500 to-emerald-600' };
         case 'gastronomia':
             return { Icon: UtensilsCrossed, color: 'from-red-500 to-pink-600' };
