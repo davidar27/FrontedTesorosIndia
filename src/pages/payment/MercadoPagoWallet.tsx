@@ -20,16 +20,28 @@ interface MercadoPagoWalletProps {
 }
 
 export const MercadoPagoWallet = ({ items, total }: MercadoPagoWalletProps) => {
-    const publicKey = import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY || "APP_USR-2f137f0b-6bf1-4429-b5b3-23ae0691657e";
+    const publicKey = (import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY || "APP_USR-2f137f0b-6bf1-4429-b5b3-23ae0691657e").trim();
     const createPreferenceEndpoint = "/pagos/preferencia";
     const [preferenceId, setPreferenceId] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
-    // Validate that the public key is available
+    // Validate that the public key is available and properly formatted
     useEffect(() => {
+        console.log("Public key value:", `"${publicKey}"`);
+        console.log("Public key length:", publicKey.length);
+        console.log("Contains spaces:", publicKey.includes(' '));
+        console.log("Starts with APP_USR-:", publicKey.startsWith('APP_USR-'));
+        
         if (!publicKey) {
             setError("Error de configuración: Clave pública de MercadoPago no encontrada");
             console.error("VITE_MERCADOPAGO_PUBLIC_KEY no está definida en las variables de entorno");
+            return;
+        }
+        
+        // Validate public key format (should start with APP_USR- and not contain whitespace)
+        if (!publicKey.startsWith('APP_USR-') || publicKey.includes(' ')) {
+            setError("Error de configuración: Clave pública de MercadoPago inválida");
+            console.error("La clave pública de MercadoPago debe comenzar con 'APP_USR-' y no contener espacios");
             return;
         }
     }, [publicKey]);
@@ -63,8 +75,16 @@ export const MercadoPagoWallet = ({ items, total }: MercadoPagoWalletProps) => {
             return;
         }
 
+        // Additional validation before using the public key
+        if (!publicKey.startsWith('APP_USR-') || publicKey.includes(' ')) {
+            setError("Error de configuración: Clave pública de MercadoPago inválida");
+            console.error("Public key validation failed:", publicKey);
+            return;
+        }
+
         if (window.MercadoPago) {
             try {
+                console.log("Initializing MercadoPago with public key:", publicKey);
                 const mp = new window.MercadoPago(publicKey, {
                     locale: "es-CO"
                 });
