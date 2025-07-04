@@ -47,6 +47,17 @@ export const MercadoPagoWallet = ({ items, total }: MercadoPagoWalletProps) => {
     }, [publicKey]);
 
     useEffect(() => {
+        // Add global error handler to suppress postMessage errors from third-party tools
+        const handleGlobalError = (event: ErrorEvent) => {
+            if (event.message && event.message.includes('postMessage') && event.message.includes('hotjar')) {
+                event.preventDefault();
+                console.warn('Suppressed Hotjar postMessage error:', event.message);
+                return false;
+            }
+        };
+
+        window.addEventListener('error', handleGlobalError);
+
         if (!window.MercadoPago) {
             const script = document.createElement("script");
             script.src = "https://sdk.mercadopago.com/js/v2";
@@ -65,8 +76,13 @@ export const MercadoPagoWallet = ({ items, total }: MercadoPagoWalletProps) => {
                 if (existingScript) {
                     document.head.removeChild(existingScript);
                 }
+                window.removeEventListener('error', handleGlobalError);
             };
         }
+
+        return () => {
+            window.removeEventListener('error', handleGlobalError);
+        };
     }, []);
 
     const openCheckout = useCallback(() => {
