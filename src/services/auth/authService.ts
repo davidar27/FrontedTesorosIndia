@@ -35,7 +35,8 @@ const normalizeUserData = (userData: UserDataInput): User => {
       email: '', // No disponible en la respuesta de verificación
       isVerified: true,
       experience_id: userData.data.experience_id,
-      image: userData.data.image
+      image: userData.data.image,
+      address: userData.data.address
     };
   }
 
@@ -48,7 +49,8 @@ const normalizeUserData = (userData: UserDataInput): User => {
       email: userData.email || '',
       isVerified: userData.isVerified || true,
       experience_id: userData.experience_id,
-      image: userData.image
+      image: userData.image,
+      address: userData.address
     };
   }
 
