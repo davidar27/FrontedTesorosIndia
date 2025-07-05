@@ -37,7 +37,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       return;
     }
     await handleAddToCart({
-      id: product.id,
+      service_id: product.id,
       name: product.name,
       price: Number(product.price),
       quantity: 1,
