@@ -31,13 +31,13 @@ export const MercadoPagoWallet = ({ items, total }: MercadoPagoWalletProps) => {
         console.log("Public key length:", publicKey.length);
         console.log("Contains spaces:", publicKey.includes(' '));
         console.log("Starts with APP_USR-:", publicKey.startsWith('APP_USR-'));
-        
+
         if (!publicKey) {
             setError("Error de configuración: Clave pública de MercadoPago no encontrada");
             console.error("VITE_MERCADOPAGO_PUBLIC_KEY no está definida en las variables de entorno");
             return;
         }
-        
+
         // Validate public key format (should start with APP_USR- and not contain whitespace)
         if (!publicKey.startsWith('APP_USR-') || publicKey.includes(' ')) {
             setError("Error de configuración: Clave pública de MercadoPago inválida");
@@ -143,7 +143,18 @@ export const MercadoPagoWallet = ({ items, total }: MercadoPagoWalletProps) => {
                     quantity: item.quantity,
                 })),
                 transaction_amount: total,
+                payer: {
+                    name: "Jhonatan",
+                    surname: "Arcos",
+                    email: "jhonatan@correo.com",
+                    address: {
+                        street_name: "Calle 10",
+                        street_number: 25,
+                        zip_code: "630001"
+                    }
+                }
             };
+
 
             const response = await axiosInstance.post(createPreferenceEndpoint, payload, {
                 headers: { "Content-Type": "application/json" },

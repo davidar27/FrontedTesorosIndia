@@ -68,9 +68,11 @@ function App() {
               <Route path="/carrito" element={<CartPage />} />
 
               {/* Rutas de resultado de pago */}
-              <Route path="/pago-exitoso" element={<PaymentSuccess />} />
-              <Route path="/pago-fallido" element={<PaymentFailure />} />
-              <Route path="/pago-pendiente" element={<PaymentPending />} />
+              <Route path="/pago">
+                <Route path="exitoso" element={<PaymentSuccess />} />
+                <Route path="fallido" element={<PaymentFailure />} />
+                <Route path="pendiente" element={<PaymentPending />} />
+              </Route>
 
               {/* Rutas de experiencias */}
               <Route path="/experiencias">
