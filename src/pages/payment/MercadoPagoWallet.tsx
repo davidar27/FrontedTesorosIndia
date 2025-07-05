@@ -146,17 +146,17 @@ export const MercadoPagoWallet = ({ items, total }: MercadoPagoWalletProps) => {
                     unit_price: item.priceWithTax,
                     quantity: item.quantity,
                 })),
-                transaction_amount: total,
                 metadata: {
                     user_id: user?.id,
                     address: user?.address,
-                    items: items.map(item => ({
-                        servicio_id: item.service_id,
-                        cantidad: item.quantity,
-                        precio_unitario: item.priceWithTax,
-                    })),
-                }
+                    // Compactamos los datos en strings separadas por coma
+                    servicio_ids: items.map(item => item.service_id).join(','),
+                    cantidades: items.map(item => item.quantity).join(','),
+                    precios_unitarios: items.map(item => item.priceWithTax).join(',')
+                },
+                transaction_amount: total,
             };
+
 
 
 
