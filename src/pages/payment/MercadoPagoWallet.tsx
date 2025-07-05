@@ -1,4 +1,5 @@
 import { axiosInstance } from "@/api/axiosInstance";
+import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState, useCallback } from "react";
 
 interface Item {
@@ -24,6 +25,8 @@ export const MercadoPagoWallet = ({ items, total }: MercadoPagoWalletProps) => {
     const createPreferenceEndpoint = "/pagos/preferencia";
     const [preferenceId, setPreferenceId] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const { user } = useAuth();
+
 
     // Validate that the public key is available and properly formatted
     useEffect(() => {
@@ -138,20 +141,17 @@ export const MercadoPagoWallet = ({ items, total }: MercadoPagoWalletProps) => {
         try {
             const payload = {
                 items: items.map(item => ({
+                    id: item.id,
                     title: item.name,
                     unit_price: item.priceWithTax,
                     quantity: item.quantity,
                 })),
                 transaction_amount: total,
+                usuario_id: user?.id,
                 payer: {
-                    name: "Jhonatan",
-                    surname: "Arcos",
-                    email: "jhonatan@correo.com",
-                    address: {
-                        street_name: "Calle 10",
-                        street_number: 25,
-                        zip_code: "630001"
-                    }
+                    first_name: user?.name,
+                    email: user?.email,
+                    address: user?.address
                 }
             };
 

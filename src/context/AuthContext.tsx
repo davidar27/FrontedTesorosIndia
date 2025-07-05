@@ -252,6 +252,9 @@ function AuthProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
+        console.log(params);
+        const preferenceId = params.get('preferenceId');
+        console.log(preferenceId);
         const token = params.get('token');
         if (token) {
             localStorage.setItem('token', token);
