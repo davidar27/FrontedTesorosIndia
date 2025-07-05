@@ -5,14 +5,14 @@ import { Credentials } from "@/interfaces/formInterface";
 import { UserRole } from "@/interfaces/role";
 
 // Tipo para los datos de usuario que pueden venir en diferentes formatos
-type UserDataInput = 
-  | { userId: number; name: string; role: string; experience_id?: number; image?: string }
-  | { data: { userId: number; name: string; role: string; experience_id?: number; image?: string } }
+type UserDataInput =
+  | { userId: number; name: string; role: string; experience_id?: number; image?: string, address?: string }
+  | { data: { userId: number; name: string; role: string; experience_id?: number; image?: string, address?: string } }
   | User;
 
 // Función helper para normalizar los datos del usuario desde diferentes formatos de respuesta
 const normalizeUserData = (userData: UserDataInput): User => {
-  // Formato del login: { logged, status, userId, role, name, token_version, experience_id, image }
+  // Formato del login: { logged, status, userId, role, name, token_version, experience_id, image, address }
   if ('userId' in userData && userData.userId && 'name' in userData && userData.name && 'role' in userData && userData.role) {
     return {
       id: userData.userId.toString(),
@@ -21,10 +21,11 @@ const normalizeUserData = (userData: UserDataInput): User => {
       email: '', // No disponible en la respuesta del login
       isVerified: true,
       experience_id: userData.experience_id,
-      image: userData.image
+      image: userData.image,
+      address: userData.address
     };
   }
-  
+
   // Formato de verificación: { data: { userId, name, role, experience_id, image } }
   if ('data' in userData && userData.data && 'userId' in userData.data && userData.data.userId && 'name' in userData.data && userData.data.name && 'role' in userData.data && userData.data.role) {
     return {
@@ -37,7 +38,7 @@ const normalizeUserData = (userData: UserDataInput): User => {
       image: userData.data.image
     };
   }
-  
+
   // Formato estándar de User
   if ('id' in userData && userData.id && 'name' in userData && userData.name && 'role' in userData && userData.role) {
     return {
@@ -50,7 +51,7 @@ const normalizeUserData = (userData: UserDataInput): User => {
       image: userData.image
     };
   }
-  
+
   throw new AuthError("Formato de datos de usuario no reconocido", {
     errorType: "general"
   });
@@ -85,7 +86,7 @@ const authService = {
     try {
       await axiosInstance.post("/auth/cerrar-sesion");
       localStorage.removeItem('lastTokenRefresh');
-    } catch  {
+    } catch {
       localStorage.removeItem('lastTokenRefresh');
       throw new AuthError("Error al cerrar sesión", { errorType: "general" });
     }
@@ -112,11 +113,11 @@ const authService = {
 
   refresh_token: async (): Promise<User> => {
     try {
-      
+
       const { data } = await axiosInstance.post<AuthResponse>("/auth/token/refrescar", {}, {
         withCredentials: true
       });
-      
+
 
       if (data.error) {
         console.error('❌ Refresh token error:', data.error);
@@ -136,9 +137,9 @@ const authService = {
 
       localStorage.setItem('lastTokenRefresh', Date.now().toString());
       return normalizedUser;
-    } catch (error: unknown) {      
-      if (error && typeof error === 'object' && 'response' in error && 
-          error.response && typeof error.response === 'object' && 'status' in error.response) {
+    } catch (error: unknown) {
+      if (error && typeof error === 'object' && 'response' in error &&
+        error.response && typeof error.response === 'object' && 'status' in error.response) {
         const response = error.response as { status: number };
         if (response.status === 404 || response.status === 501) {
           try {
@@ -152,9 +153,9 @@ const authService = {
           }
         }
       }
-      
+
       if (error instanceof AuthError) throw error;
-      throw new AuthError("La sesión ha expirado", { 
+      throw new AuthError("La sesión ha expirado", {
         errorType: "authentication",
         redirectTo: "/auth/iniciar-sesion"
       });
