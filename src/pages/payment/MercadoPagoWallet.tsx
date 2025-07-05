@@ -147,10 +147,18 @@ export const MercadoPagoWallet = ({ items, total }: MercadoPagoWalletProps) => {
                     quantity: item.quantity,
                 })),
                 transaction_amount: total,
-                user_id: user?.id,
-                address: user?.address,
-                email: user?.email,
+                metadata: {
+                    user_id: user?.id,
+                    email: user?.email,
+                    address: user?.address,
+                    items: items.map(item => ({
+                        servicio_id: item.id,
+                        cantidad: item.quantity,
+                        precio_unitario: item.priceWithTax,
+                    })),
+                }
             };
+
 
 
             const response = await axiosInstance.post(createPreferenceEndpoint, payload, {
