@@ -149,11 +149,7 @@ export const MercadoPagoWallet = ({ items, total }: MercadoPagoWalletProps) => {
                 transaction_amount: total,
                 user_id: user?.id,
                 address: user?.address,
-
-                payer: {
-                    first_name: user?.name,
-                    email: user?.email,
-                }
+                email: user?.email,
             };
 
 
