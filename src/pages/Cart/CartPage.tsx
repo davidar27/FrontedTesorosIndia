@@ -79,7 +79,7 @@ const CartPage: React.FC = () => {
                         <div className="space-y-6">
                             {items.map((item, index) => (
                                 <div
-                                    key={item.id}
+                                    key={item.service_id}
                                     className="group bg-gradient-to-r from-white to-gray-50 rounded-2xl p-6 border border-gray-100 hover:shadow-lg transition-all duration-300"
                                 >
                                     <div className="flex flex-col md:flex-row gap-6">

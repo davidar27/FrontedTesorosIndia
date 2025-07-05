@@ -3,7 +3,7 @@ import { axiosInstance } from "@/api/axiosInstance";
 import { useAuth } from "./AuthContext";
 
 export type CartItem = {
-    id: number;
+    service_id: number;
     productId?: number;
     name: string;
     price: number;
@@ -85,10 +85,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
     const handleAddToCart = (item: CartItem) => {
         setItems(prev => {
-            const exists = prev.find(i => i.id === item.id);
+            const exists = prev.find(i => i.service_id === item.service_id);
             let updated;
             if (exists) {
-                updated = prev.map(i => i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i);
+                updated = prev.map(i => i.service_id === item.service_id ? { ...i, quantity: i.quantity + item.quantity } : i);
             } else {
                 updated = [...prev, { ...item, quantity: item.quantity  }];
             }
@@ -97,19 +97,19 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         });
         // Sincronizar en background solo si el usuario está autenticado
         if (isAuthenticated && user?.role !== 'observador' && user?.id) {
-            axiosInstance.post("/carrito/agregar", { productId: item.id, quantity: item.quantity, userId: user.id })
+            axiosInstance.post("/carrito/agregar", { productId: item.service_id, quantity: item.quantity, userId: user.id })
                 .catch(() => mostrarToast("Error al sincronizar con el servidor (agregar)."));
         }
     };
 
     const handleRemoveFromCart = (item: CartItem) => {
         setItems(prev => {
-            const updated = prev.filter(i => i.id !== item.id);
+            const updated = prev.filter(i => i.service_id !== item.service_id);
             guardarEnLocalStorage(updated);
             return updated;
         });
         if (isAuthenticated && user?.role !== 'observador') {
-            axiosInstance.delete("/carrito/eliminar", { data: { productId: item.id } })
+            axiosInstance.delete("/carrito/eliminar", { data: { productId: item.service_id } })
                 .catch(() => mostrarToast("Error al sincronizar con el servidor (eliminar)."));
         }
     };
@@ -117,7 +117,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const handleUpdateQuantity = (item: CartItem) => {
         setItems(prev => {
             const updated = prev.map(i => 
-                i.id === item.id 
+                i.service_id === item.service_id 
                     ? { ...i, quantity: item.quantity, image: item.image, stock: item.stock } 
                     : { ...i }
             );
@@ -125,7 +125,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             return updated;
         });
         if (isAuthenticated && user?.role !== 'observador') {
-            axiosInstance.put("/carrito/actualizar", { productId: item.productId ?? item.id, quantity: item.quantity })
+            axiosInstance.put("/carrito/actualizar", { productId: item.productId ?? item.service_id, quantity: item.quantity })
                 .catch(() => mostrarToast("Error al sincronizar con el servidor (actualizar cantidad)."));
         }
     };

@@ -3,7 +3,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState, useCallback } from "react";
 
 interface Item {
-    id: number;
+    service_id: number;
     name: string;
     quantity: number;
     priceWithTax: number;
@@ -141,7 +141,7 @@ export const MercadoPagoWallet = ({ items, total }: MercadoPagoWalletProps) => {
         try {
             const payload = {
                 items: items.map(item => ({
-                    id: item.id,
+                    service_id: item.service_id,
                     title: item.name,
                     unit_price: item.priceWithTax,
                     quantity: item.quantity,
@@ -149,10 +149,9 @@ export const MercadoPagoWallet = ({ items, total }: MercadoPagoWalletProps) => {
                 transaction_amount: total,
                 metadata: {
                     user_id: user?.id,
-                    email: user?.email,
                     address: user?.address,
                     items: items.map(item => ({
-                        servicio_id: item.id,
+                        servicio_id: item.service_id,
                         cantidad: item.quantity,
                         precio_unitario: item.priceWithTax,
                     })),
