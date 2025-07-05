@@ -13,7 +13,5 @@ export interface User {
 
     // Campos condicionales por rol
     address?: string;    // Para cliente
-    addressNumber?: string;
-    addressZipCode?: number;
     experience_id?: number //emprendedores
 }

@@ -1,10 +1,10 @@
 import Avatar from "@/components/ui/display/Avatar";
 import { Mail, Phone, Camera } from "lucide-react";
 import { getImageUrl } from "@/utils/getImageUrl";
-import { UserProfile } from "@/features/profile/types";
+import { User } from "@/interfaces/user";
 
 export const ProfileHeader: React.FC<{
-    profile: UserProfile;
+    profile: User;
     isEditing: boolean;
     previewImage: string | null;
     onImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;

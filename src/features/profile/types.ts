@@ -1,13 +1,3 @@
-
-export interface UserProfile {
-    name: string;
-    email: string;
-    phone?: string;
-    address?: string;
-    password?: string;
-    image?: string;
-}
-
 export interface ProfileCardProps {
     icon: React.ComponentType<{ className?: string }>;
     title: string;

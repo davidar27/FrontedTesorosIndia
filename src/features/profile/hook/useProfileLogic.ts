@@ -1,10 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
-import { UserProfile } from "../types";
 import { useAuth } from "@/context/AuthContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { ProfileApi } from "@/services/user/profile";
 import { fileToWebp } from "@/utils/fileToWebp";
+import { User } from "@/interfaces/user";
 
 
 
@@ -14,8 +14,8 @@ export const useProfileLogic = () => {
     const queryClient = useQueryClient();
     
     const [isEditing, setIsEditing] = useState(false);
-    const [profile, setProfile] = useState<UserProfile | null>(null);
-    const [editedProfile, setEditedProfile] = useState<UserProfile | null>(null);
+    const [profile, setProfile] = useState<User | null>(null);
+    const [editedProfile, setEditedProfile] = useState<User | null>(null);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [isProfileLoading, setIsProfileLoading] = useState(true);
@@ -46,9 +46,9 @@ export const useProfileLogic = () => {
         }
     };
 
-    const handleInputChange = (field: keyof UserProfile, value: string) => {
+    const handleInputChange = (field: keyof User, value: string) => {
         setEditedProfile(prev => ({
-            ...(prev as UserProfile),
+            ...(prev as User),
             [field]: value
         }));
     };
@@ -78,10 +78,6 @@ export const useProfileLogic = () => {
         if (imageFile) {
             const webpFile = await fileToWebp(imageFile);
             formData.append('image', webpFile);
-        }
-
-        if (editedProfile.password) {
-            console.warn("La actualización de la contraseña debe realizarse a través de un flujo seguro y no se incluye aquí.");
         }
 
         profileUpdateMutation.mutate(formData);
