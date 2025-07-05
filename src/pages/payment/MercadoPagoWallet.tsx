@@ -22,7 +22,6 @@ interface MercadoPagoWalletProps {
 
 export const MercadoPagoWallet = ({ items, total }: MercadoPagoWalletProps) => {
     const publicKey = (import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY || "APP_USR-2f137f0b-6bf1-4429-b5b3-23ae0691657e").trim();
-    const createPreferenceEndpoint = "/pagos/preferencia";
     const [preferenceId, setPreferenceId] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const { user } = useAuth();
@@ -141,7 +140,7 @@ export const MercadoPagoWallet = ({ items, total }: MercadoPagoWalletProps) => {
         try {
             const payload = {
                 items: items.map(item => ({
-                    service_id: item.service_id,
+                    id: item.service_id, // para MercadoPago
                     title: item.name,
                     unit_price: item.priceWithTax,
                     quantity: item.quantity,
@@ -149,24 +148,23 @@ export const MercadoPagoWallet = ({ items, total }: MercadoPagoWalletProps) => {
                 metadata: {
                     user_id: user?.id,
                     address: user?.address,
-                    // Compactamos los datos en strings separadas por coma
-                    servicio_ids: items.map(item => item.service_id).join(','),
-                    cantidades: items.map(item => item.quantity).join(','),
-                    precios_unitarios: items.map(item => item.priceWithTax).join(',')
+                    email: user?.email,
+                    items: items.map(item => ({
+                        servicio_id: item.service_id,
+                        cantidad: item.quantity,
+                        precio_unitario: item.priceWithTax,
+                    }))
                 },
                 transaction_amount: total,
             };
 
-
-
-
-            const response = await axiosInstance.post(createPreferenceEndpoint, payload, {
+            const response = await axiosInstance.post("/pagos/preferencia", payload, {
                 headers: { "Content-Type": "application/json" },
             });
 
-            if (response && response.data && response.data.preferenceId) {
+            if (response?.data?.preferenceId) {
                 setPreferenceId(response.data.preferenceId);
-                setError(null); // Clear any previous errors
+                setError(null);
             } else {
                 setError("Error al crear la preferencia de pago");
             }
@@ -175,6 +173,7 @@ export const MercadoPagoWallet = ({ items, total }: MercadoPagoWalletProps) => {
             console.error("Error al crear preferencia:", err);
         }
     };
+
 
     if (error) {
         return (
