@@ -136,11 +136,13 @@ export const MercadoPagoWallet = ({ items, total }: MercadoPagoWalletProps) => {
             setError("Error de configuración: Clave pública de MercadoPago no encontrada");
             return;
         }
+        console.log(user);
+        
 
         try {
             const payload = {
                 items: items.map(item => ({
-                    id: item.service_id, // para MercadoPago
+                    id: item.service_id,
                     title: item.name,
                     unit_price: item.priceWithTax,
                     quantity: item.quantity,
@@ -148,7 +150,6 @@ export const MercadoPagoWallet = ({ items, total }: MercadoPagoWalletProps) => {
                 metadata: {
                     user_id: user?.id,
                     address: user?.address,
-                    email: user?.email,
                     items: items.map(item => ({
                         servicio_id: item.service_id,
                         cantidad: item.quantity,
