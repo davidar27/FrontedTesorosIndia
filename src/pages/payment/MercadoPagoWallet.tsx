@@ -25,7 +25,7 @@ interface MercadoPagoWalletProps {
 }
 
 export const MercadoPagoWallet = ({ items, total, onBeforePay, disabled, loading }: MercadoPagoWalletProps) => {
-    const publicKey = import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY || "APP_USR-2f137f0b-6bf1-4429-b5b3-23ae0691657e".trim();
+    const publicKey = (import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY || "APP_USR-2f137f0b-6bf1-4429-b5b3-23ae0691657e").trim();
     const createPreferenceEndpoint = "/pagos/preferencia";
     const [preferenceId, setPreferenceId] = useState<string | null>(null);
 
