@@ -55,7 +55,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         const blockedRoles = ['observador', 'administrador', 'emprendedor'];
 
         if (!isAuthenticated || blockedRoles.includes(user?.role ?? '')) return;
-        
+
         setLoading(true);
         try {
             const { data } = await axiosInstance.get("/carrito/obtener");
@@ -74,7 +74,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         if (local) {
             setItems(JSON.parse(local));
         }
-        
+
         if (isAuthenticated && user?.role !== 'observador' && !authLoading) {
             handleFetchCart();
         }
@@ -87,7 +87,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             if (exists) {
                 updated = prev.map(i => i.service_id === item.service_id ? { ...i, quantity: i.quantity + item.quantity } : i);
             } else {
-                updated = [...prev, { ...item, quantity: item.quantity  }];
+                updated = [...prev, { ...item, quantity: item.quantity }];
             }
             guardarEnLocalStorage(updated);
             return updated;
@@ -113,9 +113,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
     const handleUpdateQuantity = (item: CartItem) => {
         setItems(prev => {
-            const updated = prev.map(i => 
-                i.service_id === item.service_id 
-                    ? { ...i, quantity: item.quantity, image: item.image, stock: item.stock } 
+            const updated = prev.map(i =>
+                i.service_id === item.service_id
+                    ? { ...i, quantity: item.quantity, image: item.image, stock: item.stock }
                     : { ...i }
             );
             guardarEnLocalStorage(updated);
@@ -130,10 +130,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const handleClearCart = () => {
         setItems([]);
         guardarEnLocalStorage([]);
-        if (isAuthenticated && user?.role !== 'observador') {
-            axiosInstance.delete("/carrito/vaciar")
-                .catch(() => mostrarToast("Error al sincronizar con el servidor (vaciar carrito)."));
-        }
+        setTimeout(() => {
+            if (isAuthenticated && user?.role !== 'observador') {
+                axiosInstance.delete("/carrito/vaciar")
+                    .catch(() => mostrarToast("Error al sincronizar con el servidor (vaciar carrito)."));
+            }
+        }, 1000);
     };
     const total = calcularTotal(items);
 
