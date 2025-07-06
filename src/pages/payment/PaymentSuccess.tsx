@@ -15,6 +15,8 @@ const PaymentSuccess: React.FC = () => {
   // Recupera los datos de la reserva (pueden venir en location.state o localStorage)
   const reservationData = location.state?.reservationData || JSON.parse(localStorage.getItem("reservationData") || "null");
 
+
+
   useEffect(() => {
     // Guarda los parámetros en localStorage si están en la URL
     const paymentIdParam = searchParams.get('payment_id') || localStorage.getItem('paymentId');
@@ -23,7 +25,7 @@ const PaymentSuccess: React.FC = () => {
 
     console.log("paymentIdParam", paymentIdParam);
     console.log("statusParam", statusParam);
-    console.log("reservationData", reservationData);
+    console.log("reservationData", reservationData.room_id);
 
 
     if (paymentIdParam) {
@@ -32,7 +34,7 @@ const PaymentSuccess: React.FC = () => {
 
     if (statusParam === 'approved') {
       if (reservationData) {
-        axiosInstance.post('/reserva/reservar', {
+        axiosInstance.post(`/reservas/reservar/${reservationData.room_id}`, {
           ...reservationData,
           paymentId: paymentIdParam,
         }).then(() => {

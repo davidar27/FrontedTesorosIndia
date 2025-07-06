@@ -36,7 +36,7 @@ const PackageBuy = ({ packageData, date, people }: { packageData: PackageData, d
 
         const reservationData = {
             id: packageData.id,
-            date: selectedDate,
+            reserve_date: selectedDate,
             people: selectedPeople,
             totalPrice: totalPrice,
             room_id: selectedRoom?.room_id,
