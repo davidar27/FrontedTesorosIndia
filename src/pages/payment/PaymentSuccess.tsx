@@ -42,7 +42,12 @@ const PaymentSuccess: React.FC = () => {
         });
       }
       handleClearCart();
+
+      localStorage.removeItem("paymentId");
+      localStorage.removeItem("statusPayment");
+
     }
+
   }, [searchParams, handleClearCart, reservationData]);
 
   return (
