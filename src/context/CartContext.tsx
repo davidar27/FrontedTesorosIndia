@@ -1,10 +1,10 @@
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
 import { axiosInstance } from "@/api/axiosInstance";
 import { useAuth } from "./AuthContext";
-
+import { toast } from "sonner";
 export type CartItem = {
-    service_id: number;
-    productId?: number;
+    service_id?: number;
+    product_id?: number;
     name: string;
     price: number;
     priceWithTax: number;
@@ -34,10 +34,24 @@ export const useCart = () => {
 
 const CART_STORAGE_KEY = "cart_items";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const normalizeCartItem = (item: any): CartItem => ({
+    service_id: item.service_id ?? item.serviceId ?? undefined,
+    product_id: item.product_id ?? item.productId ?? undefined,
+    name: item.name,
+    price: typeof item.price === 'string' ? parseFloat(item.price) : item.price,
+    priceWithTax: typeof item.priceWithTax === 'string' ? parseFloat(item.priceWithTax) : item.priceWithTax,
+    quantity: item.quantity,
+    image: item.image,
+    stock: item.stock,
+});
+
 export const CartProvider = ({ children }: { children: ReactNode }) => {
     const [items, setItems] = useState<CartItem[]>([]);
     const [loading, setLoading] = useState(false);
     const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+
+    console.log(items);
 
     const calcularTotal = (products: CartItem[]) =>
         products.reduce((acc, item) => acc + item.price * item.quantity, 0);
@@ -48,7 +62,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
     const mostrarToast = (msg: string) => {
         // Puedes reemplazar esto por tu sistema de toast global
-        window.alert(msg);
+        toast.error(msg);
     };
 
     const handleFetchCart = useCallback(async () => {
@@ -59,8 +73,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         setLoading(true);
         try {
             const { data } = await axiosInstance.get("/carrito/obtener");
-            setItems(data || []);
-            guardarEnLocalStorage(data || []);
+            const normalized = (data || []).map(normalizeCartItem);
+            setItems(normalized);
+            guardarEnLocalStorage(normalized);
         } catch {
             // Si falla, ya está el localStorage
         } finally {
@@ -80,33 +95,63 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         }
     }, [isAuthenticated, user?.role, authLoading, handleFetchCart]);
 
+    function isSameCartItem(a: CartItem, b: CartItem) {
+        if (a.service_id !== undefined && b.service_id !== undefined) {
+            return a.service_id === b.service_id;
+        }
+        if (a.product_id !== undefined && b.product_id !== undefined) {
+            return a.product_id === b.product_id;
+        }
+        return false;
+    }
+
     const handleAddToCart = (item: CartItem) => {
+        let shouldSendRequest = false;
         setItems(prev => {
-            const exists = prev.find(i => i.service_id === item.service_id);
+            const exists = prev.find(i => isSameCartItem(i, item));
             let updated;
+
+            // Calcular la cantidad total que tendría el producto
+            const currentQty = exists ? exists.quantity : 0;
+            const newQty = currentQty + item.quantity;
+            const maxStock = item.stock ?? exists?.stock ?? 0;
+
+            if (newQty > maxStock) {
+                mostrarToast("No hay suficiente stock disponible.");
+                shouldSendRequest = false;
+                return prev; 
+            }
+
+            shouldSendRequest = true;
             if (exists) {
-                updated = prev.map(i => i.service_id === item.service_id ? { ...i, quantity: i.quantity + item.quantity } : i);
+                updated = prev.map(i => isSameCartItem(i, item) ? { ...i, quantity: newQty } : i);
             } else {
                 updated = [...prev, { ...item, quantity: item.quantity }];
             }
             guardarEnLocalStorage(updated);
             return updated;
         });
-        // Sincronizar en background solo si el usuario está autenticado
-        if (isAuthenticated && user?.role !== 'observador' && user?.id) {
-            axiosInstance.post("/carrito/agregar", { productId: item.service_id, quantity: item.quantity, userId: user.id })
+
+        if (
+            shouldSendRequest &&
+            isAuthenticated &&
+            user?.role !== 'observador' &&
+            user?.id
+        ) {
+            axiosInstance.post("/carrito/agregar", { serviceId: item.service_id, productId: item.product_id, quantity: item.quantity, userId: user.id })
                 .catch(() => mostrarToast("Error al sincronizar con el servidor (agregar)."));
         }
     };
 
     const handleRemoveFromCart = (item: CartItem) => {
         setItems(prev => {
-            const updated = prev.filter(i => i.service_id !== item.service_id);
+            console.log(item);
+            const updated = prev.filter(i => !isSameCartItem(i, item));
             guardarEnLocalStorage(updated);
             return updated;
         });
         if (isAuthenticated && user?.role !== 'observador') {
-            axiosInstance.delete("/carrito/eliminar", { data: { productId: item.service_id } })
+            axiosInstance.delete("/carrito/eliminar", { data: { serviceId: item.service_id, productId: item.product_id } })
                 .catch(() => mostrarToast("Error al sincronizar con el servidor (eliminar)."));
         }
     };
@@ -114,7 +159,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const handleUpdateQuantity = (item: CartItem) => {
         setItems(prev => {
             const updated = prev.map(i =>
-                i.service_id === item.service_id
+                isSameCartItem(i, item)
                     ? { ...i, quantity: item.quantity, image: item.image, stock: item.stock }
                     : { ...i }
             );
@@ -122,7 +167,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             return updated;
         });
         if (isAuthenticated && user?.role !== 'observador') {
-            axiosInstance.put("/carrito/actualizar", { productId: item.productId ?? item.service_id, quantity: item.quantity })
+            axiosInstance.put("/carrito/actualizar", { serviceId: item.service_id, productId: item.product_id, quantity: item.quantity })
                 .catch(() => mostrarToast("Error al sincronizar con el servidor (actualizar cantidad)."));
         }
     };

@@ -15,7 +15,7 @@ export const PUBLIC_ROUTES = [
     
     // Rutas de productos
     '/productos',
-    '/productos/:id',
+    '/productos/:id/detalles',
     '/productos/categorias/:categoryId',
     
     // Rutas de experiencias (vista pública)

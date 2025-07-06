@@ -42,6 +42,7 @@ import ForgotPasswordForm from "@/pages/Auth/ForgotPasswordForm";
 import ExperiencePage from "@/pages/Experience/ExperiencePage";
 import Profile from "@/features/profile/Profile";
 import PackageDetailsView from "@/pages/Packages/PackageDetailsView";
+import ProductDetail from "@/pages/Products/ProductDetail";
 function App() {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
@@ -59,6 +60,7 @@ function App() {
                 <Route index element={<ProductsPage />} />
                 <Route path=":id" element={<ProductsPage />} />
                 <Route path="categorias/:categoryId" element={<ProductsPage />} />
+                <Route path=":id/detalles" element={<ProductDetail />} />
               </Route>
 
               {/* Rutas informativas */}

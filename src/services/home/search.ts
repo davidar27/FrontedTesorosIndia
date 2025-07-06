@@ -1,5 +1,5 @@
 import { publicAxiosInstance } from "@/api/axiosInstance";
-import { Product } from "@/components/products/ProductCard";
+import { Product } from "@/features/products/components/ProductCard";
 import { Package } from "@/features/admin/packages/PackageTypes";
 import { Experience } from "@/features/admin/experiences/ExperienceTypes";
 

@@ -1,15 +1,17 @@
-import ProductCard from "@/components/products/ProductCard";
+import ProductCard from "@/features/products/components/ProductCard";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import AnimatedTitle from "@/components/ui/display/AnimatedTitle";
 import { ProductsApi } from "@/services/home/products";
 import { CategoriesApi } from "@/services/home/categories";
 import { usePageContext } from "@/context/PageContext";
-import { Product } from "@/components/products/ProductCard";
+import { Product } from "@/features/products/components/ProductCard";
 import { Experience } from "@/features/admin/experiences/ExperienceTypes";
 import { ExperiencesApi } from "@/services/home/experiences";
 import { useSearchParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import FilterSidebarContent from "@/features/products/components/FilterSidebarContent";
+import { X } from "lucide-react";
 interface Category {
     id: number;
     name: string;
@@ -36,6 +38,7 @@ export default function ProductList() {
     const [searchParams] = useSearchParams();
     const searchParam = searchParams.get("search") || "";
     const navigate = useNavigate();
+    const [showMobileFilters, setShowMobileFilters] = useState(false);
 
     const [filters, setFilters] = useState<FilterState>({
         category: null,
@@ -54,7 +57,7 @@ export default function ProductList() {
                     CategoriesApi.getCategories(),
                     ExperiencesApi.getExperiences()
                 ]);
-                
+
                 setProducts(dataProducts || []);
                 setCategories(dataCategories || []);
                 setExperiences(dataExperiences || []);
@@ -78,14 +81,14 @@ export default function ProductList() {
 
         // Filtrar por categoría
         if (filters.category) {
-            filtered = filtered.filter(product => 
+            filtered = filtered.filter(product =>
                 product.category === filters.category
             );
         }
 
         // Filtrar por experiencia (si los productos tienen relación con experiencias)
         if (filters.experience) {
-            filtered = filtered.filter(product =>{
+            filtered = filtered.filter(product => {
                 const experience = experiences.find(e => e.id === product.experience_id);
                 return experience?.name_experience === filters.experience;
             })
@@ -93,8 +96,8 @@ export default function ProductList() {
 
         // Filtrar por precio
         filtered = filtered.filter(product => {
-            const price = typeof product.price === 'string' 
-                ? parseFloat(product.price.replace(/[^\d.-]/g, '')) 
+            const price = typeof product.price === 'string'
+                ? parseFloat(product.price.replace(/[^\d.-]/g, ''))
                 : Number(product.price) || 0;
             return price >= filters.priceRange.min && price <= filters.priceRange.max;
         });
@@ -120,11 +123,11 @@ export default function ProductList() {
         filtered.sort((a, b) => {
             switch (filters.sortBy) {
                 case 'price': {
-                    const priceA = typeof a.price === 'string' 
-                        ? parseFloat(a.price.replace(/[^\d.-]/g, '')) 
+                    const priceA = typeof a.price === 'string'
+                        ? parseFloat(a.price.replace(/[^\d.-]/g, ''))
                         : Number(a.price) || 0;
-                    const priceB = typeof b.price === 'string' 
-                        ? parseFloat(b.price.replace(/[^\d.-]/g, '')) 
+                    const priceB = typeof b.price === 'string'
+                        ? parseFloat(b.price.replace(/[^\d.-]/g, ''))
                         : Number(b.price) || 0;
                     return priceA - priceB;
                 }
@@ -183,161 +186,71 @@ export default function ProductList() {
                         title="Nuestros Productos Artesanales" align="center" mdAlign="center" />
                 </motion.h1>
 
+                {/* Botón para mostrar filtros en mobile */}
+
+
                 <div className="flex flex-col lg:flex-row gap-8">
-                    {/* Sidebar de filtros mejorado */}
+                    {/* Sidebar de filtros para desktop */}
                     <motion.aside
-                        className="w-full lg:w-80 bg-white p-6 rounded-xl shadow-sm sticky top-24 h-fit"
+                        className="hidden lg:block w-full lg:w-80 bg-white p-6 rounded-xl shadow-sm sticky top-24 h-fit"
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.5, delay: 0.2 }}
                     >
-                        <div className="flex items-center justify-between mb-6 pb-2 border-b border-green-100">
-                            <h2 className="text-green-700 font-bold text-xl">Filtros</h2>
-                            <button
-                                onClick={() => {
-                                    clearFilters();
-                                    if (searchParam) {
-                                        navigate(`/productos`);
-                                    }
-                                }}
-                                className="text-sm text-green-600 hover:text-green-800 underline"
-                            >
-                                Limpiar filtros
-                            </button>
-                        </div>
-
-                        {/* Categorías */}
-                        <div className="mb-6">
-                            <h3 className="text-green-700 font-semibold mb-3">Categorías</h3>
-                            <div className="space-y-2">
-                                <label className="flex items-center cursor-pointer">
-                                    <input
-                                        type="radio"
-                                        name="category"
-                                        checked={!filters.category}
-                                        onChange={() => handleFilterChange('category', null)}
-                                        className="mr-2 text-green-600"
-                                    />
-                                    <span className="text-gray-700">Todas las categorías</span>
-                                </label>
-                                {categories.map((cat) => (
-                                    <label key={cat.id} className="flex items-center cursor-pointer">
-                                        <input
-                                            type="radio"
-                                            name="category"
-                                            value={cat.name}
-                                            checked={filters.category === cat.name}
-                                            onChange={(e) => handleFilterChange('category', e.target.value)}
-                                            className="mr-2 text-green-600"
-                                        />
-                                        <span className="text-gray-700">{cat.name}</span>
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Experiencias */}
-                        <div className="mb-6">
-                            <h3 className="text-green-700 font-semibold mb-3">Experiencias</h3>
-                            <div className="space-y-2">
-                                <label className="flex items-center cursor-pointer">
-                                    <input
-                                        type="radio"
-                                        name="experience"
-                                        checked={!filters.experience}
-                                        onChange={() => handleFilterChange('experience', null)}
-                                        className="mr-2 text-green-600"
-                                    />
-                                    <span className="text-gray-700">Todas las experiencias</span>
-                                </label>
-                                {experiences.map((experience) => (
-                                    <label key={experience.id} className="flex items-center cursor-pointer">
-                                        <input
-                                            type="radio"
-                                            name="experience"
-                                            value={experience.name_experience}
-                                            checked={filters.experience === experience.name_experience}
-                                            onChange={(e) => handleFilterChange('experience', e.target.value)}
-                                            className="mr-2 text-green-600"
-                                        />
-                                        <span className="text-gray-700">{experience.name_experience}</span>
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Rango de precio */}
-                        <div className="mb-6">
-                            <h3 className="text-green-700 font-semibold mb-3">Rango de precio</h3>
-                            <div className="space-y-3">
-                                <div className="flex gap-2">
-                                    <input
-                                        type="number"
-                                        placeholder="Mín"
-                                        value={filters.priceRange.min}
-                                        onChange={(e) => handleFilterChange('priceRange', {
-                                            ...filters.priceRange,
-                                            min: Number(e.target.value) || 0
-                                        })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                    />
-                                    <input
-                                        type="number"
-                                        placeholder="Máx"
-                                        value={filters.priceRange.max}
-                                        onChange={(e) => handleFilterChange('priceRange', {
-                                            ...filters.priceRange,
-                                            max: Number(e.target.value) || 1000000
-                                        })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Calificación */}
-                        <div className="mb-6">
-                            <h3 className="text-green-700 font-semibold mb-3">Calificación mínima</h3>
-                            <div className="space-y-2">
-                                {[5, 4, 3, 2, 1].map((rating) => (
-                                    <label key={rating} className="flex items-center cursor-pointer">
-                                        <input
-                                            type="radio"
-                                            name="rating"
-                                            value={rating}
-                                            checked={filters.rating === rating}
-                                            onChange={(e) => handleFilterChange('rating', Number(e.target.value))}
-                                            className="mr-2 text-green-600"
-                                        />
-                                        <span className="text-gray-700">
-                                            {rating}+ estrellas
-                                        </span>
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Ordenar por */}
-                        <div className="mb-6">
-                            <h3 className="text-green-700 font-semibold mb-3">Ordenar por</h3>
-                            <select
-                                value={filters.sortBy}
-                                onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                            >
-                                <option value="name">Nombre</option>
-                                <option value="price">Precio</option>
-                                <option value="rating">Calificación</option>
-                            </select>
-                        </div>
+                        <FilterSidebarContent
+                            filters={filters}
+                            categories={categories}
+                            experiences={experiences}
+                            handleFilterChange={handleFilterChange}
+                            clearFilters={clearFilters}
+                            searchParam={searchParam}
+                            navigate={navigate}
+                        />
                     </motion.aside>
 
+                    {/* Panel de filtros para mobile */}
+                    {showMobileFilters && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 lg:hidden">
+                            <motion.div
+                                className="bg-white w-11/12 max-w-sm p-6 rounded-xl shadow-lg relative"
+                                initial={{ opacity: 0, y: -30 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                <button
+                                    onClick={() => setShowMobileFilters(false)}
+                                    className="absolute top-1 right-1 text-gray-500 hover:text-green-600"
+                                    aria-label="Cerrar filtros"
+                                >
+                                    <X className="w-8 h-8" />
+                                </button>
+                                <FilterSidebarContent
+                                    filters={filters}
+                                    categories={categories}
+                                    experiences={experiences}
+                                    handleFilterChange={handleFilterChange}
+                                    clearFilters={clearFilters}
+                                    searchParam={searchParam}
+                                    navigate={navigate}
+                                />
+                            </motion.div>
+                        </div>
+                    )}
+
                     {/* Lista de productos */}
-                    <div className="flex-1">
-                        <div className="mb-6">
+                    <div className="flex-1 space-y-4 z-10">
+                        <div className="flex justify-between items-center">
                             <p className="text-gray-600">
                                 Mostrando {filteredProducts.length} {filteredProducts.length === 1 ? 'producto' : 'productos'}
                             </p>
+                            <div className="lg:hidden flex justify-end items-center">
+                                <button
+                                    onClick={() => setShowMobileFilters(true)}
+                                    className="px-4 py-2 bg-green-600 text-white rounded-lg font-semibold shadow"
+                                >
+                                    Filtros
+                                </button>
+                            </div>
                         </div>
 
                         {filteredProducts.length > 0 ? (
