@@ -4,7 +4,7 @@ import { ArrowRightIcon, CreditCardIcon } from "lucide-react";
 import Button from "@/components/ui/buttons/Button";
 
 interface Item {
-    id: number;
+    service_id: number;
     name: string;
     quantity: number;
     priceWithTax: number;
@@ -21,9 +21,10 @@ interface MercadoPagoWalletProps {
     total: number;
     onBeforePay?: () => void;
     disabled?: boolean;
+    loading?: boolean;
 }
 
-export const MercadoPagoWallet = ({ items, total, onBeforePay, disabled }: MercadoPagoWalletProps) => {
+export const MercadoPagoWallet = ({ items, total, onBeforePay, disabled, loading }: MercadoPagoWalletProps) => {
     const publicKey = import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY;
     const createPreferenceEndpoint = "/pagos/preferencia";
     const [preferenceId, setPreferenceId] = useState<string | null>(null);
@@ -100,6 +101,7 @@ export const MercadoPagoWallet = ({ items, total, onBeforePay, disabled }: Merca
                 onClick={createPreferenceIdFromAPI}
                 aria-label="Continuar Compra"
                 disabled={disabled}
+                loading={loading}
                 messageLoading="Cargando Metodo de Pago..."
             >
                 <CreditCardIcon className="w-6 h-6" />

@@ -22,7 +22,7 @@ const PackageBuy = ({ packageData, date, people }: { packageData: PackageData, d
 
     const items = [
         {
-            id: packageData.id,
+            service_id: packageData.id,
             name: packageData.name,
             quantity: selectedPeople,
             priceWithTax: Number(packageData.price),
