@@ -8,7 +8,7 @@ import { axiosInstance } from "@/api/axiosInstance";
 const PaymentSuccess: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { handleClearCartAfterPayment } = useCart();
+  const { handleClearCart } = useCart();
   const [paymentId, setPaymentId] = useState<string | null>(null);
   const location = useLocation();
 
@@ -33,13 +33,13 @@ const PaymentSuccess: React.FC = () => {
       }).then(() => {
         // Limpia los datos temporales
         localStorage.removeItem("reservationData");
-        handleClearCartAfterPayment();
+        handleClearCart();
       }).catch((err) => {
         // Maneja el error (opcional: muestra mensaje al usuario)
         console.error("Error creando la reserva:", err);
       });
     }
-  }, [searchParams, handleClearCartAfterPayment, reservationData]);
+  }, [searchParams, handleClearCart, reservationData]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-green-100 flex items-center justify-center p-8">

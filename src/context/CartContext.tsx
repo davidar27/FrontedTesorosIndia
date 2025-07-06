@@ -21,7 +21,6 @@ interface CartContextType {
     handleUpdateQuantity: (item: CartItem) => void;
     handleClearCart: () => void;
     handleFetchCart: () => void;
-    handleClearCartAfterPayment: () => void;
     loading: boolean;
 }
 
@@ -138,13 +137,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                 .catch(() => mostrarToast("Error al sincronizar con el servidor (vaciar carrito)."));
         }
     };
-
-    // Limpiar carrito tras pago exitoso
-    const handleClearCartAfterPayment = () => {
-        setItems([]);
-        guardarEnLocalStorage([]);
-    };
-
     const total = calcularTotal(items);
 
     return (
@@ -157,7 +149,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                 handleUpdateQuantity,
                 handleClearCart,
                 handleFetchCart,
-                handleClearCartAfterPayment,
                 loading,
             }}
         >
