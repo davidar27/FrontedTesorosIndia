@@ -29,7 +29,7 @@ const PaymentSuccess: React.FC = () => {
     }
 
     if (statusParam === 'approved') {
-      if (reservationData) {
+      if (reservationData.room_id) {
         axiosInstance.post(`/reservas/reservar/${reservationData.room_id}`, {
           ...reservationData,
           paymentId: paymentIdParam,
@@ -40,9 +40,10 @@ const PaymentSuccess: React.FC = () => {
         });
       }
       handleClearCart();
-
       localStorage.removeItem("paymentId");
       localStorage.removeItem("statusPayment");
+      localStorage.removeItem("reservationData");
+
 
     }
 
