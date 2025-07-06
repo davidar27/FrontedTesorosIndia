@@ -256,16 +256,16 @@ function AuthProvider({ children }: { children: ReactNode }) {
         const preferenceId = params.get('preferenceId');
         console.log(preferenceId);
         const token = params.get('token');
-        const statusPayment = params.get('status');
-        const paymentId = params.get('payment_id');
+        const statusParam = params.get('status');
+        const paymentIdParam = params.get('payment_id');
         if (token) {
             localStorage.setItem('token', token);
         }
-        if (statusPayment) {
-            localStorage.setItem('statusPayment', statusPayment);
+        if (paymentIdParam) {
+            localStorage.setItem('paymentId', paymentIdParam);
         }
-        if (paymentId) {
-            localStorage.setItem('paymentId', paymentId);
+        if (statusParam) {
+            localStorage.setItem('statusPayment', statusParam);
         }
     }, [location.search]);
 

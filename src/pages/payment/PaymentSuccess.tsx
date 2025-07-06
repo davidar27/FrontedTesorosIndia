@@ -16,28 +16,32 @@ const PaymentSuccess: React.FC = () => {
   const reservationData = location.state?.reservationData || JSON.parse(localStorage.getItem("reservationData") || "null");
 
   useEffect(() => {
-    // Obtener parámetros de URL de MercadoPago
+    // Guarda los parámetros en localStorage si están en la URL
     const paymentIdParam = searchParams.get('payment_id') || localStorage.getItem('paymentId');
     const statusParam = searchParams.get('status') || localStorage.getItem('statusPayment');
     // const preferenceIdParam = searchParams.get('preference_id');
+
+    console.log("paymentIdParam", paymentIdParam);
+    console.log("statusParam", statusParam);
+    console.log("reservationData", reservationData);
+
 
     if (paymentIdParam) {
       setPaymentId(paymentIdParam);
     }
 
-    if (statusParam === 'approved' && reservationData) {
-      // Llama a tu API para crear la reserva
-      axiosInstance.post('/reserva/reservar', {
-        ...reservationData,
-        paymentId: paymentIdParam,
-      }).then(() => {
-        // Limpia los datos temporales
-        localStorage.removeItem("reservationData");
-        handleClearCart();
-      }).catch((err) => {
-        // Maneja el error (opcional: muestra mensaje al usuario)
-        console.error("Error creando la reserva:", err);
-      });
+    if (statusParam === 'approved') {
+      if (reservationData) {
+        axiosInstance.post('/reserva/reservar', {
+          ...reservationData,
+          paymentId: paymentIdParam,
+        }).then(() => {
+          localStorage.removeItem("reservationData");
+        }).catch((err) => {
+          console.error("Error creando la reserva:", err);
+        });
+      }
+      handleClearCart();
     }
   }, [searchParams, handleClearCart, reservationData]);
 
