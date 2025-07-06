@@ -7,6 +7,7 @@ import ConfirmDialog from "@/components/ui/feedback/ConfirmDialog";
 import { useNavigate } from "react-router-dom";
 interface Item {
     service_id: number;
+    productId?: number;
     name: string;
     quantity: number;
     priceWithTax: number;
@@ -91,7 +92,7 @@ export const MercadoPagoWallet = ({ items, total, onBeforePay, disabled, loading
         
         const payload = {
             items: items.map(item => ({
-                id: item.service_id,
+                id: item.service_id || item.productId,
                 title: item.name,
                 unit_price: item.priceWithTax,
                 quantity: item.quantity,
