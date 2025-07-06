@@ -21,11 +21,7 @@ const PaymentSuccess: React.FC = () => {
     // Guarda los parámetros en localStorage si están en la URL
     const paymentIdParam = searchParams.get('payment_id') || localStorage.getItem('paymentId');
     const statusParam = searchParams.get('status') || localStorage.getItem('statusPayment');
-    // const preferenceIdParam = searchParams.get('preference_id');
-
-    console.log("paymentIdParam", paymentIdParam);
-    console.log("statusParam", statusParam);
-    console.log("reservationData", reservationData.room_id);
+    // const preferenceIdParam = searchParams.get('preference_id') || localStorage.getItem('preferenceId');
 
 
     if (paymentIdParam) {
