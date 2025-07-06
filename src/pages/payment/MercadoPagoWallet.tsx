@@ -1,5 +1,7 @@
 import { axiosInstance } from "@/api/axiosInstance";
 import { useEffect, useState, useCallback } from "react";
+import { ArrowRightIcon, CreditCardIcon } from "lucide-react";
+import Button from "@/components/ui/buttons/Button";
 
 interface Item {
     id: number;
@@ -17,9 +19,11 @@ declare global {
 interface MercadoPagoWalletProps {
     items: Item[];
     total: number;
+    onBeforePay?: () => void;
+    disabled?: boolean;
 }
 
-export const MercadoPagoWallet = ({ items, total }: MercadoPagoWalletProps) => {
+export const MercadoPagoWallet = ({ items, total, onBeforePay, disabled }: MercadoPagoWalletProps) => {
     const publicKey = import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY;
     const createPreferenceEndpoint = "/pagos/preferencia";
     const [preferenceId, setPreferenceId] = useState<string | null>(null);
@@ -71,6 +75,7 @@ export const MercadoPagoWallet = ({ items, total }: MercadoPagoWalletProps) => {
 
 
     const createPreferenceIdFromAPI = async () => {
+        if (onBeforePay) onBeforePay();
         const payload = {
             items: items.map(item => ({
                 title: item.name,
@@ -90,14 +95,18 @@ export const MercadoPagoWallet = ({ items, total }: MercadoPagoWalletProps) => {
     };
 
     return (
-        <div>
-            <button
+        <div className="flex justify-center">
+            <Button
                 onClick={createPreferenceIdFromAPI}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-md w-full text-lg font-semibold flex items-center justify-center space-x-3"
                 aria-label="Continuar Compra"
+                disabled={disabled}
+                messageLoading="Cargando Metodo de Pago..."
             >
+                <CreditCardIcon className="w-6 h-6" />
                 <span>Continuar Compra</span>
-            </button>
+                <ArrowRightIcon className="w-6 h-6" />
+
+            </Button>
             <div className="cho-container"></div>
         </div>
     );

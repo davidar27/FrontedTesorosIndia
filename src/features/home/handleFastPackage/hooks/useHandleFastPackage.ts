@@ -5,8 +5,11 @@ import { ValidationErrors, Package, ReservationData } from "@/features/home/hand
 
 export const useHandleFastPackage = () => {
     const navigate = useNavigate();
-    const [date, setDate] = useState<string>("");
-    const [people, setPeople] = useState<number>(1);
+    const [date, setDate] = useState<string>(() => localStorage.getItem("fast_package_date") || "");
+    const [people, setPeople] = useState<number>(() => {
+        const stored = localStorage.getItem("fast_package_people");
+        return stored ? Number(stored) : 1;
+    });
     const [selectedPackageId, setSelectedPackageId] = useState<number>(0);
     const [packages, setPackages] = useState<Package[]>([]);
     const [errors, setErrors] = useState<ValidationErrors>({});
@@ -26,6 +29,11 @@ export const useHandleFastPackage = () => {
 
         fetchPackages();
     }, []);
+
+    useEffect(() => {
+        if (date) localStorage.setItem("fast_package_date", date);
+        if (people) localStorage.setItem("fast_package_people", String(people));
+    }, [date, people]);
 
     const selectedPackage = packages.find(p => p.id == selectedPackageId);
 
@@ -145,6 +153,7 @@ export const useHandleFastPackage = () => {
             navigate(`/paquetes/${selectedPackage.id}?date=${date}&people=${people}`, {
                 state: reservationData
             });
+
 
         } catch (error) {
             console.error('Error en reserva rápida:', error);
