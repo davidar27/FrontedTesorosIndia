@@ -102,7 +102,7 @@ export const MercadoPagoWallet = ({ items, total, onBeforePay, disabled, loading
                 user_id: user?.id,
                 address: user?.address,
                 items: items.map(item => ({
-                    servicio_id: item.service_id,
+                    servicio_id: item.service_id || item.productId,
                     cantidad: item.quantity,
                     precio_unitario: item.priceWithTax,
                 }))
