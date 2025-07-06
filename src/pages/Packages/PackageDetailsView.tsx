@@ -16,8 +16,9 @@ const PackageDetailsView: React.FC<PackageDetailsViewProps> = (
     const { packageId } = useParams<{ packageId: string }>();
     const { packageData, loading, error } = usePackageData(packageId);
     const [searchParams] = useSearchParams();
-    const date = searchParams.get("date");
-    const people = searchParams.get("people")
+    const date = searchParams.get("date") || localStorage.getItem("fast_package_date") || "";
+    const people = searchParams.get("people") || localStorage.getItem("fast_package_people") || "";
+    
 
 
     useEffect(() => {

@@ -1,32 +1,45 @@
 import React, { useEffect, useState } from "react";
 import { CheckCircle, Mail, Clock } from "lucide-react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import Button from "@/components/ui/buttons/Button";
+import { axiosInstance } from "@/api/axiosInstance";
 
 const PaymentSuccess: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { handleClearCartAfterPayment } = useCart();
   const [paymentId, setPaymentId] = useState<string | null>(null);
+  const location = useLocation();
+
+  // Recupera los datos de la reserva (pueden venir en location.state o localStorage)
+  const reservationData = location.state?.reservationData || JSON.parse(localStorage.getItem("reservationData") || "null");
 
   useEffect(() => {
     // Obtener parámetros de URL de MercadoPago
-    const paymentIdParam = searchParams.get('payment_id');
-    const statusParam = searchParams.get('status');
-    localStorage.removeItem('cart_items');
-
+    const paymentIdParam = searchParams.get('payment_id') || localStorage.getItem('paymentId');
+    const statusParam = searchParams.get('status') || localStorage.getItem('statusPayment');
     // const preferenceIdParam = searchParams.get('preference_id');
 
     if (paymentIdParam) {
       setPaymentId(paymentIdParam);
     }
 
-    if (statusParam === 'approved' || statusParam === 'pending') {
-      localStorage.removeItem('cart_items');
-      handleClearCartAfterPayment();
+    if (statusParam === 'approved' && reservationData) {
+      // Llama a tu API para crear la reserva
+      axiosInstance.post('/reserva/reservar', {
+        ...reservationData,
+        paymentId: paymentIdParam,
+      }).then(() => {
+        // Limpia los datos temporales
+        localStorage.removeItem("reservationData");
+        handleClearCartAfterPayment();
+      }).catch((err) => {
+        // Maneja el error (opcional: muestra mensaje al usuario)
+        console.error("Error creando la reserva:", err);
+      });
     }
-  }, [searchParams, handleClearCartAfterPayment]);
+  }, [searchParams, handleClearCartAfterPayment, reservationData]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-green-100 flex items-center justify-center p-8">

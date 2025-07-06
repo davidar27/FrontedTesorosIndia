@@ -60,7 +60,7 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
     containerClassName = '',
     messageClassName = '',
     speed = 'normal',
-    overlayBg = 'bg-white/80 backdrop-blur-sm'
+    overlayBg = 'bg-white/80 backdrop-blur-sm',
 }) => {
     // No renderizar si show es false
     if (!show) return null;

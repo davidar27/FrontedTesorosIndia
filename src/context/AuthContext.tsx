@@ -159,13 +159,13 @@ function AuthProvider({ children }: { children: ReactNode }) {
                     queryClient.setQueryData(AUTH_QUERY_KEY, refreshedUser);
                     scheduleTokenRefresh();
                 } catch {
-                    
-                        const verifyResult = await authService.verifyToken();
-                        if (verifyResult.isValid && verifyResult.user) {
-                            queryClient.setQueryData(AUTH_QUERY_KEY, verifyResult.user);
-                            scheduleTokenRefresh();
-                            return;
-                        }
+
+                    const verifyResult = await authService.verifyToken();
+                    if (verifyResult.isValid && verifyResult.user) {
+                        queryClient.setQueryData(AUTH_QUERY_KEY, verifyResult.user);
+                        scheduleTokenRefresh();
+                        return;
+                    }
                     if (!isPublicRoute(location.pathname)) {
                         await logout();
                     }
@@ -256,8 +256,16 @@ function AuthProvider({ children }: { children: ReactNode }) {
         const preferenceId = params.get('preferenceId');
         console.log(preferenceId);
         const token = params.get('token');
+        const statusPayment = params.get('status');
+        const paymentId = params.get('payment_id');
         if (token) {
             localStorage.setItem('token', token);
+        }
+        if (statusPayment) {
+            localStorage.setItem('statusPayment', statusPayment);
+        }
+        if (paymentId) {
+            localStorage.setItem('paymentId', paymentId);
         }
     }, [location.search]);
 

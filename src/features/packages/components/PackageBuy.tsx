@@ -1,72 +1,48 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
 import { DateSelector } from '@/features/home/handleFastPackage/components/DateSelector';
 import { PeopleCounter } from '@/features/home/handleFastPackage/components/PeopleCounter';
-import { ShoppingCart } from 'lucide-react';
 import { formatPrice } from '@/utils/formatPrice';
-import LoadingSpinner from '@/components/ui/display/LoadingSpinner';
 import { PackageData } from '../types/packagesTypes';
-import Hostel from './Hostel';
-
-
-
+import Hostel, { Room } from './Hostel';
+import { MercadoPagoWallet } from '@/pages/payment/MercadoPagoWallet';
+import { useAuth } from '@/context/AuthContext';
 
 
 const PackageBuy = ({ packageData, date, people }: { packageData: PackageData, date: string | null, people: string | null }) => {
 
-    const [isProcessing, setIsProcessing] = useState(false);
-    const navigate = useNavigate();
-
+    const [isProcessing,] = useState(false);
+    const { user } = useAuth();
 
     const [selectedDate, setSelectedDate] = useState(date || "");
     const [selectedPeople, setSelectedPeople] = useState(Number(people) || 1);
+    const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
+    
 
     const totalPrice = packageData ? Number(packageData.price) * selectedPeople : 0;
 
-
-
-    // Manejar compra del paquete
-    const handlePurchase = async () => {
-        if (!selectedDate) {
-            alert('Por favor selecciona una fecha para tu reserva');
-            return;
+    const items = [
+        {
+            id: packageData.id,
+            name: packageData.name,
+            quantity: selectedPeople,
+            priceWithTax: Number(packageData.price),
         }
+    ];
 
-        if (!packageData) return;
+    const finalTotal = items.reduce((acc, item) => acc + item.priceWithTax * item.quantity, 0);
 
-        setIsProcessing(true);
+    const handleBeforePay = () => {
 
-        try {
-            // Aquí iría la lógica de compra/reserva
-            // Por ejemplo, llamar a tu API para crear la reserva
-
-            const reservationData = {
-                id: packageData.id,
-                date: selectedDate,
-                people: selectedPeople,
-                totalPrice: totalPrice,
-            };
-
-            console.log('Datos de reserva:', reservationData);
-
-            // Simular llamada a API
-            await new Promise(resolve => setTimeout(resolve, 2000));
-
-            // Redirigir a página de pago o confirmación
-            navigate(`/checkout?date=${selectedDate}&people=${selectedPeople}`, {
-                state: {
-                    type: 'package',
-                    data: reservationData,
-                    packageInfo: packageData
-                }
-            });
-
-        } catch (error) {
-            console.error('Error al procesar la compra:', error);
-            alert('Hubo un error al procesar tu solicitud. Por favor intenta nuevamente.');
-        } finally {
-            setIsProcessing(false);
-        }
+        const reservationData = {
+            id: packageData.id,
+            date: selectedDate,
+            people: selectedPeople,
+            totalPrice: totalPrice,
+            room_id: selectedRoom?.room_id,
+            user_id: user?.id,
+            // ...otros datos necesarios
+        };
+        localStorage.setItem("reservationData", JSON.stringify(reservationData));
     };
 
     const canPurchase = selectedDate && selectedPeople > 0 && selectedPeople <= (packageData?.capacity || 0);
@@ -99,7 +75,7 @@ const PackageBuy = ({ packageData, date, people }: { packageData: PackageData, d
                     />
                 </div>
             </div>
-            <Hostel />
+            <Hostel selectedRoom={selectedRoom} setSelectedRoom={setSelectedRoom} />
             {/* Resumen de Precio */}
             <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
                 <div className="flex justify-between items-center mb-2">
@@ -118,29 +94,6 @@ const PackageBuy = ({ packageData, date, people }: { packageData: PackageData, d
                     </span>
                 </div>
             </div>
-
-            {/* Botón de Compra */}
-            <button
-                onClick={handlePurchase}
-                disabled={!canPurchase || isProcessing}
-                className={`w-full py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center space-x-2 ${canPurchase && !isProcessing
-                    ? 'bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    }`}
-            >
-                {isProcessing ? (
-                    <>
-                        <LoadingSpinner message="" />
-                        <span>Procesando...</span>
-                    </>
-                ) : (
-                    <>
-                        <ShoppingCart className="h-5 w-5" />
-                        <span>Comprar Paquete - {formatPrice(totalPrice)}</span>
-                    </>
-                )}
-            </button>
-
             {
                 !canPurchase && !isProcessing && (
                     <p className="text-center text-red-600 text-sm mt-3">
@@ -150,6 +103,13 @@ const PackageBuy = ({ packageData, date, people }: { packageData: PackageData, d
                     </p>
                 )
             }
+
+            {/* Botón de Compra */}
+            <MercadoPagoWallet items={items} total={finalTotal} onBeforePay={handleBeforePay} disabled={!canPurchase} />
+
+
+
+
         </section >
     )
 }
