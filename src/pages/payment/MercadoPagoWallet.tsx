@@ -2,7 +2,9 @@ import { axiosInstance } from "@/api/axiosInstance";
 import { useEffect, useState, useCallback } from "react";
 import { ArrowRightIcon, CreditCardIcon } from "lucide-react";
 import Button from "@/components/ui/buttons/Button";
-
+import { useAuth } from "@/context/AuthContext";
+import ConfirmDialog from "@/components/ui/feedback/ConfirmDialog";
+import { useNavigate } from "react-router-dom";
 interface Item {
     service_id: number;
     name: string;
@@ -25,10 +27,12 @@ interface MercadoPagoWalletProps {
 }
 
 export const MercadoPagoWallet = ({ items, total, onBeforePay, disabled, loading }: MercadoPagoWalletProps) => {
+    const { user } = useAuth();
+    const [showLoginModal, setShowLoginModal] = useState(false);
     const publicKey = (import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY || "APP_USR-2f137f0b-6bf1-4429-b5b3-23ae0691657e").trim();
     const createPreferenceEndpoint = "/pagos/preferencia";
     const [preferenceId, setPreferenceId] = useState<string | null>(null);
-
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (!window.MercadoPago) {
@@ -77,6 +81,11 @@ export const MercadoPagoWallet = ({ items, total, onBeforePay, disabled, loading
 
     const createPreferenceIdFromAPI = async () => {
         if (onBeforePay) onBeforePay();
+
+        if (!user || user.role !== "cliente") {
+            setShowLoginModal(true);
+            return;
+        }
         const payload = {
             items: items.map(item => ({
                 title: item.name,
@@ -110,6 +119,17 @@ export const MercadoPagoWallet = ({ items, total, onBeforePay, disabled, loading
 
             </Button>
             <div className="cho-container"></div>
+
+
+            <ConfirmDialog
+                open={showLoginModal}
+                title="¡Hola! Para comprar un paquete, ingresa a tu cuenta"
+                description="Debes iniciar sesión para poder comprar un paquete."
+                confirmText="Iniciar sesión"
+                cancelText="Cerrar"
+                onConfirm={() => navigate('/auth/iniciar-sesion')}
+                onCancel={() => setShowLoginModal(false)}
+            />
         </div>
     );
 };
