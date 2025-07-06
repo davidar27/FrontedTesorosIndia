@@ -16,7 +16,7 @@ const PackageBuy = ({ packageData, date, people }: { packageData: PackageData, d
     const [selectedDate, setSelectedDate] = useState(date || "");
     const [selectedPeople, setSelectedPeople] = useState(Number(people) || 1);
     const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
-    
+    const [loading, setLoading] = useState(false);
 
     const totalPrice = packageData ? Number(packageData.price) * selectedPeople : 0;
 
@@ -32,6 +32,7 @@ const PackageBuy = ({ packageData, date, people }: { packageData: PackageData, d
     const finalTotal = items.reduce((acc, item) => acc + item.priceWithTax * item.quantity, 0);
 
     const handleBeforePay = () => {
+        setLoading(true);
 
         const reservationData = {
             id: packageData.id,
@@ -43,6 +44,7 @@ const PackageBuy = ({ packageData, date, people }: { packageData: PackageData, d
             // ...otros datos necesarios
         };
         localStorage.setItem("reservationData", JSON.stringify(reservationData));
+        setLoading(false);
     };
 
     const canPurchase = selectedDate && selectedPeople > 0 && selectedPeople <= (packageData?.capacity || 0);
@@ -105,7 +107,7 @@ const PackageBuy = ({ packageData, date, people }: { packageData: PackageData, d
             }
 
             {/* Botón de Compra */}
-            <MercadoPagoWallet items={items} total={finalTotal} onBeforePay={handleBeforePay} disabled={!canPurchase} />
+            <MercadoPagoWallet items={items} total={finalTotal} onBeforePay={handleBeforePay} disabled={!canPurchase} loading={loading} />
 
 
 

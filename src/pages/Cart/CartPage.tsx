@@ -203,7 +203,7 @@ const CartPage: React.FC = () => {
                         </div>
 
                         {/* Action Buttons */}
-                        <MercadoPagoWallet items={items} total={finalTotal} />
+                        <MercadoPagoWallet items={items} total={finalTotal} loading={loading} />
 
                         {/* Trust Indicators */}
                         <div className="mt-6 pt-6 border-t border-emerald-200">
