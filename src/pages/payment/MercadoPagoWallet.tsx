@@ -86,6 +86,9 @@ export const MercadoPagoWallet = ({ items, total, onBeforePay, disabled, loading
             setShowLoginModal(true);
             return;
         }
+
+        console.log(items);
+        
         const payload = {
             items: items.map(item => ({
                 id: item.service_id,

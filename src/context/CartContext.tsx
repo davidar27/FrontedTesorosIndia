@@ -75,8 +75,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             setItems(JSON.parse(local));
         }
         
-        // Solo sincronizar con backend si el usuario está autenticado y no es un observador
-        // y la autenticación ya se ha inicializado
         if (isAuthenticated && user?.role !== 'observador' && !authLoading) {
             handleFetchCart();
         }
