@@ -1,9 +1,8 @@
 import React from 'react';
-import { ShoppingCart, Plus, Trash2, ArrowRight } from 'lucide-react';
-import { formatPrice } from '@/utils/formatPrice';
-import { Product } from '@/features/experience/types/experienceTypes';
-import { getImageUrl } from '@/utils/getImageUrl';
-import Picture from '@/components/ui/display/Picture';
+import { ShoppingCart, Plus, ArrowRight } from 'lucide-react';
+import { Product } from '@/features/products/components/ProductCard';
+import ProductCard from '@/features/products/components/ProductCard';
+import { useNavigate, useParams } from 'react-router-dom';
 
 interface ProductsSectionProps {
     products: Product[];
@@ -20,10 +19,11 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({
     products,
     editProducts,
     isEditMode,
-    permissions
+    permissions,
 }) => {
     const displayProducts = isEditMode ? editProducts : products;
-
+    const navigate = useNavigate();
+    const { experience_id } = useParams();
     return (
         <section className="mb-12">
             <div className="bg-white rounded-3xl shadow-xl p-8">
@@ -41,7 +41,10 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({
                                 Agregar Producto
                             </button>
                         )}
-                        <button className="text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-2 group">
+                        <button
+                            className="text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-2 group cursor-pointer"
+                            onClick={() => navigate(`/productos/?search=${experience_id}`)}
+                        >
                             Ver todos
                             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </button>
@@ -50,39 +53,12 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({
 
                 <div className="relative w-full max-w-6xl overflow-hidden">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
                         {displayProducts.map((product) => (
-                            <div key={product.id} className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                                <div className="relative overflow-hidden">
-                                    <Picture
-                                        src={getImageUrl(product.image)}
-                                        alt={product.name}
-                                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                                    />
-                                    <div className="absolute top-3 right-3 flex gap-2">
-                                        {isEditMode && permissions.canManageProducts && (
-                                            <button className="p-2 bg-red-500/90 backdrop-blur-sm rounded-full shadow-md hover:bg-red-500 transition-colors">
-                                                <Trash2 className="w-4 h-4 text-white" />
-                                            </button>
-                                        )}
-                                    </div>
-                                </div>
-
-                                <div className="p-6">
-                                    <h3 className="font-bold text-gray-800 text-lg mb-2">{product.name}</h3>
-                                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
-
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-2xl font-bold text-emerald-600">
-                                            {formatPrice(product.price)}
-                                        </span>
-                                        {}
-                                        <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl font-medium transition-colors flex items-center gap-2 group">
-                                            <ShoppingCart className="w-4 h-4" />
-                                            <span className="hidden sm:inline">Agregar</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                            <ProductCard
+                                key={product.id}
+                                product={product as unknown as Product}
+                            />
                         ))}
                     </div>
                     {displayProducts.length === 0 && (

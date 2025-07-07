@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ExperienceApi } from '@/services/experience/experience';
-import { Experience, Product, TeamMember, Review } from '@/features/experience/types/experienceTypes';
+import { Experience, TeamMember, Review } from '@/features/experience/types/experienceTypes';
+import { Product } from '@/features/products/components/ProductCard';
 import { RatingStats } from '@/features/experience/components/reviews/RatingSummary';
 
 export const useExperienceData = (experienceId: number) => {

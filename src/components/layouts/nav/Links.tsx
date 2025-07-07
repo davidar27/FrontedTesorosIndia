@@ -21,7 +21,6 @@ export const getNavLinks = (user: User | null, experience_id: number): NavLink[]
 
     const entrepreneurLinks: NavLink[] = [
         { path: `/experiencias/${experience_id}`, label: "Mi Experiencia" },
-        { path: `/experiencias/${experience_id}/estadisticas`, label: "Mis Estadísticas" },
     ];
 
     if (!user) return publicLinks;
@@ -30,7 +29,7 @@ export const getNavLinks = (user: User | null, experience_id: number): NavLink[]
         return [...adminLinks];
     }
     if (user.role === 'emprendedor') {
-        return [ ...entrepreneurLinks];
+        return [...publicLinks, ...entrepreneurLinks];
     }
 
     return publicLinks;

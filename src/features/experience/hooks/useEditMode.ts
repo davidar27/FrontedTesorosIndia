@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Experience, Product, TeamMember } from '@/features/experience/types/experienceTypes';
+import { Experience, TeamMember } from '@/features/experience/types/experienceTypes';
+import { Product } from '@/features/products/components/ProductCard';
 import { axiosInstance } from '@/api/axiosInstance';
 
 export const useEditMode = (

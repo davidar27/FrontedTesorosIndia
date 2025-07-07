@@ -13,13 +13,13 @@ export interface Product {
   id: number;
   name: string;
   name_product?: string;
-  price: string;
+  price?: number;
   image: string;
   rating: number;
   category?: string;
   experience_id?: number;
   stock: number;
-  priceWithTax: number;
+  priceWithTax?: number;
 }
 
 interface ProductCardProps {
@@ -141,19 +141,20 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             }
           </div>
 
-          <p className="text-gray-800 font-bold text-lg">{formatPrice(product.priceWithTax)}</p>
-
-          <div className="flex items-center justify-between w-full">
-            <Button
-              type="button"
-              onClick={handleAdd}
-              disabled={isAddingToCart || product.stock <= 0}
-              className={`flex-1 ${product.stock <= 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
-            >
-              <ShoppingCart className="w-4 h-4" />
-              {isAddingToCart ? 'Añadiendo...' : product.stock <= 0 ? 'Sin stock' : 'Añadir al carrito'}
-            </Button>
-          </div>
+          <p className="text-gray-800 font-bold text-lg">{formatPrice(product.priceWithTax || 0 || product.price || 0)}</p>
+          {user?.role !== 'emprendedor' && (
+            <div className="flex items-center justify-between w-full">
+              <Button
+                type="button"
+                onClick={handleAdd}
+                disabled={isAddingToCart || product.stock <= 0}
+                className={`flex-1 ${product.stock <= 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                <ShoppingCart className="w-4 h-4" />
+                {isAddingToCart ? 'Añadiendo...' : product.stock <= 0 ? 'Sin stock' : 'Añadir al carrito'}
+              </Button>
+            </div>
+          )}
         </div>
 
         <ConfirmDialog

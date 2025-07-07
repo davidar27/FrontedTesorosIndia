@@ -96,9 +96,7 @@ export default function ProductList() {
 
         // Filtrar por precio
         filtered = filtered.filter(product => {
-            const price = typeof product.price === 'string'
-                ? parseFloat(product.price.replace(/[^\d.-]/g, ''))
-                : Number(product.price) || 0;
+            const price = Number(product.price || product.priceWithTax) || 0;
             return price >= filters.priceRange.min && price <= filters.priceRange.max;
         });
 
@@ -115,7 +113,8 @@ export default function ProductList() {
             const normalizedSearch = normalizeText(effectiveSearch);
             filtered = filtered.filter(product => {
                 const name = product.name || '';
-                return normalizeText(name).includes(normalizedSearch);
+                const experience_id = product.experience_id || '';
+                return normalizeText(name).includes(normalizedSearch) || normalizeText(experience_id.toString()).includes(normalizedSearch);
             });
         }
 
@@ -123,12 +122,8 @@ export default function ProductList() {
         filtered.sort((a, b) => {
             switch (filters.sortBy) {
                 case 'price': {
-                    const priceA = typeof a.price === 'string'
-                        ? parseFloat(a.price.replace(/[^\d.-]/g, ''))
-                        : Number(a.price) || 0;
-                    const priceB = typeof b.price === 'string'
-                        ? parseFloat(b.price.replace(/[^\d.-]/g, ''))
-                        : Number(b.price) || 0;
+                    const priceA = Number(a.price || a.priceWithTax) || 0;
+                    const priceB = Number(b.price || b.priceWithTax) || 0;
                     return priceA - priceB;
                 }
                 case 'rating': {
