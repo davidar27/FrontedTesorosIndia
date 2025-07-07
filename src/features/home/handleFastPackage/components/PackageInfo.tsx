@@ -24,7 +24,7 @@ export const PackageInfo: React.FC<PackageInfoProps> = ({
                     <span>📦</span>
                     <span>
                         <span className="font-bold">{availablePackages.length}</span> paquete{availablePackages.length !== 1 ? 's ' : ' '}
-                        disponible{availablePackages.length !== 1 ? 's' : ' '}
+                        disponible{availablePackages.length !== 1 ? 's ' : ' '}
                         para {people}
                         {people === 1 ? ' persona' : ' personas'}
                     </span>
