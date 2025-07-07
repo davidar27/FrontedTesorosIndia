@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { MessageCircle, Star, X, Send } from 'lucide-react';
+import { MessageCircle, X, Send } from 'lucide-react';
 import { Experience, Review } from '@/features/experience/types/experienceTypes';
 import { axiosInstance } from '@/api/axiosInstance';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 import { ProductDetail } from '@/features/products/types/ProductDetailTypes';
+import ConfirmDialog from '@/components/ui/feedback/ConfirmDialog';
+import { useNavigate } from 'react-router-dom';
+import StarRating from '@/features/experience/components/reviews/StarRating';
 
 interface CTASectionProps {
     isVisible?: boolean;
@@ -29,7 +32,14 @@ const CTASection: React.FC<CTASectionProps> = ({
     const [comment, setComment] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { user } = useAuth();
+    const [showLoginModal, setShowLoginModal] = useState(false);
+    const navigate = useNavigate();
+
     const handleWriteReview = () => {
+        if (!user || user.role === "observador") {
+            setShowLoginModal(true);
+            return;
+        }
         setIsWritingReview(true);
         onWriteReview?.();
     };
@@ -42,6 +52,10 @@ const CTASection: React.FC<CTASectionProps> = ({
     };
 
     const handleSubmitReview = async () => {
+        if (!user || user.role === "observador") {
+            setShowLoginModal(true);
+            return;
+        }
         if (isSubmitting || rating === 0) return;
 
         try {
@@ -51,7 +65,7 @@ const CTASection: React.FC<CTASectionProps> = ({
                 user_id: user?.id,
                 type: isProduct ? 'producto' : 'experiencia',
                 entity_id: isProduct ? product?.product_id : experience?.id,
-                rating: rating * 2,
+                rating: rating, // Ya no multiplicamos por 2, rating ya está en escala 1-10
                 review: comment,
             });
 
@@ -62,7 +76,7 @@ const CTASection: React.FC<CTASectionProps> = ({
                 user_name: user?.name || 'Usuario',
                 user_image: null,
                 review_date: new Date().toISOString().split('T')[0],
-                rating: rating * 2,
+                rating: rating, // Ya no multiplicamos por 2
                 comment: comment,
                 responses: []
             };
@@ -80,17 +94,33 @@ const CTASection: React.FC<CTASectionProps> = ({
         }
     };
 
-
-    const handleStarClick = (value: number) => {
-        setRating(value);
+    // Función para convertir posición del mouse a rating
+    const getRatingFromPosition = (starIndex: number, isHalf: boolean): number => {
+        const baseRating = (starIndex + 1) * 2; // 2, 4, 6, 8, 10
+        return isHalf ? baseRating - 1 : baseRating; // 1, 3, 5, 7, 9 o 2, 4, 6, 8, 10
     };
 
-    const handleStarHover = (value: number) => {
-        setHoverRating(value);
+    const handleStarClick = (starIndex: number, isHalf: boolean) => {
+        const newRating = getRatingFromPosition(starIndex, isHalf);
+        setRating(newRating);
+    };
+
+    const handleStarHover = (starIndex: number, isHalf: boolean) => {
+        const newRating = getRatingFromPosition(starIndex, isHalf);
+        setHoverRating(newRating);
     };
 
     const handleStarLeave = () => {
         setHoverRating(0);
+    };
+
+    // Función para obtener el texto descriptivo del rating
+    const getRatingText = (rating: number): string => {
+        if (rating <= 2) return "Muy malo";
+        if (rating <= 4) return "Malo";
+        if (rating <= 6) return "Regular";
+        if (rating <= 8) return "Bueno";
+        return "Excelente";
     };
 
     if (!isVisible) return null;
@@ -127,38 +157,46 @@ const CTASection: React.FC<CTASectionProps> = ({
                                         </h3>
                                     </div>
 
-                                    {/* Rating de estrellas */}
-                                    <div className=" flex flex-col items-center space-y-2">
+                                    {/* Rating de estrellas con medias estrellas */}
+                                    <div className="flex flex-col items-center space-y-2">
                                         <label className="block text-sm font-medium text-gray-700">
                                             Califica tu experiencia
                                         </label>
-                                        <div className="flex items-center gap-1">
-                                            {[1, 2, 3, 4, 5].map((value) => (
-                                                <button
-                                                    key={value}
-                                                    type="button"
-                                                    onClick={() => handleStarClick(value)}
-                                                    onMouseEnter={() => handleStarHover(value)}
-                                                    onMouseLeave={handleStarLeave}
-                                                    className="transition-all duration-200 hover:scale-110 cursor-pointer"
-                                                >
-                                                    <Star
-                                                        className={`w-8 h-8 ${value <= (hoverRating || rating)
-                                                            ? 'text-yellow-400 fill-current'
-                                                            : 'text-gray-300'
-                                                            }`}
-                                                    />
-                                                </button>
-                                            ))}
+                                        <div className="flex items-center gap-1 relative">
+                                            {/* Capa visual de estrellas */}
+                                            <StarRating rating={(hoverRating || rating) / 2} maxRating={5} className='w-8 h-8' />
+                                            {/* Capa interactiva invisible para selección */}
+                                            <div className="absolute inset-0 flex">
+                                                {[0, 1, 2, 3, 4].map((starIndex) => (
+                                                    <div key={starIndex} className="relative w-8 h-8">
+                                                        {/* Estrella completa */}
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleStarClick(starIndex, false)}
+                                                            onMouseEnter={() => handleStarHover(starIndex, false)}
+                                                            onMouseLeave={handleStarLeave}
+                                                            className="absolute left-0 top-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                                        />
+                                                        {/* Media estrella (solo si no es la última estrella) */}
+                                                        {starIndex < 4 && (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => handleStarClick(starIndex, true)}
+                                                                onMouseEnter={() => handleStarHover(starIndex, true)}
+                                                                onMouseLeave={handleStarLeave}
+                                                                className="absolute left-1/2 top-0 w-1/2 h-full opacity-0 cursor-pointer z-20"
+                                                            />
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
                                         {rating > 0 && (
-                                            <p className="text-sm text-gray-600">
-                                                {rating === 1 && "Muy malo"}
-                                                {rating === 2 && "Malo"}
-                                                {rating === 3 && "Regular"}
-                                                {rating === 4 && "Bueno"}
-                                                {rating === 5 && "Excelente"}
-                                            </p>
+                                            <div className="text-center">
+                                                <p className="text-sm text-gray-600">
+                                                    {getRatingText(rating)} ({rating}/10)
+                                                </p>
+                                            </div>
                                         )}
                                     </div>
 
@@ -220,6 +258,16 @@ const CTASection: React.FC<CTASectionProps> = ({
                     </div>
                 </div>
             </div>
+            <ConfirmDialog
+                open={showLoginModal}
+                title="¡Hola! Para escribir una opinión, ingresa a tu cuenta"
+                description="Debes iniciar sesión para poder escribir una opinión."
+                confirmText="Iniciar sesión"
+                cancelText="Cerrar"
+                onConfirm={() => navigate('/auth/iniciar-sesion')}
+                onCancel={() => setShowLoginModal(false)}
+                className='!backdrop-blur-none bg-black/60'
+            />
         </section>
     );
 };
