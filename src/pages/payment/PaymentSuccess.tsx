@@ -39,12 +39,11 @@ const PaymentSuccess: React.FC = () => {
           console.error("Error creando la reserva:", err);
         });
       }
+      
       handleClearCart();
       localStorage.removeItem("paymentId");
       localStorage.removeItem("statusPayment");
       localStorage.removeItem("reservationData");
-
-
     }
 
   }, [searchParams, handleClearCart, reservationData]);
