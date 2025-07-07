@@ -14,7 +14,7 @@ import ProductNotFound from '@/features/products/components/ProductNotFound';
 import { ProductDetail as ProductDetailType } from '@/features/products/types/ProductDetailTypes';
 import CTASection from '@/features/experience/components/CTASection';
 import ReviewsSection from '@/features/experience/components/ReviewsSection';
-import { Review as ExperienceReview } from '@/features/experience/types/experienceTypes';
+import { Review } from '@/features/experience/types/experienceTypes';
 
 const ProductDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -28,21 +28,8 @@ const ProductDetail: React.FC = () => {
     const [selectedImage, setSelectedImage] = useState(0);
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [isAddingToCart, setIsAddingToCart] = useState(false);
+    const [reviews, setReviews] = useState<Review[]>([]);
 
-    // Convertir reviews de productos al formato de experiencias
-    const convertProductReviewsToExperienceReviews = (productReviews: ProductDetailType['reviews']) => {
-        return productReviews?.map(review => ({
-            id: review.review_id,
-            userId: 0, // No disponible en reviews de productos
-            userName: review.user_name,
-            userImage: review.user_image || '',
-            rating: review.rating,
-            comment: review.review || '',
-            createdAt: review.review_date,
-            responses: [],
-            isOwner: false
-        })) || [];
-    };
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -51,12 +38,7 @@ const ProductDetail: React.FC = () => {
             setLoading(true);
             try {
                 const productData = await ProductsApi.getProductById(parseInt(id));
-
-                // Normalize reviews if needed
-                if (productData?.reviews && !Array.isArray(productData.reviews) && productData.reviews.reviews) {
-                    productData.reviews = productData.reviews.reviews;
-                }
-
+                setReviews(productData.reviews || []);
                 setProduct(productData);
             } catch (error) {
                 console.error('Error fetching product:', error);
@@ -148,10 +130,13 @@ const ProductDetail: React.FC = () => {
 
                 <div className="grid grid-cols-1 gap-8">
                     <ReviewsSection
-                        reviews={convertProductReviewsToExperienceReviews(product.reviews) as unknown as ExperienceReview[]}
-                        setReviews={() => {}} // No implementado para productos
+                        reviews={reviews}
+                        stats={product.stats}
+                        setReviews={setReviews}
+                        entity="producto"
                         experienceId={product.product_id}
                     />
+
                     <CTASection
                         product={product}
                         isProduct={true}

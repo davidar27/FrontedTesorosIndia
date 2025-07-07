@@ -11,6 +11,7 @@ interface ReviewsSectionProps {
     isVisible?: boolean;
     setReviews: React.Dispatch<React.SetStateAction<Review[]>>;
     experienceId?: number;
+    entity: string;
 }
 
 const ReviewsSection: React.FC<ReviewsSectionProps> = ({
@@ -19,6 +20,7 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({
     isVisible = true,
     setReviews,
     experienceId,
+    entity
 }) => {
     const {
         isResponding,
@@ -53,7 +55,7 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({
         handleDeleteResponse,
         deleteSuccess,
         deleteTarget
-    } = useReviews(setReviews, experienceId);
+    } = useReviews(setReviews, entity, experienceId);
 
 
 

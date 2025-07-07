@@ -103,7 +103,13 @@ const ExperiencePage: React.FC = () => {
 
                 {!isEditMode && (
                     <>
-                        <ReviewsSection reviews={reviews} stats={reviewStats} setReviews={setReviews} experienceId={experienceId} />
+                        <ReviewsSection
+                            reviews={reviews}
+                            stats={reviewStats}
+                            setReviews={setReviews}
+                            experienceId={experienceId}
+                            entity="experiencia"
+                        />
                         <CTASection experience={experience} setReviews={setReviews} />
                     </>
                 )}

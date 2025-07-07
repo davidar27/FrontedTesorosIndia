@@ -10,7 +10,7 @@ interface RespondingTo {
     userName: string;
 }
 
-export const useReviews = (setReviews: React.Dispatch<React.SetStateAction<Review[]>>, experienceId?: number) => {
+export const useReviews = (setReviews: React.Dispatch<React.SetStateAction<Review[]>>, entity: string, experienceId?: number) => {
     const [isResponding, setIsResponding] = useState(false);
     const [respondingTo, setRespondingTo] = useState<RespondingTo | null>(null);
     const [comment, setComment] = useState('');
@@ -116,7 +116,7 @@ export const useReviews = (setReviews: React.Dispatch<React.SetStateAction<Revie
         setEditingComment('');
     };
 
-        const handleSaveEdit = async () => {
+    const handleSaveEdit = async () => {
         if (!editingReviewId || !editingComment.trim()) return;
 
         try {
@@ -125,14 +125,12 @@ export const useReviews = (setReviews: React.Dispatch<React.SetStateAction<Revie
                 user_id: user?.id,
                 comment: editingComment.trim()
             });
-            
-            // Función recursiva para actualizar comentarios en cualquier nivel
+
             const updateCommentRecursively = (reviews: Review[]): Review[] => {
                 return reviews.map(review => {
                     if (review.review_id === editingReviewId) {
                         return { ...review, comment: editingComment.trim() };
                     }
-                    // Buscar en respuestas anidadas
                     if (review.responses && review.responses.length > 0) {
                         return {
                             ...review,
@@ -142,9 +140,9 @@ export const useReviews = (setReviews: React.Dispatch<React.SetStateAction<Revie
                     return review;
                 });
             };
-            
+
             setReviews(prevReviews => updateCommentRecursively(prevReviews));
-            
+
             setIsEditing(false);
             setEditingReviewId(null);
             setEditingComment('');
@@ -163,18 +161,18 @@ export const useReviews = (setReviews: React.Dispatch<React.SetStateAction<Revie
         try {
             const response = await axiosInstance.post('/comentarios', {
                 user_id: user?.id,
-                type: 'experiencia', 
+                type: entity,
                 entity_id: experienceId || 1,
                 review: comment.trim(),
-                parent_id: respondingTo.reviewId 
+                parent_id: respondingTo.reviewId
             });
 
             const newResponse: Review = {
-                review_id: Date.now(), 
+                review_id: Date.now(),
                 userId: response.data.review.user_id,
                 user_name: user?.name || 'Usuario',
                 user_image: null,
-                review_date: new Date().toISOString().split('T')[0], 
+                review_date: new Date().toISOString().split('T')[0],
                 rating: 0,
                 comment: response.data.review.review,
                 responses: []
@@ -229,8 +227,8 @@ export const useReviews = (setReviews: React.Dispatch<React.SetStateAction<Revie
     const handleViewAllReviews = () => {
         setShowAllReviews(!showAllReviews);
     };
-        
-        return {
+
+    return {
         isResponding,
         respondingTo,
         comment,
