@@ -1,4 +1,3 @@
-// components/ProductImageGallery.tsx
 import { getImageUrl } from '@/utils/getImageUrl';
 import Picture from '@/components/ui/display/Picture';
 import { ProductDetail } from '@/features/products/types/ProductDetailTypes';
@@ -6,7 +5,7 @@ import { ImageUpload } from '@/features/admin/packages/components/ImageUpload';
 import { useState } from 'react';
 
 interface ProductImageGalleryProps {
-    product: ProductDetail;
+    product?: ProductDetail;
     selectedImage: number;
     onImageSelect: (index: number) => void;
     isEditing: boolean;
@@ -18,7 +17,7 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
     // onImageSelect,
     isEditing
 }) => {
-    const images = product.images || [product.image];
+    const images = product?.images || [product?.image];
     // const hasMultipleImages = images.length > 1;
     const [draggedFile, setDraggedFile] = useState<File | null>(null);
 
@@ -36,7 +35,7 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
                 ) : (
                     <Picture
                         src={getImageUrl(images[selectedImage]) || ''}
-                        alt={product.name}
+                        alt={product?.name}
                         className="w-full h-115 object-cover rounded-lg"
                     />
                 )}

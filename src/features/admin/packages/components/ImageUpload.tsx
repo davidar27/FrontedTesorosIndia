@@ -69,8 +69,8 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({ onFileSelect, currentF
     };
 
     return (
-        <section className={`flex flex-col items-center p-2 `}>
-            <label className="block text-lg font-semibold text-green-700 ">{entity === 'package' ? 'Imagen del paquete' : 'Imagen del producto'}</label>
+        <section className={`mb-8 flex flex-col items-center `}>
+            <label className="block text-lg font-semibold text-green-700 mb-2">{entity === 'package' ? 'Imagen del paquete' : 'Imagen del producto'}</label>
             <div
                 className={`relative border-2 border-dashed rounded-xl p-6 w-full max-w-md bg-gray-50 flex flex-col items-center justify-center ${className} ${currentFile ? 'border-green-500 bg-green-50' : 'border-gray-200'
                     }`}
@@ -78,7 +78,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({ onFileSelect, currentF
                 onDrop={handleDrop}
             >
                 {getImageSrc() ? (
-                    <Picture src={getImageSrc()} alt="Preview" className=" object-cover rounded-lg mb-2" />
+                    <Picture src={getImageSrc()} alt="Preview" className="w-40 h-40 max-w-70 max-h-70 object-cover rounded-lg mb-2" />
                 ) : (
                     <Upload className="h-12 w-12 text-gray-400 mb-2" />
                 )}

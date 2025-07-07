@@ -29,10 +29,13 @@ const ProductInfo = ({
 }: ProductInfoProps) => {
     const [isEditing, setIsEditing] = useState(false);
 
-    // Sincronizar el estado interno con el externo
     useEffect(() => {
         onEditModeChange(isEditing);
     }, [isEditing, onEditModeChange]);
+
+
+
+
 
     const handleEditClick = () => {
         setIsEditing(true);
@@ -46,6 +49,7 @@ const ProductInfo = ({
     const handleCancel = () => {
         setIsEditing(false);
     };
+
 
     if (isEditing) {
         return (

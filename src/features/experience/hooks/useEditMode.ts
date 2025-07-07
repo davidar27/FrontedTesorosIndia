@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Experience, TeamMember } from '@/features/experience/types/experienceTypes';
 import { Product } from '@/features/products/components/ProductCard';
 import { axiosInstance } from '@/api/axiosInstance';
+import { CreateProductData } from '@/features/products/components/CreateProductForm';
 
 export const useEditMode = (
     initialExperience: Experience | null,
@@ -44,6 +45,16 @@ export const useEditMode = (
 
     const removeMember = (memberId: number) => {
         setEditMembers(prev => prev.filter(m => m.id !== memberId));
+    };
+
+    const handleCreateProduct = async (product: CreateProductData) => {
+        setEditProducts(prev => [...prev, product]);
+
+        try {
+            await axiosInstance.post('/productos', product);
+        } catch (error) {
+            console.error('Error al crear el producto:', error);
+        }
     };
 
     const handleChangeStatus = async () => {

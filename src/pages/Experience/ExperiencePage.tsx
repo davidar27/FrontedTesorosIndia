@@ -5,6 +5,8 @@ import useAuth from '@/context/useAuth';
 import useExperiencePermissions from '@/hooks/useExperiencePermissions';
 import { useExperienceData } from '@/features/experience/hooks/useExperienceData';
 import { useEditMode } from '@/features/experience/hooks/useEditMode';
+import { CategoriesApi } from '@/services/home/categories';
+import { Category } from '@/features/admin/categories/CategoriesTypes';
 
 // Componentes
 import { ErrorState } from '@/features/experience/components/ErrorState';
@@ -19,12 +21,12 @@ import CTASection from '@/features/experience/components/CTASection';
 import EditModeNotification from '@/features/experience/components/EditModeNotification';
 import LoadingSpinner from '@/components/ui/display/LoadingSpinner';
 
-
 const ExperiencePage: React.FC = () => {
     const { experience_id } = useParams();
     const { user } = useAuth();
     const { isEditMode } = usePageContext();
     const [showEditNotification, setShowEditNotification] = useState(false);
+    const [categories, setCategories] = useState<Category[]>([]);
 
     const experienceId = Number(experience_id);
     const {
@@ -38,7 +40,19 @@ const ExperiencePage: React.FC = () => {
         error
     } = useExperienceData(experienceId);
 
-    
+    // Cargar categorías
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const categoriesData = await CategoriesApi.getCategories();
+                setCategories(categoriesData || []);
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
 
     const editModeData = useEditMode(experience, products, members);
     const permissions = useExperiencePermissions();
@@ -99,6 +113,7 @@ const ExperiencePage: React.FC = () => {
                     editProducts={editModeData.editProducts}
                     onAddProduct={editModeData.addProduct}
                     onRemoveProduct={editModeData.removeProduct}
+                    categories={categories}
                 />
 
                 {!isEditMode && (
@@ -117,4 +132,5 @@ const ExperiencePage: React.FC = () => {
         </div>
     );
 };
+
 export default ExperiencePage;
