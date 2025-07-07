@@ -29,7 +29,7 @@ const PaymentSuccess: React.FC = () => {
     }
 
     if (statusParam === 'approved') {
-      if (reservationData.room_id) {
+      if (reservationData && reservationData.room_id) {
         axiosInstance.post(`/reservas/reservar/${reservationData.room_id}`, {
           ...reservationData,
           paymentId: paymentIdParam,
