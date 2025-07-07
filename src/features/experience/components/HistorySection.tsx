@@ -4,6 +4,7 @@ import { Experience } from '@/features/experience/types/experienceTypes';
 import Picture from '@/components/ui/display/Picture';
 import { CameraIcon, Save, Edit3 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { fileToWebp } from '@/utils/fileToWebp';
 
 interface HistorySectionProps {
     experience: Experience;
@@ -23,7 +24,7 @@ const HistorySection: React.FC<HistorySectionProps> = ({
     const [previewImage, setPreviewImage] = useState<string | null>(null);
     const [, setImageFile] = useState<File | null>(null);
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
             // Validación básica de tipo y tamaño (5MB máximo)
@@ -35,11 +36,11 @@ const HistorySection: React.FC<HistorySectionProps> = ({
                 alert('La imagen no debe exceder los 5MB');
                 return;
             }
-
-            const imageUrl = URL.createObjectURL(file);
+            const webpFile = await fileToWebp(file);
+            const imageUrl = URL.createObjectURL(webpFile);
             setPreviewImage(imageUrl);
-            setImageFile(file);
-            onEditDataChange({ ...editData, image: file.name });
+            setImageFile(webpFile);
+            onEditDataChange({ ...editData, image: webpFile.name });
         }
     };
 

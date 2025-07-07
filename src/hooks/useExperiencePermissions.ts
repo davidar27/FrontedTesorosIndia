@@ -21,10 +21,10 @@ export const useExperiencePermissions = (): ExperiencePermissions => {
         const isOwner = isEntrepreneur && user?.experience_id === Number(experience_id);        
         
         const canView = true; 
-        const canEdit = isOwner || isAdmin;
-        const canDelete = isOwner || isAdmin;
-        const canManageMembers = isOwner || isAdmin;
-        const canManageProducts = isOwner || isAdmin;
+        const canEdit = isOwner;
+        const canDelete = isOwner;
+        const canManageMembers = isOwner;
+        const canManageProducts = isOwner;
 
         return {
             canView,

@@ -30,7 +30,7 @@ export const getNavLinks = (user: User | null, experience_id: number): NavLink[]
         return [...adminLinks];
     }
     if (user.role === 'emprendedor') {
-        return [...publicLinks, ...entrepreneurLinks];
+        return [ ...entrepreneurLinks];
     }
 
     return publicLinks;

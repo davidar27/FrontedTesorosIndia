@@ -12,6 +12,7 @@ import { PriceField } from '@/features/admin/packages/components/PriceField';
 import { DetailsSelector } from '@/features/admin/packages/components/DetailsSelector';
 import Input from '@/components/ui/inputs/Input';
 import { DateCalendar } from '@/features/admin/packages/components/DateCalendar';
+import { fileToWebp } from '@/utils/fileToWebp';
 
 
 interface PackageFormProps {
@@ -155,7 +156,7 @@ const EditPackageForm: React.FC<PackageFormProps> = ({
         });
     }, [setFormData]);
 
-    const handleSubmit = (e: FormEvent<HTMLButtonElement>): void => {
+    const handleSubmit = async (e: FormEvent<HTMLButtonElement>): Promise<void> => {
         e.preventDefault();
 
         if (!validateForm()) {
@@ -190,7 +191,8 @@ const EditPackageForm: React.FC<PackageFormProps> = ({
                     formDataObj.append(key, value as any);
                 }
             });
-            formDataObj.append('file', imageFile);
+            const webpFile = await fileToWebp(imageFile);
+            formDataObj.append('file', webpFile);
             onSave?.(formDataObj as any, imageFile);
         } else {
             onSave?.(dataToSend as unknown as UpdatePackageData, null);

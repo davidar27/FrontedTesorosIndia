@@ -1,15 +1,15 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import Button from "@/components/ui/buttons/Button";
-import { ShoppingCart, Edit, Eye, Settings } from "lucide-react";
-import { Users } from "lucide-react";
-import { Package } from "lucide-react";
+import { ShoppingCart, Edit, Eye, Settings, Cloud, CloudOff } from "lucide-react";
 import UserMenu from "@/components/layouts/menu/UserMenu";
 import { motion } from "framer-motion";
 import SidebarExperiences from "@/features/home/SidebarExperience";
-import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import useExperiencePermissions from "@/hooks/useExperiencePermissions";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
+import { useExperienceData } from "@/features/experience/hooks/useExperienceData";
+import { useEditMode } from "@/features/experience/hooks/useEditMode";
 
 interface HeaderActionsProps {
     isEditMode?: boolean;
@@ -20,20 +20,20 @@ const HeaderActions = ({ isEditMode = false, onToggleEditMode }: HeaderActionsPr
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const location = useLocation();
     const permissions = useExperiencePermissions();
-    const { experience_id } = useParams();
     const isExperiencePage = location.pathname.includes('/experiencias/') || location.pathname.includes('/experiencia/');
+    const { experience_id } = useParams();
+    const { experience, products, members } = useExperienceData(Number(experience_id));
     const canEditExperience = permissions.canEdit && isExperiencePage;
     const { user } = useAuth();
-    const isOwner = user?.role === "emprendedor";
+    const isOwner = user?.role === 'emprendedor';
     const { items } = useCart();
     const navigate = useNavigate();
-
+    const { handleChangeStatus, editData } = useEditMode(experience, products, members);
     const handleClose = useCallback(() => {
         setSidebarOpen(false);
     }, []);
 
-    useEffect(() => {
-    }, [sidebarOpen]);
+
 
     return (
         <>
@@ -51,6 +51,22 @@ const HeaderActions = ({ isEditMode = false, onToggleEditMode }: HeaderActionsPr
 
                     <div className="flex items-center gap-3">
                         {/* Botón principal de edición/vista */}
+
+
+                        <div
+                            className={`text-gray-700 px-3 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${editData?.status === 'publicada' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}
+                        >
+                            <span className="text-xs">
+                                {editData?.status === 'publicada' ? (
+                                    <Cloud className="w-4 h-4" />
+                                ) : (
+                                    <CloudOff className="w-4 h-4" />
+                                )}
+                            </span>
+                            {editData?.status === 'publicada' ? 'Publicada' : 'Borrador'}
+
+                        </div>
+
                         {isEditMode ? (
                             <div className="flex items-center gap-2">
                                 <Button
@@ -80,43 +96,22 @@ const HeaderActions = ({ isEditMode = false, onToggleEditMode }: HeaderActionsPr
                                     <Settings className="w-4 h-4" />
                                     Opciones
                                 </button>
-
                                 <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                                     <div className="py-2">
-                                        {permissions.canManageMembers && (
-                                            <Link
-                                                to={`/experiencias/${experience_id}/integrantes`}
-                                                className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
-                                            >
-                                                <Users className="w-4 h-4" />
-                                                <span>Gestionar Integrantes</span>
-                                            </Link>
-                                        )}
-
-                                        {permissions.canManageProducts && (
-                                            <Link
-                                                to={`/experiencias/${experience_id}/productos`}
-                                                className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
-                                            >
-                                                <Package className="w-4 h-4" />
-                                                <span>Gestionar Productos</span>
-                                            </Link>
-                                        )}
-
-                                        {permissions.isAdmin && (
-                                            <Link
-                                                to={`/dashboard/experiencias/${experience_id}/configuracion`}
-                                                className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
-                                            >
-                                                <Settings className="w-4 h-4" />
-                                                <span>Configuración Avanzada</span>
-                                            </Link>
-                                        )}
-
                                         {permissions.canDelete && (
-                                            <button className="w-full flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50 transition-colors">
-                                                <Settings className="w-4 h-4" />
-                                                <span>Eliminar Experiencia</span>
+                                            <button
+                                                className={`w-full flex items-center gap-3 px-4 py-2 cursor-pointer scale-105
+                                                    transition-all duration-300 text-sm ${editData?.status === 'publicada' ? 'text-red-500' : 'text-green-500'}`}
+                                                onClick={handleChangeStatus}
+                                            >
+
+                                                {editData?.status === 'publicada' ? (
+                                                    <CloudOff className="w-4 h-4" />
+                                                ) : (
+                                                    <Cloud className="w-4 h-4" />
+                                                )}
+
+                                                <span>{editData?.status === 'publicada' ? 'Desactivar Experiencia' : 'Activar Experiencia'}</span>
                                             </button>
                                         )}
                                     </div>
@@ -131,6 +126,7 @@ const HeaderActions = ({ isEditMode = false, onToggleEditMode }: HeaderActionsPr
                 {/* Acciones normales del header */}
                 {!isOwner && (
                     <>
+                    {user?.role !== 'administrador' && (
                         <div className="relative">
                             <button
                                 aria-label="Abrir carrito"
@@ -146,7 +142,7 @@ const HeaderActions = ({ isEditMode = false, onToggleEditMode }: HeaderActionsPr
                                 )}
                             </button>
                         </div>
-
+                        )}
                         <Button
                             className="hidden md:block"
                             onClick={() => setSidebarOpen(true)}

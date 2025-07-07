@@ -20,7 +20,6 @@ export const useProfileLogic = () => {
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [isProfileLoading, setIsProfileLoading] = useState(true);
 
-    // Mutation para actualizar perfil
     const profileUpdateMutation = useMutation({
         mutationFn: (formData: FormData) => {
             if (!user) throw new Error("User not found");
@@ -53,15 +52,16 @@ export const useProfileLogic = () => {
         }));
     };
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
             if (previewImage) {
                 URL.revokeObjectURL(previewImage);
             }
-            const imageUrl = URL.createObjectURL(file);
+            const webpFile = await fileToWebp(file);
+            const imageUrl = URL.createObjectURL(webpFile);
             setPreviewImage(imageUrl);
-            setImageFile(file);
+            setImageFile(webpFile);
         }
     };
 

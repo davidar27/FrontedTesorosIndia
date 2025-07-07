@@ -9,6 +9,7 @@ export interface Experience {
     lat: number;
     lng: number;
     name_entrepreneur?: string;
+    status?: string;
 }
 
 export interface Product {

@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Experience, Product, TeamMember } from '@/features/experience/types/experienceTypes';
-import React from 'react';
+import { axiosInstance } from '@/api/axiosInstance';
 
 export const useEditMode = (
     initialExperience: Experience | null,
@@ -10,21 +10,22 @@ export const useEditMode = (
     const [editData, setEditData] = useState<Partial<Experience>>(initialExperience || {});
     const [editProducts, setEditProducts] = useState<Product[]>(initialProducts);
     const [editMembers, setEditMembers] = useState<TeamMember[]>(initialMembers);
+    const [status] = useState<string[]>(['publicada', 'borrador']);
 
-    // Actualizar estados cuando cambien los datos iniciales
-    React.useEffect(() => {
+    useEffect(() => {
         if (initialExperience) setEditData(initialExperience);
     }, [initialExperience]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         setEditProducts(initialProducts);
     }, [initialProducts]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         setEditMembers(initialMembers);
     }, [initialMembers]);
 
     const updateExperienceData = (field: keyof Experience, value: string | number | boolean) => {
+
         setEditData(prev => ({ ...prev, [field]: value }));
     };
 
@@ -44,6 +45,19 @@ export const useEditMode = (
         setEditMembers(prev => prev.filter(m => m.id !== memberId));
     };
 
+    const handleChangeStatus = async () => {
+        const newStatus = editData.status === 'publicada' ? 'borrador' : 'publicada';
+        
+        setEditData(prev => ({ ...prev, status: newStatus }));
+        
+        try {
+            await axiosInstance.put(`/experiencias/estado/${editData.id}`, { status: newStatus });
+        } catch (error) {
+            setEditData(prev => ({ ...prev, status: editData.status === 'publicada' ? 'publicada' : 'borrador' }));
+            console.error('Error al cambiar el estado:', error);
+        }
+    };
+
     return {
         editData,
         editProducts,
@@ -55,7 +69,9 @@ export const useEditMode = (
         removeMember,
         setEditData,
         setEditProducts,
-        setEditMembers
+        setEditMembers,
+        handleChangeStatus,
+        status
     };
 };
 
