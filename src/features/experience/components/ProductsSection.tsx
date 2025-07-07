@@ -75,6 +75,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({
                                         <span className="text-2xl font-bold text-emerald-600">
                                             {formatPrice(product.price)}
                                         </span>
+                                        {}
                                         <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl font-medium transition-colors flex items-center gap-2 group">
                                             <ShoppingCart className="w-4 h-4" />
                                             <span className="hidden sm:inline">Agregar</span>
