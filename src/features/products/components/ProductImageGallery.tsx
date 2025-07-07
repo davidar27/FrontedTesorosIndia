@@ -2,34 +2,48 @@
 import { getImageUrl } from '@/utils/getImageUrl';
 import Picture from '@/components/ui/display/Picture';
 import { ProductDetail } from '@/features/products/types/ProductDetailTypes';
+import { ImageUpload } from '@/features/admin/packages/components/ImageUpload';
+import { useState } from 'react';
 
 interface ProductImageGalleryProps {
     product: ProductDetail;
     selectedImage: number;
     onImageSelect: (index: number) => void;
+    isEditing: boolean;
 }
 
 const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
     product,
     selectedImage,
-    onImageSelect
+    // onImageSelect,
+    isEditing
 }) => {
     const images = product.images || [product.image];
-    const hasMultipleImages = images.length > 1;
+    // const hasMultipleImages = images.length > 1;
+    const [draggedFile, setDraggedFile] = useState<File | null>(null);
 
     return (
         <div className="space-y-4">
             {/* Imagen principal */}
             <div className="bg-white rounded-2xl p-0 shadow-sm">
-                <Picture
-                    src={getImageUrl(images[selectedImage]) || ''}
-                    alt={product.name}
-                    className="w-full h-115 object-cover rounded-lg"
-                />
+                {isEditing ? (
+                    <ImageUpload
+                            onFileSelect={setDraggedFile}
+                            currentFile={draggedFile}
+                            entity='product'
+                            className='w-full h-100'
+                        />
+                ) : (
+                    <Picture
+                        src={getImageUrl(images[selectedImage]) || ''}
+                        alt={product.name}
+                        className="w-full h-115 object-cover rounded-lg"
+                    />
+                )}
             </div>
 
             {/* Miniaturas */}
-            {hasMultipleImages && (
+           {/*  {hasMultipleImages && (
                 <div className="grid grid-cols-4 gap-3">
                     {images.map((image, index) => (
                         <button
@@ -51,7 +65,7 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
                         </button>
                     ))}
                 </div>
-            )}
+            )} */}
         </div>
     );
 };

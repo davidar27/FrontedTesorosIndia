@@ -1,10 +1,11 @@
 import { Review } from '@/features/experience/types/experienceTypes';
+import { Product } from '@/features/products/components/ProductCard';
 
-export interface ProductDetail {
+export interface ProductDetail extends Product {
     product_id: number;
     name: string;
     description: string;
-    price: string;
+    price: number;
     image: string;
     images?: string[];
     rating: number;

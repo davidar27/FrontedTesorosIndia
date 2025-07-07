@@ -26,7 +26,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({
     const { experience_id } = useParams();
     return (
         <section className="mb-12">
-            <div className="bg-white rounded-3xl shadow-xl p-8">
+            <div className="bg-white rounded-3xl shadow-xl py-6 px-8">
                 <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center gap-3">
                         <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
@@ -52,12 +52,12 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({
                 </div>
 
                 <div className="relative w-full max-w-6xl overflow-hidden">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-2">
 
                         {displayProducts.map((product) => (
                             <ProductCard
                                 key={product.id}
-                                product={product as unknown as Product}
+                                product={product}
                             />
                         ))}
                     </div>

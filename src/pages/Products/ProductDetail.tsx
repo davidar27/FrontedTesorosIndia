@@ -15,6 +15,8 @@ import { ProductDetail as ProductDetailType } from '@/features/products/types/Pr
 import CTASection from '@/features/experience/components/CTASection';
 import ReviewsSection from '@/features/experience/components/ReviewsSection';
 import { Review } from '@/features/experience/types/experienceTypes';
+import { CategoriesApi } from '@/services/home/categories';
+import { Category } from '@/features/admin/categories/CategoriesTypes';
 
 const ProductDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -29,7 +31,8 @@ const ProductDetail: React.FC = () => {
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [isAddingToCart, setIsAddingToCart] = useState(false);
     const [reviews, setReviews] = useState<Review[]>([]);
-
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [isEditing, setIsEditing] = useState(false);
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -38,8 +41,10 @@ const ProductDetail: React.FC = () => {
             setLoading(true);
             try {
                 const productData = await ProductsApi.getProductById(parseInt(id));
+                const categories = await CategoriesApi.getCategories();
                 setReviews(productData.reviews || []);
                 setProduct(productData);
+                setCategories(categories);
             } catch (error) {
                 console.error('Error fetching product:', error);
                 setProduct(null);
@@ -84,6 +89,15 @@ const ProductDetail: React.FC = () => {
         }
     };
 
+    const handleProductUpdate = (updatedProduct: ProductDetailType) => {
+        setProduct(updatedProduct);
+        setIsEditing(false);
+    };
+
+    const handleEditModeChange = (editing: boolean) => {
+        setIsEditing(editing);
+    };
+
     if (loading) {
         return <LoadingSpinner />;
     }
@@ -96,7 +110,7 @@ const ProductDetail: React.FC = () => {
         <div className="bg-gray-50 responsive-padding-y">
             <ProductHeader
                 product={product}
-                onGoBack={() => navigate('/productos')}
+                onGoBack={() => navigate(-2)}
             />
 
             <div className="container mx-auto responsive-padding-x py-8 space-y-8">
@@ -110,6 +124,7 @@ const ProductDetail: React.FC = () => {
                             product={product}
                             selectedImage={selectedImage}
                             onImageSelect={setSelectedImage}
+                            isEditing={isEditing}
                         />
                     </motion.div>
 
@@ -124,6 +139,10 @@ const ProductDetail: React.FC = () => {
                             onQuantityChange={handleQuantityChange}
                             onAddToCart={handleAddToCartAction}
                             isAddingToCart={isAddingToCart}
+                            categories={categories}
+                            canManageProducts={user?.role === 'emprendedor'}
+                            onProductUpdate={handleProductUpdate}
+                            onEditModeChange={handleEditModeChange}
                         />
                     </motion.div>
                 </div>
