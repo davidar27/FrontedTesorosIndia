@@ -12,6 +12,7 @@ import ProductReviews from '@/features/products/components/ProductReviews';
 import LoadingSpinner from '@/components/ui/display/LoadingSpinner';
 import ProductNotFound from '@/features/products/components/ProductNotFound';
 import { ProductDetail as ProductDetailType } from '@/features/products/types/ProductDetailTypes';
+import CTASection from '@/features/experience/components/CTASection';
 
 const ProductDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -130,6 +131,10 @@ const ProductDetail: React.FC = () => {
 
                 <div className="grid grid-cols-1 gap-8">
                     <ProductReviews product={product} />
+                    <CTASection
+                        product={product}
+                        isProduct={true}
+                    />
                 </div>
             </div>
 

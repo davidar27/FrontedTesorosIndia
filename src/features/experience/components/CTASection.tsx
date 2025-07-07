@@ -4,19 +4,24 @@ import { Experience, Review } from '@/features/experience/types/experienceTypes'
 import { axiosInstance } from '@/api/axiosInstance';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
+import { ProductDetail } from '@/features/products/types/ProductDetailTypes';
 
 interface CTASectionProps {
     isVisible?: boolean;
     onWriteReview?: () => void;
     experience?: Experience;
     setReviews?: React.Dispatch<React.SetStateAction<Review[]>>;
+    isProduct?: boolean;
+    product?: ProductDetail;
 }
 
 const CTASection: React.FC<CTASectionProps> = ({
     isVisible = true,
     onWriteReview,
     experience,
-    setReviews
+    setReviews,
+    isProduct = false,
+    product
 }) => {
     const [isWritingReview, setIsWritingReview] = useState(false);
     const [rating, setRating] = useState(0);
@@ -44,8 +49,8 @@ const CTASection: React.FC<CTASectionProps> = ({
 
             await axiosInstance.post('/comentarios', {
                 user_id: user?.id,
-                type: 'experiencia',
-                entity_id: experience?.id,
+                type: isProduct ? 'producto' : 'experiencia',
+                entity_id: isProduct ? product?.product_id : experience?.id,
                 rating: rating * 2,
                 review: comment,
             });
@@ -94,9 +99,9 @@ const CTASection: React.FC<CTASectionProps> = ({
         <section>
             <div className="bg-gradient-to-r from-emerald-600 to-green-600 rounded-3xl p-8 text-white text-center shadow-2xl">
                 <div className="max-w-2xl mx-auto space-y-4">
-                    <h2 className="text-3xl font-bold">¿Te gustó nuestra experiencia?</h2>
+                    <h2 className="text-3xl font-bold">¿Te gustó {isProduct ? 'nuestro producto' : 'nuestra experiencia'}?</h2>
                     <p className="text-emerald-100 text-lg">
-                        Comparte tu experiencia con otros viajeros y ayúdanos a seguir mejorando
+                        Comparte tu opinión con otros viajeros y ayúdanos a seguir mejorando
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -117,7 +122,7 @@ const CTASection: React.FC<CTASectionProps> = ({
                                             Tu opinión sobre
                                             <span
                                                 className="text-emerald-600"
-                                            > {experience?.name}
+                                            > {isProduct ? product?.name : experience?.name}
                                             </span>
                                         </h3>
                                     </div>
@@ -166,7 +171,7 @@ const CTASection: React.FC<CTASectionProps> = ({
                                             value={comment}
                                             onChange={(e) => setComment(e.target.value)}
                                             className="w-full h-28 p-3 rounded-xl border border-gray-300 resize-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
-                                            placeholder={`Comparte los detalles de tu experiencia en ${experience?.name}...`}
+                                            placeholder={`Comparte los detalles de tu experiencia con ${isProduct ? product?.name : experience?.name}...`}
                                             maxLength={300}
                                         />
                                         <div className="flex justify-between items-center">
