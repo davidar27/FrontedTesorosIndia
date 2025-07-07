@@ -22,12 +22,7 @@ const Home: React.FC = () => {
         {!isLoading && (
           <div
             className={
-              `w-full z-40 mx-auto transition-all duration-300 ease-in 
-              md:absolute md:top-1/2 md:-translate-y-1/3 md:left-1/2 md:-translate-x-1/2 md:px-8
-              lg:top-1/2   lg:-translate-y-1/8 lg:max-w-4xl  lg:px-0
-              xl:-translate-y-1/3 xl:max-w-5xl
-              2xl:-translate-y-1/2  2xl:max-w-6xl
-              3xl:-translate-y-1/4 3xl:max-w-7xl`
+              `w-full z-40 mx-auto transition-all duration-300 ease-in md:h-0 flex justify-center items-center`
             }
           >
             <HandleFastPackage />

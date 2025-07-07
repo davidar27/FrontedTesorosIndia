@@ -5,7 +5,7 @@ const Hero = () => {
     const navigate = useNavigate();
 
     return (
-        <section>
+        <section className="mb-4 md:mb-8 2xl:mb-0">
             <HeroSection
                 title={
                     <>
