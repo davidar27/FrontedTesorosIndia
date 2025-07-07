@@ -230,13 +230,17 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
                             isSubmitting={isSubmitting}
                         />
                     ) : (
-                        <button
-                            className="mt-2 text-emerald-600 hover:text-emerald-700 text-sm font-medium cursor-pointer flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-emerald-50 transition-colors"
-                            onClick={() => onRespond('main', review.review_id, review.user_name)}
-                        >
-                            <MessageCircle className="w-4 h-4" />
-                            Responder al comentario
-                        </button>
+                        <>
+                            {user && user?.role !== 'observador' && (
+                                <button
+                                    className="mt-2 text-emerald-600 hover:text-emerald-700 text-sm font-medium cursor-pointer flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-emerald-50 transition-colors"
+                                    onClick={() => onRespond('main', review.review_id, review.user_name)}
+                                >
+                                    <MessageCircle className="w-4 h-4" />
+                                    Responder al comentario
+                                </button>
+                            )}
+                        </>
                     )}
                 </div>
             </div>
