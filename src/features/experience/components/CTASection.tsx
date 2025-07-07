@@ -184,7 +184,7 @@ const CTASection: React.FC<CTASectionProps> = ({
                                                                 onClick={() => handleStarClick(starIndex, true)}
                                                                 onMouseEnter={() => handleStarHover(starIndex, true)}
                                                                 onMouseLeave={handleStarLeave}
-                                                                className="absolute -left-1 top-0 w-1/2 h-full opacity-0 cursor-pointer z-20"
+                                                                className="absolute -left-1 top-0 w-[60%] h-full opacity-0 cursor-pointer z-20"
                                                             />
                                                         )}
                                                     </div>
