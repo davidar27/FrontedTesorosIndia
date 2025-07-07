@@ -44,6 +44,7 @@ export const useExperienceData = (experienceId: number) => {
         members,
         products,
         reviews,
+        setReviews,
         isLoading,
         error,
         refetch: () => {

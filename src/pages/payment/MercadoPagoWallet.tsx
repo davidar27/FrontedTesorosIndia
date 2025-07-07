@@ -40,9 +40,6 @@ export const MercadoPagoWallet = ({ items, total, onBeforePay, disabled, loading
             const script = document.createElement("script");
             script.src = "https://sdk.mercadopago.com/js/v2";
             script.async = true;
-            script.onload = () => {
-                console.log("MercadoPago SDK cargado");
-            };
             document.head.appendChild(script);
 
             return () => {
@@ -67,8 +64,6 @@ export const MercadoPagoWallet = ({ items, total, onBeforePay, disabled, loading
                 },
 
             });
-        } else {
-            console.log("MercadoPago SDK no está cargado");
         }
     }, [preferenceId, publicKey]);
 
@@ -88,7 +83,6 @@ export const MercadoPagoWallet = ({ items, total, onBeforePay, disabled, loading
             return;
         }
 
-        console.log(items);
         
         const payload = {
             items: items.map(item => ({

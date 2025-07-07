@@ -32,9 +32,12 @@ const ExperiencePage: React.FC = () => {
         members,
         products,
         reviews,
+        setReviews,
         isLoading,
         error
     } = useExperienceData(experienceId);
+
+    
 
     const editModeData = useEditMode(experience, products, members);
     const permissions = useExperiencePermissions();
@@ -62,7 +65,7 @@ const ExperiencePage: React.FC = () => {
                 <QuickStats
                     membersCount={members.length}
                     productsCount={products.length}
-                    averageRating={reviews.length}
+                    averageRating={reviews}
                 />
 
                 <HistorySection
@@ -99,8 +102,8 @@ const ExperiencePage: React.FC = () => {
 
                 {!isEditMode && (
                     <>
-                        <ReviewsSection reviews={reviews} averageRating={reviews.length} />
-                        <CTASection />
+                        <ReviewsSection reviews={reviews} setReviews={setReviews} experienceId={experienceId} />
+                        <CTASection experience={experience} setReviews={setReviews} />
                     </>
                 )}
             </div>

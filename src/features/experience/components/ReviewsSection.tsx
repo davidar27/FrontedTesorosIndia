@@ -1,50 +1,57 @@
 import React from 'react';
-import { Star, ArrowRight } from 'lucide-react';
-
-interface Review {
-    id: number;
-    userName: string;
-    rating: number;
-    comment: string;
-    date: string;
-    avatar: string;
-}
+import { Star, Trash2 } from 'lucide-react';
+import { Review } from '@/features/experience/types/experienceTypes';
+import { useReviews } from '@/features/experience/hooks/useReviews';
+import RatingSummary from '@/features/experience/components/reviews/RatingSummary';
+import ReviewsList from '@/features/experience/components/reviews/ReviewsList';
 
 interface ReviewsSectionProps {
     reviews: Review[];
-    averageRating: number;
     isVisible?: boolean;
+    setReviews: React.Dispatch<React.SetStateAction<Review[]>>;
+    experienceId?: number;
 }
 
 const ReviewsSection: React.FC<ReviewsSectionProps> = ({
     reviews,
-    averageRating,
-    isVisible = true
+    isVisible = true,
+    setReviews,
+    experienceId,
 }) => {
-    const convertRatingToFiveScale = (rating: number): number => {
-        return (rating / 2);
-    };
-
-    const renderStars = (rating: number) => {
-        const fiveScaleRating = rating > 5 ? convertRatingToFiveScale(rating) : rating;
-
-        return Array.from({ length: 5 }, (_, index) => {
-            const starValue = index + 1;
-            const isFullStar = fiveScaleRating >= starValue;
-            const isHalfStar = fiveScaleRating >= starValue - 0.5 && fiveScaleRating < starValue;
-
-            return (
-                <div key={index} className="relative inline-block">
-                    <Star className="w-4 h-4 text-gray-300" />
-                    <div
-                        className={`absolute inset-0 overflow-hidden ${isFullStar ? 'w-full' : isHalfStar ? 'w-1/2' : 'w-0'}`}
-                    >
-                        <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                    </div>
-                </div>
-            );
-        });
-    };
+    const {
+        isResponding,
+        respondingTo,
+        comment,
+        setComment,
+        isSubmitting,
+        showAllReviews,
+        openOptionsId,
+        openResponseOptionsId,
+        openNestedResponseOptionsId,
+        openNestedOptionsMap,
+        handleSaveComment,
+        handleRespond,
+        handleCancelResponse,
+        handleViewAllReviews,
+        handleOptionsClick,
+        handleResponseOptionsClick,
+        handleNestedResponseOptionsClick,
+        closeOptions,
+        showDeleteConfirm,
+        cancelDelete,
+        confirmDelete,
+        handleEdit,
+        handleCancelEdit,
+        handleSaveEdit,
+        isEditing,
+        editingReviewId,
+        editingComment,
+        setEditingComment,
+        handleDeleteComment,
+        handleDeleteResponse,
+        deleteSuccess,
+        deleteTarget
+    } = useReviews(setReviews, experienceId);
 
     if (!isVisible) return null;
 
@@ -58,92 +65,111 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({
                     <h2 className="text-3xl font-bold text-gray-800">Valoraciones</h2>
                 </div>
 
-                {/* Rating Summary */}
-                <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-6 mb-8">
-                    <div className="grid md:grid-cols-2 gap-8 items-center">
-                        <div className="text-center md:text-left">
-                            <div className="flex items-center justify-center md:justify-start gap-4 mb-4">
-                                <div className="text-5xl font-bold text-gray-800">
-                                    {averageRating.toFixed(1)}
-                                </div>
-                                <div>
-                                    <div className="flex mb-2">
-                                        {renderStars(Math.round(averageRating))}
-                                    </div>
-                                    <div className="text-gray-600">
-                                        {reviews.length} valoraciones
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <RatingSummary reviews={reviews} />
 
-                        <div className="space-y-2">
-                            {[5, 4, 3, 2, 1].map((rating) => {
-                                const count = reviews.filter(r => {
-                                    const convertedRating = convertRatingToFiveScale(r.rating);
-                                    return Math.round(convertedRating) === rating;
-                                }).length;
-                                const percentage = reviews.length > 0 ? (count / reviews.length) * 100 : 0;
 
-                                return (
-                                    <div key={rating} className="flex items-center gap-3">
-                                        <span className="text-sm text-gray-600 w-4">{rating}</span>
-                                        <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                                        <div className="flex-1 bg-gray-200 rounded-full h-2">
-                                            <div
-                                                className="bg-amber-400 h-2 rounded-full transition-all duration-300"
-                                                style={{ width: `${percentage}%` }}
-                                            ></div>
+                <ReviewsList
+                    reviews={reviews}
+                    showAllReviews={showAllReviews}
+                    onOptionsClick={handleOptionsClick}
+                    onResponseOptionsClick={handleResponseOptionsClick}
+                    onNestedOptionsClick={handleNestedResponseOptionsClick}
+                    isResponding={isResponding}
+                    respondingTo={respondingTo}
+                    comment={comment}
+                    onCommentChange={setComment}
+                    onRespond={handleRespond}
+                    onCancelResponse={handleCancelResponse}
+                    onSaveComment={handleSaveComment}
+                    isSubmitting={isSubmitting}
+                    onViewAllReviews={handleViewAllReviews}
+                    openOptionsId={openOptionsId}
+                    openResponseOptionsId={openResponseOptionsId}
+                    openNestedResponseOptionsId={openNestedResponseOptionsId}
+                    openNestedOptionsMap={openNestedOptionsMap}
+                    onCloseOptions={closeOptions}
+                    handleDeleteComment={handleDeleteComment}
+                    handleDeleteResponse={handleDeleteResponse}
+                    handleEdit={handleEdit}
+                    handleCancelEdit={handleCancelEdit}
+                    handleSaveEdit={handleSaveEdit}
+                    isEditing={isEditing}
+                    editingReviewId={editingReviewId}
+                    editingComment={editingComment}
+                    setEditingComment={setEditingComment}
+                />
+
+                {/* Modal de confirmación para eliminar */}
+                {showDeleteConfirm && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-in fade-in-0 duration-200">
+                        <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl animate-in zoom-in-95 duration-200">
+                            {deleteSuccess ? (
+                                // Estado de éxito
+                                <div className="text-center">
+                                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </div>
+                                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                                        ¡{deleteTarget?.type === 'response' ? 'Respuesta' : 'Comentario'} eliminado!
+                                    </h3>
+                                    <p className="text-gray-600">
+                                        El {deleteTarget?.type === 'response' ? 'respuesta' : 'comentario'} ha sido eliminado exitosamente.
+                                    </p>
+                                </div>
+                            ) : (
+                                // Estado de confirmación
+                                <>
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                                            <Trash2 className="w-6 h-6 text-red-600" />
                                         </div>
-                                        <span className="text-sm text-gray-600 w-12">
-                                            {percentage.toFixed(0)}%
-                                        </span>
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-gray-900">
+                                                ¿Eliminar {deleteTarget?.type === 'response' ? 'respuesta' : 'comentario'}?
+                                            </h3>
+                                            <p className="text-sm text-gray-600">
+                                                Esta acción no se puede deshacer
+                                            </p>
+                                        </div>
                                     </div>
-                                );
-                            })}
+
+                                    <p className="text-gray-700 mb-6">
+                                        {deleteTarget?.type === 'response'
+                                            ? 'Tu respuesta será eliminada permanentemente.'
+                                            : 'Tu comentario y todas las respuestas asociadas serán eliminados permanentemente.'
+                                        }
+                                    </p>
+
+                                    <div className="flex gap-3">
+                                        <button
+                                            onClick={cancelDelete}
+                                            disabled={isSubmitting}
+                                            className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors font-medium cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            Cancelar
+                                        </button>
+                                        <button
+                                            onClick={confirmDelete}
+                                            disabled={isSubmitting}
+                                            className="flex-1 px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors font-medium cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                        >
+                                            {isSubmitting ? (
+                                                <>
+                                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                                    Eliminando...
+                                                </>
+                                            ) : (
+                                                'Eliminar'
+                                            )}
+                                        </button>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
-                </div>
-
-                {/* Reviews */}
-                <div className="space-y-6">
-                    <h3 className="text-xl font-bold text-gray-800">Opiniones recientes</h3>
-                    {reviews.slice(0, 3).map((review) => (
-                        <div key={review.id} className="bg-gray-50 rounded-2xl p-6 hover:bg-gray-100 transition-colors">
-                            <div className="flex gap-4">
-                                <img
-                                    src={review.avatar}
-                                    alt={review.userName}
-                                    className="w-12 h-12 rounded-full object-cover ring-2 ring-white shadow-md"
-                                />
-                                <div className="flex-1">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <div className="flex items-center gap-3">
-                                            <span className="font-semibold text-gray-800">{review.userName}</span>
-                                            <div className="flex">
-                                                {renderStars(review.rating)}
-                                            </div>
-                                        </div>
-                                        <span className="text-sm text-gray-500">{review.date}</span>
-                                    </div>
-                                    <p className="text-gray-700 mb-3 leading-relaxed">{review.comment}</p>
-                                    <button className="text-emerald-600 hover:text-emerald-700 text-sm font-medium">
-                                        Responder
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-
-                    {reviews.length > 3 && (
-                        <div className="text-center">
-                            <button className="text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-2 mx-auto group">
-                                Ver todas las opiniones
-                                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                            </button>
-                        </div>
-                    )}
-                </div>
+                )}
             </div>
         </section>
     );

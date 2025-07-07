@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { MapPin, Clock, DollarSign, Star, Users, Briefcase } from 'lucide-react';
 import { formatPrice } from '@/utils/formatPrice';
@@ -20,13 +20,6 @@ const PackageDetailsView: React.FC<PackageDetailsViewProps> = (
     const people = searchParams.get("people") || localStorage.getItem("fast_package_people") || "";
     
 
-
-    useEffect(() => {
-        console.log(date, people)
-    }, [date, people])
-
-
-    // Loading state
     if (loading || !packageData) {
         return (
             <div className="flex justify-center items-center h-screen">

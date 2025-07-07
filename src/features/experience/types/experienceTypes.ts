@@ -29,10 +29,13 @@ export interface TeamMember {
 }
 
 export interface Review {
-    id: number;
-    userName: string;
+    review_id: number;
+    userId: number;
+    user_name: string;
+    user_image: string | null;
+    review_date: string;
     rating: number;
     comment: string;
-    date: string;
-    avatar: string;
+    responses: Review[];
 }
+

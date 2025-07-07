@@ -51,7 +51,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const [loading, setLoading] = useState(false);
     const { user, isAuthenticated, isLoading: authLoading } = useAuth();
 
-    console.log(items);
 
     const calcularTotal = (products: CartItem[]) =>
         products.reduce((acc, item) => acc + item.price * item.quantity, 0);
@@ -145,7 +144,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
     const handleRemoveFromCart = (item: CartItem) => {
         setItems(prev => {
-            console.log(item);
             const updated = prev.filter(i => !isSameCartItem(i, item));
             guardarEnLocalStorage(updated);
             return updated;

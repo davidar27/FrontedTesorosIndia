@@ -1,10 +1,11 @@
 import React from 'react';
 import { Users, ShoppingCart, Award } from 'lucide-react';
+import { Review } from '@/features/experience/types/experienceTypes';
 
 interface QuickStatsProps {
     membersCount: number;
     productsCount: number;
-    averageRating: number;
+    averageRating: Review[];
 }
 
 const QuickStats: React.FC<QuickStatsProps> = ({
@@ -12,6 +13,10 @@ const QuickStats: React.FC<QuickStatsProps> = ({
     productsCount,
     averageRating
 }) => {
+    const averageRatingValue = averageRating.length > 0
+        ? averageRating.reduce((sum, review) => sum + review.rating, 0) / averageRating.length / 2
+        : 0;
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 -mt-16 relative z-10">
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-white/50 backdrop-blur-sm">
@@ -49,7 +54,7 @@ const QuickStats: React.FC<QuickStatsProps> = ({
                     </div>
                     <div>
                         <p className="text-2xl font-bold text-gray-800">
-                            {averageRating.toFixed(1) || 'No hay calificaciones disponibles'}
+                            {averageRatingValue.toFixed(1) || 'No hay calificaciones disponibles'}
                         </p>
                         <p className="text-gray-600 text-sm">Calificación</p>
                     </div>
