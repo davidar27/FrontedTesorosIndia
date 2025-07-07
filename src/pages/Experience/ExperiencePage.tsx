@@ -32,6 +32,7 @@ const ExperiencePage: React.FC = () => {
         members,
         products,
         reviews,
+        reviewStats,
         setReviews,
         isLoading,
         error
@@ -102,7 +103,7 @@ const ExperiencePage: React.FC = () => {
 
                 {!isEditMode && (
                     <>
-                        <ReviewsSection reviews={reviews} setReviews={setReviews} experienceId={experienceId} />
+                        <ReviewsSection reviews={reviews} stats={reviewStats} setReviews={setReviews} experienceId={experienceId} />
                         <CTASection experience={experience} setReviews={setReviews} />
                     </>
                 )}

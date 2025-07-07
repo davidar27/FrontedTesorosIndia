@@ -2,11 +2,12 @@ import React from 'react';
 import { Star, Trash2 } from 'lucide-react';
 import { Review } from '@/features/experience/types/experienceTypes';
 import { useReviews } from '@/features/experience/hooks/useReviews';
-import RatingSummary from '@/features/experience/components/reviews/RatingSummary';
+import RatingSummary, { RatingStats } from '@/features/experience/components/reviews/RatingSummary';
 import ReviewsList from '@/features/experience/components/reviews/ReviewsList';
 
 interface ReviewsSectionProps {
     reviews: Review[];
+    stats?: RatingStats;
     isVisible?: boolean;
     setReviews: React.Dispatch<React.SetStateAction<Review[]>>;
     experienceId?: number;
@@ -14,6 +15,7 @@ interface ReviewsSectionProps {
 
 const ReviewsSection: React.FC<ReviewsSectionProps> = ({
     reviews,
+    stats,
     isVisible = true,
     setReviews,
     experienceId,
@@ -53,6 +55,8 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({
         deleteTarget
     } = useReviews(setReviews, experienceId);
 
+
+
     if (!isVisible) return null;
 
     return (
@@ -65,7 +69,7 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({
                     <h2 className="text-3xl font-bold text-gray-800">Valoraciones</h2>
                 </div>
 
-                <RatingSummary reviews={reviews} />
+                <RatingSummary reviews={reviews} stats={stats} />
 
 
                 <ReviewsList

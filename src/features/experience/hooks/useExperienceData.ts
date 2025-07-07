@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { ExperienceApi } from '@/services/experience/experience';
 import { Experience, Product, TeamMember, Review } from '@/features/experience/types/experienceTypes';
+import { RatingStats } from '@/features/experience/components/reviews/RatingSummary';
 
 export const useExperienceData = (experienceId: number) => {
     const [experience, setExperience] = useState<Experience | null>(null);
     const [members, setMembers] = useState<TeamMember[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
     const [reviews, setReviews] = useState<Review[]>([]);
+    const [reviewStats, setReviewStats] = useState<RatingStats | undefined>(undefined);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(false);
 
@@ -24,6 +26,7 @@ export const useExperienceData = (experienceId: number) => {
 
                 setExperience(infoData[0] || null);
                 setReviews(reviewsData.reviews || []);
+                setReviewStats(reviewsData.stats);
                 setProducts(productsData);
                 setMembers(membersData);
             } catch (error) {
@@ -44,6 +47,7 @@ export const useExperienceData = (experienceId: number) => {
         members,
         products,
         reviews,
+        reviewStats,
         setReviews,
         isLoading,
         error,
