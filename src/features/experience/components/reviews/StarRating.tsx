@@ -25,7 +25,7 @@ const StarRating: React.FC<StarRatingProps> = ({ rating, maxRating = 5, classNam
                     <div key={index} className="relative inline-block">
                         <Star className={`w-4 h-4 text-gray-300 ${className}`} />
                         <div
-                            className={`absolute inset-0 overflow-hidden ${isFullStar ? 'w-full' : isHalfStar ? 'w-1/2' : 'w-0'
+                            className={`absolute inset-0 overflow-hidden ${isFullStar ? 'w-full' : isHalfStar ? 'top-0 w-1/2' : 'w-0'
                                 }`}
                         >
                             <Star className={`w-4 h-4 fill-amber-400 text-amber-400 ${className}`} />

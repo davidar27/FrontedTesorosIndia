@@ -175,16 +175,16 @@ const CTASection: React.FC<CTASectionProps> = ({
                                                             onClick={() => handleStarClick(starIndex, false)}
                                                             onMouseEnter={() => handleStarHover(starIndex, false)}
                                                             onMouseLeave={handleStarLeave}
-                                                            className="absolute left-0 top-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                                            className="absolute left-1/2 top-0 w-full h-full opacity-0 cursor-pointer z-10"
                                                         />
                                                         {/* Media estrella (solo si no es la última estrella) */}
-                                                        {starIndex < 4 && (
+                                                        {starIndex <= 4 && (
                                                             <button
                                                                 type="button"
                                                                 onClick={() => handleStarClick(starIndex, true)}
                                                                 onMouseEnter={() => handleStarHover(starIndex, true)}
                                                                 onMouseLeave={handleStarLeave}
-                                                                className="absolute left-1/2 top-0 w-1/2 h-full opacity-0 cursor-pointer z-20"
+                                                                className="absolute -left-1 top-0 w-1/2 h-full opacity-0 cursor-pointer z-20"
                                                             />
                                                         )}
                                                     </div>
