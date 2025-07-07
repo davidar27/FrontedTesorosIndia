@@ -1,7 +1,5 @@
 import { useHandleFastPackage } from "@/features/home/handleFastPackage/hooks/useHandleFastPackage";
 import { PackageForm } from "@/features/home/handleFastPackage/components/PackageForm";
-import { PackageInfo } from "@/features/home/handleFastPackage/components/PackageInfo";
-import { ErrorMessages } from "@/features/home/handleFastPackage/components/ErrorMessages";
 
 export default function HandleFastPackage() {
   const {
@@ -13,7 +11,6 @@ export default function HandleFastPackage() {
     selectedPackage,
     availablePackages,
     getUnavailableDates,
-    calculateTotalPrice,
     handlePackageChange,
     handleDateChange,
     handlePeopleChange,
@@ -49,8 +46,7 @@ export default function HandleFastPackage() {
           getUnavailableDates={getUnavailableDates}
         />
 
-        {/* Información de paquetes */}
-        <PackageInfo
+        {/* <PackageInfo
           availablePackages={availablePackages}
           selectedPackage={selectedPackage}
           people={people}
@@ -58,10 +54,9 @@ export default function HandleFastPackage() {
           calculateTotalPrice={calculateTotalPrice}
         />
 
-        {/* Mensajes de error y ayuda */}
         <ErrorMessages
           errors={errors}
-        />
+        /> */}
       </div>
     </div>
   );
