@@ -3,6 +3,8 @@ import Header from '@/components/layouts/Header';
 import Footer from '@/components/layouts/Footer';
 import { usePageContext } from '@/context/PageContext';
 import { useState, useCallback } from 'react';
+import Chatbot from '@/features/chatbot/Chatbot';
+// import OnboardingProvider from '@/features/chatbot/components/OnboardingProvider';
 
 const MainLayout = () => {
     const { isEditMode, toggleEditMode } = usePageContext();
@@ -25,20 +27,23 @@ const MainLayout = () => {
     const shouldPassHandler = isExperiencePage && onStatusChangeRequest;
 
     return (
-        <div className="flex flex-col min-h-screen ">
-            <Header 
-                isEditMode={isEditMode}
-                onToggleEditMode={toggleEditMode}
-                onStatusChangeRequest={shouldPassHandler ? onStatusChangeRequest : undefined}
-                currentStatus={isExperiencePage ? currentStatus : undefined}
-            />
+        // <OnboardingProvider>
+            <div className="flex flex-col min-h-screen ">
+                <Header 
+                    isEditMode={isEditMode}
+                    onToggleEditMode={toggleEditMode}
+                    onStatusChangeRequest={shouldPassHandler ? onStatusChangeRequest : undefined}
+                    currentStatus={isExperiencePage ? currentStatus : undefined}
+                />
 
-            <main className="flex-grow">
-                <Outlet context={{ registerStatusChangeHandler, updateCurrentStatus }} /> 
-            </main>
+                <main className="flex-grow">
+                    <Outlet context={{ registerStatusChangeHandler, updateCurrentStatus }} /> 
+                </main>
 
-            <Footer />
-        </div>
+                <Footer />
+                <Chatbot />
+            </div>
+        // </OnboardingProvider>
     );
 };
 

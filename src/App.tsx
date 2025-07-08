@@ -1,6 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Suspense, lazy } from "react";
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ErrorBoundary } from 'react-error-boundary';
 import ToastProvider from '@/components/ui/feedback/ToastProvider';
 
@@ -134,10 +133,7 @@ function App() {
         </Suspense>
       </PageProvider>
 
-      {/* React Query Devtools - solo en desarrollo */}
-      {process.env.NODE_ENV === 'development' && (
-        <ReactQueryDevtools initialIsOpen={false} />
-      )}
+  
     </ErrorBoundary>
   );
 }
