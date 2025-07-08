@@ -40,7 +40,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                         {cancelText}
                     </Button>
                     <Button
-                        variant={confirmText === 'Activar' || confirmText === 'Eliminar' ? 'danger' : 'primary'}
+                        variant={confirmText === 'Eliminar' || confirmText === 'Desactivar' ? 'danger' : 'success'}
                         onClick={onConfirm}
                         disabled={loading}
                     >

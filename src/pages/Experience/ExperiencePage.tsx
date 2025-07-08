@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useOutletContext } from 'react-router-dom';
 import { usePageContext } from '@/context/PageContext';
 import useAuth from '@/context/useAuth';
 import useExperiencePermissions from '@/hooks/useExperiencePermissions';
@@ -7,6 +7,7 @@ import { useExperienceData } from '@/features/experience/hooks/useExperienceData
 import { useEditMode } from '@/features/experience/hooks/useEditMode';
 import { CategoriesApi } from '@/services/home/categories';
 import { Category } from '@/features/admin/categories/CategoriesTypes';
+import ConfirmDialog from '@/components/ui/feedback/ConfirmDialog';
 
 // Componentes
 import { ErrorState } from '@/features/experience/components/ErrorState';
@@ -21,12 +22,20 @@ import CTASection from '@/features/experience/components/CTASection';
 import EditModeNotification from '@/features/experience/components/EditModeNotification';
 import LoadingSpinner from '@/components/ui/display/LoadingSpinner';
 
+interface OutletContext {
+    registerStatusChangeHandler: (handler: () => void) => void;
+    updateCurrentStatus: (status: string) => void;
+}
+
 const ExperiencePage: React.FC = () => {
     const { experience_id } = useParams();
     const { user } = useAuth();
     const { isEditMode } = usePageContext();
+    const { registerStatusChangeHandler, updateCurrentStatus } = useOutletContext<OutletContext>();
     const [showEditNotification, setShowEditNotification] = useState(false);
     const [categories, setCategories] = useState<Category[]>([]);
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+    const [isChangingStatus, setIsChangingStatus] = useState(false);
 
     const experienceId = Number(experience_id);
     const {
@@ -62,6 +71,47 @@ const ExperiencePage: React.FC = () => {
             setShowEditNotification(true);
         }
     }, [user, experience_id]);
+
+    // Actualizar el estado en el layout cuando cambie
+    useEffect(() => {
+        if (updateCurrentStatus && editModeData.editData?.status) {
+            updateCurrentStatus(editModeData.editData.status);
+        }
+    }, [editModeData.editData?.status, updateCurrentStatus]);
+
+    // Funciones para manejar el cambio de estado
+    const handleStatusChangeRequest = () => {
+        setShowConfirmDialog(true);
+    };
+
+    const handleConfirmStatusChange = async () => {
+        setIsChangingStatus(true);
+        try {
+            await editModeData.handleChangeStatus();
+        } finally {
+            setIsChangingStatus(false);
+            setShowConfirmDialog(false);
+        }
+    };
+
+    const handleCancelStatusChange = () => {
+        setShowConfirmDialog(false);
+    };
+
+    // Registrar la función de confirmación en el layout
+    useEffect(() => {
+        if (registerStatusChangeHandler) {
+            registerStatusChangeHandler(handleStatusChangeRequest);
+        }
+    }, [registerStatusChangeHandler]);
+
+    // Variables para el ConfirmDialog
+    const isPublished = editModeData.editData?.status === 'publicada';
+    const confirmTitle = isPublished ? 'Desactivar Experiencia' : 'Activar Experiencia';
+    const confirmDescription = isPublished 
+        ? '¿Estás seguro de que quieres desactivar esta experiencia? Los usuarios no podrán verla hasta que la actives nuevamente.'
+        : '¿Estás seguro de que quieres activar esta experiencia? Será visible para todos los usuarios.';
+    const confirmText = isPublished ? 'Desactivar' : 'Activar';
 
     if (isLoading) return <LoadingSpinner />;
     if (error || !experience) return <ErrorState />;
@@ -129,6 +179,18 @@ const ExperiencePage: React.FC = () => {
                     </>
                 )}
             </div>
+
+            {/* ConfirmDialog para cambio de estado */}
+            <ConfirmDialog
+                open={showConfirmDialog}
+                title={confirmTitle}
+                description={confirmDescription}
+                confirmText={confirmText}
+                onConfirm={handleConfirmStatusChange}
+                onCancel={handleCancelStatusChange}
+                loading={isChangingStatus}
+                className="!backdrop-blur-none bg-black/60"
+            />
         </div>
     );
 };

@@ -13,6 +13,8 @@ import { useAuth } from "@/context/AuthContext";
 interface HeaderProps {
   isEditMode?: boolean;
   onToggleEditMode?: () => void;
+  onStatusChangeRequest?: () => void;
+  currentStatus?: string;
 }
 
 const excludedPaths = ["/auth/iniciar-sesion", "/auth/registro"];
@@ -39,7 +41,7 @@ const backgroundAnimations = {
   visible: { opacity: 0.5, transition: { duration: 0.5 } }
 };
 
-const Header: React.FC<HeaderProps> = ({ isEditMode = false, onToggleEditMode }) => {
+const Header: React.FC<HeaderProps> = ({ isEditMode = false, onToggleEditMode, onStatusChangeRequest, currentStatus }) => {
   const { pathname } = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
@@ -170,6 +172,8 @@ const Header: React.FC<HeaderProps> = ({ isEditMode = false, onToggleEditMode })
               <HeaderActions
                 isEditMode={isEditMode}
                 onToggleEditMode={onToggleEditMode}
+                onStatusChangeRequest={onStatusChangeRequest}
+                currentStatus={currentStatus}
               />
             </motion.div>
           )}
