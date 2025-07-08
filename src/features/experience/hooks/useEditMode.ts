@@ -47,15 +47,15 @@ export const useEditMode = (
         setEditMembers(prev => prev.filter(m => m.id !== memberId));
     };
 
-    const handleCreateProduct = async (product: CreateProductData) => {
-        setEditProducts(prev => [...prev, product]);
+    // const handleCreateProduct = async (product: CreateProductData) => {
+    //     setEditProducts(prev => [...prev, product]);
 
-        try {
-            await axiosInstance.post('/productos', product);
-        } catch (error) {
-            console.error('Error al crear el producto:', error);
-        }
-    };
+    //     try {
+    //         await axiosInstance.post('/productos', product);
+    //     } catch (error) {
+    //         console.error('Error al crear el producto:', error);
+    //     }
+    // };
 
     const handleChangeStatus = async () => {
         const newStatus = editData.status === 'publicada' ? 'borrador' : 'publicada';
