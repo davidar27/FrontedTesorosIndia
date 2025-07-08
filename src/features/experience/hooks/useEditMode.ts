@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Experience, TeamMember } from '@/features/experience/types/experienceTypes';
 import { Product } from '@/features/products/components/ProductCard';
 import { axiosInstance } from '@/api/axiosInstance';
-import { CreateProductData } from '@/features/products/components/CreateProductForm';
+// import { CreateProductData } from '@/features/products/components/CreateProductForm';
 
 export const useEditMode = (
     initialExperience: Experience | null,
