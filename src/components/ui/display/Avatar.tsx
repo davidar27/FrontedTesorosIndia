@@ -1,3 +1,4 @@
+import Picture from './Picture';
 import { getImageUrl } from '@/utils/getImageUrl';
 
 type AvatarProps = {
@@ -35,20 +36,7 @@ const Avatar = ({ name = '', size = 40, className = '', src = null }: AvatarProp
             }}
         >   
             {hasImage ? (
-                <img 
-                    src={getImageUrl(src)!} 
-                    alt={name || 'Avatar del usuario'} 
-                    className="w-full h-full object-cover rounded-full"
-                    onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
-                        const parent = target.parentElement;
-                        if (parent) {
-                            parent.style.backgroundColor = backgroundColor;
-                            parent.style.color = 'hsl(0, 0%, 20%)';
-                        }
-                    }}
-                />
+                <Picture src={src || '' || getImageUrl(src || '')} alt={name || ''} />
             ) : (
                 <span className="text-2xl">{initial}</span>
             )}

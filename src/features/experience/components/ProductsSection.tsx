@@ -6,6 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import CreateProductForm, { CreateProductData } from '@/features/products/components/CreateProductForm';
 import { Category } from '@/features/admin/categories/CategoriesTypes';
 import Button from '@/components/ui/buttons/Button';
+import { createProduct } from '@/services/product/productServie';
 
 interface ProductsSectionProps {
     products: Product[];
@@ -33,29 +34,21 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({
     const [showCreateForm, setShowCreateForm] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
 
-    const handleCreateProduct = async (productData: CreateProductData) => {
+    const handleCreateProduct = async (productData: Omit<CreateProductData, 'category'> & { category_id: number }) => {
         setIsCreating(true);
         try {
-            console.log('Creando producto:', productData);
-
-            const newProduct: Product = {
-                id: Date.now(), // ID temporal
-                name: productData.name,
-                price: productData.price,
-                category: productData.category,
-                stock: productData.stock,
-                image: productData.image ? URL.createObjectURL(productData.image) : '',
-                rating: 0,
+            if (!experience_id) throw new Error('No experience_id');
+            const newProduct = await createProduct({
+                ...productData,
                 experience_id: Number(experience_id)
-            };
-
+            });
             if (onAddProduct) {
                 onAddProduct(newProduct);
             }
-
             setShowCreateForm(false);
         } catch (error) {
             console.error('Error al crear el producto:', error);
+            // Aquí podrías mostrar un toast o mensaje de error
         } finally {
             setIsCreating(false);
         }

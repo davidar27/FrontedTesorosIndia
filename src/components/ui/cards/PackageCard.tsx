@@ -7,6 +7,7 @@ import { formatPrice } from "@/utils/formatPrice";
 import { getImageUrl } from "@/utils/getImageUrl";
 
 
+
 type PackageCardProps = {
     image?: string;
     name: string;
@@ -30,6 +31,8 @@ export const PackageCard = ({
 }: PackageCardProps) => {
     const [isHovered, setIsHovered] = useState(false);
     const navigate = useNavigate();
+
+
     return (
         <motion.div
             className={`relative overflow-hidden flex flex-col justify-center rounded-xl shadow-lg w-full max-w-xs border-2 ${isCreateCard
@@ -53,7 +56,7 @@ export const PackageCard = ({
 
             <div className="relative h-56 overflow-hidden">
                 <motion.img
-                    src={getImageUrl(image) || "/placeholder-image.jpg"}
+                    src={getImageUrl(image || '') || ''}
                     alt={name}
                     className="w-full h-full object-cover"
                     animate={{

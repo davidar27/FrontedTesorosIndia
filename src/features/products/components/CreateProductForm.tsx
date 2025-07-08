@@ -11,14 +11,14 @@ export interface CreateProductData {
     name: string;
     price: number;
     description: string;
-    category: string;
+    category_id: number;
     stock: number;
     image?: File | null;
 }
 
 interface CreateProductFormProps {
     categories: Category[];
-    onSave: (product: CreateProductData) => void;
+    onSave: (product: Omit<CreateProductData, 'category'> & { category_id: number }) => void;
     onCancel: () => void;
     isLoading?: boolean;
 }
@@ -36,7 +36,7 @@ const CreateProductForm = ({
         name: '',
         price: 0,
         description: '',
-        category: '',
+        category_id: 0,
         stock: 0,
         image: null,
     });
@@ -58,8 +58,8 @@ const CreateProductForm = ({
             newErrors.description = 'La descripción es obligatoria';
         }
 
-        if (!formData.category) {
-            newErrors.category = 'Debe seleccionar una categoría';
+        if (!formData.category_id) {
+            newErrors.category_id = 'Debe seleccionar una categoría';
         }
 
         if (formData.stock < 0) {
@@ -72,7 +72,9 @@ const CreateProductForm = ({
 
     const handleSave = () => {
         if (!validateForm()) return;
-        onSave(formData);
+        // Enviar category_id en vez de category
+        const { category_id, ...rest } = formData;
+        onSave({ ...rest, category_id, image: formData.image });
     };
 
     const handleInputChange = (field: keyof CreateProductData, value: string | number) => {
@@ -88,6 +90,14 @@ const CreateProductForm = ({
             }));
         }
     }
+
+    const handleFileSelect = (file: File | null) => {
+        setDraggedFile(file);
+        setFormData(prev => ({
+            ...prev,
+            image: file
+        }));
+    };
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50 p-4">
@@ -158,22 +168,22 @@ const CreateProductForm = ({
                                         Categoría *
                                     </label>
                                     <select
-                                        value={formData.category}
-                                        onChange={(e) => handleInputChange('category', e.target.value)}
-                                        className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-white ${errors.category ? 'border-primary bg-red-50' : 'border-gray-200 hover:border-primary'
+                                        value={formData.category_id}
+                                        onChange={(e) => handleInputChange('category_id', Number(e.target.value))}
+                                        className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-white ${errors.category_id ? 'border-primary bg-red-50' : 'border-gray-200 hover:border-primary'
                                             }`}
                                     >
                                         <option value="">Selecciona una categoría</option>
                                         {categories.map((category) => (
-                                            <option key={category.id} value={category.name}>
+                                            <option key={category.id} value={category.id}>
                                                 {category.name}
                                             </option>
                                         ))}
                                     </select>
-                                    {errors.category && (
+                                    {errors.category_id && (
                                         <div className="flex items-center gap-2 text-red-600">
                                             <AlertCircle className="w-4 h-4" />
-                                            <span className="text-sm">{errors.category}</span>
+                                            <span className="text-sm">{errors.category_id}</span>
                                         </div>
                                     )}
                                 </div>
@@ -235,7 +245,7 @@ const CreateProductForm = ({
 
                             {/* Columna derecha - Imagen */}
                             <ImageUpload
-                                onFileSelect={setDraggedFile}
+                                onFileSelect={handleFileSelect}
                                 currentFile={draggedFile}
                                 entity='product'
                                 className='w-full h-72'

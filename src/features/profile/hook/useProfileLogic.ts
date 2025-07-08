@@ -58,10 +58,10 @@ export const useProfileLogic = () => {
             if (previewImage) {
                 URL.revokeObjectURL(previewImage);
             }
-            const webpFile = await fileToWebp(file);
-            const imageUrl = URL.createObjectURL(webpFile);
+            // Mostrar preview inmediato con el archivo original
+            const imageUrl = URL.createObjectURL(file);
             setPreviewImage(imageUrl);
-            setImageFile(webpFile);
+            setImageFile(file); // Guardar el archivo original
         }
     };
 
@@ -77,7 +77,7 @@ export const useProfileLogic = () => {
         
         if (imageFile) {
             const webpFile = await fileToWebp(imageFile);
-            formData.append('image', webpFile);
+            formData.append('file', webpFile);
         }
 
         profileUpdateMutation.mutate(formData);
