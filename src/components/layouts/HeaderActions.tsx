@@ -8,6 +8,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import useExperiencePermissions from "@/hooks/useExperiencePermissions";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
+import NotificationDropdown from "@/components/ui/display/NotificationDropdown";
 
 interface HeaderActionsProps {
     isEditMode?: boolean;
@@ -158,6 +159,11 @@ const HeaderActions = ({
                             <span>Experiencias</span>
                         </Button>
                     </>
+                )}
+
+                {/* Notifications */}
+                {user?.role !== 'observador' && (
+                    <NotificationDropdown />
                 )}
                 <div className="hidden md:block">
                     <UserMenu />
