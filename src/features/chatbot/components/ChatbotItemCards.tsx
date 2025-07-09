@@ -35,9 +35,6 @@ const ChatbotItemCards: React.FC<ChatbotItemCardsProps> = ({
         }
     };
 
-    console.log(items);
-    console.log(getImageUrl(items[0].image));
-
     return (
         <div className="space-y-3">
             {items.map((item) => (

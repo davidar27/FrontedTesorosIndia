@@ -84,7 +84,6 @@ export class ChatbotOptionsService {
     // Crear menú de categorías
     async getCategoriesMenu(): Promise<ChatbotMenu> {
         const categories = await this.getProductCategories();
-        console.log('Categorías cargadas:', categories);
         
         const options: ChatbotOption[] = categories.map(cat => ({
             id: `category_${cat.id}`,

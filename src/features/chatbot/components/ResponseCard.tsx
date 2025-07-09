@@ -56,7 +56,6 @@ const ResponseCard: React.FC<ResponseCardProps> = ({ item, className = '' }) => 
         navigate(item.url);
     };
 
-    console.log(item);
     
     return (
         <div

@@ -44,19 +44,15 @@ const ChatbotComponent: React.FC<ChatbotProps> = ({ className = '' }) => {
         scrollToBottom();
     }, [messages]);
 
-    // Bloquear scroll del body solo en móviles cuando el chat está abierto
     useEffect(() => {
-        // Detectar si es móvil
         const isMobile = window.innerWidth <= 768 || ('ontouchstart' in window);
         
         if (isOpen && isMobile) {
-            // Bloquear scroll del body solo en móviles
             document.body.style.overflow = 'hidden';
             document.body.style.position = 'fixed';
             document.body.style.width = '100%';
             document.body.style.top = `-${window.scrollY}px`;
         } else if (!isOpen && isMobile) {
-            // Restaurar scroll del body solo en móviles
             const scrollY = document.body.style.top;
             document.body.style.overflow = '';
             document.body.style.position = '';
@@ -65,7 +61,6 @@ const ChatbotComponent: React.FC<ChatbotProps> = ({ className = '' }) => {
             window.scrollTo(0, parseInt(scrollY || '0') * -1);
         }
 
-        // Cleanup al desmontar
         return () => {
             if (isMobile) {
                 document.body.style.overflow = '';
@@ -106,9 +101,7 @@ const ChatbotComponent: React.FC<ChatbotProps> = ({ className = '' }) => {
     };
 
     const handleTouchMove = (e: React.TouchEvent) => {
-        // Solo aplicar en móviles
         if (window.innerWidth <= 768 || ('ontouchstart' in window)) {
-            // Permitir scroll solo dentro del contenedor de mensajes
             const target = e.target as HTMLElement;
             const messagesContainer = target.closest('.chatbot-messages');
             
@@ -140,7 +133,7 @@ const ChatbotComponent: React.FC<ChatbotProps> = ({ className = '' }) => {
                             </div>
                             <div>
                                 <h3 className="font-bold text-base tracking-wide drop-shadow-sm">Tesorito</h3>
-                                <p className="text-xs text-white/90 font-medium">Asistente virtual</p>
+                                <p className="text-xs text-white/90 font-medium">Guía turístico virtual</p>
                             </div>
                         </div>
                         <div className="flex items-center space-x-2 relative z-10">
@@ -215,7 +208,7 @@ const ChatbotComponent: React.FC<ChatbotProps> = ({ className = '' }) => {
                                     className="w-full p-3 text-center rounded-xl border-2 border-gray-200 bg-white/80 backdrop-blur-sm hover:bg-gray-50 text-gray-700 transition-all duration-200 flex items-center justify-center space-x-2 hover:shadow-md hover:border-gray-300"
                                 >
                                     <ArrowLeft className="w-4 h-4" />
-                                    <span>Volver a categorías</span>
+                                    <span>Volver al menú principal</span>
                                 </button>
                             </div>
                         )}

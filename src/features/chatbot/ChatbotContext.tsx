@@ -54,7 +54,7 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
   const [currentProducts, setCurrentProducts] = useState<ChatbotProduct[]>([]);
   const [currentExperiences, setCurrentExperiences] = useState<ChatbotExperience[]>([]);
   const [currentPackages, setCurrentPackages] = useState<ChatbotPackage[]>([]);
-  
+
   const authContext = useAuth();
 
   useEffect(() => {
@@ -89,7 +89,25 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
       setIsLoading(false);
     }
   }, []);
-
+  const goBack = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const mainMenu = chatbotOptionsService.getMainMenu();
+      setCurrentMenu(mainMenu);
+      setChatbotState({
+        currentMenu: 'main_menu',
+        breadcrumb: ['Menú Principal']
+      });
+      setMessages([]);
+      setCurrentProducts([]);
+      setCurrentExperiences([]);
+      setCurrentPackages([]);
+    } catch (error) {
+      console.error('Error going back:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
   // Manejar clic en opción
   const handleOptionClick = useCallback(async (option: ChatbotOption) => {
     setIsLoading(true);
@@ -164,7 +182,6 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
           break;
 
         case 'go_back':
-          console.log('Botón de volver clickeado, breadcrumb actual:', chatbotState.breadcrumb);
           goBack();
           break;
       }
@@ -173,28 +190,9 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [goBack]);
 
-  const goBack = useCallback(async () => {
-    console.log('Función goBack ejecutada, breadcrumb actual:', chatbotState.breadcrumb);
-    setIsLoading(true);
-    try {
-      const mainMenu = chatbotOptionsService.getMainMenu();
-      setCurrentMenu(mainMenu);
-      setChatbotState({
-        currentMenu: 'main_menu',
-        breadcrumb: ['Menú Principal']
-      });
-      setMessages([]);
-      setCurrentProducts([]);
-      setCurrentExperiences([]);
-      setCurrentPackages([]);
-    } catch (error) {
-      console.error('Error going back:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [chatbotState.breadcrumb]);
+
 
   // Manejar clic en producto
   const handleProductClick = useCallback((product: ChatbotProduct) => {
@@ -229,7 +227,7 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
 
     try {
       const response = await chatService.sendMessage(text, messages);
-      
+
       const botMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         text: response.text,
@@ -240,7 +238,7 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
       console.error('Error sending message:', error);
-      
+
       const errorMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         text: 'Lo siento, hubo un error al procesar tu mensaje. Por favor, intenta de nuevo.',
