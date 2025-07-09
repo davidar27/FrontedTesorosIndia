@@ -27,7 +27,6 @@ const ChatbotOptions: React.FC<ChatbotOptionsProps> = ({
     return (
         <div className="space-y-2">
             {options.map((option) => {
-                // No mostrar botones de volver si no hay opciones válidas
                 if (option.type === 'back' && options.length <= 1) {
                     return null;
                 }

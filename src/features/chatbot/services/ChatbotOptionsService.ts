@@ -83,7 +83,9 @@ export class ChatbotOptionsService {
 
     // Crear menú de categorías
     async getCategoriesMenu(): Promise<ChatbotMenu> {
-        const categories = await this.getProductCategories();        
+        const categories = await this.getProductCategories();
+        console.log('Categorías cargadas:', categories);
+        
         const options: ChatbotOption[] = categories.map(cat => ({
             id: `category_${cat.id}`,
             label: cat.name,
@@ -94,13 +96,13 @@ export class ChatbotOptionsService {
             description: `${cat.productCount || 0} productos disponibles`
         }));
 
-        // Agregar botón de volver solo si no estamos en el menú principal
         options.push({
             id: 'back_to_main',
             label: '← Volver al menú principal',
             type: 'back',
             action: 'go_back',
-            icon: '⬅️'
+            icon: 'ㅤㅤ'
+
         });
 
         return {
@@ -148,10 +150,9 @@ export class ChatbotOptionsService {
             description: `$${product.price.toLocaleString()}`
         }));
 
-        // Agregar botón de volver
         options.push({
-            id: 'back_to_categories',
-            label: '← Volver a categorías',
+            id: 'back_to_main',
+            label: '← Volver al menú principal',
             type: 'back',
             action: 'go_back',
             icon: '⬅️'
@@ -197,7 +198,6 @@ export class ChatbotOptionsService {
             description: exp.location ? `📍 ${exp.location}` : undefined
         }));
 
-        // Agregar botón de volver
         options.push({
             id: 'back_to_main',
             label: '← Volver al menú principal',
@@ -246,13 +246,11 @@ export class ChatbotOptionsService {
             description: pkg.duration ? `⏱️ ${pkg.duration}` : undefined
         }));
 
-        // Agregar botón de volver
         options.push({
             id: 'back_to_main',
             label: '← Volver al menú principal',
             type: 'back',
             action: 'go_back',
-            icon: '⬅️'
         });
 
         return {

@@ -164,6 +164,7 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
           break;
 
         case 'go_back':
+          console.log('Botón de volver clickeado, breadcrumb actual:', chatbotState.breadcrumb);
           goBack();
           break;
       }
@@ -175,56 +176,19 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
   }, []);
 
   const goBack = useCallback(async () => {
+    console.log('Función goBack ejecutada, breadcrumb actual:', chatbotState.breadcrumb);
     setIsLoading(true);
     try {
-      if (chatbotState.breadcrumb.length === 1 && chatbotState.breadcrumb[0] === 'Menú Principal') {
-        return;
-      }
-
-      const newBreadcrumb = [...chatbotState.breadcrumb];
-      newBreadcrumb.pop();
-
-      if (newBreadcrumb.length === 1 && newBreadcrumb[0] === 'Menú Principal') {
-        const mainMenu = chatbotOptionsService.getMainMenu();
-        setCurrentMenu(mainMenu);
-        setChatbotState({
-          currentMenu: 'main_menu',
-          breadcrumb: ['Menú Principal']
-        });
-        setMessages([]);
-        setCurrentProducts([]);
-        setCurrentExperiences([]);
-        setCurrentPackages([]);
-      } else if (newBreadcrumb.length > 0 && newBreadcrumb[newBreadcrumb.length - 1] === 'Categorías') {
-        const categoriesMenu = await chatbotOptionsService.getCategoriesMenu();
-        setCurrentMenu(categoriesMenu);
-        setChatbotState(prev => ({
-          ...prev,
-          currentMenu: 'categories_menu',
-          breadcrumb: newBreadcrumb
-        }));
-        setCurrentProducts([]);
-      } else if (newBreadcrumb.length > 0 && newBreadcrumb[newBreadcrumb.length - 1] === 'Productos') {
-        const categoriesMenu = await chatbotOptionsService.getCategoriesMenu();
-        setCurrentMenu(categoriesMenu);
-        setChatbotState(prev => ({
-          ...prev,
-          currentMenu: 'categories_menu',
-          breadcrumb: newBreadcrumb
-        }));
-        setCurrentProducts([]);
-      } else {
-        const mainMenu = chatbotOptionsService.getMainMenu();
-        setCurrentMenu(mainMenu);
-        setChatbotState({
-          currentMenu: 'main_menu',
-          breadcrumb: ['Menú Principal']
-        });
-        setMessages([]);
-        setCurrentProducts([]);
-        setCurrentExperiences([]);
-        setCurrentPackages([]);
-      }
+      const mainMenu = chatbotOptionsService.getMainMenu();
+      setCurrentMenu(mainMenu);
+      setChatbotState({
+        currentMenu: 'main_menu',
+        breadcrumb: ['Menú Principal']
+      });
+      setMessages([]);
+      setCurrentProducts([]);
+      setCurrentExperiences([]);
+      setCurrentPackages([]);
     } catch (error) {
       console.error('Error going back:', error);
     } finally {
