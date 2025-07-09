@@ -1,5 +1,5 @@
 export interface DetectedIntent {
-    type: 'packages' | 'products' | 'experiences' | 'categories' | 'none';
+    type: string;
     confidence: number;
     redirectTo: string;
     message: string;

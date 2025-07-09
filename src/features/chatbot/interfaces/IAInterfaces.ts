@@ -11,7 +11,7 @@ export interface IARegisteredRequest extends IARequest {
 export interface IAResponse {
     text: string;
     intent?: {
-        type: 'packages' | 'products' | 'experiences' | 'categories' | 'none';
+        type: string; // Permitir cualquier string para tipos personalizados
         confidence: number;
         redirectTo: string;
         message: string;
@@ -19,6 +19,7 @@ export interface IAResponse {
     };
     success: boolean;
     error?: string;
+    data?: unknown[]; // <-- Permitir datos adicionales del backend
 }
 
 export interface ChatMessage {
@@ -26,6 +27,7 @@ export interface ChatMessage {
     text: string;
     sender: 'user' | 'bot';
     timestamp: Date;
+    data?: unknown[]; // <-- Permitir datos adicionales en el mensaje
 }
 
 export interface APIHistoryItem {

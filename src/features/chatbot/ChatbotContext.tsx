@@ -69,6 +69,8 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
   const [detectedIntent, setDetectedIntent] = useState<DetectedIntent | null>(null);
   const [showGuidedContent, setShowGuidedContent] = useState(false);
   const [guidedContentType, setGuidedContentType] = useState<'experiences' | 'products' | 'packages' | null>(null);
+  const [customData, setCustomData] = useState<unknown[]>([]);
+  const [showCustomData, setShowCustomData] = useState<'top_products' | 'total_income' | null>(null);
 
   const authContext = useAuth();
   const navigate = useNavigate();
@@ -406,13 +408,30 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
           await showGuidedContentInChat('packages');
           break;
         }
+
+        case 'show_top_products_by_experience': {
+          const lastBotMsg = messages.filter(m => m.sender === 'bot').slice(-1)[0];
+          if (lastBotMsg && Array.isArray(lastBotMsg.data)) {
+            setCustomData(lastBotMsg.data);
+            setShowCustomData('top_products');
+          }
+          break;
+        }
+        case 'show_total_income_by_experience': {
+          const lastBotMsg = messages.filter(m => m.sender === 'bot').slice(-1)[0];
+          if (lastBotMsg && Array.isArray(lastBotMsg.data)) {
+            setCustomData(lastBotMsg.data);
+            setShowCustomData('total_income');
+          }
+          break;
+        }
       }
     } catch (error) {
       console.error('Error handling intent redirect:', error);
     } finally {
       setIsLoading(false);
     }
-  }, [showGuidedContentInChat]);
+  }, [showGuidedContentInChat, messages]);
 
   const sendMessage = useCallback(async (text: string) => {
     if (!chatService) {
@@ -454,6 +473,7 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
           text: response.text,
           sender: 'bot',
           timestamp: new Date(),
+          data: response.data // <-- ahora permitido por la interfaz
         };
 
         setMessages(prev => [...prev, botMessage]);
@@ -463,9 +483,8 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
           id: (Date.now() + 1).toString(),
           text: response.text,
           sender: 'bot',
-          timestamp: new Date(),
+          timestamp: new Date()
         };
-
         setMessages(prev => [...prev, botMessage]);
       }
     } catch (error) {
@@ -537,6 +556,38 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
   return (
     <ChatbotContext.Provider value={value}>
       {children}
+      {showCustomData === 'top_products' && customData.length > 0 && (
+        <div className="space-y-2">
+          <h4 className="font-bold text-gray-800">Top 3 productos más vendidos</h4>
+          <ul>
+            {customData.map((item, idx) => {
+              const prod = item as { product_id: number; product_name: string; total_sold: string };
+              return (
+                <li key={prod.product_id} className="p-2 border-b">
+                  <span className="font-semibold">{idx + 1}. {prod.product_name}</span>
+                  <span className="ml-2 text-gray-600">Vendidos: {prod.total_sold}</span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
+      {showCustomData === 'total_income' && customData.length > 0 && (
+        <div className="space-y-2">
+          <h4 className="font-bold text-gray-800">Total de ingresos por experiencia</h4>
+          <ul>
+            {customData.map((item) => {
+              const exp = item as { experiencia_id: number; experiencia_nombre: string; total_income: string };
+              return (
+                <li key={exp.experiencia_id} className="p-2 border-b">
+                  <span className="font-semibold">{exp.experiencia_nombre}</span>
+                  <span className="ml-2 text-gray-600">Ingresos: ${exp.total_income}</span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
     </ChatbotContext.Provider>
   );
 }; 
