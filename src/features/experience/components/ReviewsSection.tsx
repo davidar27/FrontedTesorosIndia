@@ -6,6 +6,7 @@ import RatingSummary, { RatingStats } from '@/features/experience/components/rev
 import ReviewsList from '@/features/experience/components/reviews/ReviewsList';
 import InappropriateContentModal from '@/components/ui/feedback/InappropriateContentModal';
 import ReportCommentModal from '@/components/ui/feedback/ReportCommentModal';
+import ReportAnalysisModal from '@/components/ui/feedback/ReportAnalysisModal';
 
 interface ReviewsSectionProps {
     reviews: Review[];
@@ -65,7 +66,9 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({
         isReporting,
         handleReportComment,
         handleCloseReportModal,
-        handleSubmitReport
+        handleSubmitReport,
+        showAnalysisModal,
+        handleCloseAnalysisModal
     } = useReviews(setReviews, entity, experienceId);
 
 
@@ -203,6 +206,14 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({
                 onClose={handleCloseReportModal}
                 onSubmit={handleSubmitReport}
                 isSubmitting={isReporting}
+                commentText={reportingComment?.text}
+                userName={reportingComment?.userName}
+            />
+
+            {/* Report Analysis Modal */}
+            <ReportAnalysisModal
+                isOpen={showAnalysisModal}
+                onClose={handleCloseAnalysisModal}
                 commentText={reportingComment?.text}
                 userName={reportingComment?.userName}
             />
