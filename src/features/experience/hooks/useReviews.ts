@@ -34,6 +34,7 @@ export const useReviews = (setReviews: React.Dispatch<React.SetStateAction<Revie
     const [showReportModal, setShowReportModal] = useState(false);
     const [reportingComment, setReportingComment] = useState<{ id: number; text: string; userName: string } | null>(null);
     const [isReporting, setIsReporting] = useState(false);
+    const [showAnalysisModal, setShowAnalysisModal] = useState(false);
 
     const handleOptionsClick = (reviewId: number) => {
         setOpenOptionsId(openOptionsId === reviewId ? null : reviewId);
@@ -326,19 +327,26 @@ export const useReviews = (setReviews: React.Dispatch<React.SetStateAction<Revie
         setReportingComment(null);
     };
 
+    const handleCloseAnalysisModal = () => {
+        setShowAnalysisModal(false);
+    };
+
     const handleSubmitReport = async (reportData: { type: string; reason: string }) => {
         if (!reportingComment) return;
 
         setIsReporting(true);
         try {
-            await axiosInstance.post('/reportes-comentarios', {
+            await axiosInstance.post('/comentarios/reportar', {
                 user_id: user?.id,
                 review_id: reportingComment.id,
+                comment_text: reportingComment.text, // Enviar el texto del comentario
+                comment_author: reportingComment.userName, // Enviar el autor del comentario
                 report_type: reportData.type,
                 reason: reportData.reason
             });
 
-            toast.success('Reporte enviado correctamente');
+            // Mostrar modal de confirmación
+            setShowAnalysisModal(true);
             handleCloseReportModal();
         } catch (error: unknown) {
             console.error('Error submitting report:', error);
@@ -389,6 +397,8 @@ export const useReviews = (setReviews: React.Dispatch<React.SetStateAction<Revie
         isReporting,
         handleReportComment,
         handleCloseReportModal,
-        handleSubmitReport
+        handleSubmitReport,
+        showAnalysisModal,
+        handleCloseAnalysisModal
     };
 };
