@@ -31,3 +31,5 @@ dist-ssr
 
 
 *.cursor
+
+/src/features/chatbot/README.md
