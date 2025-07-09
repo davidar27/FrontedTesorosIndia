@@ -83,10 +83,7 @@ export class ChatbotOptionsService {
 
     // Crear menú de categorías
     async getCategoriesMenu(): Promise<ChatbotMenu> {
-        const categories = await this.getProductCategories();
-        console.log(categories);
-        
-        
+        const categories = await this.getProductCategories();        
         const options: ChatbotOption[] = categories.map(cat => ({
             id: `category_${cat.id}`,
             label: cat.name,
@@ -97,7 +94,7 @@ export class ChatbotOptionsService {
             description: `${cat.productCount || 0} productos disponibles`
         }));
 
-        // Agregar botón de volver
+        // Agregar botón de volver solo si no estamos en el menú principal
         options.push({
             id: 'back_to_main',
             label: '← Volver al menú principal',

@@ -57,7 +57,6 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
   
   const authContext = useAuth();
 
-  // Inicializar servicios cuando el contexto de auth esté disponible
   useEffect(() => {
     if (authContext) {
       chatbotAuthService.setAuthContext(authContext);
@@ -160,7 +159,6 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
               currentMenu: 'free_chat',
               breadcrumb: [...prev.breadcrumb, 'Chat Libre']
             }));
-            // Limpiar mensajes al entrar al chat libre
             setMessages([]);
           }
           break;
@@ -176,25 +174,28 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
     }
   }, []);
 
-  // Función para volver atrás
   const goBack = useCallback(async () => {
     setIsLoading(true);
     try {
-      const newBreadcrumb = [...chatbotState.breadcrumb];
-      newBreadcrumb.pop(); // Remover último elemento
+      if (chatbotState.breadcrumb.length === 1 && chatbotState.breadcrumb[0] === 'Menú Principal') {
+        return;
+      }
 
-      if (newBreadcrumb.length === 1) {
-        // Volver al menú principal
+      const newBreadcrumb = [...chatbotState.breadcrumb];
+      newBreadcrumb.pop();
+
+      if (newBreadcrumb.length === 1 && newBreadcrumb[0] === 'Menú Principal') {
         const mainMenu = chatbotOptionsService.getMainMenu();
         setCurrentMenu(mainMenu);
         setChatbotState({
           currentMenu: 'main_menu',
           breadcrumb: ['Menú Principal']
         });
-        // Limpiar mensajes al volver al menú principal
         setMessages([]);
-      } else if (newBreadcrumb[newBreadcrumb.length - 1] === 'Categorías') {
-        // Volver a categorías
+        setCurrentProducts([]);
+        setCurrentExperiences([]);
+        setCurrentPackages([]);
+      } else if (newBreadcrumb.length > 0 && newBreadcrumb[newBreadcrumb.length - 1] === 'Categorías') {
         const categoriesMenu = await chatbotOptionsService.getCategoriesMenu();
         setCurrentMenu(categoriesMenu);
         setChatbotState(prev => ({
@@ -202,6 +203,27 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
           currentMenu: 'categories_menu',
           breadcrumb: newBreadcrumb
         }));
+        setCurrentProducts([]);
+      } else if (newBreadcrumb.length > 0 && newBreadcrumb[newBreadcrumb.length - 1] === 'Productos') {
+        const categoriesMenu = await chatbotOptionsService.getCategoriesMenu();
+        setCurrentMenu(categoriesMenu);
+        setChatbotState(prev => ({
+          ...prev,
+          currentMenu: 'categories_menu',
+          breadcrumb: newBreadcrumb
+        }));
+        setCurrentProducts([]);
+      } else {
+        const mainMenu = chatbotOptionsService.getMainMenu();
+        setCurrentMenu(mainMenu);
+        setChatbotState({
+          currentMenu: 'main_menu',
+          breadcrumb: ['Menú Principal']
+        });
+        setMessages([]);
+        setCurrentProducts([]);
+        setCurrentExperiences([]);
+        setCurrentPackages([]);
       }
     } catch (error) {
       console.error('Error going back:', error);

@@ -20,7 +20,6 @@ export class ResponseParser {
     static parseResponse(response: string): ParsedResponse {
         const items: ParsedItem[] = [];
         let cleanText = response;
-        console.log(items);
 
 
         // Patrón para detectar enlaces markdown con información de paquetes
