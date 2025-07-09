@@ -7,6 +7,8 @@ import { ChatbotProvider, useChatbot } from '@/features/chatbot/ChatbotContext';
 import ChatbotOptions from '@/features/chatbot/components/ChatbotOptions';
 import ChatbotProductCards from '@/features/chatbot/components/ChatbotProductCards';
 import ChatbotItemCards from '@/features/chatbot/components/ChatbotItemCards';
+import IntentRedirectButton from '@/features/chatbot/components/IntentRedirectButton';
+import GuidedContentInChat from '@/features/chatbot/components/GuidedContentInChat';
 import Picture from '../../components/ui/display/Picture';
 import './styles/responseCards.css';
 
@@ -26,11 +28,19 @@ const ChatbotComponent: React.FC<ChatbotProps> = ({ className = '' }) => {
         currentProducts,
         currentExperiences,
         currentPackages,
+        currentCategories,
+        detectedIntent,
+        showGuidedContent,
+        guidedContentType,
         handleOptionClick,
         handleProductClick,
         handleExperienceClick,
         handlePackageClick,
-        goBack
+        handleCategoryClick,
+        handleIntentRedirect,
+        hideGuidedContent,
+        goBack,
+        backToCategories
     } = useChatbot();
     const [inputValue, setInputValue] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -47,12 +57,12 @@ const ChatbotComponent: React.FC<ChatbotProps> = ({ className = '' }) => {
     useEffect(() => {
         const isMobile = window.innerWidth <= 768 || ('ontouchstart' in window);
         
-        if (isOpen && isMobile) {
+        if (isOpen /* && isMobile */) {
             document.body.style.overflow = 'hidden';
             document.body.style.position = 'fixed';
             document.body.style.width = '100%';
             document.body.style.top = `-${window.scrollY}px`;
-        } else if (!isOpen && isMobile) {
+        } else if (!isOpen /* && isMobile */) {
             const scrollY = document.body.style.top;
             document.body.style.overflow = '';
             document.body.style.position = '';
@@ -148,12 +158,12 @@ const ChatbotComponent: React.FC<ChatbotProps> = ({ className = '' }) => {
                                 </button>
                             )}
                             
-                            <button
-                                onClick={toggleChat}
+                        <button
+                            onClick={toggleChat}
                                 className="text-white/80 hover:text-white transition-all duration-200 hover:bg-white/10 p-2 rounded-lg"
-                            >
-                                <X className="w-5 h-5" />
-                            </button>
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
                         </div>
                     </div>
 
@@ -276,7 +286,34 @@ const ChatbotComponent: React.FC<ChatbotProps> = ({ className = '' }) => {
                                 <ChatMessage key={index} message={message} />
                                 ))}
                                 
+                                {/* Botón de redirección de intención */}
+                                {detectedIntent && (
+                                    <>
+                                        <IntentRedirectButton
+                                            message={detectedIntent.message}
+                                            buttonText={detectedIntent.buttonText}
+                                            onClick={() => handleIntentRedirect(detectedIntent.redirectTo)}
+                                            isLoading={isLoading}
+                                        />
+                                    </>
+                                )}
 
+                                {/* Contenido guiado dentro del chat */}
+                                {showGuidedContent && guidedContentType && (
+                                    <GuidedContentInChat
+                                        type={guidedContentType}
+                                        products={currentProducts}
+                                        experiences={currentExperiences}
+                                        packages={currentPackages}
+                                        categories={currentCategories}
+                                        onProductClick={handleProductClick}
+                                        onExperienceClick={handleExperienceClick}
+                                        onPackageClick={handlePackageClick}
+                                        onCategoryClick={handleCategoryClick}
+                                        onBackToChat={hideGuidedContent}
+                                        onBackToCategories={backToCategories}
+                                    />
+                                )}
                             </div>
                         )}
 
@@ -323,8 +360,8 @@ const ChatbotComponent: React.FC<ChatbotProps> = ({ className = '' }) => {
                         <div ref={messagesEndRef} />
                     </div>
 
-                    {/* Input - Solo visible en chat libre */}
-                    {chatbotState.currentMenu === 'free_chat' && (
+                    {/* Input - Solo visible en chat libre, NO cuando hay contenido guiado */}
+                    {chatbotState.currentMenu === 'free_chat' && !showGuidedContent && (
                         <form 
                             onSubmit={handleSubmit} 
                             className="p-4 border-t border-gray-100 bg-white/90 backdrop-blur-sm chatbot-input-area"

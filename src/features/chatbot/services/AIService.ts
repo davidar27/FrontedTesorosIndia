@@ -15,9 +15,42 @@ export class AIService implements IAProvider {
                 prompt: request.prompt,
                 history: request.history
             });
+            // Si la respuesta es un string, intentar parsearlo como JSON
+            let parsedResponse;
+            
+            if (typeof response.data === 'string') {
+                try {
+                    parsedResponse = JSON.parse(response.data);
+                } catch {
+                    // Si no es JSON válido, usar como texto plano
+                    return {
+                        text: response.data,
+                        success: true
+                    };
+                }
+            } else if (typeof response.data === 'object') {
+                // Si ya es un objeto, usarlo directamente
+                parsedResponse = response.data;
+            } else {
+                // Fallback para otros tipos
+                return {
+                    text: String(response.data),
+                    success: true
+                };
+            }
 
+            // Si es JSON y tiene intent, retornar con intención
+            if (parsedResponse.intent) {
+                return {
+                    text: parsedResponse.text || String(response.data),
+                    intent: parsedResponse.intent,
+                    success: true
+                };
+            }
+
+            // Si es JSON pero no tiene intent, retornar texto normal
             return {
-                text: response.data,
+                text: parsedResponse.text || String(response.data),
                 success: true
             };
         } catch (error: unknown) {
@@ -38,9 +71,41 @@ export class AIService implements IAProvider {
                 userId: request.userId,
                 role: request.role
             });
+            let parsedResponse;
+            
+            if (typeof response.data === 'string') {
+                try {
+                    parsedResponse = JSON.parse(response.data);
+                } catch {
+                    // Si no es JSON válido, usar como texto plano
+                    return {
+                        text: response.data,
+                        success: true
+                    };
+                }
+            } else if (typeof response.data === 'object') {
+                // Si ya es un objeto, usarlo directamente
+                parsedResponse = response.data;
+            } else {
+                // Fallback para otros tipos
+                return {
+                    text: String(response.data),
+                    success: true
+                };
+            }
 
+            // Si es JSON y tiene intent, retornar con intención
+            if (parsedResponse.intent) {
+                return {
+                    text: parsedResponse.text || String(response.data),
+                    intent: parsedResponse.intent,
+                    success: true
+                };
+            }
+
+            // Si es JSON pero no tiene intent, retornar texto normal
             return {
-                text: response.data,
+                text: parsedResponse.text || String(response.data),
                 success: true
             };
         } catch (error: unknown) {

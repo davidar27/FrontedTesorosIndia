@@ -10,6 +10,13 @@ export interface IARegisteredRequest extends IARequest {
 
 export interface IAResponse {
     text: string;
+    intent?: {
+        type: 'packages' | 'products' | 'experiences' | 'categories' | 'none';
+        confidence: number;
+        redirectTo: string;
+        message: string;
+        buttonText: string;
+    };
     success: boolean;
     error?: string;
 }

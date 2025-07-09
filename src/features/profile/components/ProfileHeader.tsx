@@ -9,7 +9,6 @@ export const ProfileHeader: React.FC<{
     previewImage: string | null;
     onImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }> = ({ profile, isEditing, previewImage, onImageChange }) => {
-    console.log("Avatar src:", previewImage, profile?.image);
     return (
         <div className="relative bg-gradient-to-r from-emerald-500 to-teal-500 px-8 py-12">
             <div className="flex flex-col md:flex-row items-center gap-8">

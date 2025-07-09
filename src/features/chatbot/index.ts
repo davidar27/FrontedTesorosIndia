@@ -7,23 +7,15 @@ export { default as ChatbotNotification } from './ChatbotNotification';
 export { default as ChatbotOptions } from './components/ChatbotOptions';
 export { default as ChatbotProductCards } from './components/ChatbotProductCards';
 export { default as ChatbotItemCards } from './components/ChatbotItemCards';
-
-// Componentes de onboarding
-export { default as OnboardingProvider } from './components/OnboardingProvider';
-export { default as OnboardingMessage } from './components/OnboardingMessage';
+export { default as ChatbotCategoryCards } from './components/ChatbotCategoryCards';
+export { default as IntentRedirectButton } from './components/IntentRedirectButton';
+export { default as GuidedContentInChat } from './components/GuidedContentInChat';
 
 // Componentes de respuesta enriquecida
 export { default as EnrichedResponse } from './components/EnrichedResponse';
-export { default as ResponseCard } from './components/ResponseCard';
 
 // Contexto
 export { ChatbotProvider, useChatbot } from './ChatbotContext';
-
-// Hooks
-export { useOnboarding } from './hooks/useOnboarding';
-
-// Utilidades
-export { ResponseParser } from './utils/ResponseParser';
 
 // Interfaces del chatbot
 export type { 
@@ -47,17 +39,9 @@ export type {
   ChatbotPackage
 } from './interfaces/ChatbotOptionsInterfaces';
 
-// Interfaces de onboarding
-export type {
-  OnboardingMessage as OnboardingMessageType,
-  OnboardingAction,
-  OnboardingConfig,
-  PageContext as OnboardingPageContext
-} from './interfaces/OnboardingInterfaces';
-
 // Servicios
 export { aiService } from './services/AIService';
 export { chatbotAuthService } from './services/AuthService';
 export { ChatService } from './services/ChatService';
-export { onboardingService } from './services/OnboardingService';
-export { chatbotOptionsService } from './services/ChatbotOptionsService'; 
+export { chatbotOptionsService } from './services/ChatbotOptionsService';
+export type { DetectedIntent, IntentFromBackend } from './services/IntentDetectionService'; 
