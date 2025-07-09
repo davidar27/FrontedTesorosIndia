@@ -115,7 +115,7 @@ const Leaders = () => {
         {/* Leaders Card */}
         <div className="relative">
           <motion.div
-            className="flex gap-6 py-8 justify-center"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 py-8 justify-center"
             initial={false}
             animate={{ opacity: isAnimating ? 0.5 : 1 }}
             transition={{ duration: 0.3 }}
@@ -126,10 +126,7 @@ const Leaders = () => {
                   key={`${leader.id}-${index}`}
                   className={`
                     flex-shrink-0 
-                    ${currentLeaders.length === 1 ? 'w-[calc(100%-1rem)]' : 
-                      currentLeaders.length === 3 ? 'w-[calc(33.333%-1rem)]' : 
-                      currentLeaders.length === 4 ? 'w-[calc(25%-1.125rem)]' : 
-                      'w-[calc(20%-1rem)]'}
+                    
                     flex flex-col items-center
                   `}
                   initial={{ 
