@@ -14,6 +14,8 @@ interface HeaderProps {
   isEditMode?: boolean;
   onToggleEditMode?: () => void;
   onStatusChangeRequest?: () => void;
+  onSaveChanges?: () => Promise<boolean>;
+  isSaving?: boolean;
   currentStatus?: string;
 }
 
@@ -41,7 +43,14 @@ const backgroundAnimations = {
   visible: { opacity: 0.5, transition: { duration: 0.5 } }
 };
 
-const Header: React.FC<HeaderProps> = ({ isEditMode = false, onToggleEditMode, onStatusChangeRequest, currentStatus }) => {
+const Header: React.FC<HeaderProps> = ({ 
+  isEditMode = false, 
+  onToggleEditMode, 
+  onStatusChangeRequest, 
+  onSaveChanges,
+  isSaving = false,
+  currentStatus 
+}) => {
   const { pathname } = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
@@ -173,6 +182,8 @@ const Header: React.FC<HeaderProps> = ({ isEditMode = false, onToggleEditMode, o
                 isEditMode={isEditMode}
                 onToggleEditMode={onToggleEditMode}
                 onStatusChangeRequest={onStatusChangeRequest}
+                onSaveChanges={onSaveChanges}
+                isSaving={isSaving}
                 currentStatus={currentStatus}
               />
             </motion.div>

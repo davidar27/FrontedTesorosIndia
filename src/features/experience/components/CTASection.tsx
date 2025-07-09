@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
 import { MessageCircle, X, Send } from 'lucide-react';
 import { Experience, Review } from '@/features/experience/types/experienceTypes';
@@ -8,6 +9,8 @@ import { ProductDetail } from '@/features/products/types/ProductDetailTypes';
 import ConfirmDialog from '@/components/ui/feedback/ConfirmDialog';
 import { useNavigate } from 'react-router-dom';
 import StarRating from '@/features/experience/components/reviews/StarRating';
+import InappropriateContentModal from '@/components/ui/feedback/InappropriateContentModal';
+import { InappropriateContentError } from '@/types/inappropriateContent';
 
 interface CTASectionProps {
     isVisible?: boolean;
@@ -33,7 +36,9 @@ const CTASection: React.FC<CTASectionProps> = ({
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { user } = useAuth();
     const [showLoginModal, setShowLoginModal] = useState(false);
+    const [inappropriateContentError, setInappropriateContentError] = useState<InappropriateContentError | null>(null);
     const navigate = useNavigate();
+
 
     const handleWriteReview = () => {
         if (!user || user.role === "observador") {
@@ -61,43 +66,69 @@ const CTASection: React.FC<CTASectionProps> = ({
         try {
             setIsSubmitting(true);
 
-            await axiosInstance.post('/comentarios', {
+            const response = await axiosInstance.post('/comentarios', {
                 user_id: user?.id,
                 type: isProduct ? 'producto' : 'experiencia',
                 entity_id: isProduct ? product?.product_id : experience?.id,
-                rating: rating, // Ya no multiplicamos por 2, rating ya está en escala 1-10
+                rating: rating,
                 review: comment,
             });
 
-            // Crear el nuevo comentario para el estado local
             const newReview: Review = {
-                review_id: Date.now(), // ID temporal hasta que el backend responda
+                review_id: response.data.review?.review_id || Date.now(),
                 userId: Number(user?.id) || 0,
                 user_name: user?.name || 'Usuario',
                 user_image: null,
                 review_date: new Date().toISOString().split('T')[0],
-                rating: rating, // Ya no multiplicamos por 2
+                rating: rating,
                 comment: comment,
                 responses: []
             };
 
-            // Actualizar el estado local
             setReviews?.(prevReviews => [newReview, ...prevReviews]);
 
             toast.success('Comentario enviado correctamente');
             handleCloseWriteReview();
-        } catch (error) {
-            console.error("Error al enviar el comentario:", error);
-            toast.error('Ocurrió un error al enviar el comentario. Intenta nuevamente.');
+        } catch (error: unknown) {
+            const data =
+                error && typeof error === 'object' && 'response' in error && (error as any).response?.data
+                    ? (error as any).response.data
+                    : null;
+
+            if (data) {
+                if (data.success === false && data.error && typeof data.error === 'object') {
+                    setInappropriateContentError(data.error);
+                }
+                else if (
+                    data.success === false &&
+                    data.message &&
+                    typeof data.error === 'string' &&
+                    data.toxicCategories &&
+                    data.suggestion &&
+                    data.severity
+                ) {
+                    setInappropriateContentError({
+                        success: false,
+                        message: data.message,
+                        error: data.error,
+                        toxicCategories: data.toxicCategories,
+                        suggestion: data.suggestion,
+                        severity: data.severity,
+                    });
+                } else {
+                    toast.error('Ocurrió un error al enviar el comentario. Intenta nuevamente.');
+                }
+            } else {
+                toast.error('Ocurrió un error al enviar el comentario. Intenta nuevamente.');
+            }
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    // Función para convertir posición del mouse a rating
     const getRatingFromPosition = (starIndex: number, isHalf: boolean): number => {
-        const baseRating = (starIndex + 1) * 2; // 2, 4, 6, 8, 10
-        return isHalf ? baseRating - 1 : baseRating; // 1, 3, 5, 7, 9 o 2, 4, 6, 8, 10
+        const baseRating = (starIndex + 1) * 2;
+        return isHalf ? baseRating - 1 : baseRating;
     };
 
     const handleStarClick = (starIndex: number, isHalf: boolean) => {
@@ -114,13 +145,24 @@ const CTASection: React.FC<CTASectionProps> = ({
         setHoverRating(0);
     };
 
-    // Función para obtener el texto descriptivo del rating
     const getRatingText = (rating: number): string => {
         if (rating <= 2) return "Muy malo";
         if (rating <= 4) return "Malo";
         if (rating <= 6) return "Regular";
         if (rating <= 8) return "Bueno";
         return "Excelente";
+    };
+
+    const handleCloseInappropriateContentModal = () => {
+        setInappropriateContentError(null);
+    };
+
+    const handleRetryComment = () => {
+        setInappropriateContentError(null);
+        const textarea = document.querySelector('textarea');
+        if (textarea) {
+            textarea.focus();
+        }
     };
 
     if (!isVisible) return null;
@@ -267,6 +309,13 @@ const CTASection: React.FC<CTASectionProps> = ({
                 onConfirm={() => navigate('/auth/iniciar-sesion')}
                 onCancel={() => setShowLoginModal(false)}
                 className='!backdrop-blur-none bg-black/60'
+            />
+            
+            {/* Inappropriate Content Modal */}
+            <InappropriateContentModal
+                error={inappropriateContentError}
+                onClose={handleCloseInappropriateContentModal}
+                onRetry={handleRetryComment}
             />
         </section>
     );

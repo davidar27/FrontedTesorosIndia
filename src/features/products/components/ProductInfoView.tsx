@@ -1,4 +1,4 @@
-import { ShoppingCart, Share2, Plus, Minus, Edit } from 'lucide-react';
+import { ShoppingCart, Share2, Plus, Minus, Edit, Trash2 } from 'lucide-react';
 import { formatPrice } from '@/utils/formatPrice';
 import StarRating from '@/features/experience/components/reviews/StarRating';
 import Button from '@/components/ui/buttons/Button';
@@ -12,6 +12,7 @@ interface ProductInfoViewProps {
     isAddingToCart: boolean;
     canManageProducts: boolean;
     onEditClick: () => void;
+    onDeleteProduct?: () => void;
 }
 
 const ProductInfoView = ({
@@ -22,6 +23,7 @@ const ProductInfoView = ({
     isAddingToCart,
     canManageProducts,
     onEditClick,
+    onDeleteProduct,
 }: ProductInfoViewProps) => {
     const handleShare = () => {
         navigator.share?.({
@@ -46,14 +48,26 @@ const ProductInfoView = ({
                 </div>
 
                 {canManageProducts && (
-                    <button
-                        onClick={onEditClick}
-                        className="flex items-center gap-2 px-3 py-1 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        aria-label="Editar producto"
-                    >
-                        <Edit className="w-4 h-4" />
-                        Editar
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={onEditClick}
+                            className="flex items-center gap-2 px-3 py-1 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            aria-label="Editar producto"
+                        >
+                            <Edit className="w-4 h-4" />
+                            Editar
+                        </button>
+                        {onDeleteProduct && (
+                            <button
+                                onClick={onDeleteProduct}
+                                className="flex items-center gap-2 px-3 py-1 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                aria-label="Eliminar producto"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                                Eliminar
+                            </button>
+                        )}
+                    </div>
                 )}
             </div>
 

@@ -76,7 +76,6 @@ const ReusableMap: React.FC<ReusableMapProps> = ({
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    console.log(style);
 
     return (
         <div

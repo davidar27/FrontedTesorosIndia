@@ -1,7 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import { axiosInstance } from '@/api/axiosInstance';
 import { useAuth } from "@/context/AuthContext";
 import { Review } from '@/features/experience/types/experienceTypes';
+import { InappropriateContentError } from '@/types/inappropriateContent';
+import { toast } from 'sonner';
 
 interface RespondingTo {
     type: 'main' | 'response';
@@ -27,6 +30,7 @@ export const useReviews = (setReviews: React.Dispatch<React.SetStateAction<Revie
     const { user } = useAuth();
     const [deleteTarget, setDeleteTarget] = useState<{ type: 'comment' | 'response', id: number, parentId?: number } | null>(null);
     const [deleteSuccess, setDeleteSuccess] = useState(false);
+    const [inappropriateContentError, setInappropriateContentError] = useState<InappropriateContentError | null>(null);
 
     const handleOptionsClick = (reviewId: number) => {
         setOpenOptionsId(openOptionsId === reviewId ? null : reviewId);
@@ -146,8 +150,42 @@ export const useReviews = (setReviews: React.Dispatch<React.SetStateAction<Revie
             setIsEditing(false);
             setEditingReviewId(null);
             setEditingComment('');
-        } catch (error) {
+        } catch (error: unknown) {
             console.error('Error updating review:', error);
+
+            const data =
+                error && typeof error === 'object' && 'response' in error && (error as any).response?.data
+                    ? (error as any).response.data
+                    : null;
+
+            if (data) {
+                // Si viene anidado (error es un objeto)
+                if (data.success === false && data.error && typeof data.error === 'object') {
+                    setInappropriateContentError(data.error);
+                }
+                // Si viene plano (error es un string)
+                else if (
+                    data.success === false &&
+                    data.message &&
+                    typeof data.error === 'string' &&
+                    data.toxicCategories &&
+                    data.suggestion &&
+                    data.severity
+                ) {
+                    setInappropriateContentError({
+                        success: false,
+                        message: data.message,
+                        error: data.error,
+                        toxicCategories: data.toxicCategories,
+                        suggestion: data.suggestion,
+                        severity: data.severity,
+                    });
+                } else {
+                    toast.error('Ocurrió un error al actualizar el comentario. Intenta nuevamente.');
+                }
+            } else {
+                toast.error('Ocurrió un error al actualizar el comentario. Intenta nuevamente.');
+            }
         } finally {
             setIsSubmitting(false);
         }
@@ -205,8 +243,40 @@ export const useReviews = (setReviews: React.Dispatch<React.SetStateAction<Revie
             setIsResponding(false);
             setRespondingTo(null);
             setComment('');
-        } catch (error) {
+        } catch (error: unknown) {
             console.error('Error saving comment:', error);
+
+            const data =
+                error && typeof error === 'object' && 'response' in error && (error as any).response?.data
+                    ? (error as any).response.data
+                    : null;
+
+            if (data) {
+                if (data.success === false && data.error && typeof data.error === 'object') {
+                    setInappropriateContentError(data.error);
+                }
+                else if (
+                    data.success === false &&
+                    data.message &&
+                    typeof data.error === 'string' &&
+                    data.toxicCategories &&
+                    data.suggestion &&
+                    data.severity
+                ) {
+                    setInappropriateContentError({
+                        success: false,
+                        message: data.message,
+                        error: data.error,
+                        toxicCategories: data.toxicCategories,
+                        suggestion: data.suggestion,
+                        severity: data.severity,
+                    });
+                } else {
+                    toast.error('Ocurrió un error al enviar la respuesta. Intenta nuevamente.');
+                }
+            } else {
+                toast.error('Ocurrió un error al enviar la respuesta. Intenta nuevamente.');
+            }
         } finally {
             setIsSubmitting(false);
         }
@@ -226,6 +296,20 @@ export const useReviews = (setReviews: React.Dispatch<React.SetStateAction<Revie
 
     const handleViewAllReviews = () => {
         setShowAllReviews(!showAllReviews);
+    };
+
+    // Handlers for inappropriate content modal
+    const handleCloseInappropriateContentModal = () => {
+        setInappropriateContentError(null);
+    };
+
+    const handleRetryComment = () => {
+        setInappropriateContentError(null);
+        // Focus back to the comment textarea
+        const textarea = document.querySelector('textarea');
+        if (textarea) {
+            textarea.focus();
+        }
     };
 
     return {
@@ -260,6 +344,9 @@ export const useReviews = (setReviews: React.Dispatch<React.SetStateAction<Revie
         editingComment,
         setEditingComment,
         deleteTarget,
-        deleteSuccess
+        deleteSuccess,
+        inappropriateContentError,
+        handleCloseInappropriateContentModal,
+        handleRetryComment
     };
 };

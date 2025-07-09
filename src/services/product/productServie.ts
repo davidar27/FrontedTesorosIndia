@@ -23,6 +23,13 @@ export const createProduct = async (product: CreateProductData & { experience_id
     return data;
 };
 
+export const deleteProduct = async (productId: number) => {
+    const response = await axiosInstance.put(`/productos/estado/${productId}`, {
+        status: 'inactivo'
+    });
+    return response.data;
+};
+
 export const ProductsApi = {
     getProductById: async (id: number) => {
         const response = await axiosInstance.get(`/productos/informacion/${id}`);

@@ -4,6 +4,7 @@ import { Review } from '@/features/experience/types/experienceTypes';
 import { useReviews } from '@/features/experience/hooks/useReviews';
 import RatingSummary, { RatingStats } from '@/features/experience/components/reviews/RatingSummary';
 import ReviewsList from '@/features/experience/components/reviews/ReviewsList';
+import InappropriateContentModal from '@/components/ui/feedback/InappropriateContentModal';
 
 interface ReviewsSectionProps {
     reviews: Review[];
@@ -54,7 +55,10 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({
         handleDeleteComment,
         handleDeleteResponse,
         deleteSuccess,
-        deleteTarget
+        deleteTarget,
+        inappropriateContentError,
+        handleCloseInappropriateContentModal,
+        handleRetryComment
     } = useReviews(setReviews, entity, experienceId);
 
 
@@ -177,6 +181,13 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({
                     </div>
                 )}
             </div>
+            
+            {/* Inappropriate Content Modal */}
+            <InappropriateContentModal
+                error={inappropriateContentError}
+                onClose={handleCloseInappropriateContentModal}
+                onRetry={handleRetryComment}
+            />
         </section>
     );
 };

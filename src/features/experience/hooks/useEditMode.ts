@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { Experience, TeamMember } from '@/features/experience/types/experienceTypes';
 import { Product } from '@/features/products/components/ProductCard';
 import { axiosInstance } from '@/api/axiosInstance';
+import { ExperienceApi } from '@/services/experience/experience';
+import { toast } from 'sonner';
 // import { CreateProductData } from '@/features/products/components/CreateProductForm';
 
 export const useEditMode = (
@@ -13,6 +15,7 @@ export const useEditMode = (
     const [editProducts, setEditProducts] = useState<Product[]>(initialProducts);
     const [editMembers, setEditMembers] = useState<TeamMember[]>(initialMembers);
     const [status] = useState<string[]>(['publicada', 'borrador']);
+    const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {
         if (initialExperience) setEditData(initialExperience);
@@ -47,25 +50,39 @@ export const useEditMode = (
         setEditMembers(prev => prev.filter(m => m.id !== memberId));
     };
 
-    // const handleCreateProduct = async (product: CreateProductData) => {
-    //     setEditProducts(prev => [...prev, product]);
+    const handleSaveChanges = async () => {
+        if (!editData.id) {
+            toast.error('No se pudo identificar la experiencia');
+            return;
+        }
 
-    //     try {
-    //         await axiosInstance.post('/productos', product);
-    //     } catch (error) {
-    //         console.error('Error al crear el producto:', error);
-    //     }
-    // };
+        setIsSaving(true);
+        try {
+            await ExperienceApi.updateExperience(editData.id, editData);
+            toast.success('Cambios guardados correctamente');
+            return true;
+        } catch (error) {
+            console.error('Error al guardar los cambios:', error);
+            toast.error('Error al guardar los cambios');
+            return false;
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
     const handleChangeStatus = async () => {
+        if (!editData.id) return;
         const newStatus = editData.status === 'publicada' ? 'borrador' : 'publicada';
-        
+
         setEditData(prev => ({ ...prev, status: newStatus }));
-        
+
         try {
-            await axiosInstance.put(`/experiencias/estado/${editData.id}`, { status: newStatus });
+            const response = await axiosInstance.put(`/experiencias/estado/${editData.id}`, { status: newStatus });
+            if (response?.data?.status) {
+                setEditData(prev => ({ ...prev, status: response.data.status }));
+            }
         } catch (error) {
-            setEditData(prev => ({ ...prev, status: editData.status === 'publicada' ? 'publicada' : 'borrador' }));
+            setEditData(prev => ({ ...prev, status: editData.status }));
             console.error('Error al cambiar el estado:', error);
         }
     };
@@ -83,6 +100,8 @@ export const useEditMode = (
         setEditProducts,
         setEditMembers,
         handleChangeStatus,
+        handleSaveChanges,
+        isSaving,
         status
     };
 };

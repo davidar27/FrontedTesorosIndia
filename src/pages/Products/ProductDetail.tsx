@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
-import { ProductsApi } from '@/services/product/productServie';
+import { ProductsApi, deleteProduct } from '@/services/product/productServie';
 import ConfirmDialog from '@/components/ui/feedback/ConfirmDialog';
 import ProductHeader from '@/features/products/components/ProductHeader';
 import ProductImageGallery from '@/features/products/components/ProductImageGallery';
@@ -17,6 +17,7 @@ import ReviewsSection from '@/features/experience/components/ReviewsSection';
 import { Review } from '@/features/experience/types/experienceTypes';
 import { CategoriesApi } from '@/services/home/categories';
 import { Category } from '@/features/admin/categories/CategoriesTypes';
+import { toast } from 'sonner';
 
 const ProductDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -33,6 +34,8 @@ const ProductDetail: React.FC = () => {
     const [reviews, setReviews] = useState<Review[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [isEditing, setIsEditing] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -98,6 +101,24 @@ const ProductDetail: React.FC = () => {
         setIsEditing(editing);
     };
 
+    const handleDeleteProduct = async () => {
+        if (!product) return;
+
+        setIsDeleting(true);
+        try {
+            await deleteProduct(product.product_id);
+            toast.success('Producto eliminado correctamente');
+            // Redirigir a la página de productos
+            navigate('/productos');
+        } catch (error) {
+            console.error('Error deleting product:', error);
+            toast.error('Error al eliminar el producto');
+        } finally {
+            setIsDeleting(false);
+            setShowDeleteConfirm(false);
+        }
+    };
+
     if (loading) {
         return <LoadingSpinner />;
     }
@@ -143,6 +164,7 @@ const ProductDetail: React.FC = () => {
                             canManageProducts={user?.role === 'emprendedor'}
                             onProductUpdate={handleProductUpdate}
                             onEditModeChange={handleEditModeChange}
+                            onDeleteProduct={() => setShowDeleteConfirm(true)}
                         />
                     </motion.div>
                 </div>
@@ -159,6 +181,7 @@ const ProductDetail: React.FC = () => {
                     <CTASection
                         product={product}
                         isProduct={true}
+                        setReviews={setReviews}
                     />
                 </div>
             </div>
@@ -171,6 +194,18 @@ const ProductDetail: React.FC = () => {
                 cancelText="Cerrar"
                 onConfirm={() => navigate('/auth/iniciar-sesion')}
                 onCancel={() => setShowLoginModal(false)}
+            />
+
+            <ConfirmDialog
+                open={showDeleteConfirm}
+                title="¿Eliminar producto?"
+                description={`¿Estás seguro de que quieres eliminar "${product.name}"? Esta acción cambiará el estado del producto a inactivo.`}
+                confirmText={isDeleting ? "Eliminando..." : "Eliminar"}
+                cancelText="Cancelar"
+                onConfirm={handleDeleteProduct}
+                onCancel={() => setShowDeleteConfirm(false)}
+                loading={isDeleting}
+                className='!backdrop-blur-none bg-black/60'
             />
         </div>
     );

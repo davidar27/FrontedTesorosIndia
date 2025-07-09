@@ -24,14 +24,21 @@ import LoadingSpinner from '@/components/ui/display/LoadingSpinner';
 
 interface OutletContext {
     registerStatusChangeHandler: (handler: () => void) => void;
+    registerSaveChangesHandler: (handler: () => Promise<boolean>) => void;
     updateCurrentStatus: (status: string) => void;
+    updateSavingStatus: (saving: boolean) => void;
 }
 
 const ExperiencePage: React.FC = () => {
     const { experience_id } = useParams();
     const { user } = useAuth();
     const { isEditMode } = usePageContext();
-    const { registerStatusChangeHandler, updateCurrentStatus } = useOutletContext<OutletContext>();
+    const { 
+        registerStatusChangeHandler, 
+        registerSaveChangesHandler,
+        updateCurrentStatus,
+        updateSavingStatus 
+    } = useOutletContext<OutletContext>();
     const [showEditNotification, setShowEditNotification] = useState(false);
     const [categories, setCategories] = useState<Category[]>([]);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -79,6 +86,13 @@ const ExperiencePage: React.FC = () => {
         }
     }, [editModeData.editData?.status, updateCurrentStatus]);
 
+    // Actualizar el estado de guardado en el layout
+    useEffect(() => {
+        if (updateSavingStatus) {
+            updateSavingStatus(editModeData.isSaving);
+        }
+    }, [editModeData.isSaving, updateSavingStatus]);
+
     // Funciones para manejar el cambio de estado
     const handleStatusChangeRequest = () => {
         setShowConfirmDialog(true);
@@ -98,12 +112,25 @@ const ExperiencePage: React.FC = () => {
         setShowConfirmDialog(false);
     };
 
+    // Función para manejar el guardado de cambios
+    const handleSaveChanges = async (): Promise<boolean> => {
+        const result = await editModeData.handleSaveChanges();
+        return result || false;
+    };
+
     // Registrar la función de confirmación en el layout
     useEffect(() => {
         if (registerStatusChangeHandler) {
             registerStatusChangeHandler(handleStatusChangeRequest);
         }
     }, [registerStatusChangeHandler]);
+
+    // Registrar la función de guardar cambios en el layout
+    useEffect(() => {
+        if (registerSaveChangesHandler) {
+            registerSaveChangesHandler(handleSaveChanges);
+        }
+    }, [registerSaveChangesHandler]);
 
     // Variables para el ConfirmDialog
     const isPublished = editModeData.editData?.status === 'publicada';

@@ -127,12 +127,29 @@ axiosInstance.interceptors.response.use(
       let errorType: "email" | "password" | "general" | "authentication" = "general";
 
       if (typeof errorData === 'object' && errorData !== null) {
+        // Detectar si es un error de contenido inapropiado
+        if (
+          'success' in errorData && errorData.success === false &&
+          'message' in errorData &&
+          'error' in errorData &&
+          'toxicCategories' in errorData &&
+          'suggestion' in errorData &&
+          'severity' in errorData
+        ) {
+          // Es un error de contenido inapropiado, preservar toda la información
+          return Promise.reject({
+            response: {
+              data: errorData
+            }
+          });
+        }
+
         if ('error' in errorData) {
           if (typeof errorData.error === 'object' && errorData.error !== null && 'message' in errorData.error) {
             Message = String(errorData.error.message);
             errorType = normalizeErrorType((errorData.error as { type?: string }).type);
           } else if (typeof errorData.error === 'string') {
-            Message = errorData.error;
+            Message = String(errorData.error);
           }
         } else if ('message' in errorData && errorData.message) {
           Message = String(errorData.message);

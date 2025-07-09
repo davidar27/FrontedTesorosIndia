@@ -14,6 +14,7 @@ interface ProductInfoProps {
     onProductUpdate: (product: ProductDetail) => void;
     categories: Category[];
     onEditModeChange: (editing: boolean) => void;
+    onDeleteProduct?: () => void;
 }
 
 const ProductInfo = ({
@@ -25,17 +26,14 @@ const ProductInfo = ({
     canManageProducts,
     onProductUpdate,
     categories,
-    onEditModeChange
+    onEditModeChange,
+    onDeleteProduct
 }: ProductInfoProps) => {
     const [isEditing, setIsEditing] = useState(false);
 
     useEffect(() => {
         onEditModeChange(isEditing);
     }, [isEditing, onEditModeChange]);
-
-
-
-
 
     const handleEditClick = () => {
         setIsEditing(true);
@@ -49,7 +47,6 @@ const ProductInfo = ({
     const handleCancel = () => {
         setIsEditing(false);
     };
-
 
     if (isEditing) {
         return (
@@ -71,6 +68,7 @@ const ProductInfo = ({
             isAddingToCart={isAddingToCart}
             canManageProducts={canManageProducts}
             onEditClick={handleEditClick}
+            onDeleteProduct={onDeleteProduct}
         />
     );
 };
