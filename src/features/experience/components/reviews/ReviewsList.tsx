@@ -32,6 +32,7 @@ interface ReviewsListProps {
     editingReviewId: number | null;
     editingComment: string;
     setEditingComment: (value: string) => void;
+    onReportComment?: (reviewId: number, commentText: string, userName: string) => void;
 }
 
 const ReviewsList: React.FC<ReviewsListProps> = ({
@@ -62,7 +63,8 @@ const ReviewsList: React.FC<ReviewsListProps> = ({
     isEditing,
     editingReviewId,
     editingComment,
-    setEditingComment
+    setEditingComment,
+    onReportComment
     
 }) => {
 
@@ -100,6 +102,7 @@ const ReviewsList: React.FC<ReviewsListProps> = ({
                     editingReviewId={editingReviewId}
                     editingComment={editingComment}
                     setEditingComment={setEditingComment}
+                    onReportComment={onReportComment}
                 />
             ))}
 

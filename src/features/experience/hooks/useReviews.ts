@@ -31,6 +31,9 @@ export const useReviews = (setReviews: React.Dispatch<React.SetStateAction<Revie
     const [deleteTarget, setDeleteTarget] = useState<{ type: 'comment' | 'response', id: number, parentId?: number } | null>(null);
     const [deleteSuccess, setDeleteSuccess] = useState(false);
     const [inappropriateContentError, setInappropriateContentError] = useState<InappropriateContentError | null>(null);
+    const [showReportModal, setShowReportModal] = useState(false);
+    const [reportingComment, setReportingComment] = useState<{ id: number; text: string; userName: string } | null>(null);
+    const [isReporting, setIsReporting] = useState(false);
 
     const handleOptionsClick = (reviewId: number) => {
         setOpenOptionsId(openOptionsId === reviewId ? null : reviewId);
@@ -312,6 +315,39 @@ export const useReviews = (setReviews: React.Dispatch<React.SetStateAction<Revie
         }
     };
 
+    // Handlers for report modal
+    const handleReportComment = (reviewId: number, commentText: string, userName: string) => {
+        setReportingComment({ id: reviewId, text: commentText, userName });
+        setShowReportModal(true);
+    };
+
+    const handleCloseReportModal = () => {
+        setShowReportModal(false);
+        setReportingComment(null);
+    };
+
+    const handleSubmitReport = async (reportData: { type: string; reason: string }) => {
+        if (!reportingComment) return;
+
+        setIsReporting(true);
+        try {
+            await axiosInstance.post('/reportes-comentarios', {
+                user_id: user?.id,
+                review_id: reportingComment.id,
+                report_type: reportData.type,
+                reason: reportData.reason
+            });
+
+            toast.success('Reporte enviado correctamente');
+            handleCloseReportModal();
+        } catch (error: unknown) {
+            console.error('Error submitting report:', error);
+            toast.error('Error al enviar el reporte. Intenta nuevamente.');
+        } finally {
+            setIsReporting(false);
+        }
+    };
+
     return {
         isResponding,
         respondingTo,
@@ -347,6 +383,12 @@ export const useReviews = (setReviews: React.Dispatch<React.SetStateAction<Revie
         deleteSuccess,
         inappropriateContentError,
         handleCloseInappropriateContentModal,
-        handleRetryComment
+        handleRetryComment,
+        showReportModal,
+        reportingComment,
+        isReporting,
+        handleReportComment,
+        handleCloseReportModal,
+        handleSubmitReport
     };
 };

@@ -5,6 +5,7 @@ import { useReviews } from '@/features/experience/hooks/useReviews';
 import RatingSummary, { RatingStats } from '@/features/experience/components/reviews/RatingSummary';
 import ReviewsList from '@/features/experience/components/reviews/ReviewsList';
 import InappropriateContentModal from '@/components/ui/feedback/InappropriateContentModal';
+import ReportCommentModal from '@/components/ui/feedback/ReportCommentModal';
 
 interface ReviewsSectionProps {
     reviews: Review[];
@@ -58,7 +59,13 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({
         deleteTarget,
         inappropriateContentError,
         handleCloseInappropriateContentModal,
-        handleRetryComment
+        handleRetryComment,
+        showReportModal,
+        reportingComment,
+        isReporting,
+        handleReportComment,
+        handleCloseReportModal,
+        handleSubmitReport
     } = useReviews(setReviews, entity, experienceId);
 
 
@@ -107,6 +114,7 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({
                     editingReviewId={editingReviewId}
                     editingComment={editingComment}
                     setEditingComment={setEditingComment}
+                    onReportComment={handleReportComment}
                 />
 
                 {/* Modal de confirmación para eliminar */}
@@ -187,6 +195,16 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({
                 error={inappropriateContentError}
                 onClose={handleCloseInappropriateContentModal}
                 onRetry={handleRetryComment}
+            />
+
+            {/* Report Comment Modal */}
+            <ReportCommentModal
+                isOpen={showReportModal}
+                onClose={handleCloseReportModal}
+                onSubmit={handleSubmitReport}
+                isSubmitting={isReporting}
+                commentText={reportingComment?.text}
+                userName={reportingComment?.userName}
             />
         </section>
     );

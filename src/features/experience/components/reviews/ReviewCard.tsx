@@ -1,5 +1,5 @@
 import React from 'react';
-import { Edit3, MessageCircle, MoreVertical, Send, Trash2, X } from 'lucide-react';
+import { Edit3, MessageCircle, MoreVertical, Send, Trash2, X, Flag } from 'lucide-react';
 import { Review } from '@/features/experience/types/experienceTypes';
 import { useAuth } from '@/context/AuthContext';
 import Avatar from '@/components/ui/display/Avatar';
@@ -34,6 +34,7 @@ interface ReviewCardProps {
     editingReviewId: number | null;
     editingComment: string;
     setEditingComment: (value: string) => void;
+    onReportComment?: (reviewId: number, commentText: string, userName: string) => void;
 }
 
 const ReviewCard: React.FC<ReviewCardProps> = ({
@@ -62,11 +63,11 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
     isEditing,
     editingReviewId,
     editingComment,
-    setEditingComment
+    setEditingComment,
+    onReportComment
 }) => {
     const { user } = useAuth();
     const convertRatingToFiveScale = (rating: number): number => rating / 2;
-
 
     return (
         <div className="bg-gray-50 rounded-2xl p-6 hover:bg-gray-100 transition-all duration-300">
@@ -122,7 +123,16 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
                                                         <span className="font-medium">Eliminar comentario</span>
                                                     </button>
                                                 </div>
-
+                                                {/* Botón de reportar para todos los usuarios */}
+                                                {user && user?.role !== 'observador' && (
+                                                    <button
+                                                        className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors group cursor-pointer"
+                                                        onClick={() => onReportComment?.(review.review_id, review.comment, review.user_name)}
+                                                    >
+                                                        <Flag className="w-4 h-4" />
+                                                        Reportar comentario
+                                                    </button>
+                                                )}
                                             </div>
                                         </>
                                     )}
@@ -131,6 +141,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
                         </div>
                         <span className="text-sm text-gray-500">{review.review_date}</span>
                     </div>
+
                     {isEditing && editingReviewId === review.review_id ? (
                         <>
                             <div className="space-y-3">
@@ -180,6 +191,8 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
                     ) : (
                         <p className="text-gray-700 mb-4 leading-relaxed">{review.comment}</p>
                     )}
+
+
 
                     {/* Responses */}
                     {review.responses && review.responses.length > 0 && (
