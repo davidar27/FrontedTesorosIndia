@@ -123,19 +123,23 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
                                                         <span className="font-medium">Eliminar comentario</span>
                                                     </button>
                                                 </div>
-                                                {/* Botón de reportar para todos los usuarios */}
-                                                {user && user?.role !== 'observador' && (
-                                                    <button
-                                                        className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors group cursor-pointer"
-                                                        onClick={() => onReportComment?.(review.review_id, review.comment, review.user_name)}
-                                                    >
-                                                        <Flag className="w-4 h-4" />
-                                                        Reportar comentario
-                                                    </button>
-                                                )}
+
                                             </div>
                                         </>
                                     )}
+
+                                </div>
+                            )}
+                            {/* Botón de reportar para todos los usuarios */}
+                            {user && user?.role !== 'observador' && (
+                                <div className="flex justify-end">
+                                    <button
+                                        className="text-gray-500 hover:text-red-600 text-sm font-medium cursor-pointer flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-red-50 transition-colors"
+                                        onClick={() => onReportComment?.(review.review_id, review.comment, review.user_name)}
+                                    >
+                                        <Flag className="w-4 h-4" />
+                                        Reportar comentario
+                                    </button>
                                 </div>
                             )}
                         </div>
