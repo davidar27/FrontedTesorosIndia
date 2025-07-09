@@ -69,3 +69,78 @@
         opacity: 0.7;
     }
 }
+
+/* Estilos para mejorar la experiencia móvil del chatbot */
+.chatbot-container {
+    /* Prevenir scroll del body cuando el chat está abierto */
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 50;
+}
+
+/* Estilos específicos para móviles */
+@media screen and (max-width: 768px) {
+    .chatbot-window {
+        /* Mejorar scroll en móviles */
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+        touch-action: pan-y;
+    }
+
+    .chatbot-header {
+        /* Prevenir scroll en el header */
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+
+    .chatbot-messages {
+        /* Scroll optimizado para móviles */
+        touch-action: pan-y;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+        /* Permitir scroll en áreas vacías */
+        min-height: 0;
+    }
+
+    .chatbot-input-area {
+        /* Prevenir scroll en el área de input */
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+
+    .chatbot-input {
+        /* Optimizar input para touch */
+        touch-action: manipulation;
+        -webkit-user-select: text;
+        user-select: text;
+    }
+
+    .chatbot-button {
+        /* Optimizar botones para touch */
+        touch-action: manipulation;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+}
+
+/* Prevenir zoom en inputs en iOS */
+@media screen and (max-width: 768px) {
+    .chatbot-input {
+        font-size: 16px; /* Prevenir zoom en iOS */
+    }
+}
+
+/* Mejorar scroll en dispositivos táctiles */
+@media (hover: none) and (pointer: coarse) {
+    .chatbot-messages {
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
+    }
+    
+    .chatbot-messages::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+    }
+}

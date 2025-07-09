@@ -3,6 +3,11 @@ export { default as Chatbot } from './Chatbot';
 export { default as ChatMessage } from './ChatMessage';
 export { default as ChatbotNotification } from './ChatbotNotification';
 
+// Componentes de opciones del chatbot
+export { default as ChatbotOptions } from './components/ChatbotOptions';
+export { default as ChatbotProductCards } from './components/ChatbotProductCards';
+export { default as ChatbotItemCards } from './components/ChatbotItemCards';
+
 // Componentes de onboarding
 export { default as OnboardingProvider } from './components/OnboardingProvider';
 export { default as OnboardingMessage } from './components/OnboardingMessage';
@@ -31,6 +36,17 @@ export type {
   APIHistoryItem
 } from './interfaces/IAInterfaces';
 
+// Interfaces de opciones del chatbot
+export type {
+  ChatbotOption,
+  ChatbotMenu,
+  ChatbotState,
+  ProductCategory,
+  ChatbotProduct,
+  ChatbotExperience,
+  ChatbotPackage
+} from './interfaces/ChatbotOptionsInterfaces';
+
 // Interfaces de onboarding
 export type {
   OnboardingMessage as OnboardingMessageType,
@@ -43,4 +59,5 @@ export type {
 export { aiService } from './services/AIService';
 export { chatbotAuthService } from './services/AuthService';
 export { ChatService } from './services/ChatService';
-export { onboardingService } from './services/OnboardingService'; 
+export { onboardingService } from './services/OnboardingService';
+export { chatbotOptionsService } from './services/ChatbotOptionsService'; 

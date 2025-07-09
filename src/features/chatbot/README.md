@@ -1,8 +1,16 @@
-# Chatbot con IA e Onboarding Automático
+# Chatbot Guiado por Opciones con IA
 
-Un sistema completo de chatbot con inteligencia artificial real y onboarding automático contextual para la aplicación Tesoros India.
+Un sistema completo de chatbot guiado por opciones que minimiza la escritura del usuario, con navegación intuitiva y visualización de productos, experiencias y paquetes en formato card.
 
 ## 🚀 Características Principales
+
+### **Chatbot Guiado por Opciones:**
+- ✅ **Navegación por clics** - Sin necesidad de escribir
+- ✅ **Menú principal automático** al abrir el chat
+- ✅ **Categorías de productos** obtenidas del backend
+- ✅ **Visualización en cards** de productos, experiencias y paquetes
+- ✅ **Breadcrumb de navegación** para orientación del usuario
+- ✅ **Chat libre** como opción secundaria
 
 ### **Chatbot con IA Real:**
 - ✅ **Integración con Google Gemini AI**
@@ -31,11 +39,17 @@ Un sistema completo de chatbot con inteligencia artificial real y onboarding aut
 
 ### **Componentes del Sistema:**
 
-#### **Chatbot:**
-- `Chatbot.tsx` - Componente principal del chat
+#### **Chatbot Principal:**
+- `Chatbot.tsx` - Componente principal del chat con navegación por opciones
 - `ChatMessage.tsx` - Visualización de mensajes
 - `ChatbotNotification.tsx` - Notificaciones de mensajes nuevos
 - `ChatbotContext.tsx` - Estado global del chat
+
+#### **Componentes de Opciones:**
+- `ChatbotOptions.tsx` - Botones de opciones del menú
+- `ChatbotProductCards.tsx` - Cards de productos con imágenes y precios
+- `ChatbotItemCards.tsx` - Cards para experiencias y paquetes
+- `ChatbotOptionsService.ts` - Servicio para manejar menús y datos
 
 #### **Onboarding:**
 - `OnboardingProvider.tsx` - Proveedor principal de onboarding
@@ -54,7 +68,7 @@ Un sistema completo de chatbot con inteligencia artificial real y onboarding aut
 
 ## 🔧 Uso
 
-### **Chatbot Básico:**
+### **Chatbot Guiado por Opciones:**
 ```tsx
 import { Chatbot } from '@/features/chatbot';
 
@@ -66,6 +80,14 @@ function App() {
   );
 }
 ```
+
+### **Flujo de Navegación:**
+1. **Al abrir el chat** → Se muestra automáticamente el menú principal
+2. **Seleccionar "Ver productos"** → Se cargan las categorías del backend
+3. **Seleccionar categoría** → Se muestran los productos en formato card
+4. **Seleccionar "Ver experiencias"** → Se muestran experiencias en cards
+5. **Seleccionar "Ver paquetes"** → Se muestran paquetes en cards
+6. **Chat libre** → Campo de escritura aparece solo cuando se selecciona esta opción
 
 ### **Onboarding Automático:**
 ```tsx
@@ -96,33 +118,50 @@ function MyComponent() {
 
 ## 🎯 Funcionalidades por Rol
 
-### **Usuarios No Autenticados (Observadores):**
-- Mensajes de bienvenida básicos
-- Guías generales de navegación
-- Acceso limitado a funcionalidades
+### **Todos los Usuarios:**
+- **Navegación guiada** por opciones sin escribir
+- **Visualización en cards** de productos, experiencias y paquetes
+- **Breadcrumb de navegación** para orientación
+- **Chat libre** como opción secundaria
 
-### **Clientes:**
-- Onboarding personalizado
-- Recomendaciones específicas
-- Acceso completo a experiencias y productos
+### **Usuarios No Autenticados (Observadores):**
+- Acceso completo a la navegación guiada
+- Visualización de todos los productos y experiencias
+- Chat libre con respuestas básicas
+
+### **Clientes Autenticados:**
+- Navegación guiada personalizada
+- Recomendaciones específicas según historial
+- Chat libre con respuestas contextuales
 
 ### **Emprendedores:**
-- Guías de gestión de productos
-- Información de ventas
+- Navegación guiada + herramientas de gestión
+- Información de ventas en el chat libre
 - Acceso a herramientas administrativas
 
 ### **Administradores:**
-- Onboarding completo
-- Acceso a todas las funcionalidades
+- Navegación guiada completa
+- Chat libre con acceso total al sistema
 - Guías de administración del sistema
 
-## ⏰ Flujo de Onboarding
+## 🎯 Flujo de Navegación del Chatbot
 
-### **Timeline Automático:**
-1. **0-5 segundos**: Usuario navega libremente
-2. **5 segundos**: Mensaje de bienvenida de Tesorito
-3. **8 segundos**: Guía específica de la página actual
-4. **12 segundos**: Highlights de características principales
+### **Flujo Principal:**
+1. **Al abrir el chat** → Menú principal automático
+2. **Seleccionar opción** → Navegación a submenús o visualización
+3. **Ver productos** → Categorías → Productos en cards
+4. **Ver experiencias** → Experiencias en cards
+5. **Ver paquetes** → Paquetes en cards
+6. **Chat libre** → Escritura libre con IA
+
+### **Características de Navegación:**
+- **Breadcrumb visual** para orientación
+- **Botones de volver** en cada nivel
+- **Carga automática** de datos del backend
+- **Visualización en cards** con imágenes y precios
+- **Navegación fluida** sin recargas de página
+- **Campo de escritura oculto** hasta seleccionar "Chat libre"
+- **Enfoque automático** del input al activar chat libre
 
 ### **Tipos de Mensajes:**
 - **Welcome**: Mensaje de bienvenida personalizado
