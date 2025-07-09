@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AlertTriangle, X, Send, Flag } from 'lucide-react';
+import { X, Send, Flag } from 'lucide-react';
 
 interface ReportCommentModalProps {
     isOpen: boolean;
