@@ -12,6 +12,6 @@ export const NotificationsService = {
     },
 
     markAllAsRead: async (userId: number): Promise<void> => {
-        await axiosInstance.put(`/notificaciones/${userId}/read-all`);
+        await axiosInstance.patch(`/notificaciones/${userId}/marcar`);
     }
 }; 
