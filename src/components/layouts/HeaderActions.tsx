@@ -131,7 +131,10 @@ const HeaderActions = ({
                         )}
                     </div>
                 )}
-
+                {/* Notifications */}
+                {user?.role !== 'observador' && (
+                    <NotificationDropdown />
+                )}
                 {/* Acciones normales del header */}
                 {!isOwner && (
                     <>
@@ -161,10 +164,7 @@ const HeaderActions = ({
                     </>
                 )}
 
-                {/* Notifications */}
-                {user?.role !== 'observador' && (
-                    <NotificationDropdown />
-                )}
+
                 <div className="hidden md:block">
                     <UserMenu />
                 </div>
