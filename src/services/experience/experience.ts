@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { publicAxiosInstance } from "@/api/axiosInstance";
 import { axiosInstance } from "@/api/axiosInstance";
 import { Experience } from "@/features/experience/types/experienceTypes";
@@ -21,6 +22,12 @@ export const ExperienceApi = {
     },
     updateExperience: async (experienceId: number, data: Partial<Experience>) => {
         const response = await axiosInstance.put(`/experiencias/${experienceId}`, data);
+        return response.data;
+    },
+    updateExperienceInfo: async (experienceId: number, data: FormData | any) => {
+        const response = await axiosInstance.put(`/experiencias/actualizar-informacion/${experienceId}`, data, {
+            headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : { 'Content-Type': 'application/json' }
+        });
         return response.data;
     },
 }

@@ -10,6 +10,7 @@ export interface Experience {
     lng: number;
     name_entrepreneur?: string;
     status?: string;
+    location?: string;
 }
 
 

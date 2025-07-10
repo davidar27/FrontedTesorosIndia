@@ -22,3 +22,4 @@ export async function fileToWebp(file: File, quality = 0.8): Promise<File> {
         img.src = URL.createObjectURL(file);
     });
 }
+

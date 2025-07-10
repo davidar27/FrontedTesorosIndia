@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useOutletContext } from 'react-router-dom';
 import { usePageContext } from '@/context/PageContext';
 import useAuth from '@/context/useAuth';
@@ -113,10 +113,11 @@ const ExperiencePage: React.FC = () => {
     };
 
     // Función para manejar el guardado de cambios
-    const handleSaveChanges = async (): Promise<boolean> => {
+    const handleSaveChanges = useCallback(async (): Promise<boolean> => {
+        console.log('ExperiencePage: handleSaveChanges called, editData:', editModeData.editData); // Debug log
         const result = await editModeData.handleSaveChanges();
         return result || false;
-    };
+    }, [editModeData]);
 
     // Registrar la función de confirmación en el layout
     useEffect(() => {
@@ -130,7 +131,7 @@ const ExperiencePage: React.FC = () => {
         if (registerSaveChangesHandler) {
             registerSaveChangesHandler(handleSaveChanges);
         }
-    }, [registerSaveChangesHandler]);
+    }, [registerSaveChangesHandler, handleSaveChanges]);
 
     // Variables para el ConfirmDialog
     const isPublished = editModeData.editData?.status === 'publicada';
@@ -151,7 +152,13 @@ const ExperiencePage: React.FC = () => {
                 experienceName={experience.name}
             />
 
-            <HeroSection experience={experience} reviews={reviews} isEditMode={isEditMode} />
+            <HeroSection 
+                experience={experience} 
+                reviews={reviews} 
+                isEditMode={isEditMode} 
+                editData={editModeData.editData}
+                onEditDataChange={(data) => editModeData.setEditData(prev => ({ ...prev, ...data }))}
+            />
 
             <div className="container mx-auto py-8 responsive-padding-x">
                 <QuickStats
@@ -164,7 +171,9 @@ const ExperiencePage: React.FC = () => {
                     experience={experience}
                     isEditMode={isEditMode}
                     editData={editModeData.editData}
-                    onEditDataChange={(data) => editModeData.setEditData(prev => ({ ...prev, ...data }))} />
+                    onEditDataChange={(data) => editModeData.setEditData(prev => ({ ...prev, ...data }))}
+                    onImageChange={editModeData.handleImageChange}
+                />
 
                 <ActivitiesAndMap
                     experience={experience}

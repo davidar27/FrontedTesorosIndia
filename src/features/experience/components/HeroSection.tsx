@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {  MapPin } from 'lucide-react';
 import { Experience, Review } from '@/features/experience/types/experienceTypes';
 import { getImageUrl } from '@/utils/getImageUrl';
@@ -11,11 +11,26 @@ interface HeroSectionProps {
     experience: Experience;
     reviews: Review[];
     isEditMode: boolean;
+    editData?: Partial<Experience>;
+    onEditDataChange?: (data: Partial<Experience>) => void;
 }
 
-const HeroSection: React.FC<HeroSectionProps> = ({ experience, reviews, isEditMode }) => {
+const HeroSection: React.FC<HeroSectionProps> = ({ 
+    experience, 
+    reviews, 
+    isEditMode, 
+    editData, 
+    onEditDataChange 
+}) => {
     const averageRating = calculateAverageRating(reviews);
-    const [experienceName, setExperienceName] = useState(experience.name);
+    const currentName = editData?.name || experience.name;
+
+    const handleNameChange = (value: string) => {
+        console.log('HeroSection: Name changed to:', value); // Debug log
+        if (onEditDataChange) {
+            onEditDataChange({ ...editData, name: value });
+        }
+    };
 
     return (
         <section className="relative h-96 overflow-hidden">
@@ -44,8 +59,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({ experience, reviews, isEditMo
                             {isEditMode ? (
                                 <div className='flex items-center gap-2 relative w-fit'>
                                     <Input
-                                        value={experienceName}
-                                        onChange={(e) => setExperienceName(e.target.value)}
+                                        value={currentName}
+                                        onChange={(e) => handleNameChange(e.target.value)}
                                         placeholder="Nombre de la experiencia"
                                         className='bg-transparent text-4xl md:text-5xl font-bold text-white  w-fit border-secondary border-2 truncate'
                                     />

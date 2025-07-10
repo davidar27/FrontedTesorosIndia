@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getImageUrl } from '@/utils/getImageUrl';
 import { Experience } from '@/features/experience/types/experienceTypes';
 import Picture from '@/components/ui/display/Picture';
-import { CameraIcon, Save, Edit3 } from 'lucide-react';
+import { CameraIcon, Edit3 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { fileToWebp } from '@/utils/fileToWebp';
 
@@ -11,7 +11,7 @@ interface HistorySectionProps {
     isEditMode: boolean;
     editData: Partial<Experience>;
     onEditDataChange: (data: Partial<Experience>) => void;
-    onSave?: () => void;
+    onImageChange?: (file: File) => void;
 }
 
 const HistorySection: React.FC<HistorySectionProps> = ({
@@ -19,10 +19,16 @@ const HistorySection: React.FC<HistorySectionProps> = ({
     isEditMode,
     editData,
     onEditDataChange,
-    onSave
+    onImageChange,
 }) => {
     const [previewImage, setPreviewImage] = useState<string | null>(null);
-    const [, setImageFile] = useState<File | null>(null);
+
+    // Clear preview when experience changes
+    useEffect(() => {
+        if (!isEditMode) {
+            setPreviewImage(null);
+        }
+    }, [isEditMode, experience.image]);
 
     const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -36,12 +42,28 @@ const HistorySection: React.FC<HistorySectionProps> = ({
                 alert('La imagen no debe exceder los 5MB');
                 return;
             }
-            const webpFile = await fileToWebp(file);
-            const imageUrl = URL.createObjectURL(webpFile);
-            setPreviewImage(imageUrl);
-            setImageFile(webpFile);
-            onEditDataChange({ ...editData, image: webpFile.name });
+
+            try {
+                const webpFile = await fileToWebp(file);
+                const imageUrl = URL.createObjectURL(webpFile);
+                setPreviewImage(imageUrl);
+
+                // Notify parent component about the image change
+                if (onImageChange) {
+                    onImageChange(webpFile);
+                }
+            } catch (error) {
+                console.error('Error processing image:', error);
+                alert('Error al procesar la imagen');
+            }
         }
+    };
+
+    const getImageSrc = () => {
+        if (previewImage) {
+            return previewImage;
+        }
+        return getImageUrl(experience?.image) || '';
     };
 
     return (
@@ -72,10 +94,10 @@ const HistorySection: React.FC<HistorySectionProps> = ({
                             htmlFor={isEditMode ? "history-image-input" : undefined}
                             className={`block h-full w-full ${isEditMode ? 'cursor-pointer' : 'cursor-default'}`}
                         >
-                            {previewImage || getImageUrl(experience?.image) ? (
+                            {getImageSrc() ? (
                                 <div className="relative h-full w-full">
                                     <Picture
-                                        src={previewImage || getImageUrl(experience?.image) || ''}
+                                        src={getImageSrc()}
                                         alt={experience?.name as string}
                                         className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105"
                                     />
@@ -137,7 +159,10 @@ const HistorySection: React.FC<HistorySectionProps> = ({
                                 <div className="relative h-full">
                                     <textarea
                                         value={editData.history || ''}
-                                        onChange={(e) => onEditDataChange({ ...editData, history: e.target.value })}
+                                        onChange={(e) => {
+                                            console.log('HistorySection: History changed to:', e.target.value); // Debug log
+                                            onEditDataChange({ ...editData, history: e.target.value });
+                                        }}
                                         className="w-full h-full p-6 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-400 resize-none transition-all duration-200 bg-white text-gray-700 placeholder-gray-400"
                                         placeholder="Cuenta la historia fascinante de tu experiencia..."
                                         maxLength={2000}
@@ -165,20 +190,7 @@ const HistorySection: React.FC<HistorySectionProps> = ({
                             )}
                         </div>
 
-                        {/* Action Button */}
-                        {isEditMode && (
-                            <div className="mt-6 flex justify-end">
-                                <motion.button
-                                    className="bg-emerald-600 text-white px-6 py-3 rounded-xl hover:bg-emerald-700 transition-colors flex items-center gap-2 shadow-md"
-                                    whileHover={{ y: -2 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    onClick={onSave}
-                                >
-                                    <Save className="w-5 h-5" />
-                                    Guardar Cambios
-                                </motion.button>
-                            </div>
-                        )}
+
                     </div>
                 </div>
             </div>
