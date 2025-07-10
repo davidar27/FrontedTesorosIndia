@@ -11,7 +11,10 @@ import useAuth from '@/context/useAuth';
 export const useEditMode = (
     initialExperience: Experience | null,
     initialProducts: Product[],
-    initialMembers: TeamMember[]
+    initialMembers: TeamMember[],
+    updateExperienceLocally?: (updatedExperience: Partial<Experience>) => void,
+    updateProductsLocally?: (updatedProducts: Product[]) => void,
+    updateMembersLocally?: (updatedMembers: TeamMember[]) => void
 ) => {
     const { user } = useAuth();
     const [editData, setEditData] = useState<Partial<Experience>>(initialExperience || {});
@@ -145,6 +148,17 @@ export const useEditMode = (
 
             console.log('Backend response:', result); // Debug log
 
+            // Actualizar datos locales después de guardar exitosamente
+            if (updateExperienceLocally) {
+                updateExperienceLocally(editData);
+            }
+            if (updateProductsLocally) {
+                updateProductsLocally(editProducts);
+            }
+            if (updateMembersLocally) {
+                updateMembersLocally(editMembers);
+            }
+
             toast.success('Cambios guardados correctamente');
             setImageFile(null); // Clear the image file after successful save
             return true;
@@ -155,7 +169,7 @@ export const useEditMode = (
         } finally {
             setIsSaving(false);
         }
-    }, [editData, user?.id, imageFile]);
+    }, [editData, user?.id, imageFile, editProducts, editMembers, updateExperienceLocally, updateProductsLocally, updateMembersLocally]);
 
     const handleChangeStatus = async () => {
         if (!editData.id) return;
@@ -167,6 +181,10 @@ export const useEditMode = (
             const response = await axiosInstance.put(`/experiencias/estado/${editData.id}`, { status: newStatus });
             if (response?.data?.status) {
                 setEditData(prev => ({ ...prev, status: response.data.status }));
+                // Actualizar también el estado local de la experiencia
+                if (updateExperienceLocally) {
+                    updateExperienceLocally({ status: response.data.status });
+                }
             }
         } catch (error) {
             setEditData(prev => ({ ...prev, status: editData.status }));

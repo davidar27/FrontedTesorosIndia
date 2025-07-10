@@ -23,46 +23,61 @@ export const useExperienceData = (experienceId: number) => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(false);
 
+    const fetchData = async () => {
+        try {
+            setIsLoading(true);
+
+            const [infoData, reviewsData, productsData, membersData] = await Promise.all([
+                ExperienceApi.getInfo(experienceId),
+                ExperienceApi.getReviews(experienceId),
+                ExperienceApi.getProducts(experienceId),
+                ExperienceApi.getMembers(experienceId)
+            ]);
+
+            setExperience(infoData[0] || null);
+            setReviews(reviewsData.reviews || []);
+            setReviewStats(reviewsData.stats);
+            setProducts(productsData);
+            
+            console.log('Miembros del backend:', membersData); 
+            const transformedMembers = membersData.map((member: BackendMember) => ({
+                id: member.memberId,
+                name: member.name,
+                age: member.age,
+                profession: member.profession,
+                description: member.description,
+                image: member.image
+            }));
+            console.log('Miembros transformados:', transformedMembers); // Debug log
+            setMembers(transformedMembers);
+        } catch (error) {
+            console.error('Error fetching experience data:', error);
+            setError(true);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setIsLoading(true);
-
-                const [infoData, reviewsData, productsData, membersData] = await Promise.all([
-                    ExperienceApi.getInfo(experienceId),
-                    ExperienceApi.getReviews(experienceId),
-                    ExperienceApi.getProducts(experienceId),
-                    ExperienceApi.getMembers(experienceId)
-                ]);
-
-                setExperience(infoData[0] || null);
-                setReviews(reviewsData.reviews || []);
-                setReviewStats(reviewsData.stats);
-                setProducts(productsData);
-                
-                console.log('Miembros del backend:', membersData); 
-                const transformedMembers = membersData.map((member: BackendMember) => ({
-                    id: member.memberId,
-                    name: member.name,
-                    age: member.age,
-                    profession: member.profession,
-                    description: member.description,
-                    image: member.image
-                }));
-                console.log('Miembros transformados:', transformedMembers); // Debug log
-                setMembers(transformedMembers);
-            } catch (error) {
-                console.error('Error fetching experience data:', error);
-                setError(true);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
         if (experienceId) {
             fetchData();
         }
     }, [experienceId]);
+
+    // Función para actualizar la experiencia localmente después de guardar
+    const updateExperienceLocally = (updatedExperience: Partial<Experience>) => {
+        setExperience(prev => prev ? { ...prev, ...updatedExperience } : null);
+    };
+
+    // Función para actualizar productos localmente
+    const updateProductsLocally = (updatedProducts: Product[]) => {
+        setProducts(updatedProducts);
+    };
+
+    // Función para actualizar miembros localmente
+    const updateMembersLocally = (updatedMembers: TeamMember[]) => {
+        setMembers(updatedMembers);
+    };
 
     return {
         experience,
@@ -73,14 +88,9 @@ export const useExperienceData = (experienceId: number) => {
         setReviews,
         isLoading,
         error,
-        refetch: () => {
-            // Función para recargar los datos si es necesario
-            if (experienceId) {
-                const fetchData = async () => {
-                    // ... mismo código de arriba
-                };
-                fetchData();
-            }
-        }
+        refetch: fetchData,
+        updateExperienceLocally,
+        updateProductsLocally,
+        updateMembersLocally
     };
 };

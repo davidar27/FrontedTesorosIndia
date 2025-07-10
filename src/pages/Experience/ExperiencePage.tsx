@@ -53,7 +53,10 @@ const ExperiencePage: React.FC = () => {
         reviewStats,
         setReviews,
         isLoading,
-        error
+        error,
+        updateExperienceLocally,
+        updateProductsLocally,
+        updateMembersLocally
     } = useExperienceData(experienceId);
 
     // Cargar categorías
@@ -70,7 +73,14 @@ const ExperiencePage: React.FC = () => {
         fetchCategories();
     }, []);
 
-    const editModeData = useEditMode(experience, products, members);
+    const editModeData = useEditMode(
+        experience, 
+        products, 
+        members,
+        updateExperienceLocally,
+        updateProductsLocally,
+        updateMembersLocally
+    );
     const permissions = useExperiencePermissions();
 
     useEffect(() => {
