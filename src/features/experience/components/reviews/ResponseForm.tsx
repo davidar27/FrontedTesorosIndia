@@ -43,7 +43,7 @@ const ResponseForm: React.FC<ResponseFormProps> = ({
                     maxLength={300}
                 />
 
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center flex-col md:flex-row gap-4 md:gap-0">
                     <span className={`text-xs ${comment.length > 250 ? 'text-amber-600' : 'text-gray-500'}`}>
                         {comment.length}/300 caracteres
                     </span>
@@ -59,7 +59,7 @@ const ResponseForm: React.FC<ResponseFormProps> = ({
 
                         <button
                             disabled={comment.trim().length === 0 || isSubmitting}
-                            className="bg-emerald-600 text-white text-sm font-medium cursor-pointer flex items-center gap-1 px-4 py-2 rounded-lg hover:bg-emerald-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md"
+                            className="bg-emerald-600 text-white text-sm font-medium cursor-pointer flex items-center gap-1 px-4 md:py-2 rounded-lg hover:bg-emerald-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md"
                             onClick={onSubmit}
                         >
                             {isSubmitting ? (

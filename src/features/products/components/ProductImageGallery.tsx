@@ -8,41 +8,52 @@ interface ProductImageGalleryProps {
     product?: ProductDetail;
     selectedImage: number;
     onImageSelect: (index: number) => void;
-    isEditing: boolean;
+    isEditing?: boolean;
+    onImageChange?: (file: File | null) => void;
 }
 
 const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
     product,
     selectedImage,
-    // onImageSelect,
-    isEditing
+    onImageSelect, // Se usará cuando se implementen las miniaturas
+    isEditing = false,
+    onImageChange
 }) => {
     const images = product?.images || [product?.image];
-    // const hasMultipleImages = images.length > 1;
-    const [draggedFile, setDraggedFile] = useState<File | null>(null);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+    // Evitar error de linter - se usará cuando se implementen las miniaturas
+    void onImageSelect;
+
+    const handleFileSelect = (file: File | null) => {
+        setSelectedFile(file);
+        if (onImageChange) {
+            onImageChange(file);
+        }
+    };
 
     return (
-        <div className="space-y-4">
+        <div className='w-full h-full bg-transparent'>
             {/* Imagen principal */}
-            <div className="bg-white rounded-2xl p-0 shadow-sm">
+            <div className="bg-transparent rounded-2xl p-0">
                 {isEditing ? (
                     <ImageUpload
-                            onFileSelect={setDraggedFile}
-                            currentFile={draggedFile}
-                            entity='product'
-                            className='w-full h-100'
-                        />
+                        onFileSelect={handleFileSelect}
+                        currentFile={selectedFile || product?.image}
+                        entity='product'
+                        className='w-full h-115'
+                    />
                 ) : (
                     <Picture
-                        src={getImageUrl(images[selectedImage]) || ''}
+                        src={getImageUrl(images[selectedImage])}
                         alt={product?.name}
-                        className="w-full h-115 object-cover rounded-lg"
+                        className="w-full h-full object-cover rounded-lg"
                     />
                 )}
             </div>
 
             {/* Miniaturas */}
-           {/*  {hasMultipleImages && (
+            {/*  {hasMultipleImages && (
                 <div className="grid grid-cols-4 gap-3">
                     {images.map((image, index) => (
                         <button

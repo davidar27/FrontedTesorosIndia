@@ -12,7 +12,7 @@ interface ReviewResponseProps {
     handleEdit: (reviewId: number, currentComment: string) => void;
     handleDeleteResponse: (responseId: number, parentReviewId: number) => void;
     parentReviewId: number;
-    level?: number; 
+    level?: number;
     isResponding: boolean;
     respondingTo: { type: 'main' | 'response'; reviewId: number; responseId?: number; userName: string } | null;
     comment: string;
@@ -32,14 +32,14 @@ interface ReviewResponseProps {
     openNestedOptionsMap: Record<number, boolean>;
 }
 
-const ReviewResponse: React.FC<ReviewResponseProps> = ({ 
-    response, 
-    onRespond, 
-    onOptionsClick, 
-    isOptionsOpen, 
-    onCloseOptions, 
-    handleEdit, 
-    handleDeleteResponse, 
+const ReviewResponse: React.FC<ReviewResponseProps> = ({
+    response,
+    onRespond,
+    onOptionsClick,
+    isOptionsOpen,
+    onCloseOptions,
+    handleEdit,
+    handleDeleteResponse,
     parentReviewId,
     level = 0,
     isResponding,
@@ -62,12 +62,12 @@ const ReviewResponse: React.FC<ReviewResponseProps> = ({
 }) => {
     const { user } = useAuth();
     const indentClass = level > 0 ? `ml-${Math.min(level * 4, 12)}` : '';
-    
-    const currentIsOptionsOpen = level === 0 
-        ? isOptionsOpen 
+
+    const currentIsOptionsOpen = level === 0
+        ? isOptionsOpen
         : (openNestedOptionsMap?.[response.review_id] || isNestedOptionsOpen || false);
     const currentOnOptionsClick = level === 0 ? onOptionsClick : () => onNestedOptionsClick?.(response.review_id);
-    
+
     return (
         <div className={`mb-3 p-4 bg-white rounded-xl border border-gray-100 shadow-sm ${indentClass}`}>
             <div className="flex items-center gap-2 mb-2">
@@ -133,11 +133,11 @@ const ReviewResponse: React.FC<ReviewResponseProps> = ({
                         maxLength={300}
                         placeholder="Editar tu comentario..."
                     />
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-center flex-col md:flex-row gap-4 md:gap-0 ">
                         <span className={`text-xs ${editingComment.length > 250 ? 'text-amber-600' : 'text-gray-500'}`}>
                             {editingComment.length}/300 caracteres
                         </span>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 flex-col md:flex-row">
                             <button
                                 className="text-gray-500 hover:text-gray-700 text-xs font-medium cursor-pointer px-3 py-1 rounded-lg hover:bg-gray-100 transition-colors"
                                 onClick={handleCancelEdit}
@@ -157,7 +157,7 @@ const ReviewResponse: React.FC<ReviewResponseProps> = ({
             ) : (
                 <p className="text-sm text-gray-600 mb-3 ml-6">{response.comment}</p>
             )}
-            
+
             {/* Botón de responder */}
             {level < 2 && ( // Limitar a máximo 3 niveles (0, 1, 2)
                 <button
@@ -171,7 +171,7 @@ const ReviewResponse: React.FC<ReviewResponseProps> = ({
 
             {/* Formulario de respuesta */}
             {isResponding && respondingTo?.reviewId === response.review_id && (
-                <div className="mt-3 ml-6 p-3 bg-gray-50 rounded-lg">
+                <div className="mt-3 p-3 lg:ml-6 bg-gray-50 rounded-lg">
                     <textarea
                         className="w-full p-2 rounded border border-gray-200 resize-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
                         rows={2}
@@ -180,11 +180,11 @@ const ReviewResponse: React.FC<ReviewResponseProps> = ({
                         onChange={(e) => onCommentChange(e.target.value)}
                         maxLength={300}
                     />
-                    <div className="flex justify-between items-center mt-2">
+                    <div className="flex justify-between items-center mt-2 flex-col md:flex-row gap-4 md:gap-0">
                         <span className={`text-xs ${comment.length > 250 ? 'text-amber-600' : 'text-gray-500'}`}>
                             {comment.length}/300 caracteres
                         </span>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 flex-col md:flex-row">
                             <button
                                 className="text-gray-500 hover:text-gray-700 text-xs font-medium cursor-pointer px-2 py-1 rounded hover:bg-gray-100 transition-colors"
                                 onClick={onCancelResponse}

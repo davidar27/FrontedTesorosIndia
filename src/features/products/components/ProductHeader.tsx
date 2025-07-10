@@ -9,7 +9,7 @@ interface ProductHeaderProps {
 
 const ProductHeader: React.FC<ProductHeaderProps> = ({ product, onGoBack }) => {
     return (
-        <div className="bg-white border-b sticky top-8 z-10 pt-8">
+        <div className="bg-white border-b sticky top-14 md:top-8 z-10 pt-8">
             <div className="container mx-auto px-4 py-4">
                 <div className="flex items-center gap-4">
                     <Button

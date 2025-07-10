@@ -1,4 +1,4 @@
-import React, {  useCallback, DragEvent, ChangeEvent } from 'react';
+import React, { useCallback, DragEvent, ChangeEvent } from 'react';
 import { Upload } from 'lucide-react';
 import Picture from '@/components/ui/display/Picture';
 import { getImageUrl } from '@/utils/getImageUrl';
@@ -70,7 +70,6 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({ onFileSelect, currentF
 
     return (
         <section className={`mb-8 flex flex-col items-center `}>
-            <label className="block text-lg font-semibold text-green-700 mb-2">{entity === 'package' ? 'Imagen del paquete' : 'Imagen del producto'}</label>
             <div
                 className={`relative border-2 border-dashed rounded-xl p-6 w-full max-w-md bg-gray-50 flex flex-col items-center justify-center ${className} ${currentFile ? 'border-green-500 bg-green-50' : 'border-gray-200'
                     }`}
@@ -87,7 +86,6 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({ onFileSelect, currentF
                     accept="image/*"
                     className="absolute inset-0 opacity-0 cursor-pointer"
                     onChange={handleFileSelect}
-                    aria-label={entity === 'package' ? 'Cargar imagen del paquete' : 'Cargar imagen del producto'}
                 />
                 <span className="text-gray-500 text-sm">{entity === 'package' ? 'Arrastra o haz clic para subir una imagen (máx 5MB)' : 'Arrastra o haz clic para subir una imagen (máx 5MB)'}</span>
                 {currentFile && (

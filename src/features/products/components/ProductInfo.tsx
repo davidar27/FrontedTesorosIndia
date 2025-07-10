@@ -15,6 +15,7 @@ interface ProductInfoProps {
     categories: Category[];
     onEditModeChange: (editing: boolean) => void;
     onDeleteProduct?: () => void;
+    selectedImageFile?: File | null;
 }
 
 const ProductInfo = ({
@@ -27,7 +28,8 @@ const ProductInfo = ({
     onProductUpdate,
     categories,
     onEditModeChange,
-    onDeleteProduct
+    onDeleteProduct,
+    selectedImageFile
 }: ProductInfoProps) => {
     const [isEditing, setIsEditing] = useState(false);
 
@@ -55,6 +57,7 @@ const ProductInfo = ({
                 categories={categories}
                 onSave={handleSave}
                 onCancel={handleCancel}
+                selectedImageFile={selectedImageFile}
             />
         );
     }

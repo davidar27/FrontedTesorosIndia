@@ -36,6 +36,7 @@ const ProductDetail: React.FC = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -95,10 +96,14 @@ const ProductDetail: React.FC = () => {
     const handleProductUpdate = (updatedProduct: ProductDetailType) => {
         setProduct(updatedProduct);
         setIsEditing(false);
+        setSelectedImageFile(null);
     };
 
     const handleEditModeChange = (editing: boolean) => {
         setIsEditing(editing);
+        if (!editing) {
+            setSelectedImageFile(null);
+        }
     };
 
     const handleDeleteProduct = async () => {
@@ -135,7 +140,7 @@ const ProductDetail: React.FC = () => {
             />
 
             <div className="container mx-auto responsive-padding-x py-8 space-y-8">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 h- bg-white">
                     <motion.div
                         initial={{ opacity: 0, x: -50 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -146,6 +151,7 @@ const ProductDetail: React.FC = () => {
                             selectedImage={selectedImage}
                             onImageSelect={setSelectedImage}
                             isEditing={isEditing}
+                            onImageChange={setSelectedImageFile}
                         />
                     </motion.div>
 
@@ -165,6 +171,7 @@ const ProductDetail: React.FC = () => {
                             onProductUpdate={handleProductUpdate}
                             onEditModeChange={handleEditModeChange}
                             onDeleteProduct={() => setShowDeleteConfirm(true)}
+                            selectedImageFile={selectedImageFile}
                         />
                     </motion.div>
                 </div>

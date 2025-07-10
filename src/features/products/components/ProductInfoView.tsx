@@ -33,9 +33,9 @@ const ProductInfoView = ({
     };
 
     return (
-        <div className="bg-white rounded-2xl p-7 shadow-sm space-y-4">
+        <div className="bg-white border-l border-gray-200 p-7 space-y-4">
             {/* Etiquetas y botón de edición */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center flex-col md:flex-row justify-between">
                 <div className="flex items-center gap-2">
                     <span className="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">
                         {product.category || 'Sin categoría'}

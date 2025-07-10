@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { Save, X } from 'lucide-react';
-import Button from '@/components/ui/buttons/Button';
 import { ProductDetail } from '@/features/products/types/ProductDetailTypes';
 import { Category } from '@/features/admin/categories/CategoriesTypes';
+import { updateProduct } from '@/services/product/productServie';
+import { useAuth } from '@/context/AuthContext';
 
 interface ProductInfoEditProps {
     product: ProductDetail;
     categories: Category[];
     onSave: (product: ProductDetail) => void;
     onCancel: () => void;
+    selectedImageFile?: File | null;
 }
 
 const ProductInfoEdit = ({
@@ -16,16 +18,19 @@ const ProductInfoEdit = ({
     categories,
     onSave,
     onCancel,
+    selectedImageFile
 }: ProductInfoEditProps) => {
+    const { user } = useAuth();
+    const [isLoading, setIsLoading] = useState(false);
     const [editedProduct, setEditedProduct] = useState({
         name: product.name,
         price: product.price,
         description: product.description,
         stock: product.stock,
-        category: product.category
+        category_id: categories.find(cat => cat.name === product.category)?.id || 0
     });
 
-    const handleSave = () => {
+    const handleSave = async () => {
         // Validaciones
         if (!editedProduct.name.trim()) {
             alert('El nombre del producto es obligatorio');
@@ -39,28 +44,55 @@ const ProductInfoEdit = ({
             alert('El stock no puede ser negativo');
             return;
         }
+        if (editedProduct.category_id === 0) {
+            alert('Debe seleccionar una categoría');
+            return;
+        }
 
-        // Crear el objeto actualizado manteniendo las propiedades originales
-        const updatedProduct: ProductDetail = {
-            ...product,
-            name: editedProduct.name,
-            price: editedProduct.price,
-            description: editedProduct.description,
-            stock: editedProduct.stock,
-            category: editedProduct.category
-        };
+        if (!user) {
+            alert('Usuario no autenticado');
+            return;
+        }
 
-        onSave(updatedProduct);
+        setIsLoading(true);
+        try {
+            const productData = {
+                name: editedProduct.name,
+                description: editedProduct.description,
+                price: editedProduct.price,
+                stock: editedProduct.stock,
+                userId: Number(user.id),
+                category_id: editedProduct.category_id,
+                image: selectedImageFile || undefined
+            };
+
+            await updateProduct(product.product_id, product.experience_id || 0, productData);
+
+            const updatedProduct: ProductDetail = {
+                ...product,
+                name: editedProduct.name,
+                price: editedProduct.price,
+                description: editedProduct.description,
+                stock: editedProduct.stock,
+                category: categories.find(cat => cat.id === editedProduct.category_id)?.name
+            };
+
+            onSave(updatedProduct);
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : 'Error al actualizar el producto';
+            alert(errorMessage);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleCancel = () => {
-        // Resetear el formulario
         setEditedProduct({
             name: product.name,
             price: product.price,
             description: product.description,
             stock: product.stock,
-            category: product.category
+            category_id: categories.find(cat => cat.name === product.category)?.id || 0
         });
         onCancel();
     };
@@ -73,70 +105,62 @@ const ProductInfoEdit = ({
     };
 
     return (
-        <div className="bg-white rounded-2xl p-7 shadow-sm space-y-6">
-            {/* Header con botones de acción */}
-            <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-gray-800">Editar Producto</h2>
-                <div className="flex gap-2">
-                    <Button
+        <div className="bg-white rounded-2xl p-7 shadow-sm space-y-4">
+            {/* Etiquetas y botones de acción */}
+            <div className="flex items-center flex-col md:flex-row justify-between">
+                <div className="flex items-center gap-2">
+                    <select
+                        value={editedProduct.category_id}
+                        onChange={(e) => handleInputChange('category_id', Number(e.target.value))}
+                        className="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full border-none focus:ring-2 focus:ring-green-500"
+                    >
+                        <option value={0}>Selecciona categoría</option>
+                        {categories.map((category) => (
+                            <option
+                                key={category.id}
+                                value={category.id}
+                            >
+                                {category.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="flex items-center gap-2">
+                    <button
                         onClick={handleCancel}
-                        variant='cancel'
-                        className="flex items-center gap-2"
+                        className="flex items-center gap-2 px-3 py-1 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                        disabled={isLoading}
                     >
                         <X className="w-4 h-4" />
                         Cancelar
-                    </Button>
-                    <Button
+                    </button>
+                    <button
                         onClick={handleSave}
-                        variant='success'
-                        className="flex items-center gap-2"
+                        className="flex items-center gap-2 px-3 py-1 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                        disabled={isLoading}
                     >
                         <Save className="w-4 h-4" />
-                        Guardar
-                    </Button>
+                        {isLoading ? 'Guardando...' : 'Guardar'}
+                    </button>
                 </div>
             </div>
 
-            {/* Categoría */}
+            {/* Título */}
             <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                    Categoría
-                </label>
-                <select
-                    value={editedProduct.category || ''}
-                    onChange={(e) => handleInputChange('category', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                >
-                    <option value="">Selecciona una categoría</option>
-                    {categories.map((category) => (
-                        <option
-                            key={category.id}
-                            value={category.name}
-                        >
-                            {category.name}
-                        </option>
-                    ))}
-                </select>
-            </div>
-
-            {/* Nombre del producto */}
-            <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                    Nombre del producto *
-                </label>
+                <label className="block text-sm font-medium text-gray-700 pl-1"> Nombre del producto *</label>
                 <input
                     type="text"
                     value={editedProduct.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg font-semibold"
+                    className="text-3xl font-bold text-gray-800 bg-gray-100 border-none outline-none w-full focus:ring-2 focus:ring-blue-500 rounded-lg px-2 py-1"
                     placeholder="Nombre del producto"
                 />
             </div>
-
-            {/* Precio y Stock */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Precio */}
+            <div className="flex items-center gap-4">
                 <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">
+                    <label className="block text-sm font-medium text-gray-700 pl-1">
                         Precio *
                     </label>
                     <input
@@ -145,39 +169,42 @@ const ProductInfoEdit = ({
                         onChange={(e) => handleInputChange('price', Number(e.target.value))}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg font-semibold"
                         placeholder="0"
-                        min="0"
-                        step="0.01"
+                        step="1000"
                     />
                 </div>
-
+                {/* Stock */}
                 <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">
-                        Stock disponible *
+                    <label className="block text-sm font-medium text-gray-700 pl-1">
+                        Stock disponible:
                     </label>
                     <input
                         type="number"
                         value={editedProduct.stock}
                         onChange={(e) => handleInputChange('stock', Number(e.target.value))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg font-semibold"
                         placeholder="0"
-                        min="0"
+                        min="1"
                     />
                 </div>
             </div>
 
             {/* Descripción */}
             <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                    Descripción
+                <label className="block text-sm font-medium text-gray-700 pl-1">
+                    Descripción del producto *
                 </label>
                 <textarea
                     value={editedProduct.description}
                     onChange={(e) => handleInputChange('description', e.target.value)}
-                    rows={4}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                    rows={3}
+                    className="text-gray-600 leading-relaxed bg-gray-100 border-none outline-none w-full resize-none focus:ring-2 focus:ring-blue-500 rounded-lg px-2 py-1"
                     placeholder="Descripción del producto"
                 />
             </div>
+
+
+
+
         </div>
     );
 };
