@@ -140,7 +140,7 @@ const ProductDetail: React.FC = () => {
             />
 
             <div className="container mx-auto responsive-padding-x py-8 space-y-8">
-                <div className="grid grid-cols-1 lg:grid-cols-2 h- bg-white">
+                <div className="grid grid-cols-1 lg:grid-cols-2 bg-white rounded-lg items-center shadow-md">
                     <motion.div
                         initial={{ opacity: 0, x: -50 }}
                         animate={{ opacity: 1, x: 0 }}

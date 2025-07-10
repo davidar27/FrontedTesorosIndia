@@ -1,4 +1,4 @@
-import React, { useCallback, DragEvent, ChangeEvent } from 'react';
+import React, {  useCallback, DragEvent, ChangeEvent } from 'react';
 import { Upload } from 'lucide-react';
 import Picture from '@/components/ui/display/Picture';
 import { getImageUrl } from '@/utils/getImageUrl';
@@ -69,7 +69,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({ onFileSelect, currentF
     };
 
     return (
-        <section className={`mb-8 flex flex-col items-center `}>
+        <section className={`flex flex-col items-center `}>
             <div
                 className={`relative border-2 border-dashed rounded-xl p-6 w-full max-w-md bg-gray-50 flex flex-col items-center justify-center ${className} ${currentFile ? 'border-green-500 bg-green-50' : 'border-gray-200'
                     }`}

@@ -1,6 +1,5 @@
 import { axiosInstance } from '@/api/axiosInstance';
 import { CreateProductData } from '@/features/products/components/CreateProductForm';
-import { ProductDetail } from '@/features/products/types/ProductDetailTypes';
 
 export const createProduct = async (product: CreateProductData & { experience_id: number }) => {
     const { experience_id, image, ...rest } = product;
@@ -25,12 +24,12 @@ export const createProduct = async (product: CreateProductData & { experience_id
 };
 
 export const updateProduct = async (productId: number, experienceId: number, productData: {
-    name: string;
-    description: string;
-    price: number;
-    stock: number;
+    name?: string;
+    description?: string;
+    price?: number;
+    stock?: number;
     userId: number;
-    category_id: number;
+    category_id?: number;
     image?: File;
 }) => {
     const { image, ...rest } = productData;

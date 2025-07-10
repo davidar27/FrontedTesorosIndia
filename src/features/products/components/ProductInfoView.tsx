@@ -33,7 +33,7 @@ const ProductInfoView = ({
     };
 
     return (
-        <div className="bg-white border-l border-gray-200 p-7 space-y-4">
+        <div className="bg-white p-7 space-y-4 rounded-lg">
             {/* Etiquetas y botón de edición */}
             <div className="flex items-center flex-col md:flex-row justify-between">
                 <div className="flex items-center gap-2">
