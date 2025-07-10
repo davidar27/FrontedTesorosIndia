@@ -256,7 +256,7 @@ const CTASection: React.FC<CTASectionProps> = ({
                                         />
                                         <div className="flex justify-between items-center">
                                             <span className="text-xs text-gray-500">
-                                                {comment.length}/300 caracteres
+                                                {comment.length} caracteres
                                             </span>
                                             {comment.length > 450 && (
                                                 <span className="text-xs text-amber-600">

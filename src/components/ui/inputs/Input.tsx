@@ -17,6 +17,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
         isValid: boolean;
     }[];
     showValidation?: boolean;
+    error?: string;
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -32,6 +33,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             showValidation = false,
             value,
             onChange,
+            error,
             ...props
         },
         ref
@@ -83,6 +85,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                 {rightElement && (
                     <div className="absolute right-0 top-0 h-full flex items-center pr-3">
                         {rightElement}
+                    </div>
+                )}
+                {error && (
+                    <div className="absolute right-0 top-0 h-full flex items-center pr-3">
+                        <span className="text-red-500 text-sm">{error}</span>
                     </div>
                 )}
                 {validationRules && (

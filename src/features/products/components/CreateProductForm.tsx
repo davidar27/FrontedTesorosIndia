@@ -103,11 +103,11 @@ const CreateProductForm = ({
         <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50 p-4">
             <div className="max-w-4xl mx-auto">
                 <div className="bg-white rounded-3xl shadow-xl border border-orange-100 overflow-hidden">
-                    {/* Header con diseño inspirado en la India */}
+                    {/* Header*/}
                     <div className="bg-gradient-to-r from-primary via-primary/80 to-primary/60 p-8 text-white">
                         <div className="flex justify-between items-center">
                             <div>
-                                <h1 className="text-3xl font-bold mb-2">Crear Nuevo Tesoro</h1>
+                                <h1 className="text-3xl font-bold mb-2">Crear Nuevo Producto</h1>
                                 <p className="text-orange-100 text-lg">Comparte tus productos únicos con el mundo</p>
                             </div>
                             <div className="flex gap-3">

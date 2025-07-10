@@ -18,6 +18,7 @@ export const ExperienceApi = {
     },
     getMembers: async (experience_id: number) => {
         const response = await publicAxiosInstance.get(`/experiencias/miembros/${experience_id}`);
+        console.log('Respuesta del servicio getMembers:', response.data); // Debug log
         return response.data;
     },
     updateExperience: async (experienceId: number, data: Partial<Experience>) => {

@@ -4,6 +4,16 @@ import { Experience, TeamMember, Review } from '@/features/experience/types/expe
 import { Product } from '@/features/products/components/ProductCard';
 import { RatingStats } from '@/features/experience/components/reviews/RatingSummary';
 
+// Tipo para la respuesta del backend
+interface BackendMember {
+    memberId: number;
+    name: string;
+    age: number;
+    profession: string;
+    description: string;
+    image: string;
+}
+
 export const useExperienceData = (experienceId: number) => {
     const [experience, setExperience] = useState<Experience | null>(null);
     const [members, setMembers] = useState<TeamMember[]>([]);
@@ -29,7 +39,18 @@ export const useExperienceData = (experienceId: number) => {
                 setReviews(reviewsData.reviews || []);
                 setReviewStats(reviewsData.stats);
                 setProducts(productsData);
-                setMembers(membersData);
+                
+                console.log('Miembros del backend:', membersData); 
+                const transformedMembers = membersData.map((member: BackendMember) => ({
+                    id: member.memberId,
+                    name: member.name,
+                    age: member.age,
+                    profession: member.profession,
+                    description: member.description,
+                    image: member.image
+                }));
+                console.log('Miembros transformados:', transformedMembers); // Debug log
+                setMembers(transformedMembers);
             } catch (error) {
                 console.error('Error fetching experience data:', error);
                 setError(true);

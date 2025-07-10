@@ -2,7 +2,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import Header from '@/components/layouts/Header';
 import Footer from '@/components/layouts/Footer';
 import { usePageContext } from '@/context/PageContext';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import Chatbot from '@/features/chatbot/Chatbot';
 
 const MainLayout = () => {
@@ -33,29 +33,44 @@ const MainLayout = () => {
         setIsSaving(saving);
     }, []);
 
-    // Solo pasar la función si estamos en una página de experiencia
-    const isExperiencePage = location.pathname.includes('/experiencias/') || location.pathname.includes('/experiencia/');
-    const shouldPassHandler = isExperiencePage && onStatusChangeRequest;
-    const shouldPassSaveHandler = isExperiencePage && onSaveChanges;
+    // Memoize the context object to prevent unnecessary re-renders
+    const outletContext = useMemo(() => ({
+        registerStatusChangeHandler, 
+        registerSaveChangesHandler,
+        updateCurrentStatus,
+        updateSavingStatus
+    }), [registerStatusChangeHandler, registerSaveChangesHandler, updateCurrentStatus, updateSavingStatus]);
+
+    // Memoize the experience page check to prevent unnecessary re-renders
+    const isExperiencePage = useMemo(() => 
+        location.pathname.includes('/experiencias/') || location.pathname.includes('/experiencia/'),
+        [location.pathname]
+    );
+
+    // Memoize the handler props to prevent unnecessary re-renders
+    const headerProps = useMemo(() => ({
+        isEditMode,
+        onToggleEditMode: toggleEditMode,
+        onStatusChangeRequest: isExperiencePage && onStatusChangeRequest ? onStatusChangeRequest : undefined,
+        onSaveChanges: isExperiencePage && onSaveChanges ? onSaveChanges : undefined,
+        isSaving,
+        currentStatus: isExperiencePage ? currentStatus : undefined
+    }), [
+        isEditMode, 
+        toggleEditMode, 
+        isExperiencePage, 
+        onStatusChangeRequest, 
+        onSaveChanges, 
+        isSaving, 
+        currentStatus
+    ]);
 
     return (
         <div className="flex flex-col min-h-screen ">
-            <Header 
-                isEditMode={isEditMode}
-                onToggleEditMode={toggleEditMode}
-                onStatusChangeRequest={shouldPassHandler ? onStatusChangeRequest : undefined}
-                onSaveChanges={shouldPassSaveHandler ? onSaveChanges : undefined}
-                isSaving={isSaving}
-                currentStatus={isExperiencePage ? currentStatus : undefined}
-            />
+            <Header {...headerProps} />
 
             <main className="flex-grow">
-                <Outlet context={{ 
-                    registerStatusChangeHandler, 
-                    registerSaveChangesHandler,
-                    updateCurrentStatus,
-                    updateSavingStatus
-                }} /> 
+                <Outlet context={outletContext} /> 
             </main>
 
             <Footer />

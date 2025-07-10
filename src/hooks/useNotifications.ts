@@ -18,8 +18,10 @@ export const useNotifications = () => {
         queryKey: ['notifications', user?.id],
         queryFn: () => NotificationsService.getNotifications(Number(user?.id)),
         enabled: !!user?.id && user?.role !== 'observador',
-        refetchInterval: 30000, 
+        refetchInterval: 60000, 
         staleTime: 10000,
+        refetchIntervalInBackground: false,
+        refetchOnWindowFocus: true
     });
 
     const markAsReadMutation = useMutation({

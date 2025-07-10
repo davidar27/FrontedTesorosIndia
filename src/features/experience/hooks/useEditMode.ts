@@ -52,11 +52,30 @@ export const useEditMode = (
     };
 
     const addMember = (member: TeamMember) => {
-        setEditMembers(prev => [...prev, member]);
+        console.log('Agregando miembro al estado local:', member); // Debug log
+        setEditMembers(prev => {
+            const newMembers = [...prev, member];
+            console.log('Nuevo estado de miembros:', newMembers); // Debug log
+            return newMembers;
+        });
     };
 
     const removeMember = (memberId: number) => {
-        setEditMembers(prev => prev.filter(m => m.id !== memberId));
+        console.log('Eliminando miembro del estado local con ID:', memberId); // Debug log
+        setEditMembers(prev => {
+            const newMembers = prev.filter(m => m.id !== memberId);
+            console.log('Nuevo estado de miembros después de eliminar:', newMembers); // Debug log
+            return newMembers;
+        });
+    };
+
+    const updateMember = (memberId: number, updatedMember: TeamMember) => {
+        console.log('Actualizando miembro del estado local con ID:', memberId, 'datos:', updatedMember); // Debug log
+        setEditMembers(prev => {
+            const newMembers = prev.map(m => m.id === memberId ? updatedMember : m);
+            console.log('Nuevo estado de miembros después de actualizar:', newMembers); // Debug log
+            return newMembers;
+        });
     };
 
     // Debug effect to log editData changes
@@ -165,6 +184,7 @@ export const useEditMode = (
         removeProduct,
         addMember,
         removeMember,
+        updateMember,
         setEditData,
         setEditProducts,
         setEditMembers,

@@ -93,6 +93,11 @@ const ExperiencePage: React.FC = () => {
         }
     }, [editModeData.isSaving, updateSavingStatus]);
 
+    // Debug: Monitorear cambios en editMembers
+    useEffect(() => {
+        console.log('ExperiencePage: editMembers actualizado:', editModeData.editMembers);
+    }, [editModeData.editMembers]);
+
     // Funciones para manejar el cambio de estado
     const handleStatusChangeRequest = () => {
         setShowConfirmDialog(true);
@@ -186,11 +191,22 @@ const ExperiencePage: React.FC = () => {
                     members={isEditMode ? editModeData.editMembers : members}
                     isEditMode={isEditMode}
                     permissions={permissions}
-                    onAddMember={editModeData.addMember}
-                    onRemoveMember={editModeData.removeMember}
+                    onAddMember={(member) => {
+                        console.log('ExperiencePage: onAddMember llamado con:', member); // Debug log
+                        editModeData.addMember(member);
+                    }}
+                    onRemoveMember={(memberId) => {
+                        console.log('ExperiencePage: onRemoveMember llamado con ID:', memberId); // Debug log
+                        editModeData.removeMember(memberId);
+                    }}
+                    onUpdateMember={(memberId, updatedMember) => {
+                        console.log('ExperiencePage: onUpdateMember llamado con ID:', memberId, 'miembro:', updatedMember); // Debug log
+                        editModeData.updateMember(memberId, updatedMember);
+                    }}
                     editMembers={editModeData.editMembers}
                     onEditDataChange={(data) => editModeData.setEditData(prev => ({ ...prev, ...data }))}
                 />
+
 
                 <ProductsSection
                     products={isEditMode ? editModeData.editProducts : products}

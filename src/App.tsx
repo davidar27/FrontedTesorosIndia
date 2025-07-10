@@ -46,7 +46,7 @@ function App() {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <PageProvider>
-        <Suspense fallback={<LoadingSpinner position="overlay" size="lg" variant="primary" speed="slow" overlayBg="bg-white/90" message="Cargando aplicación..." />}>
+        <Suspense fallback={<LoadingSpinner position="overlay" size="lg" variant="primary" speed="slow" overlayBg="bg-white/80" message="Cargando aplicación..." />}>
           <ToastProvider />
           <Routes>
             {/* Rutas públicas con MainLayout */}

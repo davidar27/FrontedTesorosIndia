@@ -148,12 +148,13 @@ const ReportCommentModal: React.FC<ReportCommentModalProps> = ({
                                     ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
                                     : 'border-gray-300 focus:border-emerald-500 focus:ring-emerald-500'
                             } focus:ring-2 focus:ring-opacity-50`}
+                            maxLength={300}
                         />
                         {errors.reason && (
                             <p className="mt-1 text-sm text-red-600">{errors.reason}</p>
                         )}
                         <p className="mt-1 text-xs text-gray-500">
-                            {reason.length}/500 caracteres (mínimo 10)
+                            {reason.length}/300 caracteres (mínimo 10)
                         </p>
                     </div>
                 </div>
