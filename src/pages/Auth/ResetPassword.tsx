@@ -12,6 +12,7 @@ import CardContent from '@/components/ui/cards/CardContent';
 import Button from '@/components/ui/buttons/Button';
 import { useFieldValidation, passwordRules } from '@/hooks/useFieldValidation';
 import background from "/images/FondoDesktop.webp";
+import { useNotificationModal } from '@/hooks/useNotificationModal';
 
 const resetSchema = z.object({
     password: z
@@ -33,6 +34,7 @@ const ResetPasswordForm = () => {
 
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
+    const { showSuccess, showError } = useNotificationModal();
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -57,7 +59,11 @@ const ResetPasswordForm = () => {
     const { mutate: sendResetPassword } = useMutation({
         mutationFn: (data: ResetFormData) => resetPassword(token || '', data.password, data.confirmPassword),
         onSuccess: () => {
-            setMessage('¡Contraseña restablecida con éxito! Redirigiendo al inicio de sesión...');
+            showSuccess(
+                'Contraseña restablecida',
+                '¡Tu contraseña ha sido restablecida exitosamente! Serás redirigido al inicio de sesión.',
+                { autoCloseDelay: 3000 }
+            );
             setTimeout(() => {
                 navigate('/auth/iniciar-sesion', {
                     state: { message: '¡Contraseña restablecida con éxito! Ya puedes iniciar sesión.' }
@@ -66,7 +72,11 @@ const ResetPasswordForm = () => {
             }, 3000);
         },
         onError: (error) => {
-            setMessage(error instanceof Error ? error.message : 'Error al restablecer la contraseña');
+            showError(
+                'Error al restablecer contraseña',
+                error instanceof Error ? error.message : 'No se pudo restablecer la contraseña. Por favor, intenta nuevamente.',
+                { autoClose: false }
+            );
         }
     });
 

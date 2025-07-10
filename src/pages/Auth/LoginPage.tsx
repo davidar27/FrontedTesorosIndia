@@ -9,6 +9,7 @@ import { loginSchema } from '@/validations/auth/loginSchema';
 import { emailRules, passwordRules } from '@/hooks/useFieldValidation';
 import { AuthError } from '@/interfaces/responsesApi';
 import { UserRole } from '@/interfaces/role';
+import { useNotificationModal } from '@/hooks/useNotificationModal';
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
@@ -37,6 +38,7 @@ const LoginPage = () => {
     const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
     const [errorType, setErrorType] = useState<"email" | "password" | "general" | null>(null);
     const { user } = useAuth();
+    const { showSuccess, showError } = useNotificationModal();
 
 
     useEffect(() => {
@@ -60,17 +62,36 @@ const LoginPage = () => {
             const user = await login(data);
             const from = location.state?.from;
             const redirectPath = getRedirectPath(user.role, from,user.experience_id);
-            navigate(redirectPath, { replace: true });
+            
+            // Mostrar modal de éxito antes de redirigir
+            showSuccess(
+                'Sesión iniciada',
+                `¡Bienvenido de vuelta, ${user.name}! Has iniciado sesión exitosamente.`,
+                { autoCloseDelay: 2000 }
+            );
+            
+            // Redirigir después de un breve delay para que se vea el modal
+            setTimeout(() => {
+                navigate(redirectPath, { replace: true });
+            }, 1000);
         } catch (error) {
             if (error instanceof AuthError) {
-                setErrorMessage(error.message);
+                showError(
+                    'Error al iniciar sesión',
+                    error.message,
+                    { autoClose: false }
+                );
                 if (error.errorType !== "authentication") {
                     setErrorType(error.errorType);
                 } else {
                     setErrorType("general");
                 }
             } else {
-                setErrorMessage("Error al iniciar sesión");
+                showError(
+                    'Error al iniciar sesión',
+                    'Ha ocurrido un error inesperado. Por favor, intenta nuevamente.',
+                    { autoClose: false }
+                );
                 setErrorType("general");
             }
         }

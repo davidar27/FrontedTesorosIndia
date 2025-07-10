@@ -5,6 +5,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from 'react';
+import { useNotificationModal } from '@/hooks/useNotificationModal';
 //services
 import registerService from '@/services/auth/registerService';
 //validations
@@ -22,6 +23,7 @@ const RegisterPage = () => {
     const [showValidations, setShowValidations] = useState<Record<string, boolean>>({});
     const navigate = useNavigate();
     const location = useLocation();
+    const { showSuccess, showError } = useNotificationModal();
 
     const {
         register,
@@ -72,6 +74,14 @@ const RegisterPage = () => {
 
             if (result.success) {
                 setIsRedirecting(true);
+                
+                // Mostrar modal de éxito
+                showSuccess(
+                    'Cuenta creada exitosamente',
+                    `¡Bienvenido a Tesoros de la India, ${data.name}! Tu cuenta ha sido creada. Por favor, verifica tu correo electrónico para activar tu cuenta.`,
+                    { autoCloseDelay: 4000 }
+                );
+                
                 setTimeout(() => {
                     navigate('/auth/verificacion', {
                         state: {
@@ -79,9 +89,13 @@ const RegisterPage = () => {
                             email: result.user?.email || data.email
                         }
                     });
-                }, 1000);
+                }, 2000);
             } else {
-                setMessage(result.message);
+                showError(
+                    'Error al crear cuenta',
+                    result.message,
+                    { autoClose: false }
+                );
                 setFormError('email', {
                     type: 'manual',
                     message: result.message
@@ -91,7 +105,11 @@ const RegisterPage = () => {
             setIsRedirecting(false);
 
             if (error instanceof AuthError) {
-                setMessage(error.message);
+                showError(
+                    'Error al crear cuenta',
+                    error.message,
+                    { autoClose: false }
+                );
                 const errorType = error.errorType;
 
                 if (errorType === 'email') {
@@ -102,7 +120,11 @@ const RegisterPage = () => {
                 }
             } else {
                 const errorMsg = "Ocurrió un error inesperado. Por favor, intenta nuevamente.";
-                setMessage(errorMsg);
+                showError(
+                    'Error al crear cuenta',
+                    errorMsg,
+                    { autoClose: false }
+                );
                 console.error('Registration error:', error);
             }
         }

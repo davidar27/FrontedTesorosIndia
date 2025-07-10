@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { ProgressBar } from '@/components/ui/display/ProgressBar';
+import { useNotificationModal } from '@/hooks/useNotificationModal';
 
 const RESEND_COOLDOWN = 60;
 
@@ -22,6 +23,7 @@ const ForgotPasswordForm = () => {
   const [lastEmail, setLastEmail] = useState<string>('');
   const location = useLocation();
   const email = location.state?.email;
+  const { showSuccess, showError, showWarning } = useNotificationModal();
 
   const {
     cooldown,
@@ -50,20 +52,36 @@ const ForgotPasswordForm = () => {
     onSuccess: (response, email) => {
       if (response.success) {
         setLastEmail(email);
-        setMessage(`¡Correo enviado con éxito! Se han enviado las instrucciones para restablecer tu contraseña a ${email}`);
+        showSuccess(
+          'Correo enviado exitosamente',
+          `Se han enviado las instrucciones para restablecer tu contraseña a ${email}. Por favor, revisa tu bandeja de entrada.`,
+          { autoCloseDelay: 5000 }
+        );
         startCooldown();
       } else {
-        setMessage(response.message || 'Error al enviar el correo');
+        showError(
+          'Error al enviar correo',
+          response.message || 'No se pudo enviar el correo de recuperación. Por favor, intenta nuevamente.',
+          { autoClose: false }
+        );
       }
     },
     onError: (error) => {
-      setMessage(error instanceof Error ? error.message : 'Error al enviar el correo');
+      showError(
+        'Error al enviar correo',
+        error instanceof Error ? error.message : 'Error al enviar el correo de recuperación. Por favor, intenta nuevamente.',
+        { autoClose: false }
+      );
     }
   });
 
   const onSubmit = async (data: ResetFormData) => {
     if (isActive) {
-      setMessage(`Por favor espera ${cooldown} segundos antes de solicitar otro correo`);
+      showWarning(
+        'Espera un momento',
+        `Por favor espera ${cooldown} segundos antes de solicitar otro correo de recuperación.`,
+        { autoCloseDelay: 3000 }
+      );
       return;
     }
     clearErrors();

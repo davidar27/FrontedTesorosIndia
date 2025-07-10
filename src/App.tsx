@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import { ErrorBoundary } from 'react-error-boundary';
 import ToastProvider from '@/components/ui/feedback/ToastProvider';
+import GlobalModalProvider from '@/components/ui/feedback/GlobalModalProvider';
 
 // Layouts
 const MainLayout = lazy(() => import('@/layouts/MainLayout'));
@@ -46,94 +47,96 @@ function App() {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <PageProvider>
-        <Suspense fallback={<LoadingSpinner position="overlay" size="lg" variant="primary" speed="slow" overlayBg="bg-white/80" message="Cargando aplicación..." />}>
-          <ToastProvider />
-          <Routes>
-            {/* Rutas públicas con MainLayout */}
+        <GlobalModalProvider>
+          <Suspense fallback={<LoadingSpinner position="overlay" size="lg" variant="primary" speed="slow" overlayBg="bg-white/80" message="Cargando aplicación..." />}>
+            <ToastProvider />
+            <Routes>
+              {/* Rutas públicas con MainLayout */}
 
-            <Route element={<MainLayout />}>
-              <Route path="/" element={<Home />} />
+              <Route element={<MainLayout />}>
+                <Route path="/" element={<Home />} />
 
-              {/* Rutas de productos */}
-              <Route path="/productos">
-                <Route index element={<ProductsPage />} />
-                <Route path=":id" element={<ProductsPage />} />
-                <Route path="categorias/:categoryId" element={<ProductsPage />} />
-                <Route path=":id/detalles" element={<ProductDetail />} />
+                {/* Rutas de productos */}
+                <Route path="/productos">
+                  <Route index element={<ProductsPage />} />
+                  <Route path=":id" element={<ProductsPage />} />
+                  <Route path="categorias/:categoryId" element={<ProductsPage />} />
+                  <Route path=":id/detalles" element={<ProductDetail />} />
+                </Route>
+
+                {/* Rutas informativas */}
+                <Route path="/nosotros" element={<AboutUs />} />
+
+                {/* Rutas de carrito */}
+                <Route path="/carrito" element={<CartPage />} />
+
+                {/* Rutas de resultado de pago */}
+                <Route path="/pago">
+                  <Route path="exitoso" element={<PaymentSuccess />} />
+                  <Route path="fallido" element={<PaymentFailure />} />
+                  <Route path="pendiente" element={<PaymentPending />} />
+                </Route>
+
+                {/* Rutas de experiencias */}
+                <Route path="/experiencias">
+                  <Route index element={<ExperiencePage />} />
+                  <Route path="categorias/:categoryId" element={<ExperiencePage />} />
+                  <Route path=":experience_id" element={<ExperiencePage />} />
+                </Route>
+
+                {/* Rutas de paquetes */}
+                <Route path="/paquetes">
+                  <Route index element={<PackagesPage />} />
+                  <Route path=":packageId" element={<PackageDetailsView />} />
+                </Route>
+
+
+                {/* Rutas de edición de experiencias - accesible públicamente, protección interna */}
+                <Route path="/experiencia/:experience_id/editar" element={<ExperiencePage />} />
+
+                {/* Rutas de perfil de usuario */}
+                <Route element={<ProtectedRoute roles={['administrador', 'emprendedor', 'cliente']} />}>
+                  <Route path="/perfil/:id" element={<Profile />} />
+                </Route>
               </Route>
 
-              {/* Rutas informativas */}
-              <Route path="/nosotros" element={<AboutUs />} />
-
-              {/* Rutas de carrito */}
-              <Route path="/carrito" element={<CartPage />} />
-
-              {/* Rutas de resultado de pago */}
-              <Route path="/pago">
-                <Route path="exitoso" element={<PaymentSuccess />} />
-                <Route path="fallido" element={<PaymentFailure />} />
-                <Route path="pendiente" element={<PaymentPending />} />
+              {/* Rutas de autenticación */}
+              <Route path="/auth" element={<AuthLayout />}>
+                <Route path="iniciar-sesion" element={<LoginPage />} />
+                <Route path="registro" element={<RegisterPage />} />
+                <Route path="verificacion" element={<SendEmail />} />
+                <Route path="verificacion/correo" element={<EmailVerificationPage />} />
+                <Route path="password">
+                  <Route path="recuperar" element={<ForgotPasswordForm />} />
+                  <Route path="restablecer" element={<ResetPassword />} />
+                </Route>
               </Route>
 
-              {/* Rutas de experiencias */}
-              <Route path="/experiencias">
-                <Route index element={<ExperiencePage />} />
-                <Route path="categorias/:categoryId" element={<ExperiencePage />} />
-                <Route path=":experience_id" element={<ExperiencePage />} />
+              {/* Rutas del dashboard administrativo */}
+              <Route element={<ProtectedRoute roles={['administrador']} />}>
+                <Route path="/dashboard" element={<DashboardLayout />}>
+                  <Route index element={<EntrepreneursPage />} />
+                  <Route path="estadisticas" />
+                  <Route path="emprendedores" element={<EntrepreneursPage />} />
+                  <Route path="experiencias" element={<ExperiencesPage />} />
+                  <Route path="paquetes" element={<PackagesPage />} />
+                  <Route path="categorias" element={<CategoriesPage />} />
+                </Route>
               </Route>
 
-              {/* Rutas de paquetes */}
-              <Route path="/paquetes">
-                <Route index element={<PackagesPage />} />
-                <Route path=":packageId" element={<PackageDetailsView />} />
+              {/* Páginas de error */}
+              <Route path="/error">
+                <Route path="acceso-denegado" element={<AccessDenied />} />
+                <Route path="no-encontrado" element={<NotFoundPage />} />
               </Route>
 
-
-              {/* Rutas de edición de experiencias - accesible públicamente, protección interna */}
-              <Route path="/experiencia/:experience_id/editar" element={<ExperiencePage />} />
-
-              {/* Rutas de perfil de usuario */}
-              <Route element={<ProtectedRoute roles={['administrador', 'emprendedor', 'cliente']} />}>
-                <Route path="/perfil/:id" element={<Profile />} />
-              </Route>
-            </Route>
-
-            {/* Rutas de autenticación */}
-            <Route path="/auth" element={<AuthLayout />}>
-              <Route path="iniciar-sesion" element={<LoginPage />} />
-              <Route path="registro" element={<RegisterPage />} />
-              <Route path="verificacion" element={<SendEmail />} />
-              <Route path="verificacion/correo" element={<EmailVerificationPage />} />
-              <Route path="password">
-                <Route path="recuperar" element={<ForgotPasswordForm />} />
-                <Route path="restablecer" element={<ResetPassword />} />
-              </Route>
-            </Route>
-
-            {/* Rutas del dashboard administrativo */}
-            <Route element={<ProtectedRoute roles={['administrador']} />}>
-              <Route path="/dashboard" element={<DashboardLayout />}>
-                <Route index element={<EntrepreneursPage />} />
-                <Route path="estadisticas" />
-                <Route path="emprendedores" element={<EntrepreneursPage />} />
-                <Route path="experiencias" element={<ExperiencesPage />} />
-                <Route path="paquetes" element={<PackagesPage />} />
-                <Route path="categorias" element={<CategoriesPage />} />
-              </Route>
-            </Route>
-
-            {/* Páginas de error */}
-            <Route path="/error">
-              <Route path="acceso-denegado" element={<AccessDenied />} />
-              <Route path="no-encontrado" element={<NotFoundPage />} />
-            </Route>
-
-            <Route path="*" element={<Navigate to="/error/no-encontrado" replace />} />
-          </Routes>
-        </Suspense>
+              <Route path="*" element={<Navigate to="/error/no-encontrado" replace />} />
+            </Routes>
+          </Suspense>
+        </GlobalModalProvider>
       </PageProvider>
 
-  
+
     </ErrorBoundary>
   );
 }
