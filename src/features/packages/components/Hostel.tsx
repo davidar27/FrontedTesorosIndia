@@ -21,6 +21,7 @@ export interface Room {
     room_id: number;
     name: string;
     image: string;
+    capacity: number;
     price: number;
 }
 

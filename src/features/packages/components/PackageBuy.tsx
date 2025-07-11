@@ -18,7 +18,9 @@ const PackageBuy = ({ packageData, date, people }: { packageData: PackageData, d
     const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
     const [loading, setLoading] = useState(false);
 
-    const totalPrice = packageData ? Number(packageData.price) * selectedPeople : 0;
+    const packagePrice = packageData ? Number(packageData.price) * selectedPeople : 0;
+    const roomPrice = selectedRoom ? Number(selectedRoom.price) : 0;
+    const totalPrice = packagePrice + roomPrice;
 
     const items = [
         {
@@ -28,6 +30,16 @@ const PackageBuy = ({ packageData, date, people }: { packageData: PackageData, d
             priceWithTax: Number(packageData.price),
         }
     ];
+
+    // Agregar la habitación como un item separado si está seleccionada
+    if (selectedRoom) {
+        items.push({
+            service_id: selectedRoom.room_id,
+            name: `Habitación: ${selectedRoom.name}`,
+            quantity: 1,
+            priceWithTax: Number(selectedRoom.price),
+        });
+    }
 
     const finalTotal = items.reduce((acc, item) => acc + item.priceWithTax * item.quantity, 0);
 
@@ -88,6 +100,16 @@ const PackageBuy = ({ packageData, date, people }: { packageData: PackageData, d
                     <span className="text-gray-600">Cantidad de personas:</span>
                     <span className="font-semibold">{selectedPeople}</span>
                 </div>
+                <div className="flex justify-between items-center mb-2">
+                    <span className="text-gray-600">Subtotal paquete:</span>
+                    <span className="font-semibold">{formatPrice(packagePrice)}</span>
+                </div>
+                {selectedRoom && (
+                    <div className="flex justify-between items-center mb-2">
+                        <span className="text-gray-600">Habitación seleccionada:</span>
+                        <span className="font-semibold">{formatPrice(roomPrice)}</span>
+                    </div>
+                )}
                 <hr className="my-3" />
                 <div className="flex justify-between items-center">
                     <span className="text-lg font-bold text-green-800">Total:</span>

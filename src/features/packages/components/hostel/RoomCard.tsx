@@ -36,6 +36,9 @@ export const RoomCard = ({
             <h4 className="text-lg font-semibold text-gray-800 mb-2 group-hover:text-emerald-600 transition-colors duration-300">
                 {room.name}
             </h4>
+            <p className="text-sm text-gray-500 mb-2">
+                Capacidad: {room.capacity} personas
+            </p>
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <span className="text-xl font-bold text-emerald-600">
