@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useState, useEffect } from "react";
 import NotificationItem from "@/components/ui/display/Notification/NotificationItem";
 import { Notification } from "@/interfaces/notification";
 
@@ -9,14 +9,34 @@ const NotificationsList = memo(({
     notifications: Notification[];
     onNotificationClick: (id: number, status: string) => void;
 }) => {
-    // Si hay menos de 10 notificaciones, usar renderizado normal
-    // Si hay más, considerar virtualización (implementación futura)
-    const shouldVirtualize = notifications.length > 10;
+    const [isMobile, setIsMobile] = useState(false);
+    const [isTablet, setIsTablet] = useState(false);
 
-    if (shouldVirtualize) {
-        // Por ahora, limitar a mostrar solo las primeras 20 notificaciones
-        // En el futuro se puede implementar react-window para virtualización completa
-        const limitedNotifications = notifications.slice(0, 20);
+    useEffect(() => {
+        const checkScreenSize = () => {
+            const width = window.innerWidth;
+            setIsMobile(width < 768);
+            setIsTablet(width >= 768 && width < 1024);
+        };
+
+        checkScreenSize();
+        window.addEventListener('resize', checkScreenSize);
+        
+        return () => window.removeEventListener('resize', checkScreenSize);
+    }, []);
+
+    // Ajustar límite de notificaciones según el tamaño de pantalla
+    const getNotificationLimit = () => {
+        if (isMobile) return 10;
+        if (isTablet) return 15;
+        return 20;
+    };
+
+    const limit = getNotificationLimit();
+    const shouldLimit = notifications.length > limit;
+
+    if (shouldLimit) {
+        const limitedNotifications = notifications.slice(0, limit);
 
         return (
             <div className="divide-y divide-gray-50">
@@ -27,11 +47,9 @@ const NotificationsList = memo(({
                         onNotificationClick={onNotificationClick}
                     />
                 ))}
-                {notifications.length > 20 && (
-                    <div className="p-4 text-center text-gray-500 text-sm">
-                        Mostrando las 20 notificaciones más recientes de {notifications.length}
-                    </div>
-                )}
+                <div className="p-3 sm:p-4 text-center text-gray-500 text-xs sm:text-sm bg-gray-50/50">
+                    Mostrando las {limit} notificaciones más recientes de {notifications.length}
+                </div>
             </div>
         );
     }
@@ -48,4 +66,5 @@ const NotificationsList = memo(({
         </div>
     );
 });
+
 export default NotificationsList;

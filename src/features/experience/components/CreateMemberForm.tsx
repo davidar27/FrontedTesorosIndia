@@ -115,6 +115,7 @@ const CreateMemberForm: React.FC<CreateMemberFormProps> = ({
                         <div className="flex flex-col sm:flex-row items-center gap-4">
                             <Button
                                 type="submit"
+                                onClick={handleSubmit}
                                 disabled={isLoading}
                                 className='flex items-center gap-2'
                                 variant='success'
@@ -146,7 +147,7 @@ const CreateMemberForm: React.FC<CreateMemberFormProps> = ({
                 {/* Form Card */}
 
 
-                <form onSubmit={handleSubmit} className="p-8 space-y-8">
+                <form className="p-8 space-y-8">
                     {/* Image Upload Section */}
                     <div className="flex flex-col items-center">
                         <div className="relative mb-6">
