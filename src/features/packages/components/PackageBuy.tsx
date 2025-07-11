@@ -130,10 +130,6 @@ const PackageBuy = ({ packageData, date, people }: { packageData: PackageData, d
 
             {/* Botón de Compra */}
             <MercadoPagoWallet items={items} total={finalTotal} onBeforePay={handleBeforePay} disabled={!canPurchase} loading={loading} />
-
-
-
-
         </section >
     )
 }
