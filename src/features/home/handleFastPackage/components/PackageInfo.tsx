@@ -33,7 +33,7 @@ export const PackageInfo: React.FC<PackageInfoProps> = ({
                 {/* Información del paquete seleccionado */}
                 {selectedPackage && (
                     <div className="flex items-center justify-center gap-4 text-xs text-white/70">
-                        <span>Capacidad: <span className="font-bold">{selectedPackage.capacity}</span> personas</span>
+                        <span>Cantidad: <span className="font-bold">{selectedPackage.capacity}</span> personas</span>
                         <span>Precio: <span className="font-bold">${parseFloat(selectedPackage.price!).toLocaleString()}</span>/persona</span>
                     </div>
                 )}

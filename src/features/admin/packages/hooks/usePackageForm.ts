@@ -66,7 +66,7 @@ export const usePackageForm = (initialData?: Partial<CreatePackageData> & { id?:
         }
 
         if (!formData.capacity) {
-            newErrors.capacity = 'La capacidad es requerida';
+            newErrors.capacity = 'La Cantidad es requerida';
         }
 
         if (!formData.pricePerPerson) {

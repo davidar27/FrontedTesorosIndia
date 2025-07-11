@@ -182,7 +182,7 @@ export function ExperiencePackageEditCard<T extends BaseItem>({
                                     value={formData.capacity || ''}
                                     onChange={handleInputChange}
                                     className="w-full bg-transparent border-b border-gray-300 focus:border-primary outline-none"
-                                    placeholder="Ingrese capacidad"
+                                    placeholder="Ingrese Cantidad de personas"
                                 />
                             </div>
                         )}

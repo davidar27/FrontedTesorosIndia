@@ -123,7 +123,7 @@ const PackageBuy = ({ packageData, date, people }: { packageData: PackageData, d
                     <p className="text-center text-red-600 text-sm mt-3">
                         {!selectedDate && "Selecciona una fecha para continuar"}
                         {selectedDate && selectedPeople > (packageData?.capacity || 0) &&
-                            `El número de personas excede la capacidad máxima (${packageData?.capacity || 0})`}
+                            `El número de personas excede la cantidad máxima (${packageData?.capacity || 0})`}
                     </p>
                 )
             }

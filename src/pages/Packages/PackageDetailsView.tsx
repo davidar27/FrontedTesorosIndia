@@ -76,7 +76,7 @@ const PackageDetailsView: React.FC<PackageDetailsViewProps> = (
                         <div className="border-2 border-primary/30 rounded-lg p-6 bg-white shadow-md">
                             <h3 className="text-lg font-semibold text-green-700 flex items-center ">
                                 <Users className="mr-2 h-5 w-5" />
-                                Capacidad Máxima
+                                Cantidad Máxima
                             </h3>
                             <div className="bg-gray-50 p-4 rounded-lg shadow-md">
                                 <p className="text-2xl font-bold text-green-800">{packageData.capacity} personas</p>
@@ -86,7 +86,7 @@ const PackageDetailsView: React.FC<PackageDetailsViewProps> = (
                     </div>
                 </section>
 
-                {/* Experiencias y Capacidad */}
+                {/* Experiencias y Cantidad */}
                 <section className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                     <ExperienceList
                         title="Experiencias Incluidas"
