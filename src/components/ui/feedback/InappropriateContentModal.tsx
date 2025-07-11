@@ -131,7 +131,7 @@ const InappropriateContentModal: React.FC<InappropriateContentModalProps> = ({
                                     Sugerencia:
                                 </p>
                                 <p className="text-sm text-emerald-700">
-                                    Considera usar: <span className="font-medium">"{error.suggestion.trim()}"</span>
+                                    Considera usar palabras adecuadas y evitar contenido que pueda ser considerado ofensivo o inapropiado.
                                 </p>
                             </div>
                         </div>
