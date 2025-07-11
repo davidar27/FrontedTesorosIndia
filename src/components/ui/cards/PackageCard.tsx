@@ -85,7 +85,7 @@ export const PackageCard = ({
             </div>
 
             <div className="p-5">
-                <p className="text-gray-700">{description}</p>
+                <p className="text-gray-700">{description.slice(0, 200)}...</p>
 
                 {details.length > 0 && (
                     <ul className="mt-3 space-y-1">
