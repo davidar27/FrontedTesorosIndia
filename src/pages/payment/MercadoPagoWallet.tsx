@@ -113,13 +113,14 @@ export const MercadoPagoWallet = ({ items, total, onBeforePay, disabled, loading
     };
 
     return (
-        <div className="flex justify-center">
+        <div className="flex justify-center max-w-xl mx-auto">
             <Button
                 onClick={createPreferenceIdFromAPI}
                 aria-label="Continuar Compra"
                 disabled={disabled}
                 loading={loading}
                 messageLoading="Cargando Metodo de Pago..."
+                className="w-full"
             >
                 <CreditCardIcon className="w-6 h-6" />
                 <span>Continuar Compra</span>
