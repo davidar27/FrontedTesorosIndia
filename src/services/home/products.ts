@@ -7,5 +7,13 @@ export const ProductsApi = {
             : `/productos`;
         const response = await publicAxiosInstance.get(url);
         return response.data;
+    },
+
+    getTopProducts: async (userId: string) => {
+        const url = userId 
+            ? `/productos/top/${encodeURIComponent(userId)}`
+            : `/productos/top`;
+        const response = await publicAxiosInstance.get(url);
+        return response.data;
     }
 }

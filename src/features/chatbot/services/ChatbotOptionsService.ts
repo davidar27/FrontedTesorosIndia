@@ -23,46 +23,91 @@ export class ChatbotOptionsService {
     }
 
     // Menú principal
-    getMainMenu(): ChatbotMenu {
+    getMainMenu(userRole?: string): ChatbotMenu {
+        const isEntrepreneur = userRole === 'emprendedor';
+        
+        // Opciones base para todos menos emprendedor
+        const baseOptions = isEntrepreneur ? [
+            {
+                id: 'generate_report',
+                label: 'Generar informe',
+                type: 'main_menu' as const,
+                action: 'custom' as const,
+                value: 'generate_report',
+                icon: '📄',
+                description: 'Solicita un informe automático'
+            },
+            {
+                id: 'total_income',
+                label: 'Ver total de dinero ingresado',
+                type: 'main_menu' as const,
+                action: 'custom' as const,
+                value: 'show_total_income',
+                icon: '💰',
+                description: 'Consulta tus ingresos totales'
+            },
+            {
+                id: 'chat',
+                label: 'Chatear libremente',
+                type: 'main_menu' as const,
+                action: 'custom' as const,
+                value: 'open_free_chat',
+                icon: '💬',
+                description: 'Hazme cualquier pregunta'
+            }
+        ] : [
+            {
+                id: 'products',
+                label: 'Ver productos disponibles',
+                type: 'main_menu' as const,
+                action: 'show_categories' as const,
+                icon: '🛍️',
+                description: 'Descubre productos artesanales'
+            },
+            {
+                id: 'experiences',
+                label: 'Ver experiencias disponibles',
+                type: 'main_menu' as const,
+                action: 'show_experiences' as const,
+                icon: '🌟',
+                description: 'Vive experiencias culturales únicas'
+            },
+            {
+                id: 'chat',
+                label: 'Chatear libremente',
+                type: 'main_menu' as const,
+                action: 'custom' as const,
+                value: 'open_free_chat',
+                icon: '💬',
+                description: 'Hazme cualquier pregunta'
+            }
+        ];
+
+        // Opción específica según el rol
+        const roleSpecificOption = isEntrepreneur 
+            ? {
+                id: 'top_products',
+                label: 'Productos más vendidos',
+                type: 'main_menu' as const,
+                action: 'custom' as const,
+                value: 'show_top_products',
+                icon: '🔥',
+                description: 'Ver productos con mejor rendimiento'
+            }
+            : {
+                id: 'packages',
+                label: 'Ver paquetes disponibles',
+                type: 'main_menu' as const,
+                action: 'show_packages' as const,
+                icon: '🎒',
+                description: 'Explora nuestros paquetes turísticos'
+            };
+
         return {
             id: 'main_menu',
             title: '¡Hola! Soy Tesorito, tu guía turístico virtual 👋',
             isMainMenu: true,
-            options: [
-                {
-                    id: 'packages',
-                    label: 'Ver paquetes disponibles',
-                    type: 'main_menu',
-                    action: 'show_packages',
-                    icon: '🎒',
-                    description: 'Explora nuestros paquetes turísticos'
-                },
-                {
-                    id: 'products',
-                    label: 'Ver productos disponibles',
-                    type: 'main_menu',
-                    action: 'show_categories',
-                    icon: '🛍️',
-                    description: 'Descubre productos artesanales'
-                },
-                {
-                    id: 'experiences',
-                    label: 'Ver experiencias disponibles',
-                    type: 'main_menu',
-                    action: 'show_experiences',
-                    icon: '🌟',
-                    description: 'Vive experiencias culturales únicas'
-                },
-                {
-                    id: 'chat',
-                    label: 'Chatear libremente',
-                    type: 'main_menu',
-                    action: 'custom',
-                    value: 'open_free_chat',
-                    icon: '💬',
-                    description: 'Hazme cualquier pregunta'
-                }
-            ]
+            options: [roleSpecificOption, ...baseOptions]
         };
     }
 
@@ -231,6 +276,31 @@ export class ChatbotOptionsService {
         }
     }
 
+    // Obtener productos más vendidos (para emprendedores)
+    async getTopProducts(userId?: string): Promise<ChatbotProduct[]> {
+        try {
+            const products = await ProductsApi.getTopProducts(userId || '');
+            
+            // Mapear los productos más vendidos con información adicional
+            const topProducts = products.map((product: any, index: number) => ({
+                id: product.id,
+                name: product.name,
+                description: product.description,
+                price: product.price || product.priceWithTax || 0,
+                image: product.image,
+                category: product.category,
+                url: `/productos/${product.id}/detalles`,
+                salesRank: index + 1, // Ranking de ventas
+                totalSold: product.totalSold || product.total_sold || 0 // Cantidad vendida del backend
+            }));
+            
+            return topProducts;
+        } catch (error) {
+            console.error('Error fetching top products:', error);
+            return [];
+        }
+    }
+
     // Crear menú de paquetes
     async getPackagesMenu(): Promise<ChatbotMenu> {
         const packages = await this.getPackages();
@@ -257,6 +327,21 @@ export class ChatbotOptionsService {
             title: 'Paquetes Turísticos',
             options
         };
+    }
+
+    // Obtener total de dinero ingresado (para emprendedores)
+    async getTotalIncome(userId?: string): Promise<{ experienceName: string; totalIncome: string | number }> {
+        try {
+            const response = await ExperiencesApi.gettotalIncome(userId || '');
+            // Asegúrate de que response tenga experienceName y totalIncome
+            return {
+                experienceName: response?.experienceName ?? 'Experiencia',
+                totalIncome: response?.totalIncome ?? 0
+            };
+        } catch (error) {
+            console.error('Error fetching total income:', error);
+            return { experienceName: 'Experiencia', totalIncome: 0 };
+        }
     }
 
     // Obtener categoría por ID

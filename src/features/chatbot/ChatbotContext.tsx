@@ -8,6 +8,8 @@ import { ChatService } from './services/ChatService';
 import { ChatbotMenu, ChatbotState, ChatbotOption, ChatbotProduct, ChatbotExperience, ChatbotPackage, ProductCategory } from './interfaces/ChatbotOptionsInterfaces';
 import { chatbotOptionsService } from './services/ChatbotOptionsService';
 import { DetectedIntent } from './services/IntentDetectionService';
+import { ArrowLeft } from 'lucide-react';
+import { formatPrice } from '@/utils/formatPrice';
 
 interface ChatbotContextType {
   isOpen: boolean;
@@ -36,6 +38,10 @@ interface ChatbotContextType {
   goBack: () => void;
   showMainMenu: () => void;
   backToCategories: () => void;
+  customData: unknown[];
+  showCustomData: 'top_products' | 'total_income' | null;
+  setCustomData: React.Dispatch<React.SetStateAction<unknown[]>>;
+  setShowCustomData: React.Dispatch<React.SetStateAction<'top_products' | 'total_income' | null>>;
 }
 
 const ChatbotContext = createContext<ChatbotContextType | undefined>(undefined);
@@ -91,11 +97,12 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
     setMessages([]);
   }, []);
 
-  // Mostrar menú principal al abrir el chat
   const showMainMenu = useCallback(async () => {
     setIsLoading(true);
     try {
-      const mainMenu = chatbotOptionsService.getMainMenu();
+      const currentUser = await chatService?.getCurrentUser();
+      const userRole = currentUser?.role || 'observador';
+      const mainMenu = chatbotOptionsService.getMainMenu(userRole);
       setCurrentMenu(mainMenu);
       setChatbotState({
         currentMenu: 'main_menu',
@@ -106,11 +113,14 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [chatService]);
+
   const goBack = useCallback(async () => {
     setIsLoading(true);
     try {
-      const mainMenu = chatbotOptionsService.getMainMenu();
+      const currentUser = await chatService?.getCurrentUser();
+      const userRole = currentUser?.role || 'observador';
+      const mainMenu = chatbotOptionsService.getMainMenu(userRole);
       setCurrentMenu(mainMenu);
       setChatbotState({
         currentMenu: 'main_menu',
@@ -125,7 +135,78 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [chatService]);
+
+  const sendMessage = useCallback(async (text: string) => {
+    if (!chatService) {
+      console.error('Chat service not initialized');
+      return;
+    }
+
+    // Ocultar contenido guiado cuando el usuario envía un nuevo mensaje
+    // PERO solo si hay contenido guiado visible y no estamos cargando
+    if (showGuidedContent && guidedContentType && !isLoading) {
+      setShowGuidedContent(false);
+      setGuidedContentType(null);
+      setCurrentProducts([]);
+      setCurrentExperiences([]);
+      setCurrentPackages([]);
+      setDetectedIntent(null);
+    }
+
+    const userMessage: ChatMessage = {
+      id: Date.now().toString(),
+      text,
+      sender: 'user',
+      timestamp: new Date(),
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setIsLoading(true);
+
+    try {
+      // Usar el servicio de IA que ahora puede detectar intención
+      const response = await chatService.sendMessage(text, messages);
+      
+      if (response.intent && response.intent.confidence >= 0.7) {
+        // Si la IA detecta una intención clara, mostrar botón de redirección
+        setDetectedIntent(response.intent);
+        
+        const botMessage: ChatMessage = {
+          id: (Date.now() + 1).toString(),
+          text: response.text,
+          sender: 'bot',
+          timestamp: new Date(),
+          data: response.data // <-- ahora permitido por la interfaz
+        };
+
+        setMessages(prev => [...prev, botMessage]);
+      } else {
+        // Respuesta normal sin redirección
+        const botMessage: ChatMessage = {
+          id: (Date.now() + 1).toString(),
+          text: response.text,
+          sender: 'bot',
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, botMessage]);
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+
+      const errorMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        text: 'Lo siento, hubo un error al procesar tu mensaje. Por favor, intenta de nuevo.',
+        sender: 'bot',
+        timestamp: new Date(),
+      };
+
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [chatService, messages]);
+
   // Manejar clic en opción
   const handleOptionClick = useCallback(async (option: ChatbotOption) => {
     setIsLoading(true);
@@ -203,6 +284,62 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
               breadcrumb: [...prev.breadcrumb, 'Chat Libre']
             }));
             setMessages([]);
+          } else if (option.value === 'show_top_products') {
+            const currentUser = await chatService?.getCurrentUser();
+            const userId = currentUser?.id?.toString() || '';
+            const topProducts = await chatbotOptionsService.getTopProducts(userId);
+            setCurrentProducts(topProducts);
+            setCurrentMenu(null);
+            setChatbotState(prev => ({
+              ...prev,
+              currentMenu: 'top_products_display',
+              breadcrumb: [...prev.breadcrumb, 'Productos Más Vendidos']
+            }));
+          } else if (option.value === 'show_total_income') {
+            const currentUser = await chatService?.getCurrentUser();
+            const userId = currentUser?.id?.toString() || '';
+            const response = await chatbotOptionsService.getTotalIncome(userId);
+            setCustomData([response]);
+            setShowCustomData('total_income');
+            setCurrentMenu(null);
+            setChatbotState(prev => ({
+              ...prev,
+              currentMenu: 'total_income_display',
+              breadcrumb: [...prev.breadcrumb, 'Total de Ingresos']
+            }));
+          } else if (option.value === 'generate_report') {
+            const currentUser = await chatService?.getCurrentUser();
+            const userId = currentUser?.id || '';
+            if (userId) {
+                setIsLoading(true);
+                try {
+                    // Usa axiosInstance para la petición
+                    const response = await (await import('@/api/axiosInstance')).axiosInstance.get(`/IA/reportes/descargar?userId=${userId}`, {
+                        responseType: 'blob'
+                    });
+                    const blob = response.data;
+                    const downloadUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+                    a.download = 'informe_experiencia.pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(downloadUrl);
+                    // Mensaje de éxito en el chat
+                    const botMessage: ChatMessage = {
+                        id: Date.now().toString(),
+                        text: '¡El informe PDF se ha descargado correctamente!',
+                        sender: 'bot',
+                        timestamp: new Date(),
+                    };
+                    setMessages(prev => [...prev, botMessage]);
+                } catch {
+                    await sendMessage('Ocurrió un error al descargar el informe.');
+                } finally {
+                    setIsLoading(false);
+                }
+            }
           }
           break;
 
@@ -215,7 +352,7 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
     } finally {
       setIsLoading(false);
     }
-  }, [goBack]);
+  }, [goBack, sendMessage]);
 
 
 
@@ -409,6 +546,19 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
           break;
         }
 
+        case 'show_top_products': {
+          const currentUser = await chatService?.getCurrentUser();
+          const userId = currentUser?.id?.toString() || '';
+          const topProducts = await chatbotOptionsService.getTopProducts(userId);
+          setCurrentProducts(topProducts);
+          setCurrentMenu(null);
+          setChatbotState(prev => ({
+            ...prev,
+            currentMenu: 'top_products_display',
+            breadcrumb: [...prev.breadcrumb, 'Productos Más Vendidos']
+          }));
+          break;
+        }
         case 'show_top_products_by_experience': {
           const lastBotMsg = messages.filter(m => m.sender === 'bot').slice(-1)[0];
           if (lastBotMsg && Array.isArray(lastBotMsg.data)) {
@@ -432,76 +582,6 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
       setIsLoading(false);
     }
   }, [showGuidedContentInChat, messages]);
-
-  const sendMessage = useCallback(async (text: string) => {
-    if (!chatService) {
-      console.error('Chat service not initialized');
-      return;
-    }
-
-    // Ocultar contenido guiado cuando el usuario envía un nuevo mensaje
-    // PERO solo si hay contenido guiado visible y no estamos cargando
-    if (showGuidedContent && guidedContentType && !isLoading) {
-      setShowGuidedContent(false);
-      setGuidedContentType(null);
-      setCurrentProducts([]);
-      setCurrentExperiences([]);
-      setCurrentPackages([]);
-      setDetectedIntent(null);
-    }
-
-    const userMessage: ChatMessage = {
-      id: Date.now().toString(),
-      text,
-      sender: 'user',
-      timestamp: new Date(),
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    setIsLoading(true);
-
-    try {
-      // Usar el servicio de IA que ahora puede detectar intención
-      const response = await chatService.sendMessage(text, messages);
-      
-      if (response.intent && response.intent.confidence >= 0.7) {
-        // Si la IA detecta una intención clara, mostrar botón de redirección
-        setDetectedIntent(response.intent);
-        
-        const botMessage: ChatMessage = {
-          id: (Date.now() + 1).toString(),
-          text: response.text,
-          sender: 'bot',
-          timestamp: new Date(),
-          data: response.data // <-- ahora permitido por la interfaz
-        };
-
-        setMessages(prev => [...prev, botMessage]);
-      } else {
-        // Respuesta normal sin redirección
-        const botMessage: ChatMessage = {
-          id: (Date.now() + 1).toString(),
-          text: response.text,
-          sender: 'bot',
-          timestamp: new Date()
-        };
-        setMessages(prev => [...prev, botMessage]);
-      }
-    } catch (error) {
-      console.error('Error sending message:', error);
-
-      const errorMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        text: 'Lo siento, hubo un error al procesar tu mensaje. Por favor, intenta de nuevo.',
-        sender: 'bot',
-        timestamp: new Date(),
-      };
-
-      setMessages(prev => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [chatService, messages]);
 
   // Mostrar menú principal cuando se abre el chat
   useEffect(() => {
@@ -551,6 +631,10 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
     goBack,
     showMainMenu,
     backToCategories,
+    customData,
+    showCustomData,
+    setCustomData,
+    setShowCustomData,
   };
 
   return (
@@ -572,20 +656,27 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
           </ul>
         </div>
       )}
-      {showCustomData === 'total_income' && customData.length > 0 && (
-        <div className="space-y-2">
-          <h4 className="font-bold text-gray-800">Total de ingresos por experiencia</h4>
-          <ul>
-            {customData.map((item) => {
-              const exp = item as { experiencia_id: number; experiencia_nombre: string; total_income: string };
-              return (
-                <li key={exp.experiencia_id} className="p-2 border-b">
-                  <span className="font-semibold">{exp.experiencia_nombre}</span>
-                  <span className="ml-2 text-gray-600">Ingresos: ${exp.total_income}</span>
-                </li>
-              );
-            })}
-          </ul>
+      {chatbotState.currentMenu === 'total_income_display' && showCustomData === 'total_income' && customData.length > 0 && (
+        <div className="space-y-4">
+          <div className="text-center bg-gradient-to-r from-yellow-50 to-amber-100 rounded-xl p-4 shadow-sm border border-yellow-200">
+            <h3 className="font-bold text-gray-800 text-base mb-2">
+              💰 Total de dinero ingresado
+            </h3>
+            <p className="text-lg text-gray-700 font-semibold mb-1">
+              {(customData[0] as { experienceName: string }).experienceName}
+            </p>
+            <p className="text-2xl text-green-700 font-bold mb-2">
+              {formatPrice((customData[0] as { totalIncome: string | number }).totalIncome as number) }
+            </p>
+            <div className="h-1 w-16 bg-gradient-to-r from-yellow-400 to-amber-400 rounded-full mx-auto"></div>
+          </div>
+          <button
+            onClick={() => goBack()}
+            className="w-full p-3 text-center rounded-xl border-2 border-gray-200 bg-white/80 backdrop-blur-sm hover:bg-gray-50 text-gray-700 transition-all duration-200 flex items-center justify-center space-x-2 hover:shadow-md hover:border-gray-300"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Volver al menú principal</span>
+          </button>
         </div>
       )}
     </ChatbotContext.Provider>

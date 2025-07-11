@@ -1,4 +1,4 @@
-import { publicAxiosInstance } from '@/api/axiosInstance';
+import { axiosInstance, publicAxiosInstance } from '@/api/axiosInstance';
 import { Experience, RawExperienceResponse } from '@/features/admin/experiences/ExperienceTypes';
 
 const transformExperienceResponse = (Experience: RawExperienceResponse): Experience => ({
@@ -22,6 +22,11 @@ export const ExperiencesApi = {
 
     getExperiencesHome: async () => {
         const response = await publicAxiosInstance.get('/experiencias/mapa');
+        return response.data;
+    },
+
+    gettotalIncome: async (userId : string) => {
+        const response = await axiosInstance.get(`/experiencias/ingresos/${userId}`);
         return response.data;
     }
 

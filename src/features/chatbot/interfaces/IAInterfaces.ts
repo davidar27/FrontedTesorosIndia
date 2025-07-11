@@ -53,4 +53,5 @@ export interface CurrentUser {
     id: number;
     role: UserRole;
     email: string;
+    experience_id?: string;
 } 

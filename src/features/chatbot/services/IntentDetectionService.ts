@@ -31,6 +31,11 @@ export class IntentDetectionService {
             'regalo', 'regalos', 'compra', 'compras', 'tienda', 'tiendas', 'mercado', 'mercados',
             'artículo', 'artículos', 'objeto', 'objetos', 'manualidad', 'manualidades'
         ],
+        top_products: [
+            'más vendido', 'más vendidos', 'mejor vendido', 'mejor vendidos', 'top', 'ranking',
+            'popular', 'populares', 'exitoso', 'exitosos', 'rendimiento', 'ventas', 'estadísticas',
+            'mejor', 'destacado', 'destacados', 'favorito', 'favoritos', 'trending'
+        ],
         experiences: [
             'experiencia', 'experiencias', 'actividad', 'actividades', 'evento', 'eventos',
             'taller', 'talleres', 'clase', 'clases', 'workshop', 'workshops', 'cultura', 'cultural',
@@ -54,6 +59,11 @@ export class IntentDetectionService {
             buttonText: "Ver productos disponibles",
             redirectTo: "show_categories"
         },
+        top_products: {
+            message: "¡Genial! Te muestro los productos con mejor rendimiento de ventas:",
+            buttonText: "Ver productos más vendidos",
+            redirectTo: "show_top_products"
+        },
         experiences: {
             message: "¡Genial! Te presento nuestras experiencias culturales únicas:",
             buttonText: "Ver experiencias disponibles",
@@ -75,6 +85,7 @@ export class IntentDetectionService {
         const scores = {
             packages: this.calculateScore(normalizedMessage, this.patterns.packages),
             products: this.calculateScore(normalizedMessage, this.patterns.products),
+            top_products: this.calculateScore(normalizedMessage, this.patterns.top_products),
             experiences: this.calculateScore(normalizedMessage, this.patterns.experiences),
             categories: this.calculateScore(normalizedMessage, this.patterns.categories)
         };

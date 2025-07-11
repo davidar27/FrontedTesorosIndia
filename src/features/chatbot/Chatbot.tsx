@@ -11,6 +11,7 @@ import IntentRedirectButton from '@/features/chatbot/components/IntentRedirectBu
 import GuidedContentInChat from '@/features/chatbot/components/GuidedContentInChat';
 import Picture from '../../components/ui/display/Picture';
 import './styles/responseCards.css';
+import { formatPrice } from '@/utils/formatPrice';
 
 interface ChatbotProps {
     className?: string;
@@ -40,7 +41,9 @@ const ChatbotComponent: React.FC<ChatbotProps> = ({ className = '' }) => {
         handleIntentRedirect,
         hideGuidedContent,
         goBack,
-        backToCategories
+        backToCategories,
+        customData,
+        showCustomData,
     } = useChatbot();
     const [inputValue, setInputValue] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -54,32 +57,7 @@ const ChatbotComponent: React.FC<ChatbotProps> = ({ className = '' }) => {
         scrollToBottom();
     }, [messages]);
 
-    useEffect(() => {
-        const isMobile = window.innerWidth <= 768 || ('ontouchstart' in window);
-        
-        if (isOpen /* && isMobile */) {
-            document.body.style.overflow = 'hidden';
-            document.body.style.position = 'fixed';
-            document.body.style.width = '100%';
-            document.body.style.top = `-${window.scrollY}px`;
-        } else if (!isOpen /* && isMobile */) {
-            const scrollY = document.body.style.top;
-            document.body.style.overflow = '';
-            document.body.style.position = '';
-            document.body.style.width = '';
-            document.body.style.top = '';
-            window.scrollTo(0, parseInt(scrollY || '0') * -1);
-        }
 
-        return () => {
-            if (isMobile) {
-                document.body.style.overflow = '';
-                document.body.style.position = '';
-                document.body.style.width = '';
-                document.body.style.top = '';
-            }
-        };
-    }, [isOpen]);
 
     useEffect(() => {
         if (isOpen && inputRef.current && chatbotState.currentMenu === 'free_chat') {
@@ -114,7 +92,7 @@ const ChatbotComponent: React.FC<ChatbotProps> = ({ className = '' }) => {
         if (window.innerWidth <= 768 || ('ontouchstart' in window)) {
             const target = e.target as HTMLElement;
             const messagesContainer = target.closest('.chatbot-messages');
-            
+
             if (!messagesContainer) {
                 e.preventDefault();
             }
@@ -125,7 +103,7 @@ const ChatbotComponent: React.FC<ChatbotProps> = ({ className = '' }) => {
         <div className={`fixed bottom-4 right-4 z-50 chatbot-container ${className}`}>
             {/* Chat Window */}
             {isOpen && (
-                <div 
+                <div
                     className="mb-4 w-80 h-115 rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden backdrop-blur-sm bg-white/95 chatbot-window"
                     onTouchStart={handleTouchStart}
                     onTouchMove={handleTouchMove}
@@ -157,13 +135,13 @@ const ChatbotComponent: React.FC<ChatbotProps> = ({ className = '' }) => {
                                     <ArrowLeft className="w-4 h-4" />
                                 </button>
                             )}
-                            
-                        <button
-                            onClick={toggleChat}
+
+                            <button
+                                onClick={toggleChat}
                                 className="text-white/80 hover:text-white transition-all duration-200 hover:bg-white/10 p-2 rounded-lg"
-                        >
-                            <X className="w-5 h-5" />
-                        </button>
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
                         </div>
                     </div>
 
@@ -208,6 +186,32 @@ const ChatbotComponent: React.FC<ChatbotProps> = ({ className = '' }) => {
                                         Productos Disponibles
                                     </h3>
                                     <div className="h-1 w-16 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full mx-auto"></div>
+                                </div>
+                                <ChatbotProductCards
+                                    products={currentProducts}
+                                    onProductClick={handleProductClick}
+                                />
+                                <button
+                                    onClick={() => goBack()}
+                                    className="w-full p-3 text-center rounded-xl border-2 border-gray-200 bg-white/80 backdrop-blur-sm hover:bg-gray-50 text-gray-700 transition-all duration-200 flex items-center justify-center space-x-2 hover:shadow-md hover:border-gray-300"
+                                >
+                                    <ArrowLeft className="w-4 h-4" />
+                                    <span>Volver al menú principal</span>
+                                </button>
+                            </div>
+                        )}
+
+                        {/* Productos más vendidos en cards */}
+                        {chatbotState.currentMenu === 'top_products_display' && currentProducts.length > 0 && (
+                            <div className="space-y-4">
+                                <div className="text-center bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-4 shadow-sm border border-orange-200">
+                                    <h3 className="font-bold text-gray-800 text-base mb-2">
+                                        🔥 Productos Más Vendidos
+                                    </h3>
+                                    <p className="text-xs text-gray-600 mb-2">
+                                        Los productos con mejor rendimiento
+                                    </p>
+                                    <div className="h-1 w-16 bg-gradient-to-r from-orange-400 to-red-400 rounded-full mx-auto"></div>
                                 </div>
                                 <ChatbotProductCards
                                     products={currentProducts}
@@ -279,13 +283,38 @@ const ChatbotComponent: React.FC<ChatbotProps> = ({ className = '' }) => {
                             </div>
                         )}
 
+                        {/* Total de dinero ingresado para emprendedor */}
+                        {chatbotState.currentMenu === 'total_income_display' && showCustomData === 'total_income' && customData.length > 0 && (
+                            <div className="space-y-4">
+                                <div className="text-center bg-gradient-to-r from-yellow-50 to-amber-100 rounded-xl p-4 shadow-sm border border-yellow-200">
+                                    <h3 className="font-bold text-gray-800 text-base mb-2">
+                                        💰 Total de dinero ingresado
+                                    </h3>
+                                    <p className="text-lg text-gray-700 font-semibold mb-1">
+                                        {(customData[0] as { experienceName: string }).experienceName}
+                                    </p>
+                                    <p className="text-2xl text-green-700 font-bold mb-2">
+                                        {formatPrice((customData[0] as { totalIncome: string | number }).totalIncome as number)}
+                                    </p>
+                                    <div className="h-1 w-16 bg-gradient-to-r from-yellow-400 to-amber-400 rounded-full mx-auto"></div>
+                                </div>
+                                <button
+                                    onClick={() => goBack()}
+                                    className="w-full p-3 text-center rounded-xl border-2 border-gray-200 bg-white/80 backdrop-blur-sm hover:bg-gray-50 text-gray-700 transition-all duration-200 flex items-center justify-center space-x-2 hover:shadow-md hover:border-gray-300"
+                                >
+                                    <ArrowLeft className="w-4 h-4" />
+                                    <span>Volver al menú principal</span>
+                                </button>
+                            </div>
+                        )}
+
                         {/* Mensajes del chat */}
                         {messages.length > 0 && (
                             <div className="space-y-3">
                                 {messages.map((message, index) => (
-                                <ChatMessage key={index} message={message} />
+                                    <ChatMessage key={index} message={message} />
                                 ))}
-                                
+
                                 {/* Botón de redirección de intención */}
                                 {detectedIntent && (
                                     <>
@@ -332,7 +361,7 @@ const ChatbotComponent: React.FC<ChatbotProps> = ({ className = '' }) => {
                                         <div className="h-1 w-16 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full mx-auto"></div>
                                     </div>
                                 </div>
-                                
+
                                 {/* Botón para volver al menú principal */}
                                 <button
                                     onClick={() => goBack()}
@@ -362,30 +391,30 @@ const ChatbotComponent: React.FC<ChatbotProps> = ({ className = '' }) => {
 
                     {/* Input - Solo visible en chat libre, NO cuando hay contenido guiado */}
                     {chatbotState.currentMenu === 'free_chat' && !showGuidedContent && (
-                        <form 
-                            onSubmit={handleSubmit} 
+                        <form
+                            onSubmit={handleSubmit}
                             className="p-4 border-t border-gray-100 bg-white/90 backdrop-blur-sm chatbot-input-area"
                         >
                             <div className="flex space-x-3">
-                            <input
-                                ref={inputRef}
-                                type="text"
-                                value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value)}
-                                onKeyPress={handleKeyPress}
-                                placeholder="Escribe tu mensaje..."
-                                disabled={isLoading}
-                                className="flex-1 px-2 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent text-sm disabled:opacity-50 bg-white/80 backdrop-blur-sm placeholder-gray-500 transition-all duration-200 chatbot-input"
-                            />
-                            <button
-                                type="submit"
-                                disabled={!inputValue.trim() || isLoading}
-                                className="px-4 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl hover:from-emerald-600 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 chatbot-button"
-                            >
-                                <Send className="w-4 h-4" />
-                            </button>
-                        </div>
-                    </form>
+                                <input
+                                    ref={inputRef}
+                                    type="text"
+                                    value={inputValue}
+                                    onChange={(e) => setInputValue(e.target.value)}
+                                    onKeyPress={handleKeyPress}
+                                    placeholder="Escribe tu mensaje..."
+                                    disabled={isLoading}
+                                    className="flex-1 px-2 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent text-sm disabled:opacity-50 bg-white/80 backdrop-blur-sm placeholder-gray-500 transition-all duration-200 chatbot-input"
+                                />
+                                <button
+                                    type="submit"
+                                    disabled={!inputValue.trim() || isLoading}
+                                    className="px-4 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl hover:from-emerald-600 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 chatbot-button"
+                                >
+                                    <Send className="w-4 h-4" />
+                                </button>
+                            </div>
+                        </form>
                     )}
                 </div>
             )}

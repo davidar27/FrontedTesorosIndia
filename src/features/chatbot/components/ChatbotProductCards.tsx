@@ -55,10 +55,25 @@ const ChatbotProductCards: React.FC<ChatbotProductCardsProps> = ({
                                 <span className="text-sm font-bold text-primary">
                                     {formatPrice(product.price)}
                                 </span>
-                                <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                                    {product.category}
-                                </span>
+                                <div className="flex items-center space-x-2">
+                                    {product.salesRank && (
+                                        <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded font-medium">
+                                            #{product.salesRank}
+                                        </span>
+                                    )}
+                                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                                        {product.category}
+                                    </span>
+                                </div>
                             </div>
+                            
+                            {product.totalSold && (
+                                <div className="mt-1">
+                                    <span className="text-xs text-green-600 font-medium">
+                                        📈 {product.totalSold} vendidos
+                                    </span>
+                                </div>
+                            )}
                         </div>
 
                         {/* Flecha */}
