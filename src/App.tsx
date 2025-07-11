@@ -3,6 +3,7 @@ import { Suspense, lazy } from "react";
 import { ErrorBoundary } from 'react-error-boundary';
 import ToastProvider from '@/components/ui/feedback/ToastProvider';
 import GlobalModalProvider from '@/components/ui/feedback/GlobalModalProvider';
+import ScrollToTop from '@/components/ui/feedback/ScrollToTop';
 
 // Layouts
 const MainLayout = lazy(() => import('@/layouts/MainLayout'));
@@ -50,6 +51,7 @@ function App() {
         <GlobalModalProvider>
           <Suspense fallback={<LoadingSpinner position="overlay" size="lg" variant="primary" speed="slow" overlayBg="bg-white/80" message="Cargando aplicación..." />}>
             <ToastProvider />
+            <ScrollToTop />
             <Routes>
               {/* Rutas públicas con MainLayout */}
 

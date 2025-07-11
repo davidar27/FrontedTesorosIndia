@@ -7,7 +7,6 @@ import DropdownHeader from "@/components/ui/display/Notification/DropdownHeader"
 import LoadingSpinner from "@/components/ui/display/LoadingSpinner";
 import EmptyState from "@/components/ui/display/Notification/EmptyState";
 import NotificationsList from "@/components/ui/display/Notification/NotificationsList";
-import "./Notification/notificationStyles.css";
 
 const NotificationDropdown = () => {
   const {
