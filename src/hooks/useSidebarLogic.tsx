@@ -2,7 +2,7 @@ import { useCallback, useState, useMemo } from "react";
 
 import { useLocation,useNavigate } from "react-router-dom";
 import { SidebarItem } from "@/components/admin/SideBar";
-import { User, MapPin, Package, Tag, Home, BarChart } from "lucide-react";
+import { User, MapPin, Package, Tag, Home } from "lucide-react";
 
 
 const useSidebarLogic = () => {
@@ -26,13 +26,6 @@ const useSidebarLogic = () => {
             icon: Home,
             path: '/',
             active: activeSection === 'home'
-        },
-        {
-            id: 'estadisticas',
-            label: 'Estadisticas',
-            icon: BarChart,
-            path: '/dashboard',
-            active: activeSection === 'estadisticas'
         },
         {
             id: 'emprendedores',
