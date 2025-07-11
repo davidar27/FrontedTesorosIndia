@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { NotificationsService } from '@/services/notifications/notificationsService';
 import { Notification } from '@/interfaces/notification';
@@ -9,32 +9,38 @@ export const useNotifications = () => {
     const queryClient = useQueryClient();
     const [isOpen, setIsOpen] = useState(false);
 
+    // Memoizar el userId para evitar re-renders innecesarios
+    const userId = useMemo(() => user?.id ? Number(user.id) : null, [user?.id]);
+    const shouldFetch = useMemo(() => !!userId && user?.role !== 'observador', [userId, user?.role]);
+
     const {
         data: notifications = [],
         isLoading,
         error,
         refetch
     } = useQuery({
-        queryKey: ['notifications', user?.id],
-        queryFn: () => NotificationsService.getNotifications(Number(user?.id)),
-        enabled: !!user?.id && user?.role !== 'observador',
-        refetchInterval: 60000, 
-        staleTime: 10000,
+        queryKey: ['notifications', userId],
+        queryFn: () => NotificationsService.getNotifications(userId!),
+        enabled: shouldFetch,
+        refetchInterval: 60000,
+        staleTime: 30000, // Aumentado para reducir refetch innecesarios
         refetchIntervalInBackground: false,
-        refetchOnWindowFocus: true
+        refetchOnWindowFocus: false, // Cambiado a false para evitar refetch en focus
+        refetchOnMount: true,
+        refetchOnReconnect: true,
     });
 
     const markAsReadMutation = useMutation({
         mutationFn: NotificationsService.markAsRead,
         onMutate: async (notificationId: number) => {
-            await queryClient.cancelQueries({ queryKey: ['notifications', user?.id] });
+            await queryClient.cancelQueries({ queryKey: ['notifications', userId] });
 
-            const previousNotifications = queryClient.getQueryData(['notifications', user?.id]);
+            const previousNotifications = queryClient.getQueryData(['notifications', userId]);
 
-            queryClient.setQueryData(['notifications', user?.id], (old: Notification[] | undefined) => {
+            queryClient.setQueryData(['notifications', userId], (old: Notification[] | undefined) => {
                 if (!old) return old;
-                return old.map(notification => 
-                    notification.notification_id === notificationId 
+                return old.map(notification =>
+                    notification.notification_id === notificationId
                         ? { ...notification, status: 'Vista' as const }
                         : notification
                 );
@@ -44,26 +50,23 @@ export const useNotifications = () => {
         },
         onError: (_err, _notificationId, context) => {
             if (context?.previousNotifications) {
-                queryClient.setQueryData(['notifications', user?.id], context.previousNotifications);
+                queryClient.setQueryData(['notifications', userId], context.previousNotifications);
             }
         },
         onSettled: () => {
-            // Siempre refetch para asegurar sincronización con el servidor
-            queryClient.invalidateQueries({ queryKey: ['notifications', user?.id] });
+            // Solo invalidar si es necesario
+            queryClient.invalidateQueries({ queryKey: ['notifications', userId] });
         },
     });
 
     const markAllAsReadMutation = useMutation({
         mutationFn: NotificationsService.markAllAsRead,
         onMutate: async () => {
-            // Cancelar queries en curso
-            await queryClient.cancelQueries({ queryKey: ['notifications', user?.id] });
+            await queryClient.cancelQueries({ queryKey: ['notifications', userId] });
 
-            // Guardar el estado anterior
-            const previousNotifications = queryClient.getQueryData(['notifications', user?.id]);
+            const previousNotifications = queryClient.getQueryData(['notifications', userId]);
 
-            // Actualizar optimistamente todas las notificaciones como leídas
-            queryClient.setQueryData(['notifications', user?.id], (old: Notification[] | undefined) => {
+            queryClient.setQueryData(['notifications', userId], (old: Notification[] | undefined) => {
                 if (!old) return old;
                 return old.map(notification => ({ ...notification, status: 'Vista' as const }));
             });
@@ -72,25 +75,29 @@ export const useNotifications = () => {
         },
         onError: (_err, _variables, context) => {
             if (context?.previousNotifications) {
-                queryClient.setQueryData(['notifications', user?.id], context.previousNotifications);
+                queryClient.setQueryData(['notifications', userId], context.previousNotifications);
             }
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: ['notifications', user?.id] });
+            queryClient.invalidateQueries({ queryKey: ['notifications', userId] });
         },
     });
 
-    const unreadCount = notifications.filter(n => n.status === 'No Vista').length;
+    // Memoizar el conteo de no leídas para evitar recálculos
+    const unreadCount = useMemo(() =>
+        notifications.filter(n => n.status === 'No Vista').length,
+        [notifications]
+    );
 
     const handleMarkAsRead = useCallback((notificationId: number) => {
         markAsReadMutation.mutate(notificationId);
     }, [markAsReadMutation]);
 
     const handleMarkAllAsRead = useCallback(() => {
-        if (user?.id) {
-            markAllAsReadMutation.mutate(Number(user.id));
+        if (userId) {
+            markAllAsReadMutation.mutate(userId);
         }
-    }, [markAllAsReadMutation, user?.id]);
+    }, [markAllAsReadMutation, userId]);
 
     const toggleNotifications = useCallback(() => {
         setIsOpen(prev => !prev);
