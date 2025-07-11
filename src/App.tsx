@@ -24,6 +24,7 @@ const CartPage = lazy(() => import('@/pages/Cart/CartPage'));
 const PaymentSuccess = lazy(() => import('@/pages/payment/PaymentSuccess'));
 const PaymentFailure = lazy(() => import('@/pages/payment/PaymentFailure'));
 const PaymentPending = lazy(() => import('@/pages/payment/PaymentPending'));
+const CancelReservePage = lazy(() => import('@/pages/CancelReserve/CancelReservePage'));
 
 // Admin Pages
 const ExperiencesPage = lazy(() => import('@/pages/Admin/ExperiencesPage'));
@@ -78,6 +79,9 @@ function App() {
                   <Route path="fallido" element={<PaymentFailure />} />
                   <Route path="pendiente" element={<PaymentPending />} />
                 </Route>
+
+                {/* Rutas de cancelación */}
+                <Route path="/cancelar/reserva" element={<CancelReservePage />} />
 
                 {/* Rutas de experiencias */}
                 <Route path="/experiencias">

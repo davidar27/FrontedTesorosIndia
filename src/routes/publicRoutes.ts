@@ -38,4 +38,6 @@ export const PUBLIC_ROUTES = [
     '/paquetes/:id',
     '/paquetes/:id/comprar',
 
+    // Rutas de cancelación
+    '/cancelar/reserva',
 ];
