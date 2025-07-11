@@ -4,11 +4,12 @@ export interface Position {
 }
 
 export interface Experience {
-  id: number;
+  experienceId: number;
   name: string;
   description: string;
   location: string;
   type?: string;
+  image?: string;
   position: Position;
   lat?: number;
   lng?: number;

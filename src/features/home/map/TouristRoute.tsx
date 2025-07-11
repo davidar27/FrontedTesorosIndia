@@ -7,6 +7,7 @@ import { MapSection } from '@/features/home/map/components/MapSection';
 import { RouteDescription } from '@/features/home/map/components/RouteDescription';
 import { ErrorMessage } from '@/features/home/map/components/ErrorMessage';
 import LoadingSpinner from '@/components/ui/display/LoadingSpinner';
+import { MapProvider } from './context/MapContext';
 
 const TouristRoute: React.FC = () => {
   const { locations, loading, error } = useTouristRouteData();
@@ -26,21 +27,23 @@ const TouristRoute: React.FC = () => {
   }
 
   return (
-    <div className="responsive-padding-x pt-10">
-      <Header />
+    <MapProvider>
+      <div className="responsive-padding-x pt-10">
+        <Header />
 
-      <div className="grid md:grid-cols-3 gap-8">
-        <SidePanel
-          locations={locations}
-          onLocationClick={handleLocationClick}
-        />
+        <div className="grid md:grid-cols-3 gap-8">
+          <SidePanel
+            locations={locations}
+            onLocationClick={handleLocationClick}
+          />
 
-        <div className="md:col-span-2">
-          <MapSection locations={locations} />
-          <RouteDescription locations={locations} />
+          <div className="md:col-span-2">
+            <MapSection locations={locations} />
+            <RouteDescription locations={locations} />
+          </div>
         </div>
       </div>
-    </div>
+    </MapProvider>
   );
 };
 

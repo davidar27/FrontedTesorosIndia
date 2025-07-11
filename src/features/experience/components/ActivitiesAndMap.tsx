@@ -260,6 +260,7 @@ const ActivitiesAndMap: React.FC<ActivitiesAndMapProps> = ({
                                             name: experience?.name || '',
                                             description: experience?.description || '',
                                             type: experience?.type || '',
+                                            imageUrl: experience?.image || '',
                                         }]}
                                     />
                                 ) : (
@@ -272,6 +273,8 @@ const ActivitiesAndMap: React.FC<ActivitiesAndMapProps> = ({
                                                     name: experience?.name || '',
                                                     description: experience?.description || '',
                                                     type: experience?.type || '',
+                                                    imageUrl: experience?.image || '',
+                                                    
                                                 }]}
                                             />
                                         ) : (
