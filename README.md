@@ -1,6 +1,6 @@
 <div align="left" style="position: relative;">
-<img src="https://img.icons8.com/?size=512&id=55494&format=png" align="right" width="30%" style="margin: -20px 0 0 20px;">
-<h1>FRONTENDTESOROSINDIA</h1>
+<img src="https://i.postimg.cc/YSQp2Kmn/logotesorosindia.png" align="right" width="30%" style="margin: -20px 0 0 20px;">
+<h1>Tesoros de la India</h1>
 <p align="left">
 	<em><code>A modern web app that connects travelers with authentic rural experiences and local products from Colombia.</code></em>
 </p>
